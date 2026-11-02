@@ -771,7 +771,7 @@ items:[
  {lvl:3,text:'{These*|This@en.s.this_that} boys play {_*|the} basketball every Friday.',
   why:'1) Boys — мн. число → <b>These</b>. 2) Basketball — спорт → без артикля.',
   why2:'This boy, these boys. Спорт — без артикля.'},
- {lvl:3,text:'My sister can play {the*|_|a} violin, and I {can’t*|don’t can@en.s.can} play it.',
+ {lvl:3,text:'My sister can play {the*|_|a} violin, but I {can’t*|don’t can@en.s.can} play it.',
   why:'1) Инструмент → <b>the</b> violin. 2) Отрицание от can — <b>can’t</b>, без don’t.',
   why2:'Музыка — the. Can сам делает отрицание: can’t.'},
  {lvl:3,text:'{Has*|Have@en.s.have_got} your friend got {an*|a|_} umbrella? It is raining.',
@@ -1734,7 +1734,7 @@ items:[
 {type:'listen', lvl:1, say:"I'll call you tomorrow.", q:'Послушай. Что обещают?', opts:['позвонить завтра','позвонить сегодня','прийти завтра'], ans:0,
  why:`Прозвучало ${s("I'll call you tomorrow.")} — ${s('call')} = позвонить, ${s('tomorrow')} = завтра.`,
  why2:`I'll = I will — «я сделаю». call — звонить.`},
-{lvl:2, text:'— The phone is ringing! — OK, I {\'ll answer*|\'m going to answer|answered} it.',
+{lvl:2, text:'— The phone is ringing! — OK, {I\'ll answer*|I\'m going to answer|I answered} it.',
  why:`Решение принято <b>прямо сейчас</b>, в ответ на звонок → <b>will</b>: ${s("I'll answer it.")} going to — для заранее готовых планов. «answered» — прошлое.`,
  why2:`Телефон зазвонил — «о, отвечу!» Мгновенное решение = will.`},
 {lvl:2, text:'{Will you open*|Will you to open|Do you will open} the door, please?',
@@ -1755,7 +1755,7 @@ items:[
 {type:'listen', lvl:2, say:"I won't go.", q:'Послушай. Что прозвучало?', opts:["I won't go.",'I want to go.'], ans:0,
  why:`Прозвучало ${s("I won't go.")} — «Я не пойду». ${s("won't")} ${tr('wəʊnt')} звучит «уоунт», а ${s('want')} ${tr('wɒnt')} — коротко «уонт».`,
  why2:`won't — с «оу» внутри, want — с коротким «о». И после want было бы to.`},
-{lvl:3, text:'— I haven\'t got a pen. — No problem, I {\'ll give*|\'m going to give|give} you mine.',
+{lvl:3, text:'— I haven\'t got a pen. — No problem, {I\'ll give*|I\'m going to give|I give} you mine.',
  why:`Помощь предлагают <b>прямо сейчас</b>, услышав проблему → <b>will</b>: ${s("I'll give you mine.")} going to — если план был заранее. «I give» — по-русски «сейчас дам», но по-английски так нельзя.`,
  why2:`«Нет ручки? — Дам свою!» — решение на ходу = will.`},
 {lvl:3, text:'I promise I {won\'t be*|won\'t to be|don\'t be} late again.',
@@ -1764,7 +1764,7 @@ items:[
 {lvl:3, text:'I {think*|thinks|am thinking@en.5.ps_vs_pc} Anna {will like*|will to like|will likes} your present.',
  why:`1) think в значении «считаю, по-моему» не ставят в Continuous → <b>I think</b>. 2) Предсказание → <b>will like</b>, без to и без -s.`,
  why2:`«Я думаю (считаю)» = I think. «Ей понравится» = she will like.`},
-{lvl:3, text:'— Is there any milk? — No, there {isn\'t*|aren\'t|hasn\'t@en.p.there_is}. — OK, I {\'ll buy*|bought|\'m buy} some.',
+{lvl:3, text:'— Is there any milk? — No, there {isn\'t*|aren\'t|hasn\'t@en.p.there_is}. — OK, {I\'ll buy*|I bought|I\'m buy} some.',
  why:`1) Вопрос был ${s('Is there…?')} (milk — неисчисляемое) → ответ ${s("No, there isn't.")} 2) Решение принято сейчас, услышав ответ → <b>I'll buy</b>.`,
  why2:`Is there…? — No, there isn't. «Тогда куплю!» — will.`},
 {lvl:3, q:'В каком случае нужен именно <b>will</b> (решение прямо сейчас)?', opts:["We've got the tickets. We ___ fly to Rome in May.","— Oh no, I've forgotten my pencil! — I ___ lend you one.",'Look at those black clouds! It ___ rain.'], ans:1,
@@ -1829,10 +1829,10 @@ items:[
 {lvl:2, text:'She {isn\'t going to*|doesn\'t going to|not going to} study tonight.',
  why:`Отрицание: is + not → <b>isn't going to</b>. doesn't с going to не используется, «not going to» без is — не хватает кубика.`,
  why2:`She is going to → She isn't going to.`},
-{lvl:2, text:'I bought some paint yesterday. I {\'m going to paint*|\'ll paint|painted} my room this weekend.',
+{lvl:2, text:'I bought some paint yesterday. {I\'m going to paint*|I\'ll paint|I painted} my room this weekend.',
  why:`Краску уже купил — значит, <b>план готов заранее</b> → <b>going to</b>. will — для решения в момент разговора. «painted» — прошлое, а речь о выходных впереди.`,
  why2:`Заранее решил и подготовился = going to.`},
-{lvl:2, text:'{Be*|Are|Is@en.p.imperative} careful! You {\'re going to fall*|\'ll to fall|fall}!',
+{lvl:2, text:'{Be*|Are|Is@en.p.imperative} careful! {You\'re going to fall*|You\'ll to fall|You fall}!',
  why:`1) Приказ / совет — повелительное наклонение: просто <b>Be careful!</b> 2) Видно, что вот-вот упадёт → <b>going to</b>: ${s("You're going to fall!")}`,
  why2:`«Осторожно!» = Be careful! «Сейчас упадёшь!» (видно же) = going to.`},
 {lvl:2, text:'My parents {are going to*|is going to|going to} buy a car. They {want*|wants|are wanting@en.5.ps} a big one.',
@@ -1844,10 +1844,10 @@ items:[
 {type:'read', lvl:2, text:'Look at the sky! It is going to rain.', q:'Прочитай вслух',
  why:`${s('Look at')} — связывай: «лукэт». ${s('sky')} ${tr('skaɪ')} — «скай». Подчеркни голосом ${s('rain')}.`,
  why2:`Говори как будто правда видишь тучи: «Лук эт зэ скай!»`},
-{lvl:3, text:'— Why have you got a towel? — I {\'m going to swim*|\'ll swim|swim} in the lake.',
+{lvl:3, text:'— Why have you got a towel? — {I\'m going to swim*|I\'ll swim|I swim} in the lake.',
  why:`Полотенце взял заранее — это <b>план</b> → <b>going to swim</b>. will — для решения в момент разговора, «I swim» — по-английски так о будущем не говорят.`,
  why2:`Подготовился заранее (полотенце) = going to.`},
-{lvl:3, text:'He\'s running too fast! He {\'s going to fall*|going to fall|\'s going fall}!',
+{lvl:3, text:'He\'s running too fast! {He\'s going to fall*|He going to fall|He\'s going fall}!',
  why:`Видно, что сейчас упадёт → going to. Нужны все кубики: <b>is ('s) + going to + fall</b>. Без is и без to — ошибки.`,
  why2:`He's + going to + fall — три кубика.`},
 {lvl:3, text:'Tomorrow is Saturday. My friends and I {are going to*|am going to|is going to} play {_*|the|a@en.5.articles} tennis.',
@@ -2456,7 +2456,7 @@ RU.mix(6, [
 {lvl:2, text:'Every morning Tom {gets*|get|getting@en.5.ps} up at seven, but yesterday he {got*|getted|gets@en.6.past_irreg} up at nine.',
  why:`1) Каждое утро, Tom = he → <b>gets</b>. 2) Вчера → прошедшее от get: <b>got</b>.`,
  why2:`Обычно — gets. Вчера — got.`},
-{lvl:2, text:'— It\'s very hot {in*|on|at@en.p.prep_place} here. — I {\'ll open*|open|opened@en.6.will} the window.',
+{lvl:2, text:'— It\'s very hot {in*|on|at@en.p.prep_place} here. — {I\'ll open*|I open|I opened@en.6.will} the window.',
  why:`1) Говорим ${s('in here')} — «здесь, в этой комнате». 2) Решение принято прямо сейчас → <b>I'll open</b>.`,
  why2:`in here — внутри. Мгновенное решение — will.`},
 {lvl:2, text:'We {stopped*|stoped|stop@en.6.past_reg} at a café, and Dad {bought*|buyed|buys@en.6.past_irreg} some ice cream.',
@@ -2480,7 +2480,7 @@ RU.mix(6, [
 {lvl:3, text:'— {Did*|Were|Was@en.6.past_neg_q} you hear that noise? — Yes, I think it {was*|were@en.p.was_were} the cat.',
  why:`1) hear — обычный глагол, вопрос в прошлом → <b>Did</b> you hear…? 2) it → <b>was</b>.`,
  why2:`Did + you + hear. it was.`},
-{lvl:3, text:'Right now my brother {is playing*|plays|play@en.5.pc} a computer game. I think he {\'ll finish*|finish|finished@en.6.will} soon.',
+{lvl:3, text:'Right now my brother {is playing*|plays|play@en.5.pc} a computer game. I think {he\'ll finish*|he finish|he finished@en.6.will} soon.',
  why:`1) ${s('Right now')} — прямо сейчас → Present Continuous: <b>is playing</b>. 2) Мнение о будущем с I think → <b>he'll finish</b>.`,
  why2:`Сейчас — is playing. Думаю, что будет — will.`},
 {lvl:3, text:'{These*|This|That@en.s.this_that} jeans are {cheaper*|more cheap|cheapest@en.6.comparatives} than those.',
@@ -2857,7 +2857,7 @@ theory:`<p>У Present Perfect есть «слова-друзья». Они по�
 <tr><td><b>yet</b></td><td>уже? / ещё не</td><td>в конце вопроса и отрицания</td><td>${s('Have you finished yet?')}<br>${s('I haven’t finished yet.')}</td></tr>
 <tr><td><b>ever</b></td><td>когда-нибудь</td><td>в вопросах, перед V3</td><td>${s('Have you ever been to London?')}</td></tr>
 <tr><td><b>never</b></td><td>никогда</td><td>между have и V3 (без not!)</td><td>${s('I have never been to London.')}</td></tr></table>
-<div class="box rule"><b>for или since?</b><b>for</b> + <b>сколько</b> длится (период): ${s('for three years')}, ${s('for a week')}, ${s('for a long time')}<br><b>since</b> + <b>с какого момента</b> (точка): ${s('since 2019')}, ${s('since Monday')}, ${s('since last summer')}, ${s('since I was six')}<br>${s('I have lived here for five years.')} = ${s('I have lived here since 2020.')}</div>
+<div class="box rule"><b>for или since?</b><b>for</b> + <b>сколько</b> длится (период): ${s('for three years')}, ${s('for a week')}, ${s('for a long time')}<br><b>since</b> + <b>с какого момента</b> (точка): ${s('since 2019')}, ${s('since Monday')}, ${s('since last summer')}, ${s('since I was six')}<br>${s('I have lived here for five years.')} = ${s('I have lived here since 2021.')}</div>
 <div class="box ex"><b>Вопрос «Как долго?»</b>${s('How long have you had this dog?')} — ${s('For three months.')} / ${s('Since May.')}</div>
 <div class="box tip"><b>Как запомнить</b><b>for</b> — «в течение» (сколько). <b>since</b> — «с» (с какого времени). Если можно спросить «сколько?» — for. Если «с какого момента?» — since.<br>Самое лучшее в жизни: ${s('This is the most interesting book I have ever read.')}</div>
 <div class="box err"><b>Типичные ошибки</b>✗ I live here for five years → ✓ ${s('I have lived here for five years.')} (по-русски «живу», но по-английски — Present Perfect!)<br>✗ since three years → ✓ ${s('for three years')}<br>✗ I haven’t never… → ✓ ${s('I have never…')} (never уже отрицание)<br>✗ I haven’t done it already → ✓ ${s('I haven’t done it yet.')}</div>`,
@@ -2889,8 +2889,8 @@ items:[
  {lvl:2,text:'He has worked at this school {since*|for} he left university.',
   why:'«С тех пор как он окончил университет» — это точка отсчёта → <b>since</b>. После since может стоять целое предложение в Past Simple (he left).',
   why2:'since + событие в прошлом (he left) = с того момента.'},
- {lvl:2,text:'{Have you ever*|Have you never|Did you ever} ridden a horse?',
-  why:'Вопрос «когда-нибудь в жизни?» → <b>Have you ever</b> + V3 (ridden). never в вопросе здесь не подходит, а «Did … ridden» — ошибка: после did нужна 1-я форма.',
+ {lvl:2,text:'{Have you ever*|Have you yet|Did you ever} ridden a horse?',
+  why:'Вопрос «когда-нибудь в жизни?» → <b>Have you ever</b> + V3 (ridden). yet перед V3 не ставят (оно стоит в конце вопроса), а «Did … ridden» — ошибка: после did нужна 1-я форма.',
   why2:'Вопрос про опыт: Have you ever…?'},
  {lvl:2,text:'I have {never*|ever} been to America.',
   why:'В утверждении «никогда» → <b>never</b>. ever ставим в вопросах.',
@@ -3569,8 +3569,8 @@ RU.mix(7,[
  {lvl:2,text:'The woman {who*|which|whose@en.7.relative} {teaches*|teach@en.5.ps} us English {is*|are@en.s.to_be} very kind.',
   why:'1) woman — человек → <b>who</b>. 2) who заменяет woman (она) → <b>teaches</b> (-es после ch). 3) Главное слово — woman (одна) → <b>is</b>.',
   why2:'Женщина, которая учит → who teaches. Она добрая → is.'},
- {lvl:2,text:'Have you {ever*|never@en.7.pp_words} {seen*|saw|seed@en.7.pres_perf} {an*|a@en.s.a_an} owl?',
-  why:'1) В вопросе «когда-нибудь» → <b>ever</b>. 2) После have — V3: see — saw — <b>seen</b>. 3) owl начинается с гласного звука → <b>an</b> owl.',
+ {lvl:2,text:'Have you {ever*|yet@en.7.pp_words} {seen*|saw|seed@en.7.pres_perf} {an*|a@en.s.a_an} owl?',
+  why:'1) В вопросе «когда-нибудь» → <b>ever</b> (yet перед V3 не ставят — только в конце вопроса). 2) После have — V3: see — saw — <b>seen</b>. 3) owl начинается с гласного звука → <b>an</b> owl.',
   why2:'Have you ever seen…? owl — гласный звук → an.'},
  {lvl:2,text:'— Is there {any*|some@en.5.some_any} milk? — No, Tom {has drunk*|has drank|have drunk@en.7.pres_perf} it all.',
   why:'1) В вопросе — <b>any</b>. 2) drink — drank — <b>drunk</b>; Tom = he → <b>has drunk</b>.',
@@ -3686,8 +3686,8 @@ items:[
  {lvl:3, text:"She has been writing letters all morning. She {has written*|has been writing|have written} five letters.",
   why:`Есть <b>число готовых</b> писем (five letters) — важен результат → Present Perfect: <b>has written</b>. Процесс («пишет всё утро») — has been writing, но «сколько штук» — has written. «have written» — с she нужно has.`,
   why2:`Процесс — been + -ing. Результат, который можно посчитать, — has + V3 (written).`},
- {lvl:3, text:"He is out of breath because he {has been running*|is running|runs}. He runs {faster*|more fast|the fastest@en.6.comparatives} than me.",
-  why:`1) Он запыхался — это след только что закончившегося долгого действия → <b>has been running</b>. 2) Сравнение двух людей со словом <b>than</b> → сравнительная степень: fast → <b>faster</b>. «more fast» — нельзя: короткие слова получают -er.`,
+ {lvl:3, text:"He is sitting on a bench now. He is out of breath because he {has been running*|is running|runs}. He runs {faster*|more fast|the fastest@en.6.comparatives} than me.",
+  why:`1) Он уже сидит на скамейке (сейчас не бежит), но запыхался — это след только что закончившегося долгого действия → <b>has been running</b>. «is running» — «бежит прямо сейчас», а он сидит. 2) Сравнение двух людей со словом <b>than</b> → сравнительная степень: fast → <b>faster</b>. «more fast» — нельзя: короткие слова получают -er.`,
   why2:`1) Запыхался = «бегал (и это видно)» → has been running. 2) than («чем») → -er: faster, bigger, taller.`},
  {type:'read', lvl:3, text:'We have been waiting for you for half an hour.', q:'Прочитай вслух',
   why:`<b>waiting</b> ${T('[ˈweɪtɪŋ]')}. <b>for you</b> — for звучит слабо ${T('[fə]')}. <b>half</b> ${T('[hɑːf]')} — буква l не читается! <b>half an hour</b> читается слитно: «хаафэнауэ», в <b>hour</b> h не читается.`,
@@ -5979,8 +5979,8 @@ items:[
  {lvl:3, text:`My mum {doesn't drink*|doesn't drinks|don't drink} coffee.`,
   why:`Mum = she → <b>doesn't</b>. А после doesn't глагол без -s: <b>drink</b>. Хвостик уже «забрал» does.`,
   why2:`Один хвостик на предложение: does-n't уже с -s, поэтому ${say("My mum doesn't drink coffee.")}`},
- {lvl:3, text:'{Does*|Do|Is} your brother {play*|plays|playing} the guitar?',
-  why:`Brother = he → <b>Does</b>. После does глагол голый: <b>play</b>. «Is … play» и «Does … plays» — ошибки.`,
+ {lvl:3, text:'{Does*|Do|Is} your brother {play*|plays|to play} the guitar?',
+  why:`Brother = he → <b>Does</b>. После does глагол голый: <b>play</b>. «Is … play», «Does … plays» и «Does … to play» — ошибки.`,
   why2:`Вопрос в Present Simple: Does + он + глагол без -s. ${say('Does your brother play the guitar?')}`},
  {lvl:3, text:'He {has*|haves|have} breakfast at seven.',
   why:`Глагол <b>have</b> — исключение: с he/she/it он становится <b>has</b>. «haves» не бывает.`,
@@ -6336,7 +6336,7 @@ theory:`
 ${say('next to')} — всегда с <b>to</b>. ${say('in front of')} — всегда с <b>of</b>. ${say('between')} A <b>and</b> B — всегда с and.</div>
 
 <div class="box tip"><b>Как запомнить</b>Представь коробку и мяч: мяч <b>in</b> — внутри, <b>on</b> — сверху, <b>under</b> — снизу, <b>behind</b> — спрятался сзади, <b>in front of</b> — стоит перед коробкой, <b>next to</b> — сбоку.<br>
-Где стоит предложение? Порядок: кто + is/are + предлог + место: ${say('My bag is under the table.')}</div>
+Порядок слов: кто + is/are + предлог + место: ${say('My bag is under the table.')}</div>
 
 <div class="box err"><b>Где русский язык подводит</b>
 «на картинке» → ${say('in the picture')} (не on)<br>
@@ -6534,7 +6534,7 @@ ${say('Where were you yesterday?')}</div>
 
 <p>Слова-подсказки: ${say('yesterday')} (вчера), ${say('last week')} (на прошлой неделе), ${say('last summer')}, ${say('two days ago')} (два дня назад), ${say('then')} (тогда).</p>
 
-<div class="box tip"><b>Как запомнить</b>Am и is превращаются в <b>was</b>, are превращается в <b>were</b>. Буква a в обоих: <b>a</b>m/is → w<b>a</b>s. И you — всегда were, даже если «ты» один.</div>
+<div class="box tip"><b>Как запомнить</b>Am и is превращаются в <b>was</b>, are превращается в <b>were</b>. Буква a в обоих: <b>a</b>m → w<b>a</b>s. И you — всегда were, даже если «ты» один.</div>
 
 <div class="box err"><b>Типичные ошибки</b>
 ✗ I were happy. → ✓ ${say('I was happy.')}<br>
@@ -6881,7 +6881,7 @@ items:[
   why2:`Вместо «O, O» англичане говорят «double O» — «двойная O». Так же ${s('apple')} — A, double P, L, E.`},
  {lvl:3,q:`В названии какой буквы есть звук ${t('eɪ')}, как в слове name?`,opts:['K','E','I'],ans:0,sayAfter:'K',
   why:`${s('K')} называется ${t('keɪ')} «кей» — там звук ${t('eɪ')}, как в ${s('name')}. E — ${t('iː')}, I — ${t('aɪ')}.`,
-  why2:`На «эй» заканчиваются A, H, J, K: ${s('A, H, J, K','A, H, J, K')}.`},
+  why2:`Звук «эй» есть в названиях A, H, J, K: ${s('A, H, J, K','A, H, J, K')}.`},
  {type:'read',lvl:3,text:'Please say the alphabet.',q:'Прочитай вслух',
   why:`${s('Please say the alphabet.')} — «Пожалуйста, скажи алфавит». ${s('please')} ${t('pliːz')} — ea читается «и», s как [z]; ${s('say')} ${t('seɪ')}; ${s('alphabet')} ${t('ˈælfəbet')} — ph читается как [f], ударение на первом слоге.`,
   why2:`«Плиз сэй зэ ЭЛфэбэт». В слове the язык между зубами — ${t('ð')}.`}
