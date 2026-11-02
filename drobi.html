@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Рациональные дроби — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY='trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div></div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':return Math.abs(H.parseNum(val)-t.ans)<1e-9;
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  const fb=$('#fb');
+  if(ok){
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}</h3>${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      <div class="ans">Правильный ответ: ${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%).</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,gcd}=H;
+const N=H.num,M=H.m;
+const F=(a,b)=>H.frac(typeof a==='number'?N(a):a,typeof b==='number'?N(b):b);
+
+/* ---------- small algebra toolkit ---------- */
+const SUP={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻'};
+const sup=n=>n===1?'':String(n).split('').map(c=>SUP[c]).join('');
+const nz=(a,b)=>{let v;do{v=R(a,b);}while(v===0);return v;};
+const xp=(a,v)=>{v=v||'x';return a===0?v:a>0?`${v} + ${a}`:`${v} − ${-a}`;};   // x + a
+const P=s=>`(${s})`;
+const pn=v=>v<0?`(${N(v)})`:N(v);                                                // number in brackets if negative
+const lin1=(v,a)=>`${N(v)} ${a<0?'−':'+'} ${Math.abs(a)}`;                        // "v + a" with numbers
+const mono=(c,parts)=>{const a=Math.abs(c);const vs=parts.filter(p=>p[1]>0).map(p=>p[0]+sup(p[1])).join('');return (c<0?'−':'')+((a===1&&vs)?'':N(a))+vs;};
+// polynomials: coefficient arrays, lowest degree first
+function pf(p,v){v=v||'x';let s='';for(let i=p.length-1;i>=0;i--){const c=p[i];if(!c)continue;const a=Math.abs(c);const body=i===0?N(a):(a===1?'':N(a))+v+sup(i);if(!s)s=(c<0?'−':'')+body;else s+=(c<0?' − ':' + ')+body;}return s||'0';}
+// exact fractions
+function Q(n,d){if(d===undefined)d=1;if(d<0){n=-n;d=-d;}const g=gcd(n,d)||1;return {n:n/g,d:d/g};}
+const qa=(a,b)=>Q(a.n*b.d+b.n*a.d,a.d*b.d),qs=(a,b)=>Q(a.n*b.d-b.n*a.d,a.d*b.d),qm=(a,b)=>Q(a.n*b.n,a.d*b.d),qd=(a,b)=>Q(a.n*b.d,a.d*b.n);
+const qi=n=>Q(n,1),qv=q=>q.n/q.d,qeq=(a,b)=>a.n===b.n&&a.d===b.d;
+const qh=q=>q.d===1?N(q.n):(q.n<0?'−':'')+F(Math.abs(q.n),q.d);
+const numA=q=>{const o={ans:qv(q)};if(q.d!==1)o.ansText=qh(q);return o;};
+// choice helper: first is right
+function ch(right,wrong){const o=shuffle([right,...wrong].map((s,i)=>({s,i})));return {opts:o.map(x=>M(x.s)),ans:o.findIndex(x=>x.i===0)};}
+const uniq=a=>new Set(a).size===a.length;
+// tall brackets around fractions: a "(…)" pair whose content contains a stacked fraction is enlarged
+function big(s){if(typeof s!=='string'||s.indexOf('class="frac"')<0)return s;const st=[],mark=new Set();let tag=false;
+  for(let i=0;i<s.length;i++){const c=s[i];if(c==='<')tag=true;else if(c==='>')tag=false;else if(!tag){if(c==='(')st.push(i);else if(c===')'&&st.length){const o=st.pop();if(s.slice(o,i).indexOf('class="frac"')>=0){mark.add(o);mark.add(i);}}}}
+  if(!mark.size)return s;let r='';for(let i=0;i<s.length;i++)r+=mark.has(i)?`<span style="display:inline-block;transform:scaleY(1.75);vertical-align:middle;margin:0 1px">${s[i]}</span>`:s[i];return r;}
+function bigTask(t){if(!t)return t;['q','short','explain','explain2','hint','ansText'].forEach(k=>{if(t[k])t[k]=big(t[k]);});if(t.opts)t.opts=t.opts.map(big);return t;}
+
+/* ---------- figure: 1/2 = 2/4 = 4/8 ---------- */
+function bars(){
+  let s=`<svg viewBox="0 0 320 160" width="320" role="img" aria-label="Одна вторая равна двум четвертым и четырём восьмым" style="font-family:system-ui,sans-serif">`;
+  [[2,'1/2'],[4,'2/4'],[8,'4/8']].forEach(([n,l],r)=>{const y=12+r*50,w=230/n;
+    for(let i=0;i<n;i++)s+=`<rect x="${78+i*w}" y="${y}" width="${w}" height="34" fill="${i<n/2?'var(--hl)':'var(--card)'}" fill-opacity="${i<n/2?0.55:1}" stroke="var(--fig)" stroke-width="1.4"/>`;
+    s+=`<text x="38" y="${y+23}" text-anchor="middle" font-size="17" font-weight="700" fill="var(--accent-ink)">${l}</text>`;});
+  return s+'</svg>';
+}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Что такое рациональная дробь',lvl:0,html:`
+<p>Ты уже знаешь обычные дроби: ${F(3,4)}, ${F(5,7)}. Черта дроби — это <b>деление</b>: ${F(3,4)} = 3 : 4.</p>
+<p><b>Рациональная (алгебраическая) дробь</b> — то же самое, только вместо чисел сверху и снизу стоят <b>выражения с буквами</b> (многочлены):</p>
+<p class="m" style="text-align:center">${F('x + 3','x − 5')}, &nbsp; ${F('2a','b²')}, &nbsp; ${F('x² − 9','x + 3')}</p>
+<div class="box rule"><b>Названия</b>Верх — <b>числитель</b>, низ — <b>знаменатель</b>. Если в знаменателе есть буква, выражение называют <b>дробным</b>. Если букв в знаменателе нет (например, ${F('x + 1',5)}), это просто многочлен, делённый на число, — <b>целое</b> выражение.</div>
+<h3>Как найти значение дроби</h3>
+<ol class="steps"><li>Вместо каждой буквы подставь число. <b>Отрицательное число бери в скобки!</b></li>
+<li>Посчитай отдельно числитель и отдельно знаменатель.</li>
+<li>Раздели одно на другое и сократи.</li></ol>
+<div class="box ex"><b>Пример</b>${F('x + 3','x − 5')} при x = 7: числитель 7 + 3 = 10, знаменатель 7 − 5 = 2, значение 10 : 2 = <b>5</b>.</div>
+<div class="box err"><b>Частая ошибка</b>При x = −3 выражение x² — это (−3)² = <b>9</b>, а не −9. Минус «прячется» в скобках и при возведении в квадрат исчезает.</div>`},
+{title:'Когда дробь не имеет смысла',lvl:1,html:`
+<p>Главный запрет математики: <b>на ноль делить нельзя</b>. Поэтому дробь <b>не имеет смысла</b> при тех x, при которых <b>знаменатель равен нулю</b>.</p>
+<p>Все остальные x называются <b>допустимыми значениями переменной</b>.</p>
+<div class="box rule"><b>Как найти «запрещённые» x</b>1) Возьми <b>только знаменатель</b>. 2) Приравняй его к нулю. 3) Реши уравнение. Числитель при этом вообще не смотрим!</div>
+<div class="box ex"><b>Пример</b>${F('x + 3','x² − 9')}. Знаменатель: x² − 9 = 0 → x² = 9 → x = 3 или x = −3.<br>Ответ: дробь не имеет смысла при <b>x = 3 и x = −3</b>.</div>
+<div class="box err"><b>Ловушка</b>Эту дробь можно сократить: ${F('x + 3','(x − 3)(x + 3)')} = ${F(1,'x − 3')}. Но запрещённые значения ищут по <b>исходной</b> дроби! Число −3 тоже запрещено, хоть после сокращения его «не видно».</div>
+<div class="box tip"><b>Полезно знать</b>Произведение равно нулю, когда <b>хотя бы один</b> множитель равен нулю: <span class="m">x(x − 4) = 0</span> → <span class="m">x = 0</span> или <span class="m">x = 4</span>.<br>А x² + 4 никогда не равно нулю: x² ≥ 0, значит x² + 4 ≥ 4. Такая дробь имеет смысл при любом x.</div>`},
+{title:'Когда дробь равна нулю',lvl:2,html:`
+<p>Дробь — это деление. 0 : 5 = 0, а 5 : 0 — нельзя. Поэтому:</p>
+<div class="box rule"><b>Правило (нужны ОБА условия)</b>Дробь равна нулю, когда <b>числитель = 0</b> <u>и</u> <b>знаменатель ≠ 0</b>.</div>
+<ol class="steps"><li>Приравняй числитель к нулю и найди x.</li>
+<li><b>Проверь каждый</b> найденный x: не обращает ли он знаменатель в ноль? Если обращает — выбрасываем.</li></ol>
+<div class="box ex"><b>Пример</b>${F('x² − 16','x + 4')} = 0.<br>Числитель: x² − 16 = 0 → x = 4 или x = −4.<br>Проверяем знаменатель: при x = 4 он 8 ≠ 0 ✅; при x = −4 он 0 ❌ (на ноль делить нельзя).<br>Ответ: <b>x = 4</b>.</div>
+<div class="box err"><b>Главная ловушка</b>Найти корни числителя и забыть шаг 2. Учителя очень любят такие задачи!</div>`},
+{title:'Основное свойство дроби',lvl:3,html:`
+<p>Если числитель и знаменатель <b>умножить или разделить на одно и то же</b> (не ноль), дробь не изменится.</p>
+<div class="fig" data-fig="bars"></div>
+<p class="small" style="text-align:center">Половина пиццы — это и 2 куска из 4, и 4 куска из 8. Кусков больше, но еды столько же.</p>
+<div class="box rule"><b>Формула</b><span class="m">${F('a','b')} = ${F('a · c','b · c')}</span>, где b ≠ 0, c ≠ 0.</div>
+<p>Отсюда два действия:</p>
+<ul class="steps"><li><b>Сокращение</b> — делим верх и низ на общий множитель: ${F('6x','9x²')} = ${F('2','3x')} (разделили на 3x).</li>
+<li><b>Приведение к новому знаменателю</b> — умножаем верх и низ на <b>дополнительный множитель</b>: ${F(3,'x − 2')} = ${F('3(x + 5)','(x − 2)(x + 5)')}.</li></ul>
+<div class="box tip"><b>Степени при сокращении</b><span class="m">${F('a⁵','a²')} = a³</span> — пять «a» сверху, две снизу, две пары зачеркнули, три осталось. Показатели <b>вычитаем</b>.</div>`},
+{title:'Сокращаем только МНОЖИТЕЛИ',lvl:[3,4],html:`
+<p>Это самое важное правило темы. Сокращать можно только то, на что <b>умножают</b> весь числитель и весь знаменатель. То, что <b>прибавляют</b> (слагаемое), сокращать нельзя!</p>
+<div class="box err"><b>Неверно ❌</b><span class="m">${F('x + 5','5')} = x</span> — пятёрка в числителе — слагаемое, её нельзя зачеркнуть.<br>Проверка: x = 1 → ${F('1 + 5','5')} = ${F(6,5)}, а не 1.</div>
+<div class="box rule"><b>Верно ✅</b><span class="m">${F('5x','5')} = x</span> — здесь 5 умножается на x, это множитель.</div>
+<p>Поэтому план сокращения всегда один:</p>
+<ol class="steps"><li><b>Разложи на множители</b> числитель и знаменатель (вынеси общий множитель, примени формулу).</li>
+<li>Найди <b>одинаковые скобки или множители</b> сверху и снизу.</li>
+<li>Зачеркни их.</li></ol>
+<div class="box ex"><b>Пример</b>${F('4x + 12','6x + 18')} = ${F('4(x + 3)','6(x + 3)')} = ${F(4,6)} = ${F(2,3)}.</div>
+<div class="box tip"><b>Как запомнить</b>Множитель — это «кирпич», на котором стоит вся дробь: убрали его сверху и снизу — дробь не изменилась. Слагаемое — это «довесок» только к части числителя: его убирать нельзя.</div>`},
+{title:'Формулы, которые помогают разложить',lvl:4,html:`
+<div class="box rule"><b>Три формулы и один приём</b>
+<span class="m">a² − b² = (a − b)(a + b)</span> — разность квадратов<br>
+<span class="m">a² + 2ab + b² = (a + b)²</span><br>
+<span class="m">a² − 2ab + b² = (a − b)²</span><br>
+<span class="m">ax − ay = a(x − y)</span> — вынесение общего множителя</div>
+<div class="box ex"><b>Пример 1</b>${F('x² − 49','x + 7')} = ${F('(x − 7)(x + 7)','x + 7')} = x − 7.</div>
+<div class="box ex"><b>Пример 2</b>${F('x² − 3x','x² − 9')} = ${F('x(x − 3)','(x − 3)(x + 3)')} = ${F('x','x + 3')}.</div>
+<h3>Скобки «наоборот»: a − b = −(b − a)</h3>
+<p>(5 − 2) = 3, а (2 − 5) = −3. Скобки отличаются только знаком! Поэтому <span class="m">${F('x − 4','4 − x')} = −1</span>.</p>
+<div class="box err"><b>Ловушка</b>${F('x − 4','4 − x')} — это не 1! Проверь: x = 5 → ${F(1,-1)} = −1.</div>`},
+{title:'Сложение и вычитание: одинаковые знаменатели',lvl:5,html:`
+<p>Как с обычными дробями: ${F(2,7)} + ${F(3,7)} = ${F(5,7)}. <b>Числители складываем, знаменатель оставляем</b>.</p>
+<div class="box rule"><b>Правило</b><span class="m">${F('a','c')} ± ${F('b','c')} = ${F('a ± b','c')}</span></div>
+<div class="box err"><b>Ловушка с минусом</b>При вычитании второй числитель <b>берём в скобки</b>:<br>
+${F('3x + 5','x − 1')} − ${F('x + 2','x − 1')} = ${F('3x + 5 − (x + 2)','x − 1')} = ${F('3x + 5 − x − 2','x − 1')} = ${F('2x + 3','x − 1')}.<br>
+Минус перед скобкой меняет знак <b>у каждого</b> слагаемого: −(x + 2) = −x <b>− 2</b>, а не −x + 2.</div>
+<div class="box err"><b>Ещё ошибка</b>Знаменатели <b>не складывают</b>! ${F(1,'x')} + ${F(1,'x')} = ${F(2,'x')}, а не ${F(2,'2x')}.</div>
+<h3>Когда знаменатели «наоборот»</h3>
+<p>${F('x','x − 3')} + ${F(3,'3 − x')}. Знаменатели отличаются знаком: 3 − x = −(x − 3). Переносим минус вперёд дроби:</p>
+<p class="m" style="text-align:center">${F('x','x − 3')} − ${F(3,'x − 3')} = ${F('x − 3','x − 3')} = 1</p>
+<div class="box tip"><b>В конце</b>Всегда посмотри, не сокращается ли ответ. Часто числитель раскладывается и «съедает» знаменатель.</div>`},
+{title:'Разные знаменатели',lvl:6,html:`
+<p>Дроби с разными знаменателями сначала <b>приводят к общему знаменателю</b>, как ${F(1,2)} + ${F(1,3)} = ${F(3,6)} + ${F(2,6)} = ${F(5,6)}.</p>
+<ol class="steps"><li><b>Разложи знаменатели</b> на множители.</li>
+<li><b>Общий знаменатель</b> — набор всех множителей, каждый в наибольшей степени, без лишних повторов.</li>
+<li>Для каждой дроби найди <b>дополнительный множитель</b> — то, чего ей не хватает до общего знаменателя. Умножь на него числитель.</li>
+<li>Сложи (вычти) числители. Упрости и сократи.</li></ol>
+<div class="box ex"><b>Пример</b>${F(1,'x − 3')} − ${F(1,'x + 3')}. Общий знаменатель (x − 3)(x + 3) = x² − 9.<br>
+Доп. множители: к первой (x + 3), ко второй (x − 3).<br>
+${F('(x + 3) − (x − 3)','x² − 9')} = ${F('x + 3 − x + 3','x² − 9')} = ${F(6,'x² − 9')}.</div>
+<div class="box ex"><b>Пример с числами</b>${F(5,'6x')} + ${F(1,'4x')}. Общий знаменатель 12x. Доп. множители: 2 и 3.<br>${F('10','12x')} + ${F(3,'12x')} = ${F(13,'12x')}.</div>
+<div class="box tip"><b>Как найти общий знаменатель</b>Если один знаменатель «помещается» в другой, общий — больший: у x² − 9 и x + 3 общий x² − 9, ведь x² − 9 = (x − 3)(x + 3).</div>`},
+{title:'Умножение, деление, степень',lvl:7,html:`
+<div class="box rule"><b>Умножение</b><span class="m">${F('a','b')} · ${F('c','d')} = ${F('a · c','b · d')}</span> — верх на верх, низ на низ. <b>Сначала сокращай, потом умножай</b> — так проще.</div>
+<div class="box rule"><b>Деление</b><span class="m">${F('a','b')} : ${F('c','d')} = ${F('a','b')} · ${F('d','c')}</span> — вторую дробь <b>переворачиваем</b> и умножаем.</div>
+<div class="box rule"><b>Степень</b><span class="m">(${F('a','b')})ⁿ = ${F('aⁿ','bⁿ')}</span> — в степень возводим и верх, и низ, и каждый множитель в них.</div>
+<div class="box ex"><b>Пример</b>${F('x² − 25','3x')} : ${F('x + 5','6x²')} = ${F('(x − 5)(x + 5)','3x')} · ${F('6x²','x + 5')} = 2x(x − 5).</div>
+<div class="box err"><b>Ошибки</b>• Перевернуть не ту дробь (первую вместо второй).<br>• При возведении в степень забыть про число: (2a)³ = <b>8</b>a³, а не 2a³.<br>• Перепутать знак: (−a)² = a², но (−a)³ = −a³. Чётная степень «съедает» минус, нечётная — оставляет.</div>`},
+{title:'Длинные выражения: план',lvl:8,html:`
+<p>Длинное выражение — это несколько маленьких задач подряд. Не пытайся сделать всё сразу.</p>
+<ol class="steps"><li>Определи <b>порядок действий</b>: сначала скобки, потом умножение/деление, потом сложение/вычитание.</li>
+<li>Выполни действие в скобках (обычно сложение дробей).</li>
+<li>Всё, что можно, <b>разложи на множители</b>.</li>
+<li>Выполни умножение/деление и <b>сократи</b>.</li>
+<li><b>Проверь</b> подстановкой любого удобного числа.</li></ol>
+<div class="box ex"><b>Пример</b>(${F('x','x − 2')} − ${F('x','x + 2')}) · ${F('x² − 4','x')}<br>
+1) В скобках: ${F('x(x + 2) − x(x − 2)','x² − 4')} = ${F('4x','x² − 4')}.<br>
+2) Умножаем: ${F('4x','x² − 4')} · ${F('x² − 4','x')} = <b>4</b>.</div>
+<div class="box tip"><b>Проверка подстановкой</b>Возьми x = 3 и посчитай исходное выражение: (3 − ${F(3,5)}) · ${F(5,3)} = ${F(12,5)} · ${F(5,3)} = 4 ✅. Совпало — значит, упростил верно.</div>`},
+{title:'Приёмы для задач со звёздочкой',lvl:9,html:`
+<h3>1) Разбиение дроби на разность</h3>
+<p class="m" style="text-align:center">${F(1,'n(n + 1)')} = ${F(1,'n')} − ${F(1,'n + 1')}</p>
+<p>Проверка: ${F(1,'n')} − ${F(1,'n + 1')} = ${F('n + 1 − n','n(n + 1)')} = ${F(1,'n(n + 1)')} ✅.</p>
+<p>Благодаря этому длинная сумма «складывается как подзорная труба» (телескопическая сумма):</p>
+<p class="m" style="text-align:center">${F(1,'1·2')} + ${F(1,'2·3')} + ${F(1,'3·4')} = (1 − ${F(1,2)}) + (${F(1,2)} − ${F(1,3)}) + (${F(1,3)} − ${F(1,4)}) = 1 − ${F(1,4)} = ${F(3,4)}</p>
+<h3>2) Выделение целой части</h3>
+<p>${F('n + 5','n + 1')} = ${F('(n + 1) + 4','n + 1')} = 1 + ${F(4,'n + 1')}. Это целое число, только если n + 1 — делитель числа 4: ±1, ±2, ±4.</p>
+<h3>3) Квадрат суммы с обратным числом</h3>
+<p>(x + ${F(1,'x')})² = x² + 2 + ${F(1,'x²')}, поэтому <span class="m">x² + ${F(1,'x²')} = (x + ${F(1,'x')})² − 2</span>.</p>
+<h3>4) Многоэтажная дробь</h3>
+<p>Упрощай <b>снизу вверх</b>: сначала самую маленькую дробь внизу, потом этаж выше и так далее.</p>
+<h3>5) Отношение</h3>
+<p>Если известно ${F('x','y')} = k, раздели верх и низ на y — получишь выражение только от k.</p>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>Дробь не имеет смысла, если <b>знаменатель = 0</b>.</li>
+<li>Дробь = 0, если <b>числитель = 0 и знаменатель ≠ 0</b>.</li>
+<li>Сокращаем только <b>множители</b>: сначала разложи, потом зачёркивай.</li>
+<li>a − b = −(b − a).</li>
+<li>Вычитая дробь, бери её числитель в скобки.</li>
+<li>Разные знаменатели → общий знаменатель и доп. множители.</li>
+<li>Делить = умножить на перевёрнутую дробь.</li>
+<li>Проверяй ответ подстановкой числа.</li></ul>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Формулы',title:'Главные формулы и обозначения',rows:[
+[F('a','b'),'Дробь, «a делить на b»','Черта дроби — это знак деления. Сверху числитель, снизу знаменатель.',`${F(6,3)} = 6 : 3 = 2`],
+['b ≠ 0','«b не равно нулю»','Знаменатель никогда не может быть нулём — на ноль делить нельзя.',`${F(1,'x − 2')}: x ≠ 2`],
+[F('ac','bc'),'Основное свойство дроби','Верх и низ можно умножить или разделить на одно и то же (не ноль).',`${F('2x','2y')} = ${F('x','y')}`],
+['a² − b²','Разность квадратов','= (a − b)(a + b). Главная формула для сокращения.','x² − 9 = (x − 3)(x + 3)'],
+['(a ± b)²','Квадрат суммы / разности','= a² ± 2ab + b².','x² + 6x + 9 = (x + 3)²'],
+['a − b','«Скобки наоборот»','a − b = −(b − a): переставили — поменяли знак.',`${F('x − 1','1 − x')} = −1`],
+[F('a ± b','c'),'Одинаковые знаменатели','Складываем или вычитаем числители, знаменатель тот же.',`${F('x','5')} + ${F('2','5')} = ${F('x + 2','5')}`],
+['·','Умножение дробей','Верх на верх, низ на низ.',`${F('a','b')} · ${F('c','d')} = ${F('ac','bd')}`],
+[':','Деление дробей','Вторую дробь переворачиваем и умножаем.',`${F('a','b')} : ${F('c','d')} = ${F('ad','bc')}`],
+['( )ⁿ','Степень дроби','В степень возводим и числитель, и знаменатель.',`(${F('2','x')})² = ${F('4','x²')}`],
+[F('aᵐ','aⁿ'),'Деление степеней','Показатели вычитаем.',`${F('x⁵','x²')} = x³`],
+[F(1,'n(n+1)'),'Разбиение на разность',`= ${F(1,'n')} − ${F(1,'n + 1')}. Для телескопических сумм.`,`${F(1,'2·3')} = ${F(1,2)} − ${F(1,3)}`]
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Прежде чем сокращать — разложи на множители. Прежде чем отвечать — проверь подстановкой.</div>`};
+
+/* ---------- generators ---------- */
+const gens=[];
+const retry=make=>()=>{for(let i=0;i<500;i++){const t=make();if(t)return t;}throw new Error('generator failed');};
+const G=(lvl,make,star)=>gens.push({lvl,make:()=>bigTask(retry(make)()),star});
+
+/* L0: what is a fraction, value */
+G(0,()=>{const a=R(1,9),b=R(2,9),c=R(2,9);
+const ok=F(xp(a),xp(-b));
+return {type:'choice',q:'Какое из выражений — <b>дробное</b>, то есть в нём есть деление на выражение с переменной?',...ch(ok,[F(xp(a),c),`${c}x² − ${a}`,`${F('x',c)} + ${a}`]),
+short:`Только в ${F(xp(a),xp(-b))} в знаменателе стоит буква x.`,
+explain:`Смотрим только на <b>знаменатели</b> (низ дроби):<br>• ${F(xp(a),xp(-b))} — внизу <b>x − ${b}</b>, там есть буква → это <b>дробное</b> выражение ✅.<br>• ${F(xp(a),c)} — внизу число ${c}. Это просто «многочлен, делённый на ${c}», целое выражение.<br>• ${F('x',c)} + ${a} — тоже делим только на число ${c}.<br>• ${c}x² − ${a} — дроби вообще нет.`,
+explain2:`Задай себе вопрос: «Может ли знаменатель стать нулём, если менять x?» У ${F(xp(a),xp(-b))} — может (при x = ${b}), потому что в знаменателе есть x. У дробей с числом ${c} внизу знаменатель всегда ${c} — с ним ничего не случится. Дробное выражение — это то, где делят на букву.`};});
+G(0,()=>{let a,b,v;do{a=nz(-9,9);b=R(1,9);v=R(-6,9);}while(v===b||v+a===0);
+const q=Q(v+a,v-b);
+return {type:'num',q:`Найди значение дроби <span class="m">${F(xp(a),xp(-b))}</span> при x = ${N(v)}.`,...numA(q),ph:'число или дробь, например 3/4',
+hint:'Подставь число вместо x и отдельно посчитай верх и низ.',
+short:`Числитель ${N(v+a)}, знаменатель ${N(v-b)}, значение ${qh(q)}.`,
+explain:`Подставляем x = ${N(v)} вместо каждого x:<br>• числитель: ${lin1(v,a)} = <b>${N(v+a)}</b>;<br>• знаменатель: ${N(v)} − ${b} = <b>${N(v-b)}</b>.<br>Делим: ${F(N(v+a),N(v-b))} = <b>${qh(q)}</b>.${v-b<0?'<br>Знаменатель отрицательный — минус выносим перед дробью (плюс на минус даёт минус, минус на минус — плюс).':''}`,
+explain2:`Черта дроби — это деление. Значит, нужно вычислить (${lin1(v,a)}) : (${N(v)} − ${b}) = ${N(v+a)} : ${pn(v-b)} = ${qh(q)}.${q.d!==1?' Ответ не целый — запиши его дробью, например '+Math.abs(q.n)+'/'+q.d+(q.n<0?' с минусом.':'.'):''}`};});
+G(0,()=>{let v,a,b;do{v=R(-5,-1);a=R(1,20);b=nz(-9,9);}while(2*v+b===0||v*v-a===0);
+const q=Q(v*v-a,2*v+b);
+return {type:'num',q:`Найди значение дроби <span class="m">${F(`x² − ${a}`,`2x ${b<0?'−':'+'} ${Math.abs(b)}`)}</span> при x = ${N(v)}.`,...numA(q),ph:'число или дробь',
+hint:`Отрицательное число бери в скобки: (${N(v)})².`,
+short:`(${N(v)})² − ${a} = ${N(v*v-a)}; 2·(${N(v)}) ${b<0?'−':'+'} ${Math.abs(b)} = ${N(2*v+b)}. Ответ ${qh(q)}.`,
+explain:`Подставляем x = ${N(v)}, <b>обязательно в скобках</b>:<br>• числитель: (${N(v)})² − ${a} = ${v*v} − ${a} = <b>${N(v*v-a)}</b>. Квадрат отрицательного числа — <b>положительный</b>: (${N(v)})·(${N(v)}) = ${v*v};<br>• знаменатель: 2·(${N(v)}) ${b<0?'−':'+'} ${Math.abs(b)} = ${N(2*v)} ${b<0?'−':'+'} ${Math.abs(b)} = <b>${N(2*v+b)}</b>.<br>Значение: ${F(N(v*v-a),N(2*v+b))} = <b>${qh(q)}</b>.<div class="box err"><b>Типичная ошибка</b>Написать ${N(v)}² = ${N(-v*v)}. Без скобок квадрат относится только к ${-v}, а минус остаётся. Нам же нужно возвести в квадрат всё число ${N(v)}.</div>`,
+explain2:`Сделай маленький пример: (−2)² = (−2)·(−2) = 4, ведь «минус на минус даёт плюс». Так же (${N(v)})² = ${v*v}. Дальше просто арифметика: верх ${v*v} − ${a} = ${N(v*v-a)}, низ ${N(2*v)} ${b<0?'−':'+'} ${Math.abs(b)} = ${N(2*v+b)}, и делим: ${qh(q)}.`};});
+
+/* L1: domain */
+G(1,()=>{let a,d;do{a=nz(-9,9);d=nz(-9,9);}while(a===d);
+return {type:'num',q:`При каком значении x дробь <span class="m">${F(xp(a),xp(d))}</span> <b>не имеет смысла</b>?`,ans:-d,
+hint:'Смотри только на знаменатель. Когда он равен нулю?',
+short:`${xp(d)} = 0 при x = ${N(-d)}.`,
+explain:`Дробь не имеет смысла, когда <b>знаменатель равен нулю</b> (на ноль делить нельзя). Числитель здесь не важен.<br>${xp(d)} = 0 → x = ${N(-d)}.<br>Проверка: ${lin1(-d,d)} = 0 ✅.${a!==0?`<br>Не путай: при x = ${N(-a)} нулём становится <b>числитель</b> — тогда дробь просто равна 0, это разрешено.`:''}`,
+explain2:`Представь: знаменатель — это количество друзей, между которыми делят конфеты. Если друзей 0, делить не на кого — действие бессмысленно. Ищем x, при котором «друзей» ${xp(d)} станет 0: нужно, чтобы x ${d>0?'+':'−'} ${Math.abs(d)} = 0, то есть x = ${N(-d)}.`};});
+G(1,()=>{const k=R(2,9),s=pick([1,-1]);
+return {type:'set',q:`Найди все значения x, при которых дробь <span class="m">${F(xp(s*k),`x² − ${k*k}`)}</span> не имеет смысла.`,ans:[k,-k],keys:['−','∅'],ph:'например: −1, 1',
+hint:`x² − ${k*k} = 0. Какие два числа в квадрате дают ${k*k}?`,
+short:`x² = ${k*k} → x = ${k} или x = −${k}.`,
+explain:`Приравниваем знаменатель к нулю: x² − ${k*k} = 0 → x² = ${k*k} → x = ${k} <b>или</b> x = −${k} (ведь (−${k})² тоже ${k*k}).<br>Ответ: <b>−${k}; ${k}</b>.<div class="box err"><b>Ловушка</b>Дробь сокращается: ${F(xp(s*k),`(x − ${k})(x + ${k})`)} = ${F(1,xp(-s*k))}. Но запрещённые значения ищем по <b>исходному</b> знаменателю. При x = ${N(-s*k)} исходная дробь превращается в ${F(0,0)} — смысла нет. Поэтому ${N(-s*k)} тоже в ответе.</div>`,
+explain2:`Проверим подстановкой:<br>• x = ${k}: ${k}² − ${k*k} = 0 ❌ нельзя;<br>• x = −${k}: (−${k})² − ${k*k} = ${k*k} − ${k*k} = 0 ❌ нельзя;<br>• для сравнения x = 0: 0 − ${k*k} = −${k*k} ≠ 0 — можно.<br>У уравнения x² = число (положительное) всегда <b>два</b> корня: с плюсом и с минусом.`};});
+G(1,()=>{const kind=pick(['x','two','never']);
+if(kind==='x'){const b=nz(-9,9),c=nz(-9,9);
+ return {type:'set',q:`Найди все значения x, при которых дробь <span class="m">${F(xp(c),`x(${xp(-b)})`)}</span> не имеет смысла.`,ans:[0,b],keys:['−','∅'],
+ short:`x(${xp(-b)}) = 0 при x = 0 или x = ${N(b)}.`,
+ explain:`Знаменатель x(${xp(-b)}) — это <b>произведение</b>. Произведение равно нулю, когда <b>хотя бы один</b> множитель равен нулю:<br>• x = 0;<br>• ${xp(-b)} = 0 → x = ${N(b)}.<br>Ответ: <b>0; ${N(b)}</b>.`,
+ explain2:`Пример из жизни: 5 · 0 = 0, 0 · 7 = 0. Чтобы получить ноль при умножении, достаточно одного нуля. В x(${xp(-b)}) два множителя — значит, и вариантов два: первый множитель x равен нулю или второй ${xp(-b)} равен нулю. Многие забывают про x = 0!`};}
+if(kind==='two'){let a,b;do{a=nz(-8,8);b=nz(-8,8);}while(-a===b);const c=nz(-9,9);
+ return {type:'set',q:`Найди все значения x, при которых дробь <span class="m">${F(xp(c),`(${xp(a)})(${xp(-b)})`)}</span> не имеет смысла.`,ans:[-a,b],keys:['−','∅'],
+ short:`(${xp(a)})(${xp(-b)}) = 0 при x = ${N(-a)} или x = ${N(b)}.`,
+ explain:`Знаменатель — произведение двух скобок. Оно равно нулю, когда <b>хотя бы одна скобка</b> равна нулю:<br>• ${xp(a)} = 0 → x = ${N(-a)};<br>• ${xp(-b)} = 0 → x = ${N(b)}.<br>Ответ: <b>${N(-a)}; ${N(b)}</b>.`,
+ explain2:`Чтобы скобка ${xp(a)} обратилась в ноль, x должен «погасить» число ${N(a)}: x = ${N(-a)}. Проверка: ${lin1(-a,a)} = 0. Так же для второй скобки: ${lin1(b,-b)} = 0. Каждая скобка даёт своё запрещённое число.`};}
+const k=R(1,9),c=nz(-9,9);
+return {type:'set',q:`Найди все значения x, при которых дробь <span class="m">${F(xp(c),`x² + ${k}`)}</span> не имеет смысла. Если таких нет — нажми ∅.`,ans:[],keys:['−','∅'],
+short:`x² + ${k} ≥ ${k} > 0 — знаменатель никогда не равен нулю. Ответ: ∅.`,
+explain:`Решаем x² + ${k} = 0 → x² = −${k}. Но квадрат любого числа <b>не бывает отрицательным</b>: 3² = 9, (−3)² = 9, 0² = 0. Поэтому таких x нет.<br>Дробь имеет смысл при <b>любом</b> x. Ответ: <b>∅</b> (пустое множество).`,
+explain2:`Попробуй подставить разные числа: x = 0 → 0 + ${k} = ${k}; x = 2 → 4 + ${k} = ${4+k}; x = −5 → 25 + ${k} = ${25+k}. Знаменатель всегда не меньше ${k}. Самое маленькое значение x² — это 0, а к нему ещё прибавляем ${k}. Ноль получить невозможно.`};});
+G(1,()=>{let k,m,c;do{k=R(2,5);m=R(1,15);c=nz(-9,9);}while(m%k===0);
+const q=Q(m,k);
+return {type:'num',q:`При каком значении x дробь <span class="m">${F(xp(c),`${k}x − ${m}`)}</span> не имеет смысла? Ответ можно записать дробью.`,...numA(q),ph:'например 5/2',
+short:`${k}x − ${m} = 0 → x = ${F(m,k)}.`,
+explain:`Знаменатель равен нулю: ${k}x − ${m} = 0.<br>Переносим ${m}: ${k}x = ${m}.<br>Делим на ${k}: x = ${F(m,k)}${q.d!==k?' = '+qh(q):''}.<br>Ответ: <b>${qh(q)}</b> (можно ввести как ${q.n}/${q.d}).`,
+explain2:`Проверка подстановкой: ${k} · ${F(m,k)} = ${m}, и ${m} − ${m} = 0 ✅. Если бы ты ответил ${N(m-k)} или ${N(m+k)}, получилось бы не ноль. Решая ${k}x = ${m}, надо <b>делить</b>, а не вычитать.`};});
+
+/* L2: fraction equals zero */
+G(2,()=>{let a,b;do{a=nz(-9,9);b=nz(-9,9);}while(a===-b);
+return {type:'num',q:`При каком x дробь <span class="m">${F(xp(-a),xp(b))}</span> равна нулю?`,ans:a,
+hint:'Дробь равна нулю, когда числитель равен нулю, а знаменатель — нет.',
+short:`Числитель ${xp(-a)} = 0 при x = ${N(a)}, знаменатель тогда ${N(a+b)} ≠ 0.`,
+explain:`Дробь = 0, когда <b>числитель = 0</b> и <b>знаменатель ≠ 0</b>.<br>1) Числитель: ${xp(-a)} = 0 → x = ${N(a)}.<br>2) Проверка знаменателя: ${lin1(a,b)} = ${N(a+b)} ≠ 0 ✅.<br>Ответ: <b>${N(a)}</b>.<br>Не путай с x = ${N(-b)}: там нулём становится <b>знаменатель</b> — при нём дробь вообще не существует.`,
+explain2:`Дробь — это деление. 0 : ${N(a+b)} = 0 ✅, а например 5 : 2 — не ноль. Получить в ответе ноль можно, только если <b>делим ноль</b>. Значит, обнуляем верх: x = ${N(a)}.`};});
+G(2,()=>{const k=R(2,9),s=pick([1,-1]);
+return {type:'set',q:`Найди все x, при которых дробь <span class="m">${F(`x² − ${k*k}`,xp(s*k))}</span> равна нулю.`,ans:[s*k],keys:['−','∅'],
+hint:'Найди корни числителя, а потом проверь каждый: не обнуляет ли он знаменатель?',
+short:`Корни числителя ±${k}, но x = ${N(-s*k)} обнуляет знаменатель. Остаётся x = ${N(s*k)}.`,
+explain:zeroTrapExplain(k,s),
+explain2:zeroTrapExplain2(k,s)};});
+function zeroTrapExplain(k,s){const bad=-s*k,good=s*k;
+ return `1) Числитель = 0: x² − ${k*k} = 0 → x = ${k} или x = −${k}.<br>2) Проверяем знаменатель ${xp(s*k)} для каждого корня:<br>• x = ${N(good)}: ${lin1(good,s*k)} = ${N(good+s*k)} ≠ 0 ✅ — подходит;<br>• x = ${N(bad)}: ${lin1(bad,s*k)} = 0 ❌ — на ноль делить нельзя, этот корень выбрасываем.<br>Ответ: <b>x = ${N(good)}</b>.<div class="box err"><b>Ловушка</b>Ответ «${N(-k)}; ${N(k)}» — неверный. Он получается, если забыть про знаменатель.</div>`;}
+function zeroTrapExplain2(k,s){const bad=-s*k,good=s*k;
+ return `Подставим оба «кандидата» прямо в дробь:<br>• x = ${N(good)}: ${F(`${good*good} − ${k*k}`,lin1(good,s*k))} = ${F(0,N(good+s*k))} = 0 ✅;<br>• x = ${N(bad)}: ${F(`${bad*bad} − ${k*k}`,lin1(bad,s*k))} = ${F(0,0)} — такого числа нет, это запрещено ❌.<br>Ещё можно сократить: ${F(`(x − ${k})(x + ${k})`,xp(s*k))} = ${xp(-s*k)} (при x ≠ ${N(bad)}). Выражение ${xp(-s*k)} равно нулю при x = ${N(good)}.`;}
+G(2,()=>{const a=nz(-9,9),v=pick(['x','a']);
+if(v==='x'){
+ return {type:'set',q:`Найди все x, при которых дробь <span class="m">${F(`x² ${a<0?'+':'−'} ${Math.abs(a)}x`,xp(-a))}</span> равна нулю.`,ans:[0],keys:['−','∅'],
+ short:`x(${xp(-a)}) = 0 при x = 0 и x = ${N(a)}, но x = ${N(a)} обнуляет знаменатель. Ответ: 0.`,
+ explain:`1) Разложим числитель: x² ${a<0?'+':'−'} ${Math.abs(a)}x = x(${xp(-a)}). Он равен нулю при x = 0 или x = ${N(a)}.<br>2) Проверяем знаменатель ${xp(-a)}:<br>• x = 0: ${lin1(0,-a)} = ${N(-a)} ≠ 0 ✅;<br>• x = ${N(a)}: ${lin1(a,-a)} = 0 ❌.<br>Ответ: <b>x = 0</b>.`,
+ explain2:`Сократим дробь: ${F(`x(${xp(-a)})`,xp(-a))} = x, но только при x ≠ ${N(a)}. Выражение x равно нулю при x = 0 — это и ответ. А x = ${N(a)} «запрещён» с самого начала.`};}
+return {type:'set',q:`Найди все x, при которых дробь <span class="m">${F(`x² ${a<0?'+':'−'} ${Math.abs(a)}x`,'x')}</span> равна нулю.`,ans:[a],keys:['−','∅'],
+short:`Числитель x(${xp(-a)}) = 0 при x = 0 или x = ${N(a)}; x = 0 запрещён. Ответ: ${N(a)}.`,
+explain:`1) Числитель: x² ${a<0?'+':'−'} ${Math.abs(a)}x = x(${xp(-a)}) = 0 → x = 0 или x = ${N(a)}.<br>2) Знаменатель x:<br>• x = 0 → знаменатель 0 ❌ выбрасываем;<br>• x = ${N(a)} → знаменатель ${N(a)} ≠ 0 ✅.<br>Ответ: <b>x = ${N(a)}</b>.`,
+explain2:`Подставь x = 0 прямо в дробь: ${F(0,0)} — такого не бывает. А x = ${N(a)}: ${F(`${a*a} ${a<0?'+':'−'} ${Math.abs(a*a)}`,N(a))} = ${F(0,N(a))} = 0 ✅. Ноль в числителе — хорошо, ноль в знаменателе — запрещено.`};});
+
+/* L3: basic property, reducing */
+G(3,()=>{let g,p,q,m1,m2,n1,n2;do{g=R(2,6);p=R(1,5);q=R(2,7);m2=R(1,3);m1=m2+R(1,3);n1=R(1,3);n2=n1+R(1,3);}while(gcd(p,q)!==1||p===q);
+const dm=m1-m2,dn=n2-n1;
+const top=mono(g*p,[['a',m1],['b',n1]]),bot=mono(g*q,[['a',m2],['b',n2]]);
+const ok=F(mono(p,[['a',dm]]),mono(q,[['b',dn]]));
+const w=[F(mono(p,[['a',m1]]),mono(q,[['b',n2]])),F(mono(q,[['a',dm]]),mono(p,[['b',dn]])),F(mono(p,[['a',dm],['b',dn]]),q)];
+return {type:'choice',q:`Сократи дробь <span class="m">${F(top,bot)}</span>.`,...ch(ok,w),
+short:`Числа делим на ${g}, a: ${m1} − ${m2} = ${dm}, b: ${n2} − ${n1} = ${dn} (остаётся внизу).`,
+explain:`Сокращаем по частям:<br>• <b>числа</b>: ${F(g*p,g*q)} — делим на ${g}, получаем ${F(p,q)};<br>• <b>a</b>: ${F('a'+sup(m1),'a'+sup(m2))} = a${sup(dm)} — вверху a больше, показатели вычитаем: ${m1} − ${m2} = ${dm}, остаётся <b>вверху</b>;<br>• <b>b</b>: ${F('b'+sup(n1),'b'+sup(n2))} = ${F(1,'b'+sup(dn))} — внизу b больше: ${n2} − ${n1} = ${dn}, остаётся <b>внизу</b>.<br>Итог: <b>${ok}</b>.<br>Ошибка «${w[0]}» — сократили только числа, а буквы забыли. Ошибка «${w[2]}» — b переехал наверх, хотя внизу его было больше.`,
+explain2:`Распиши степени как умножение и зачёркивай пары: ${F(Array(m1).fill('a').join('·'),Array(m2).fill('a').join('·'))} — зачеркнули ${m2} пар${m2===1?'у':m2<5?'ы':''}, сверху осталось ${dm}. ${F(Array(n1).fill('b').join('·'),Array(n2).fill('b').join('·'))} — зачеркнули ${n1}, снизу осталось ${dn}. Там, где букв было больше, они и остаются.`};});
+G(3,()=>{const a=R(1,9),b=R(1,9),c=R(2,9);
+const ok=pf([c*b,c]);
+return {type:'choice',q:`Приведи дробь <span class="m">${F(c,xp(-a))}</span> к знаменателю <span class="m">(${xp(-a)})(${xp(b)})</span>. Какой получится числитель?`,...ch(ok,[pf([b,c]),String(c),pf([c*b,1])]),
+short:`Доп. множитель (${xp(b)}), числитель ${c}(${xp(b)}) = ${ok}.`,
+explain:`Чтобы получить знаменатель (${xp(-a)})(${xp(b)}), старый знаменатель ${xp(-a)} надо умножить на <b>(${xp(b)})</b> — это дополнительный множитель.<br>По основному свойству дроби на него же умножаем и числитель:<br>${c} · (${xp(b)}) = ${c}·x + ${c}·${b} = <b>${ok}</b>.<br>Ошибка «${pf([b,c])}» — умножили на ${c} только x, а ${b} забыли. Умножать нужно <b>каждое</b> слагаемое в скобке.`,
+explain2:`С числами то же самое: ${F(3,5)} → знаменатель 20. 20 : 5 = 4, значит ${F('3·4','5·4')} = ${F(12,20)}. Здесь «новый знаменатель : старый» = (${xp(-a)})(${xp(b)}) : (${xp(-a)}) = ${xp(b)}. Числитель ${c} умножаем на ${xp(b)}: ${c}x + ${c*b}.`};});
+G(3,()=>{let k,m,a;do{k=R(2,9);m=R(2,9);a=R(1,9);}while(k===m);
+const q=Q(k,m);
+return {type:'num',q:`Сократи дробь <span class="m">${F(`${k}x + ${k*a}`,`${m}x + ${m*a}`)}</span>. В ответе получится число — запиши его.`,...numA(q),ph:'например 2/3',
+hint:'Вынеси общий множитель в числителе и в знаменателе.',
+short:`${F(`${k}(x + ${a})`,`${m}(x + ${a})`)} = ${F(k,m)}${q.d!==m?' = '+qh(q):''}.`,
+explain:`Сначала раскладываем на множители:<br>• числитель: ${k}x + ${k*a} = ${k}(x + ${a});<br>• знаменатель: ${m}x + ${m*a} = ${m}(x + ${a}).<br>Теперь скобка (x + ${a}) — общий <b>множитель</b>, её сокращаем: ${F(`${k}(x + ${a})`,`${m}(x + ${a})`)} = ${F(k,m)} = <b>${qh(q)}</b>.<div class="box err"><b>Неверно</b>зачёркивать «x» в ${k}x и ${m}x — это слагаемые, а не множители всего числителя.</div>`,
+explain2:`Проверь подстановкой. x = 0: ${F(k*a,m*a)} = ${qh(q)}. x = 1: ${F(k+k*a,m+m*a)} = ${qh(q)}. При любом x получается одно и то же число ${qh(q)} — значит, это и есть ответ.`};});
+G(3,()=>{let c,d;do{c=R(2,9);d=R(2,9);}while(c===d);
+const ok=`${F(c+'x',c)} = x`;
+const w=[`${F(xp(c),c)} = x`,`${F(xp(c),xp(d))} = ${F(c,d)}`,`${F(`x² + ${c}`,'x')} = x + ${c}`];
+return {type:'choice',q:'Какое сокращение выполнено <b>верно</b>?',...ch(ok,w),
+short:`В ${F(c+'x',c)} число ${c} — множитель, его можно сократить.`,
+explain:`Сокращать можно только <b>множители</b> — то, на что умножен весь числитель и весь знаменатель.<br>• ${F(c+'x',c)}: ${c}x = ${c}·x, ${c} — множитель → ${F(c+'x',c)} = x ✅.<br>• ${F(xp(c),c)}: здесь ${c} — <b>слагаемое</b>, сокращать нельзя ❌.<br>• ${F(xp(c),xp(d))}: зачеркнули x — а x тут слагаемое ❌.<br>• ${F(`x² + ${c}`,'x')}: x делит только x², а ${c} — нет ❌.`,
+explain2:`Проверь каждое равенство числом x = 1:<br>• ${F(c+'·1',c)} = 1 и x = 1 — совпало ✅;<br>• ${F(`1 + ${c}`,c)} = ${F(1+c,c)}, а не 1 ❌;<br>• ${F(`1 + ${c}`,`1 + ${d}`)} = ${F(1+c,1+d)}, а не ${F(c,d)} ❌;<br>• ${F(`1 + ${c}`,1)} = ${1+c}, и 1 + ${c} = ${1+c} — совпало случайно! Возьми x = 2: ${F(`4 + ${c}`,2)} = ${N((4+c)/2)}, а 2 + ${c} = ${2+c} ❌.<br>Одна подстановка может случайно совпасть — проверяй двумя числами.`};});
+
+/* L4: reducing with formulas */
+G(4,()=>{const k=R(2,9),s=pick([1,-1]);
+const ok=xp(-s*k);
+return {type:'choice',q:`Сократи дробь <span class="m">${F(`x² − ${k*k}`,xp(s*k))}</span>.`,...ch(ok,[xp(s*k),`x² ${s>0?'−':'+'} ${k}`,F(xp(-s*k),xp(s*k))]),
+short:`x² − ${k*k} = (x − ${k})(x + ${k}), сокращаем (${xp(s*k)}).`,
+explain:`Числитель — разность квадратов: x² − ${k*k} = x² − ${k}² = (x − ${k})(x + ${k}).<br>${F(`(x − ${k})(x + ${k})`,xp(s*k))} — скобка (${xp(s*k)}) есть и сверху, и снизу, сокращаем.<br>Остаётся <b>${ok}</b>.<br>Ответ «${xp(s*k)}» — перепутан знак: сократили не ту скобку.`,
+explain2:`Проверь подстановкой x = ${k+1}: ${F(`${(k+1)*(k+1)} − ${k*k}`,N(k+1+s*k))} = ${F((k+1)*(k+1)-k*k,k+1+s*k)} = ${N(((k+1)*(k+1)-k*k)/(k+1+s*k))}. А ${ok} при x = ${k+1} равно ${N(k+1-s*k)}. Совпало ✅.`};});
+G(4,()=>{const k=R(2,7),s=pick([1,-1]);
+const ok=F(s>0?'a + b':'a − b',k);
+return {type:'choice',q:`Сократи дробь <span class="m">${F('a² − b²',`${k}a ${s>0?'−':'+'} ${k}b`)}</span>.`,...ch(ok,[F(s>0?'a − b':'a + b',k),`${k}(${s>0?'a + b':'a − b'})`,F('a² − b²',k)]),
+short:`${F('(a − b)(a + b)',`${k}(${s>0?'a − b':'a + b'})`)} = ${ok}.`,
+explain:`1) Числитель: a² − b² = (a − b)(a + b).<br>2) Знаменатель: выносим ${k}: ${k}a ${s>0?'−':'+'} ${k}b = ${k}(${s>0?'a − b':'a + b'}).<br>3) Сокращаем общую скобку (${s>0?'a − b':'a + b'}): остаётся <b>${ok}</b>.<br>Вариант «${k}(${s>0?'a + b':'a − b'})» неверен: ${k} был в <b>знаменателе</b>, он там и остаётся.`,
+explain2:`Проверка числами: a = 3, b = 1. Исходная дробь: ${F('9 − 1',`${3*k} ${s>0?'−':'+'} ${k}`)} = ${F(8,3*k-s*k)} = ${qh(Q(8,3*k-s*k))}. Ответ ${ok} даёт ${F(s>0?'3 + 1':'3 − 1',k)} = ${qh(Q(s>0?4:2,k))}. Совпало ✅.`};});
+G(4,()=>{const a=R(2,9);
+const ok=F('x',xp(a));
+return {type:'choice',q:`Сократи дробь <span class="m">${F(`x² − ${a}x`,`x² − ${a*a}`)}</span>.`,...ch(ok,[F('x',xp(-a)),F('x',a),F(xp(-a),xp(a))]),
+short:`${F(`x(x − ${a})`,`(x − ${a})(x + ${a})`)} = ${ok}.`,
+explain:`1) Числитель: выносим x: x² − ${a}x = x(x − ${a}).<br>2) Знаменатель: разность квадратов x² − ${a*a} = (x − ${a})(x + ${a}).<br>3) Сокращаем общую скобку (x − ${a}): <b>${ok}</b>.<div class="box err"><b>Ловушка</b>Ответ ${F('x',a)} получается, если «зачеркнуть x²» сверху и снизу. Но x² там — слагаемое, а не множитель! Так нельзя.</div>`,
+explain2:`Проверим числом x = ${a+1}: исходная дробь ${F(`${(a+1)*(a+1)} − ${a*(a+1)}`,`${(a+1)*(a+1)} − ${a*a}`)} = ${F(a+1,2*a+1)}. Ответ ${ok} даёт ${F(a+1,2*a+1)} ✅. А ${F('x',a)} дало бы ${F(a+1,a)} — не совпадает.`};});
+G(4,()=>{const k=R(2,9),s=pick([1,-1]);
+const ok=F(xp(s*k),xp(-s*k));
+return {type:'choice',q:`Сократи дробь <span class="m">${F(`x² ${s>0?'+':'−'} ${2*k}x + ${k*k}`,`x² − ${k*k}`)}</span>.`,...ch(ok,[F(xp(-s*k),xp(s*k)),xp(s*k),F(1,xp(-s*k))]),
+short:`${F(`(${xp(s*k)})²`,`(x − ${k})(x + ${k})`)} = ${ok}.`,
+explain:`1) Числитель — квадрат ${s>0?'суммы':'разности'}: x² ${s>0?'+':'−'} 2·${k}·x + ${k}² = (${xp(s*k)})² = (${xp(s*k)})(${xp(s*k)}).<br>2) Знаменатель: x² − ${k*k} = (x − ${k})(x + ${k}).<br>3) Одна скобка (${xp(s*k)}) сверху сокращается с такой же снизу. Остаётся <b>${ok}</b>.`,
+explain2:`Представь множители как кубики: сверху два кубика (${xp(s*k)}) и (${xp(s*k)}), снизу кубики (${xp(s*k)}) и (${xp(-s*k)}). Убираем по одному одинаковому сверху и снизу: сверху остался (${xp(s*k)}), снизу (${xp(-s*k)}).`};});
+G(4,()=>{const k=R(1,9),n=R(37,98);
+const ans=n+k;
+return {type:'num',q:`Найди значение дроби <span class="m">${F(`x² − ${k*k}`,`x − ${k}`)}</span> при x = ${n}. Сначала сократи — так гораздо проще!`,ans,
+short:`Дробь равна x + ${k}, значит ${n} + ${k} = ${ans}.`,
+explain:`Сокращаем: ${F(`(x − ${k})(x + ${k})`,`x − ${k}`)} = x + ${k}.<br>Подставляем: ${n} + ${k} = <b>${ans}</b>.`,
+explain2:`Можно и «в лоб»: ${n}² − ${k*k} = ${n*n} − ${k*k} = ${n*n-k*k}; ${n} − ${k} = ${n-k}; ${n*n-k*k} : ${n-k} = ${ans}. Ответ тот же, но считать пришлось гораздо больше. Вот зачем упрощать <b>до</b> подстановки.`};});
+G(4,()=>{let k,m,a;do{k=R(2,9);m=R(2,9);a=R(1,9);}while(k===m);
+const q=Q(-k,m);
+return {type:'num',q:`Сократи дробь <span class="m">${F(`${k}x − ${k*a}`,`${m*a} − ${m}x`)}</span>. Получится число.`,...numA(q),ph:'например −2/3',
+hint:`Посмотри на скобки: (x − ${a}) и (${a} − x). Чем они отличаются?`,
+short:`${F(`${k}(x − ${a})`,`−${m}(x − ${a})`)} = ${qh(q)}.`,
+explain:`1) Числитель: ${k}x − ${k*a} = ${k}(x − ${a}).<br>2) Знаменатель: ${m*a} − ${m}x = ${m}(${a} − x) = <b>−</b>${m}(x − ${a}) — переставили местами и поменяли знак.<br>3) Сокращаем (x − ${a}): ${F(k,'−'+m)} = <b>${qh(q)}</b>.<br>Ответ ${qh(Q(k,m))} (без минуса) — частая ошибка: (${a} − x) и (x − ${a}) <b>не одинаковые</b> скобки.`,
+explain2:`Проверь на числах: ${a+2} − ${a} = 2, а ${a} − ${a+2} = −2. Скобки «наоборот» отличаются только знаком. Подставим x = ${a+1}: ${F(k*(a+1)-k*a,m*a-m*(a+1))} = ${F(k,-m)} = ${qh(q)} ✅.`};});
+
+/* L5: add/sub equal denominators */
+G(5,()=>{let A,C,B,D,c;do{A=R(2,9);C=R(1,8);B=R(1,9);D=R(1,9);c=R(1,6);}while(A===C||(A-C)*c+(B-D)===0||B===D);
+const den=xp(-c);const ok=F(pf([B-D,A-C]),den);
+const w=[F(pf([B+D,A-C]),den),F(pf([B-D,A-C]),pf([-2*c,2])),F(pf([B+D,A+C]),den)];
+if(!uniq([ok,...w]))return null;
+return {type:'choice',q:`Выполни вычитание: <span class="m">${F(pf([B,A]),den)} − ${F(pf([D,C]),den)}</span>`,...ch(ok,w),
+short:`${pf([B,A])} − (${pf([D,C])}) = ${pf([B-D,A-C])}, знаменатель тот же.`,
+explain:`Знаменатели одинаковые → вычитаем числители, знаменатель оставляем. Второй числитель <b>обязательно в скобках</b>:<br>${pf([B,A])} − (${pf([D,C])}) = ${pf([B,A])} − ${C===1?'':C}x − ${D} = ${pf([B-D,A-C])}.<br>Ответ: <b>${ok}</b>.<div class="box err"><b>Почему не «${w[0]}»</b>Минус перед скобкой меняет знак <b>каждого</b> слагаемого: −(${pf([D,C])}) = −${C===1?'':C}x <b>− ${D}</b>. Если поменять знак только у x, получится ошибка.</div>Знаменатели не складывают и не вычитают — вариант с ${pf([-2*c,2])} внизу неверен.`,
+explain2:`Сравни с обычными дробями: ${F(7,9)} − ${F(2,9)} = ${F(5,9)} — внизу так и осталось 9. Здесь «девятка» — это ${den}.<br>Проверка числом x = ${c+1} (знаменатель = 1): ${N(A*(c+1)+B)} − ${N(C*(c+1)+D)} = ${N((A-C)*(c+1)+B-D)}. Ответ: ${pf([B-D,A-C])} при x = ${c+1} → ${N((A-C)*(c+1)+B-D)} ✅.`};});
+G(5,()=>{const a=R(2,9),s=pick([1,-1]);
+const den=xp(-s*a),ok=xp(s*a);
+return {type:'choice',q:`Упрости: <span class="m">${F('x²',den)} − ${F(a*a,den)}</span>`,...ch(ok,[xp(-s*a),`x² − ${a*a}`,'1']),
+short:`${F(`x² − ${a*a}`,den)} = ${F(`(x − ${a})(x + ${a})`,den)} = ${ok}.`,
+explain:`1) Знаменатели одинаковые: ${F(`x² − ${a*a}`,den)}.<br>2) Не останавливаемся! Числитель раскладывается: x² − ${a*a} = (x − ${a})(x + ${a}).<br>3) Сокращаем (${den}): <b>${ok}</b>.<br>Ответ «x² − ${a*a}» — потеряли знаменатель.`,
+explain2:`Проверка: x = ${s>0?a+1:-a+1>0?a+1:a+1}. ${(()=>{const x=a+1;const den2=x-s*a;return `${F(`${x*x} − ${a*a}`,N(den2))} = ${F(x*x-a*a,den2)} = ${N((x*x-a*a)/den2)}; а ${ok} = ${N(x+s*a)} ✅.`;})()} Совет: после сложения/вычитания дробей всегда смотри, не сокращается ли результат.`};});
+G(5,()=>{const k=R(2,9),a=R(1,9);
+return {type:'num',q:`Упрости и запиши ответ числом: <span class="m">${F(k+'x',xp(-a))} + ${F(k*a,`${a} − x`)}</span>`,ans:k,
+hint:`${a} − x = −(x − ${a}). Перенеси минус к дроби.`,
+short:`${F(`${k}x − ${k*a}`,`x − ${a}`)} = ${F(`${k}(x − ${a})`,`x − ${a}`)} = ${k}.`,
+explain:`1) Знаменатели отличаются только знаком: ${a} − x = −(x − ${a}). Значит, ${F(k*a,`${a} − x`)} = −${F(k*a,`x − ${a}`)}.<br>2) Теперь знаменатели одинаковые: ${F(k+'x',xp(-a))} − ${F(k*a,xp(-a))} = ${F(`${k}x − ${k*a}`,xp(-a))}.<br>3) Выносим ${k}: ${F(`${k}(x − ${a})`,xp(-a))} = <b>${k}</b>.<br>Если сложить «как есть», получится ${F(`${k}x + ${k*a}`,'…')} — неверно, ведь знаменатели были разные.`,
+explain2:`Проверка числом x = ${a+1}: первая дробь ${F(k*(a+1),1)} = ${k*(a+1)}, вторая ${F(k*a,-1)} = −${k*a}. Сумма: ${k*(a+1)} − ${k*a} = ${k} ✅. Возьми другое число, например x = ${a+2}: ${F(k*(a+2),2)} + ${F(k*a,-2)} = ${F(2*k,2)} = ${k}. Всегда ${k}!`};});
+G(5,()=>{const k=R(1,4),a=R(k+1,9),b=R(1,15),c=R(1,6);
+const n2=[b-k*c,a-k];
+return {type:'num',q:`Упрости и запиши ответ числом: <span class="m">${F(pf([b,a]),xp(c))} − ${F(pf(n2),xp(c))}</span>`,ans:k,
+short:`${pf([b,a])} − (${pf(n2)}) = ${pf([k*c,k])} = ${k}(${xp(c)}), сокращаем: ${k}.`,
+explain:`1) Вычитаем числители, второй — в скобках:<br>${pf([b,a])} − (${pf(n2)}) = ${pf([b,a])} ${(()=>{const t=pf(psneg(n2));return t[0]==='−'?'− '+t.slice(1):'+ '+t;})()} = <b>${pf([k*c,k])}</b>.<br>2) Получили ${F(pf([k*c,k]),xp(c))}. ${k===1?'Числитель равен знаменателю':`Выносим ${k}: ${k}(${xp(c)})`}.<br>3) Сокращаем (${xp(c)}): ответ <b>${k}</b>.`,
+explain2:`Проверка числом x = 0: ${F(b,c)} − ${F(N(b-k*c),c)} = ${F(N(k*c),c)} = ${k} ✅. Проверь сам с x = 1 — тоже получится ${k}. Если не раскрыть минус перед скобкой правильно, ответ «плывёт» и начинает зависеть от x — верный знак, что где-то ошибка.`};});
+function psneg(p){return p.map(x=>-x);}
+
+/* L6: different denominators */
+G(6,()=>{let m,n,p,q;do{m=R(2,9);n=R(2,9);p=R(1,9);q=R(1,9);}while(m===n||m%n===0||n%m===0||gcd(p,m)>1||gcd(q,n)>1);
+const L=H.lcm(m,n),num=p*(L/m)+q*(L/n),g=gcd(num,L);
+const right=Q(num,L),wa=Q(p+q,m+n),wb=Q(p+q,L);
+if(qeq(right,wa)||qeq(right,wb))return null;
+const okS=F(N(num/g),(L/g===1?'':L/g)+'x');
+const w=[F(p+q,(m+n)+'x'),F(p+q,L+'x'),F(p+q,(m*n)+'x²')];
+if(!uniq([okS,...w]))return null;
+return {type:'choice',q:`Выполни сложение: <span class="m">${F(p,m+'x')} + ${F(q,n+'x')}</span>`,...ch(okS,w),
+short:`Общий знаменатель ${L}x; ${p}·${L/m} + ${q}·${L/n} = ${num}.`,
+explain:`1) Общий знаменатель — наименьшее число, которое делится на ${m} и на ${n}: это ${L}. С буквой: <b>${L}x</b>.<br>2) Доп. множители: к первой дроби ${L} : ${m} = <b>${L/m}</b>, ко второй ${L} : ${n} = <b>${L/n}</b>.<br>3) ${F(`${p}·${L/m}`,L+'x')} + ${F(`${q}·${L/n}`,L+'x')} = ${F(p*L/m,L+'x')} + ${F(q*L/n,L+'x')} = ${F(num,L+'x')}${g>1?` = ${okS} (сократили на ${g})`:''}.<br>Ответ: <b>${okS}</b>.<br>Вариант «${w[0]}» — сложили знаменатели, так нельзя. Вариант «${w[1]}» — забыли умножить числители на доп. множители.`,
+explain2:`Это как с обычными дробями ${F(p,m)} + ${F(q,n)}: сначала одинаковые «куски» (${L}-е доли), потом считаем, сколько их. ${F(p,m)} = ${F(p*L/m,L)}, ${F(q,n)} = ${F(q*L/n,L)}, вместе ${F(num,L)}. Буква x в знаменателе просто «едет» вместе: ответ ${okS}.`};});
+G(6,()=>{const k=R(2,9),op=pick(['−','+']);
+const ok=op==='−'?F(2*k,`x² − ${k*k}`):F('2x',`x² − ${k*k}`);
+const other=op==='−'?F('2x',`x² − ${k*k}`):F(2*k,`x² − ${k*k}`);
+const w=[other,'−'+ok,'0'];
+return {type:'choice',q:`Выполни действие: <span class="m">${F(1,`x − ${k}`)} ${op} ${F(1,`x + ${k}`)}</span>`,...ch(ok,w),
+short:`${F(`(x + ${k}) ${op} (x − ${k})`,`x² − ${k*k}`)} = ${ok}.`,
+explain:`1) Общий знаменатель: (x − ${k})(x + ${k}) = x² − ${k*k}.<br>2) Доп. множитель к первой дроби — (x + ${k}), ко второй — (x − ${k}).<br>3) Числитель: (x + ${k}) ${op} (x − ${k}) = x + ${k} ${op==='−'?`− x + ${k} = <b>${2*k}</b>`:`+ x − ${k} = <b>2x</b>`}.<br>Ответ: <b>${ok}</b>.${op==='−'?`<br>Ошибка «2x» появляется, если забыть поменять знаки во второй скобке: −(x − ${k}) = −x <b>+ ${k}</b>.`:''}`,
+explain2:`Проверка числом x = ${k+1}: ${F(1,1)} ${op} ${F(1,2*k+1)} = ${qh(op==='−'?Q(2*k,2*k+1):Q(2*k+2,2*k+1))}. Ответ ${ok} при x = ${k+1} даёт ${op==='−'?F(2*k,`${(k+1)*(k+1)} − ${k*k}`):F(2*(k+1),`${(k+1)*(k+1)} − ${k*k}`)} = ${qh(op==='−'?Q(2*k,2*k+1):Q(2*k+2,2*k+1))} ✅.`};});
+G(6,()=>{const a=R(1,5);
+const ok=F(xp(2*a),xp(a));
+const w=[F(`x − ${2*a*a}`,`x² − ${a*a}`),F(xp(2*a),xp(-a)),F('x',xp(a))];
+return {type:'choice',q:`Упрости: <span class="m">${F('x',xp(-a))} − ${F(2*a*a,`x² − ${a*a}`)}</span>`,...ch(ok,w),
+short:`${F(`x² + ${a===1?'':a}x − ${2*a*a}`,`(x − ${a})(x + ${a})`)} = ${F(`(x + ${2*a})(x − ${a})`,`(x − ${a})(x + ${a})`)} = ${ok}.`,
+explain:`1) Второй знаменатель: x² − ${a*a} = (x − ${a})(x + ${a}). Он и будет общим.<br>2) Первой дроби не хватает (x + ${a}): ${F(`x(x + ${a})`,`x² − ${a*a}`)} = ${F(`x² + ${a===1?'':a}x`,`x² − ${a*a}`)}.<br>3) Вычитаем: ${F(`x² + ${a===1?'':a}x − ${2*a*a}`,`x² − ${a*a}`)}.<br>4) Раскладываем числитель: x² + ${a===1?'':a}x − ${2*a*a} = (x + ${2*a})(x − ${a}) (проверь, раскрыв скобки).<br>5) Сокращаем (x − ${a}): <b>${ok}</b>.<br>Вариант «${w[0]}» — вычли числители, не приведя к общему знаменателю.`,
+explain2:`Проверка числом x = ${a+1}: ${F(a+1,1)} − ${F(2*a*a,`${(a+1)*(a+1)} − ${a*a}`)} = ${a+1} − ${F(2*a*a,2*a+1)} = ${qh(qs(qi(a+1),Q(2*a*a,2*a+1)))}. Ответ ${ok} при x = ${a+1} даёт ${F(3*a+1,2*a+1)} ✅.`};});
+G(6,()=>{const k=R(2,9),v=pick([1,2]);
+if(v===1){const ok=`x² − ${k*k}`;
+ return {type:'choice',q:`Найди простейший общий знаменатель дробей <span class="m">${F(1,`x² − ${k*k}`)}</span> и <span class="m">${F(1,`x − ${k}`)}</span>.`,...ch(ok,[`(x² − ${k*k})(x − ${k})`,`x − ${k}`,`x² + ${k*k}`]),
+ short:`x² − ${k*k} = (x − ${k})(x + ${k}) уже делится на x − ${k}.`,
+ explain:`Разложим: x² − ${k*k} = (x − ${k})(x + ${k}). Второй знаменатель (x − ${k}) уже «сидит» внутри первого. Значит, общий знаменатель — <b>x² − ${k*k}</b>, а доп. множитель ко второй дроби — (x + ${k}).<br>Вариант (x² − ${k*k})(x − ${k}) тоже общий, но не простейший — в нём (x − ${k}) повторяется дважды, лишняя работа.`,
+ explain2:`С числами: у ${F(1,12)} и ${F(1,4)} общий знаменатель 12, а не 48, потому что 12 уже делится на 4. Здесь «12» — это x² − ${k*k}, а «4» — это x − ${k}.`};}
+const c=R(2,5);const ok=`${c}(x² − ${k*k})`;
+return {type:'choice',q:`Найди простейший общий знаменатель дробей <span class="m">${F(1,`x² − ${k*k}`)}</span> и <span class="m">${F(1,`${c}x + ${c*k}`)}</span>.`,...ch(ok,[`x² − ${k*k}`,`(x² − ${k*k})(${c}x + ${c*k})`,`${c}(x + ${k})`]),
+short:`x² − ${k*k} = (x − ${k})(x + ${k}), ${c}x + ${c*k} = ${c}(x + ${k}). Нужно всё: ${c}(x − ${k})(x + ${k}).`,
+explain:`Раскладываем оба знаменателя:<br>• x² − ${k*k} = (x − ${k})(x + ${k});<br>• ${c}x + ${c*k} = ${c}(x + ${k}).<br>Собираем все множители, каждый по одному разу: ${c}, (x − ${k}), (x + ${k}). Общий знаменатель: <b>${c}(x − ${k})(x + ${k}) = ${c}(x² − ${k*k})</b>.<br>x² − ${k*k} без ${c} не подходит — не делится на ${c}(x + ${k}).`,
+explain2:`Представь, что знаменатели — это наборы кубиков. Первый: [x − ${k}] [x + ${k}]. Второй: [${c}] [x + ${k}]. Общий набор должен содержать оба: [${c}] [x − ${k}] [x + ${k}]. Кубик [x + ${k}] есть в обоих — берём его один раз.`};});
+
+/* L7: multiply, divide, power */
+G(7,()=>{let p,q,r,s,C;do{p=R(2,9);q=R(2,9);r=R(2,9);s=R(2,9);C=Q(p*r,q*s);}while(C.n===C.d);
+const ok=F(mono(C.n,[['x',1]]),mono(C.d,[['y',2]]));
+const w=[F(mono(C.n,[['x',3]]),mono(C.d,[['y',4]])),F(mono(C.d,[['x',1]]),mono(C.n,[['y',2]])),F(mono(C.n,[['x',1]]),mono(C.d,[['y',3]]))];
+if(!uniq([ok,...w]))return null;
+return {type:'choice',q:`Выполни умножение: <span class="m">${F(p+'x²',q+'y³')} · ${F(r+'y',s+'x')}</span>`,...ch(ok,w),
+short:`${F(`${p*r}x²y`,`${q*s}xy³`)} = ${ok}.`,
+explain:`Умножаем верх на верх, низ на низ: ${F(`${p}·${r}·x²·y`,`${q}·${s}·x·y³`)} = ${F(`${p*r}x²y`,`${q*s}xy³`)}.<br>Сокращаем по частям:<br>• числа: ${F(p*r,q*s)} = ${qh(C)};<br>• x: ${F('x²','x')} = x (остаётся вверху);<br>• y: ${F('y','y³')} = ${F(1,'y²')} (остаётся внизу).<br>Ответ: <b>${ok}</b>.<br>Вариант «${w[0]}» — x² и x перемножили, хотя они стоят в разных местах (один вверху, другой внизу) и должны сокращаться.`,
+explain2:`Сначала сократи «крест-накрест», потом умножай — так легче. x² вверху первой дроби и x внизу второй: сокращаем на x, остаётся x вверху. y вверху второй и y³ внизу первой: остаётся y² внизу. Числа: ${p}·${r} = ${p*r}, ${q}·${s} = ${q*s}, ${F(p*r,q*s)} = ${qh(C)}.`};});
+G(7,()=>{const a=R(1,9),k=R(2,9);
+const ok=F(xp(a),'x');
+const w=[F('x',xp(a)),F(`(x − ${a})²(x + ${a})`,`${k*k}x`),F(xp(a),`${k*k}x`)];
+return {type:'choice',q:`Выполни деление: <span class="m">${F(`x² − ${a*a}`,`${k}x`)} : ${F(`x − ${a}`,k)}</span>`,...ch(ok,w),
+short:`${F(`(x − ${a})(x + ${a})`,`${k}x`)} · ${F(k,`x − ${a}`)} = ${ok}.`,
+explain:`Делить — значит умножать на <b>перевёрнутую вторую</b> дробь:<br>${F(`x² − ${a*a}`,`${k}x`)} · ${F(k,`x − ${a}`)}.<br>Раскладываем x² − ${a*a} = (x − ${a})(x + ${a}) и сокращаем ${k} и (x − ${a}):<br>${F(`(x − ${a})(x + ${a})·${k}`,`${k}x·(x − ${a})`)} = <b>${ok}</b>.<br>Вариант с (x − ${a})² — дроби перемножили, не перевернув вторую. Вариант ${F('x',xp(a))} — перевернули первую, а не вторую.`,
+explain2:`Пример с числами: ${F(6,5)} : ${F(3,10)} = ${F(6,5)} · ${F(10,3)} = 4. Переворачивается всегда то, <b>на что</b> делят (вторая дробь). Проверка ответа: x = ${a+1}: ${F((a+1)*(a+1)-a*a,k*(a+1))} : ${F(1,k)} = ${qh(qd(Q((a+1)*(a+1)-a*a,k*(a+1)),Q(1,k)))}; и ${F(2*a+1,a+1)} ✅.`};});
+G(7,()=>{let c,d;do{c=pick([-3,-2,2,3]);d=pick([2,3,5,7]);}while(gcd(c,d)!==1);const n=pick([2,3]);
+const cn=Math.pow(c,n),dn=Math.pow(d,n);
+const ok=`${cn<0?'−':''}${F(`${Math.abs(cn)}a${sup(2*n)}`,`${dn}b${sup(n)}`)}`;
+const wSign=`${cn<0?'':'−'}${F(`${Math.abs(cn)}a${sup(2*n)}`,`${dn}b${sup(n)}`)}`;
+const ea=n===2?2:2+n;
+const wPow=`${cn<0?'−':''}${F(`${Math.abs(cn)}a${sup(ea)}`,`${dn}b${sup(n)}`)}`;
+const wCoef=`${c*n<0?'−':''}${F(`${Math.abs(c*n)}a${sup(2*n)}`,`${d*n}b${sup(n)}`)}`;
+return {type:'choice',q:`Возведи в степень: <span class="m">(${c<0?'−':''}${F(`${Math.abs(c)}a²`,`${d}b`)})${sup(n)}</span>`,...ch(ok,[wSign,wPow,wCoef]),
+short:`(${N(c)})${sup(n)} = ${N(cn)}, (a²)${sup(n)} = a${sup(2*n)}, ${d}${sup(n)} = ${dn}, b${sup(n)}.`,
+explain:`В степень ${n} возводим <b>каждый</b> множитель вверху и внизу:<br>• число вверху: (${N(c)})${sup(n)} = ${N(cn)}${c<0?(n%2?' — степень нечётная, минус остаётся':' — степень чётная, минус исчезает'):''};<br>• (a²)${sup(n)} = a${sup(2*n)} — показатели <b>умножаем</b>: 2·${n} = ${2*n};<br>• число внизу: ${d}${sup(n)} = ${dn};<br>• b${sup(n)}.<br>Ответ: <b>${ok}</b>.<br>Вариант с ${Math.abs(c*n)} и ${d*n} — числа умножили на ${n}, а надо возвести в степень.`,
+explain2:`Распиши степень как умножение: (${c<0?'−':''}${F(`${Math.abs(c)}a²`,`${d}b`)})${sup(n)} = ${Array(n).fill(`(${c<0?'−':''}${F(`${Math.abs(c)}a²`,`${d}b`)})`).join(' · ')}. Вверху: ${Array(n).fill(N(c)).join('·')} = ${N(cn)} и ${Array(n).fill('a²').join('·')} = a${sup(2*n)}. Внизу: ${Array(n).fill(d).join('·')} = ${dn} и b${sup(n)}.`};});
+G(7,()=>{let k,m;do{k=R(1,6);m=R(2,12);}while(m===k);
+const q=Q(m-k,m);
+return {type:'num',q:`Упрости и найди значение при x = ${m}: <span class="m">${F(`x² − ${k*k}`,'x²')} · ${F('x',xp(k))}</span>`,...numA(q),ph:'например 3/4',
+short:`Выражение равно ${F(xp(-k),'x')}, при x = ${m} получаем ${F(m-k,m)}${q.d!==m?' = '+qh(q):''}.`,
+explain:`1) Раскладываем: x² − ${k*k} = (x − ${k})(x + ${k}).<br>2) ${F(`(x − ${k})(x + ${k})·x`,`x²·(x + ${k})`)} — сокращаем (x + ${k}) и один x: <b>${F(xp(-k),'x')}</b>.<br>3) При x = ${m}: ${F(`${m} − ${k}`,m)} = <b>${qh(q)}</b>.`,
+explain2:`Можно подставить сразу: ${F(`${m*m} − ${k*k}`,m*m)} · ${F(m,m+k)} = ${F(m*m-k*k,m*m)} · ${F(m,m+k)} = ${qh(qm(Q(m*m-k*k,m*m),Q(m,m+k)))}. Ответ тот же, но с большими числами легко ошибиться. Упрощение сначала — надёжнее.`};});
+
+/* L8: long expressions */
+G(8,()=>{const k=R(1,9);
+const t=k+1,q1=Q(t,t-k),q2=Q(t,t+k),df=qs(q1,q2),mul=Q(t*t-k*k,t),res=qm(df,mul);
+return {type:'num',q:`Упрости выражение и запиши ответ числом: <span class="m">(${F('x',`x − ${k}`)} − ${F('x',`x + ${k}`)}) · ${F(`x² − ${k*k}`,'x')}</span>`,ans:2*k,
+hint:'Сначала действие в скобках: общий знаменатель (x − k)(x + k).',
+short:`В скобках ${F(`${2*k}x`,`x² − ${k*k}`)}, умножаем на ${F(`x² − ${k*k}`,'x')} → ${2*k}.`,
+explain:`1) Скобки: общий знаменатель (x − ${k})(x + ${k}) = x² − ${k*k}.<br>${F(`x(x + ${k}) − x(x − ${k})`,`x² − ${k*k}`)} = ${F(`x² + ${k===1?'':k}x − x² + ${k===1?'':k}x`,`x² − ${k*k}`)} = ${F(`${2*k}x`,`x² − ${k*k}`)}.<br>2) Умножаем: ${F(`${2*k}x`,`x² − ${k*k}`)} · ${F(`x² − ${k*k}`,'x')} — сокращаем x² − ${k*k} и x.<br>Ответ: <b>${2*k}</b>. Выражение вообще не зависит от x!`,
+explain2:`Проверка подстановкой x = ${t}:<br>• ${F(t,`${t} − ${k}`)} = ${qh(q1)}, ${F(t,`${t} + ${k}`)} = ${qh(q2)}, разность ${qh(df)};<br>• ${F(`${t*t} − ${k*k}`,t)} = ${qh(mul)};<br>• ${qh(df)} · ${qh(mul)} = ${qh(res)} ✅.`};});
+G(8,()=>{const k=R(1,9);
+const ok=F(2,xp(k));
+const w=[F(2,xp(-k)),F('2x²',`(x + ${k})(x − ${k})²`),F(1,xp(k))];
+const t=k+1,L=qd(qa(Q(1,t-k),Q(1,t+k)),Q(t,t-k));
+return {type:'choice',q:`Упрости: <span class="m">(${F(1,xp(-k))} + ${F(1,xp(k))}) : ${F('x',xp(-k))}</span>`,...ch(ok,w),
+short:`В скобках ${F('2x',`(x − ${k})(x + ${k})`)}; делим → умножаем на ${F(xp(-k),'x')}: ${ok}.`,
+explain:`1) Скобки: ${F(`(x + ${k}) + (x − ${k})`,`(x − ${k})(x + ${k})`)} = ${F('2x',`(x − ${k})(x + ${k})`)}.<br>2) Деление → умножение на перевёрнутую: ${F('2x',`(x − ${k})(x + ${k})`)} · ${F(xp(-k),'x')}.<br>3) Сокращаем x и (x − ${k}): <b>${ok}</b>.<br>Вариант с (x − ${k})² — забыли перевернуть вторую дробь и просто умножили.`,
+explain2:`Проверка подстановкой x = ${t}: (${F(1,1)} + ${F(1,t+k)}) : ${F(t,1)} = ${qh(qa(qi(1),Q(1,t+k)))} : ${t} = ${qh(L)}. Ответ ${ok} даёт ${F(2,t+k)} = ${qh(Q(2,t+k))} ✅. Например, вариант ${F(2,xp(-k))} даёт ${qh(Q(2,1))} — не совпадает.`};});
+G(8,()=>{let k,m;do{k=R(1,6);m=R(3,40);}while(m===k);
+return {type:'num',q:`Найди значение выражения при x = ${m}: <span class="m">(${F(xp(k),xp(-k))} − ${F(xp(-k),xp(k))}) · ${F(`x² − ${k*k}`,4*k)}</span>`,ans:m,
+hint:'Упрости сначала. Числитель в скобках: (x + k)² − (x − k)².',
+short:`Выражение тождественно равно x, значит ответ ${m}.`,
+explain:`1) В скобках общий знаменатель (x − ${k})(x + ${k}) = x² − ${k*k}:<br>${F(`(x + ${k})² − (x − ${k})²`,`x² − ${k*k}`)}.<br>2) Числитель: (x² + ${2*k}x + ${k*k}) − (x² − ${2*k}x + ${k*k}) = ${4*k}x.<br>3) Умножаем: ${F(`${4*k}x`,`x² − ${k*k}`)} · ${F(`x² − ${k*k}`,4*k)} = <b>x</b>.<br>4) При x = ${m} значение равно <b>${m}</b>.`,
+explain2:`Числитель можно разложить как разность квадратов: A² − B² = (A − B)(A + B), где A = x + ${k}, B = x − ${k}. A − B = ${2*k}, A + B = 2x. Произведение ${2*k} · 2x = ${4*k}x — то же самое. Потом всё сокращается и остаётся x = ${m}.`};});
+G(8,()=>{const k=R(1,9);
+const ok=F('x',xp(k));
+const w=[F('x',xp(-k)),F(xp(k),'x'),F(1,xp(k))];
+const t=k+1,L=qd(qs(qi(1),Q(k,t)),Q(t*t-k*k,t*t));
+return {type:'choice',q:`Упрости: <span class="m">(1 − ${F(k,'x')}) : ${F(`x² − ${k*k}`,'x²')}</span>`,...ch(ok,w),
+short:`${F(xp(-k),'x')} · ${F('x²',`(x − ${k})(x + ${k})`)} = ${ok}.`,
+explain:`1) В скобках: 1 = ${F('x','x')}, поэтому 1 − ${F(k,'x')} = ${F(xp(-k),'x')}.<br>2) Деление → умножение на перевёрнутую: ${F(xp(-k),'x')} · ${F('x²',`x² − ${k*k}`)}.<br>3) x² − ${k*k} = (x − ${k})(x + ${k}). Сокращаем (x − ${k}) и x: <b>${ok}</b>.`,
+explain2:`Проверка числом x = ${t}: (1 − ${F(k,t)}) : ${F(t*t-k*k,t*t)} = ${qh(qs(qi(1),Q(k,t)))} : ${qh(Q(t*t-k*k,t*t))} = ${qh(L)}. Ответ ${ok} при x = ${t} даёт ${F(t,t+k)} = ${qh(Q(t,t+k))} ✅.`};});
+
+/* L9: star */
+G(9,()=>{const v=pick(['A','B']),n=R(5,30);
+let sum=qi(0);
+if(v==='A'){for(let m=1;m<=n;m++)sum=qa(sum,Q(1,m*(m+1)));
+ return {type:'num',q:`Вычисли сумму: <span class="m">${F(1,'1·2')} + ${F(1,'2·3')} + ${F(1,'3·4')} + … + ${F(1,`${n}·${n+1}`)}</span>`,...numA(sum),ph:'например 7/8',
+ hint:`Каждое слагаемое ${F(1,'m(m + 1)')} = ${F(1,'m')} − ${F(1,'m + 1')}.`,
+ short:`Сумма «телескопическая»: 1 − ${F(1,n+1)} = ${qh(sum)}.`,
+ explain:`Ключевой приём: ${F(1,'m(m + 1)')} = ${F(1,'m')} − ${F(1,'m + 1')} (проверь: ${F('m + 1 − m','m(m + 1)')} = ${F(1,'m(m + 1)')}).<br>Расписываем:<br>(1 − ${F(1,2)}) + (${F(1,2)} − ${F(1,3)}) + (${F(1,3)} − ${F(1,4)}) + … + (${F(1,n)} − ${F(1,n+1)}).<br>Все средние слагаемые взаимно уничтожаются (−${F(1,2)} и +${F(1,2)}, −${F(1,3)} и +${F(1,3)}…). Остаются только первое и последнее:<br>1 − ${F(1,n+1)} = <b>${qh(sum)}</b>.`,
+ explain2:`Посмотри на маленьких суммах: ${F(1,2)} = ${F(1,2)}; ${F(1,2)} + ${F(1,6)} = ${F(2,3)}; ${F(1,2)} + ${F(1,6)} + ${F(1,12)} = ${F(3,4)}. Закономерность: сумма n слагаемых равна ${F('n','n + 1')}. При n = ${n}: ${qh(sum)}.`};}
+for(let m=1;m<=n;m++)sum=qa(sum,Q(1,(2*m-1)*(2*m+1)));
+return {type:'num',q:`Вычисли сумму: <span class="m">${F(1,'1·3')} + ${F(1,'3·5')} + ${F(1,'5·7')} + … + ${F(1,`${2*n-1}·${2*n+1}`)}</span>`,...numA(sum),ph:'например 7/15',
+hint:`${F(1,'1·3')} = ${F(1,2)}·(1 − ${F(1,3)}). Каждое слагаемое — половина разности.`,
+short:`${F(1,2)}·(1 − ${F(1,2*n+1)}) = ${qh(sum)}.`,
+explain:`Приём: ${F(1,'(2m − 1)(2m + 1)')} = ${F(1,2)}·(${F(1,'2m − 1')} − ${F(1,'2m + 1')}). Проверка: ${F(1,'2m − 1')} − ${F(1,'2m + 1')} = ${F(2,'(2m − 1)(2m + 1)')}, а половина этого — как раз наша дробь.<br>Тогда сумма = ${F(1,2)}·[(1 − ${F(1,3)}) + (${F(1,3)} − ${F(1,5)}) + … + (${F(1,2*n-1)} − ${F(1,2*n+1)})] = ${F(1,2)}·(1 − ${F(1,2*n+1)}) = ${F(1,2)}·${F(2*n,2*n+1)} = <b>${qh(sum)}</b>.`,
+explain2:`Маленькие суммы: ${F(1,3)}; ${F(1,3)} + ${F(1,15)} = ${F(2,5)}; ${F(1,3)} + ${F(1,15)} + ${F(1,35)} = ${F(3,7)}. Закономерность: ${F('n','2n + 1')}. Последний знаменатель ${2*n-1}·${2*n+1}, значит слагаемых n = ${n}, ответ ${qh(sum)}.`};},true);
+G(9,()=>{const k=R(1,5);
+const k1=k===1;
+const fx=F(1,'x'),fk=F(1,xp(k)),c=F(1,k);
+const ok=k1?`${fx} − ${fk}`:`${c} · (${fx} − ${fk})`;
+const w=k1?[`${fx} + ${fk}`,`${fk} − ${fx}`,`1 − ${fk}`]:[`${fx} − ${fk}`,`${c} · (${fx} + ${fk})`,`${c} · (${fk} − ${fx})`];
+const t=1;const lhs=Q(1,t*(t+k));
+return {type:'choice',q:`Какое равенство верно при всех допустимых x?<br><span class="m">${F(1,`x(x + ${k})`)} = …</span>`,...ch(ok,w),
+short:`${fx} − ${fk} = ${F(k,`x(x + ${k})`)}${k1?'':`, поэтому нужен множитель ${c}`}.`,
+explain:`Вычислим разность: ${fx} − ${fk} = ${F(`(x + ${k}) − x`,`x(x + ${k})`)} = ${F(k,`x(x + ${k})`)}.<br>${k1?`Это ровно наша дробь. Ответ: <b>${ok}</b>.`:`Получилось в ${k} раза больше нужного, поэтому умножаем на ${c}: <b>${ok}</b>.`}<br>Порядок важен: ${fk} − ${fx} даёт ${F(-k,`x(x + ${k})`)} — с минусом.`,
+explain2:`Проверь подстановкой x = 1: слева ${F(1,`1·${1+k}`)} = ${qh(lhs)}.${k1?` Справа 1 − ${F(1,2)} = ${F(1,2)} ✅. А 1 + ${F(1,2)} = ${F(3,2)} — не подходит.`:` Справа ${c} · (1 − ${F(1,1+k)}) = ${c} · ${F(k,1+k)} = ${qh(Q(1,1+k))} ✅. А без ${c}: 1 − ${F(1,1+k)} = ${F(k,1+k)} — в ${k} раза больше.`}`};},true);
+G(9,()=>{const b=R(-3,3),d=pick([4,6,8,9,10,12]),a=b+d;
+const ans=[];for(let n=-200;n<=200;n++){if(n+b===0)continue;if((n+a)%(n+b)===0)ans.push(n);}
+const divs=[];for(let i=1;i<=d;i++)if(d%i===0){divs.push(i,-i);}
+return {type:'set',q:`Найди все <b>целые</b> n, при которых дробь <span class="m">${F(xp(a,'n'),xp(b,'n'))}</span> — целое число.`,ans,keys:['−'],ph:'числа через запятую',
+hint:`Выдели целую часть: ${xp(a,'n')} = (${xp(b,'n')}) + ${d}.`,
+short:`${F(xp(a,'n'),xp(b,'n'))} = 1 + ${F(d,xp(b,'n'))}; ${xp(b,'n')} — делитель ${d}.`,
+explain:`1) Выделяем целую часть: ${F(xp(a,'n'),xp(b,'n'))} = ${F(`(${xp(b,'n')}) + ${d}`,xp(b,'n'))} = 1 + ${F(d,xp(b,'n'))}.<br>2) Это целое, когда ${F(d,xp(b,'n'))} — целое, то есть ${xp(b,'n')} — <b>делитель числа ${d}</b> (и положительный, и отрицательный!).<br>3) Делители ${d}: ${divs.map(N).join(', ')}.<br>4) n = делитель ${b>0?'− '+b:b<0?'+ '+(-b):''}: ${divs.map(x=>`${N(x)}${b>0?' − '+b:b<0?' + '+(-b):''} = ${N(x-b)}`).join('; ')}.<br>Ответ: <b>${H.fmtSet(ans)}</b>.`,
+explain2:`Проверь пару значений. n = ${N(ans[ans.length-1])}: ${F(ans[ans.length-1]+a,ans[ans.length-1]+b)} = ${N((ans[ans.length-1]+a)/(ans[ans.length-1]+b))} — целое ✅. n = ${N(ans[0])}: ${F(N(ans[0]+a),N(ans[0]+b))} = ${N((ans[0]+a)/(ans[0]+b))} ✅. Частая ошибка — забыть отрицательные делители: ведь ${d} : (−1) = −${d} тоже целое.`};},true);
+G(9,()=>{const v=pick(['A','B','C']),t=R(3,7);
+// verify numerically: x is a root of x^2 - t x + 1 = 0 (A,C) or x^2 - t x - 1 = 0 (B)
+let ans,q,ex,ex2,sh;
+if(v==='A'){ans=t*t-2;q=`Известно, что <span class="m">x + ${F(1,'x')} = ${t}</span>. Найди <span class="m">x² + ${F(1,'x²')}</span>.`;
+ sh=`(x + ${F(1,'x')})² = x² + 2 + ${F(1,'x²')}, значит ${t*t} − 2 = ${ans}.`;
+ ex=`Возведём обе части в квадрат: (x + ${F(1,'x')})² = ${t}².<br>Раскрываем: x² + 2·x·${F(1,'x')} + ${F(1,'x²')} = ${t*t}. Средний член: 2·x·${F(1,'x')} = 2.<br>x² + 2 + ${F(1,'x²')} = ${t*t} → x² + ${F(1,'x²')} = ${t*t} − 2 = <b>${ans}</b>.`;
+ ex2=`Ошибка «${t*t}» — забыли удвоенное произведение. Вспомни: (a + b)² = a² + <b>2ab</b> + b². Здесь a = x, b = ${F(1,'x')}, и ab = 1. Проверка на простом примере: x = 1 → x + ${F(1,'x')} = 2, а x² + ${F(1,'x²')} = 2 = 2² − 2 ✅.`;}
+else if(v==='B'){ans=t*t+2;q=`Известно, что <span class="m">x − ${F(1,'x')} = ${t}</span>. Найди <span class="m">x² + ${F(1,'x²')}</span>.`;
+ sh=`(x − ${F(1,'x')})² = x² − 2 + ${F(1,'x²')}, значит ${t*t} + 2 = ${ans}.`;
+ ex=`Возведём в квадрат: (x − ${F(1,'x')})² = ${t*t}.<br>x² − 2·x·${F(1,'x')} + ${F(1,'x²')} = ${t*t}, то есть x² − 2 + ${F(1,'x²')} = ${t*t}.<br>x² + ${F(1,'x²')} = ${t*t} + 2 = <b>${ans}</b>.`;
+ ex2=`Здесь разность, поэтому удвоенное произведение идёт с минусом: (a − b)² = a² − 2ab + b². Чтобы найти x² + ${F(1,'x²')}, двойку переносим вправо и она становится <b>плюсом</b>: ${t*t} + 2.`;}
+else{ans=t*t*t-3*t;q=`Известно, что <span class="m">x + ${F(1,'x')} = ${t}</span>. Найди <span class="m">x³ + ${F(1,'x³')}</span>.`;
+ sh=`(x + ${F(1,'x')})³ = x³ + ${F(1,'x³')} + 3(x + ${F(1,'x')}), значит ${t*t*t} − 3·${t} = ${ans}.`;
+ ex=`Возведём в куб: (a + b)³ = a³ + b³ + 3ab(a + b). Здесь a = x, b = ${F(1,'x')}, ab = 1:<br>(x + ${F(1,'x')})³ = x³ + ${F(1,'x³')} + 3·(x + ${F(1,'x')}).<br>${t}³ = x³ + ${F(1,'x³')} + 3·${t} → ${t*t*t} = x³ + ${F(1,'x³')} + ${3*t}.<br>x³ + ${F(1,'x³')} = <b>${ans}</b>.`;
+ ex2=`Другой путь: x³ + ${F(1,'x³')} = (x + ${F(1,'x')})(x² − 1 + ${F(1,'x²')}) — это формула суммы кубов. x² + ${F(1,'x²')} = ${t}² − 2 = ${t*t-2}, поэтому x² − 1 + ${F(1,'x²')} = ${t*t-3}. Итог: ${t} · ${t*t-3} = ${ans}.`;}
+return {type:'num',q,ans,short:sh,explain:ex,explain2:ex2,hint:'Возведи данное равенство в квадрат (или в куб).'};},true);
+G(9,()=>{const v=pick(['A','B']),m=R(11,99);
+let val,q,ex,ex2,sh;
+if(v==='A'){const i1=qs(qi(1),Q(1,m)),i2=qs(qi(1),qd(qi(1),i1));val=qd(qi(1),i2);
+ q=`Найди значение выражения при x = ${m}: <span class="m">${F(1,`1 − ${F(1,`1 − ${F(1,'x')}`)}`)}</span>`;
+ sh=`Выражение равно 1 − x, при x = ${m} получаем ${qh(val)}.`;
+ ex=`Упрощаем <b>снизу вверх</b>:<br>1) 1 − ${F(1,'x')} = ${F('x − 1','x')}.<br>2) ${F(1,F('x − 1','x'))} = ${F('x','x − 1')} (перевернули).<br>3) 1 − ${F('x','x − 1')} = ${F('x − 1 − x','x − 1')} = ${F('−1','x − 1')}.<br>4) ${F(1,F('−1','x − 1'))} = −(x − 1) = <b>1 − x</b>.<br>При x = ${m}: 1 − ${m} = <b>${qh(val)}</b>.`;
+ ex2=`Проверим формулу на маленьком числе x = 2, считая «этажи» снизу вверх:<br>• 1 − ${F(1,2)} = ${F(1,2)};<br>• 1 : ${F(1,2)} = 2;<br>• 1 − 2 = −1;<br>• 1 : (−1) = −1.<br>А по формуле 1 − x = 1 − 2 = −1 ✅. Формула работает, значит при x = ${m} ответ 1 − ${m} = ${qh(val)}. Подставлять ${m} сразу в четырёхэтажную дробь было бы гораздо дольше.`;}
+else{const i1=qa(qi(1),Q(1,m)),i2=qa(qi(1),qd(qi(1),i1));val=qd(qi(1),i2);
+ q=`Найди значение выражения при x = ${m}: <span class="m">${F(1,`1 + ${F(1,`1 + ${F(1,'x')}`)}`)}</span>`;
+ sh=`Выражение равно ${F('x + 1','2x + 1')}, при x = ${m} получаем ${qh(val)}.`;
+ ex=`Упрощаем <b>снизу вверх</b>:<br>1) 1 + ${F(1,'x')} = ${F('x + 1','x')}.<br>2) ${F(1,F('x + 1','x'))} = ${F('x','x + 1')}.<br>3) 1 + ${F('x','x + 1')} = ${F('2x + 1','x + 1')}.<br>4) ${F(1,F('2x + 1','x + 1'))} = <b>${F('x + 1','2x + 1')}</b>.<br>При x = ${m}: ${F(m+1,2*m+1)} = <b>${qh(val)}</b>.`;
+ ex2=`Проверим формулу на x = 1: 1 + 1 = 2; 1 : 2 = ${F(1,2)}; 1 + ${F(1,2)} = ${F(3,2)}; 1 : ${F(3,2)} = ${F(2,3)}. Формула: ${F('1 + 1','2 + 1')} = ${F(2,3)} ✅. Значит, при x = ${m} получаем ${F(m+1,2*m+1)}.`;}
+return {type:'num',q,...numA(val),ph:'число или дробь',hint:'Упрощай с самого нижнего «этажа».',short:sh,explain:ex,explain2:ex2};},true);
+G(9,()=>{const v=pick([1,'a','a²']);
+let a,b,c;do{[a,b,c]=sample(range(-5,6).filter(x=>x!==0),3);}while(false);
+const f=x=>v===1?1:v==='a'?x:x*x;
+const t1=Q(f(a),(a-b)*(a-c)),t2=Q(f(b),(b-a)*(b-c)),t3=Q(f(c),(c-a)*(c-b));const tot=qa(qa(t1,t2),t3);
+const right=v==='a²'?'1':'0';
+const num=x=>v===1?'1':v==='a'?x:x+'²';
+const expr=`${F(num('a'),'(a − b)(a − c)')} + ${F(num('b'),'(b − a)(b − c)')} + ${F(num('c'),'(c − a)(c − b)')}`;
+const opts=shuffle(['0','1','a + b + c','abc']);
+const inner=v===1?'(b − c) + (c − a) + (a − b) = 0':v==='a'?'a(b − c) + b(c − a) + c(a − b) = ab − ac + bc − ab + ac − bc = 0':'a²(b − c) + b²(c − a) + c²(a − b) = −(a − b)(b − c)(c − a)';
+return {type:'choice',q:`Докажи тождество: чему равно выражение при любых различных a, b, c?<br><span class="m">${expr}</span>`,opts:opts.map(M),ans:opts.indexOf(right),
+short:`Общий знаменатель (a − b)(b − c)(c − a); числитель ${v==='a²'?'равен знаменателю':'равен 0'}.`,
+explain:`Общий знаменатель D = (a − b)(b − c)(c − a). Заметим, что каждый знаменатель отличается от «своего куска» D только знаком:<br>• (a − b)(a − c) = −(a − b)(c − a);<br>• (b − a)(b − c) = −(a − b)(b − c);<br>• (c − a)(c − b) = −(c − a)(b − c).<br>Тогда сумма = −${F(`${v===1?'(b − c) + (c − a) + (a − b)':v==='a'?'a(b − c) + b(c − a) + c(a − b)':'a²(b − c) + b²(c − a) + c²(a − b)'}`,'D')}.<br>Считаем числитель: ${inner}.<br>${v==='a²'?'Числитель равен −D, поэтому сумма = −(−D)/D = <b>1</b>. (Чтобы проверить −(a − b)(b − c)(c − a), раскрой скобки — получится то же самое.)':'Числитель равен 0, значит вся сумма = <b>0</b>.'}`,
+explain2:`Проверка подстановкой (не доказательство, но хороший контроль): a = ${N(a)}, b = ${N(b)}, c = ${N(c)}.<br>${qh(t1)} + ${qh(t2)} + ${qh(t3)} = <b>${qh(tot)}</b>. Значит, ответ ${right}. Попробуй другие числа — снова получится ${right}: выражение от a, b, c не зависит.`};},true);
+G(9,()=>{let k,p,qq,r,s;do{k=R(2,6);p=R(1,5);qq=R(1,7);r=R(1,4);s=R(1,9);}while(r*k-s===0);
+const val=Q(p*k+qq,r*k-s);
+const top=`${p===1?'':p}x + ${qq===1?'':qq}y`,bot=`${r===1?'':r}x − ${s===1?'':s}y`;
+return {type:'num',q:`Известно, что <span class="m">${F('x','y')} = ${k}</span>. Найди значение <span class="m">${F(top,bot)}</span>.`,...numA(val),ph:'число или дробь',
+hint:'Раздели числитель и знаменатель на y.',
+short:`Делим на y: ${F(`${p===1?'':p+'·'}${k} + ${qq}`,`${r===1?'':r+'·'}${k} − ${s}`)} = ${qh(val)}.`,
+explain:`По основному свойству дроби делим числитель и знаменатель на y (y ≠ 0):<br>${F(`${p===1?'':p}·${F('x','y')} + ${qq}`,`${r===1?'':r}·${F('x','y')} − ${s}`)}. Подставляем ${F('x','y')} = ${k}:<br>${F(`${p*k} + ${qq}`,`${r*k} − ${s}`)} = ${F(p*k+qq,r*k-s)}${(val.d!==Math.abs(r*k-s)||val.n!==p*k+qq)?' = '+qh(val):''}.<br>Ответ: <b>${qh(val)}</b>.`,
+explain2:`Раз ${F('x','y')} = ${k}, то x = ${k}y. Возьмём для проверки конкретные числа: y = 1, x = ${k}. Тогда ${F(`${p*k} + ${qq}`,`${r*k} − ${s}`)} = ${qh(val)}. Возьми y = 2, x = ${2*k}: ${F(2*p*k+2*qq,2*r*k-2*s)} = ${qh(val)} — то же самое. Значение зависит только от отношения ${F('x','y')}.`};},true);
+
+window.TOPIC={id:'drobi',title:'Рациональные дроби',subtitle:'Алгебра · 8 класс · Макарычев, глава 1',
+intro:`<p>Рациональная дробь — это обычная дробь, только с буквами. Здесь разберём по шагам: когда дробь не имеет смысла, когда она равна нулю, как сокращать (и как <b>нельзя</b>), как складывать, умножать и делить дроби и как упрощать длинные выражения. В конце — задачи олимпиадного уровня.</p>`,
+theory:theory.map(t=>({...t,html:big(t.html)})),symbols:{...symbols,rows:symbols.rows.map(r=>[r[0],r[1],r[2],`<span class="m">${r[3]}</span>`].map(big))},figs:{bars:()=>bars()},
+levels:['Дробь и её значение','Когда дробь не имеет смысла','Когда дробь равна нулю','Основное свойство и сокращение','Сокращение по формулам','Сложение и вычитание (знаменатели равны)','Разные знаменатели','Умножение, деление, степень','Длинные выражения','★ Задачи уровня олимпиад / Сириус'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

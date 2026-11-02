@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Среднее, минимум, максимум, размах — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY='trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div></div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':return Math.abs(H.parseNum(val)-t.ans)<1e-9;
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  const fb=$('#fb');
+  if(ok){
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}</h3>${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      <div class="ans">Правильный ответ: ${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%).</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const N=H.num, FR=H.frac;
+const OV=s=>`<span style="text-decoration:overline">${s}</span>`;
+const XB=OV('x');
+const sum=a=>a.reduce((s,x)=>s+x,0);
+const rnd=x=>Math.round(x*1e6)/1e6;
+const sortN=a=>a.slice().sort((x,y)=>x-y);
+const mean=a=>rnd(sum(a)/a.length);
+const median=a=>{const s=sortN(a),n=s.length;return n%2?s[(n-1)/2]:rnd((s[n/2-1]+s[n/2])/2);};
+const LS=a=>a.map(N).join(a.every(Number.isInteger)?', ':'; ');
+const P=v=>v<0?`(${N(v)})`:N(v);
+const plusExpr=a=>a.map((x,i)=>i===0?N(x):(x<0?' − '+N(-x):' + '+N(x))).join('');
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+const NAMES=['Аня','Борис','Вика','Гоша','Даша','Егор','Женя','Зоя','Илья','Катя','Лёва','Мила','Ника','Олег'];
+const BOLD=(arr,idx)=>arr.map((v,i)=>idx.includes(i)?`<b>${N(v)}</b>`:N(v)).join(', ');
+
+/* ---------- table helper ---------- */
+const TD='border:1px solid var(--line);padding:4px 10px;text-align:center';
+const TH=TD+';background:var(--accent-soft);color:var(--accent-ink);font-weight:600';
+function tbl(rows,o){o=o||{};
+  let h='<div style="overflow-x:auto;margin:8px 0"><table style="border-collapse:collapse;margin:0 auto;font-size:16px">';
+  rows.forEach((r,i)=>{h+='<tr>'+r.map((c,j)=>{const th=(o.head!==false&&i===0)||(o.firstCol&&j===0);const st=(th?TH:TD)+(o.lastBold&&i===rows.length-1?';font-weight:700':'');return `<${th?'th':'td'} style="${st}">${c}</${th?'th':'td'}>`;}).join('')+'</tr>';});
+  return h+'</table></div>';
+}
+
+/* ---------- dot plot on a number line ---------- */
+function niceStep(span){for(const s of [1,2,5,10,20,25,50,100,200,250,500,1000])if(span/s<=10)return s;return 2000;}
+function dotplot(vals,o){o=o||{};
+  const W=o.w||320,pad=24;
+  let mn=Math.min(...vals),mx=Math.max(...vals);
+  if(o.lo!=null)mn=Math.min(mn,o.lo);if(o.hi!=null)mx=Math.max(mx,o.hi);
+  if(mn===mx){mn-=1;mx+=1;}
+  const st=niceStep(mx-mn);const lo=Math.floor(mn/st)*st,hi=Math.ceil(mx/st)*st;
+  const sx=v=>pad+(v-lo)/(hi-lo)*(W-2*pad);
+  const cols={};const pts=[];
+  sortN(vals).forEach(v=>{const k=Math.round(sx(v)/11);cols[k]=(cols[k]||0)+1;pts.push({v,x:sx(v),lv:cols[k]-1});});
+  const ms=Math.max(...Object.values(cols));
+  const top=(o.median!=null||o.range)?40:14;
+  const axisY=top+ms*13+4;
+  const Hh=axisY+(o.mean!=null?52:26);
+  const cl=x=>Math.max(44,Math.min(W-44,x));
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="Точки на числовой прямой" style="font-family:system-ui,sans-serif">`;
+  s+=`<line x1="${pad-10}" y1="${axisY}" x2="${W-pad+10}" y2="${axisY}" stroke="var(--fig)" stroke-width="1.4"/>`;
+  const nt=Math.round((hi-lo)/st);const every=(nt>7&&String(hi).length>3)?2:1;
+  for(let i=0;i<=nt;i++){const t=lo+i*st;const x=sx(t);s+=`<line x1="${x}" y1="${axisY-4}" x2="${x}" y2="${axisY+4}" stroke="var(--fig)"/>`;if(i%every===0)s+=`<text x="${x}" y="${axisY+17}" text-anchor="middle" font-size="11" fill="var(--ink)">${N(t)}</text>`;}
+  if(o.median!=null){const x=sx(o.median);s+=`<line x1="${x}" y1="${top-10}" x2="${x}" y2="${axisY}" stroke="var(--ok)" stroke-width="1.6" stroke-dasharray="4 3"/><text x="${cl(x)}" y="${top-15}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ok)">Me = ${N(o.median)}</text>`;}
+  if(o.range){const a=sx(Math.min(...vals)),b=sx(Math.max(...vals));const y=top-12;s+=`<line x1="${a}" y1="${y}" x2="${b}" y2="${y}" stroke="var(--accent-ink)" stroke-width="1.6"/><line x1="${a}" y1="${y}" x2="${a}" y2="${y+7}" stroke="var(--accent-ink)" stroke-width="1.6"/><line x1="${b}" y1="${y}" x2="${b}" y2="${y+7}" stroke="var(--accent-ink)" stroke-width="1.6"/><text x="${cl((a+b)/2)}" y="${y-6}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-ink)">размах = ${N(Math.max(...vals)-Math.min(...vals))}</text>`;}
+  const hl=o.hl||[];
+  pts.forEach(p=>{const y=axisY-9-p.lv*13;const h=hl.includes(p.v);s+=`<circle cx="${p.x}" cy="${y}" r="5.5" fill="${h?'var(--hl)':'var(--accent-ink)'}" fill-opacity="${h?1:.85}" stroke="var(--card)" stroke-width="1"/>`;});
+  if(o.mean!=null){const x=sx(o.mean);s+=`<path d="M${x},${axisY+22} l-6,9 h12 z" fill="var(--hl)"/><text x="${cl(x)}" y="${axisY+46}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-ink)">среднее ${Math.abs(Math.round(o.mean*100)/100-o.mean)<1e-9?'=':'≈'} ${N(Math.round(o.mean*100)/100)}</text>`;}
+  return s+'</svg>';
+}
+
+/* median by crossing out */
+function crossSteps(s){let l=0,r=s.length-1;const out=[];while(r-l>1){out.push(`вычёркиваем ${N(s[l])} и ${N(s[r])}`);l++;r--;}return {out,mid:s.slice(l,r+1)};}
+function crossHtml(s){const c=crossSteps(s);return `Вычёркиваем по одному числу <b>с обоих краёв</b>, пока не останется середина:<br>${c.out.map((t,i)=>`${i+1}) ${t}`).join('<br>')}<br>Осталось: <b>${c.mid.map(N).join(' и ')}</b>.${c.mid.length===2?` Два числа — берём число ровно посередине между ними: (${N(c.mid[0])} + ${N(c.mid[1])}) : 2 = <b>${N(rnd((c.mid[0]+c.mid[1])/2))}</b>.`:''}`;}
+
+/* ---------- theory ---------- */
+const exMarks=[5,3,4,5,4,4,2];
+const salary=[30,32,35,36,38,40,300];
+const theory=[
+{title:'Набор данных',lvl:0,html:`
+<p>Статистика начинается с <b>чисел, которые мы собрали</b>: оценки за четверть, температура каждый день, рост ребят в классе, очки в игре. Такой список чисел называют <b>набором данных</b> (или <b>числовым набором</b>), а каждое число в нём — <b>значением</b>.</p>
+<div class="box ex"><b>Пример</b>Оценки Артёма по алгебре: 5, 3, 4, 5, 4, 4, 2. Это набор из <b>7 значений</b>. Оценка 4 встречается три раза — и считается <b>три раза</b>: каждое значение — это отдельная оценка.</div>
+<p>Количество значений обозначают буквой <b>n</b>. Здесь <span class="m">n = 7</span>.</p>
+<div class="box tip"><b>Полезная привычка</b>Почти любую задачу удобно начинать с того, чтобы <b>упорядочить</b> набор — выписать числа по возрастанию: 2, 3, 4, 4, 4, 5, 5. Так сразу видно самое маленькое, самое большое и середину.</div>
+<div class="box err"><b>Частая ошибка</b>Отрицательные числа: −7 <b>меньше</b>, чем −2 (−7 °C холоднее, чем −2 °C). По возрастанию: −7, −2, 0, 3.</div>`},
+{title:'Минимум и максимум',lvl:0,html:`
+<p><b>Минимум</b> (min) — самое маленькое значение набора. <b>Максимум</b> (max) — самое большое.</p>
+<div class="box ex"><b>Пример</b>Температура за неделю: −3, 1, 4, −6, 0, 2, 5.<br>По возрастанию: <b>−6</b>, −3, 0, 1, 2, 4, <b>5</b>.<br>min = −6 °C (самый холодный день), max = 5 °C (самый тёплый).</div>
+<div class="fig">${dotplot([-3,1,4,-6,0,2,5],{hl:[-6,5]})}</div>
+<p class="small" style="text-align:center">Если отметить значения точками на числовой прямой, минимум — самая левая точка, максимум — самая правая.</p>`},
+{title:'Размах',lvl:1,html:`
+<div class="box rule"><b>Размах = максимум − минимум</b>Размах показывает, <b>насколько сильно разбросаны</b> значения: какое расстояние от самого маленького до самого большого.</div>
+<div class="box ex"><b>Пример 1</b>Цены на одинаковую шоколадку в 5 магазинах: 79, 95, 84, 110, 90 ₽.<br>max = 110, min = 79, размах = 110 − 79 = <b>31 ₽</b>. Значит, самый дорогой магазин дороже самого дешёвого на 31 ₽.</div>
+<div class="box ex"><b>Пример 2 (с минусом)</b>Температура: −6, −3, 0, 1, 2, 4, 5.<br>Размах = 5 − (−6) = 5 + 6 = <b>11 °C</b>.</div>
+<div class="fig">${dotplot([-3,1,4,-6,0,2,5],{range:true})}</div>
+<div class="box err"><b>Ловушка</b>Минус минуса даёт плюс: 5 − (−6) = 11, а не −1. Проверь по картинке: от −6 до 0 — 6 шагов, от 0 до 5 — ещё 5, всего 11.</div>
+<div class="box tip"><b>Зачем нужен размах</b>Маленький размах — значения похожи друг на друга (результаты стабильные). Большой размах — значения сильно различаются.</div>`},
+{title:'Среднее арифметическое',lvl:2,html:`
+<div class="box rule"><b>Среднее = сумма всех значений : их количество</b>Обозначают ${XB} («икс с чертой»): <span class="m">${XB} = (x₁ + x₂ + … + xₙ) : n</span></div>
+<p>Смысл простой — <b>«поделить поровну»</b>. Представь: трое друзей собрали грибы — 4, 7 и 10 штук. Высыпали всё в одну корзину (4 + 7 + 10 = 21) и разделили поровну на троих: 21 : 3 = 7. Каждому по 7 — это и есть среднее.</p>
+<div class="box ex"><b>Пример</b>Оценки 5, 3, 4, 5, 4, 4, 2.<br>1) Сумма: 5 + 3 + 4 + 5 + 4 + 4 + 2 = 27.<br>2) Количество: 7.<br>3) Среднее: 27 : 7 ≈ 3,86.</div>
+<div class="fig">${dotplot(exMarks,{mean:mean(exMarks),lo:2,hi:5})}</div>
+<div class="box tip"><b>Полезный перевёрнутый вид</b><span class="m">Сумма = среднее · количество.</span> Если 6 покупок стоят в среднем 150 ₽, то всего потратили 6 · 150 = 900 ₽.</div>
+<div class="box rule"><b>Важное свойство</b>Среднее всегда лежит <b>между минимумом и максимумом</b> (может совпасть с ними, только если все числа равны). Если у тебя получилось среднее больше максимума — ищи ошибку.</div>`},
+{title:'Медиана',lvl:3,html:`
+<p><b>Медиана</b> (обозначают Me) — это число <b>в середине упорядоченного набора</b>. Половина значений не больше её, половина — не меньше.</p>
+<ol class="steps"><li><b>Упорядочь</b> набор по возрастанию. Без этого медиану не найти!</li>
+<li>Если значений <b>нечётное</b> количество — медиана это одно число ровно посередине.</li>
+<li>Если <b>чётное</b> — посередине стоят два числа; медиана — их среднее: сложить и разделить на 2.</li></ol>
+<div class="box ex"><b>Нечётное количество</b>12, 7, 15, 9, 20 → по возрастанию: 7, 9, <b>12</b>, 15, 20. Me = 12.</div>
+<div class="box ex"><b>Чётное количество</b>8, 3, 10, 5, 6, 12 → по возрастанию: 3, 5, <b>6</b>, <b>8</b>, 10, 12. Me = (6 + 8) : 2 = 7.</div>
+<div class="fig">${dotplot([8,3,10,5,6,12],{median:7})}</div>
+<div class="box tip"><b>Как быстро найти середину</b>Вычёркивай по числу с обоих краёв: самое маленькое и самое большое, потом снова… Что останется в конце (одно или два числа) — середина.</div>
+<div class="box err"><b>Частая ошибка</b>Взять число в середине <b>неупорядоченного</b> списка. В списке 12, 7, 15, 9, 20 посередине стоит 15, но медиана — 12.</div>`},
+{title:'Выбросы: когда среднее обманывает',lvl:4,html:`
+<p><b>Выброс</b> — значение, которое сильно отличается от остальных: очень большое или очень маленькое. Иногда это ошибка в записи, а иногда правда (например, зарплата директора).</p>
+<div class="box ex"><b>Пример</b>Зарплаты в маленькой фирме (тыс. ₽): 30, 32, 35, 36, 38, 40 и директор — 300.<br>Среднее: (30 + 32 + 35 + 36 + 38 + 40 + 300) : 7 = 511 : 7 = <b>73</b>.<br>Медиана: 30, 32, 35, <b>36</b>, 38, 40, 300 → <b>36</b>.</div>
+<div class="fig">${dotplot(salary,{mean:73,median:36,hl:[300]})}</div>
+<p>Среднее 73 больше, чем зарплата <b>шести человек из семи</b>! Один выброс «перетянул» среднее к себе. А медиана почти не заметила директора: замени 300 на 3000 — медиана так и останется 36.</p>
+<div class="box rule"><b>Что выбирать</b>Значения похожи, выбросов нет → среднее и медиана близки, подходит любое.<br>Есть выброс → «типичное» значение лучше показывает <b>медиана</b>.</div>`},
+{title:'Среднее по таблице частот',lvl:5,html:`
+<p>Когда значений много, их записывают <b>таблицей</b>: какое значение и сколько раз оно встретилось (это число называют <b>частотой</b>).</p>
+${tbl([['Оценка','2','3','4','5'],['Сколько раз','1','4','10','5']],{firstCol:true})}
+<ol class="steps"><li><b>Количество</b> значений — сумма частот: 1 + 4 + 10 + 5 = 20 оценок.</li>
+<li><b>Сумма</b> значений — каждую оценку умножаем на её частоту и складываем: 2 · 1 + 3 · 4 + 4 · 10 + 5 · 5 = 2 + 12 + 40 + 25 = 79.</li>
+<li><b>Среднее</b> = 79 : 20 = 3,95.</li></ol>
+${tbl([['Оценка','Сколько раз','Оценка · сколько'],['2','1','2'],['3','4','12'],['4','10','40'],['5','5','25'],['Итого','20','79']],{lastBold:true})}
+<div class="box err"><b>Частая ошибка</b>Сложить оценки 2 + 3 + 4 + 5 и разделить на 4. Так мы делаем вид, что каждая оценка была один раз, а четвёрок на самом деле 10!</div>
+<div class="box tip"><b>Медиана и размах по таблице</b>Медиана: n = 20, середина между 10-м и 11-м значением. Считаем подряд: двойка — 1-я, тройки — 2-я…5-я, четвёрки — 6-я…15-я. 10-я и 11-я — четвёрки, Me = 4.<br>Размах считают по <b>значениям</b> (5 − 2 = 3), а не по частотам!</div>`},
+{title:'Как найти неизвестное значение',lvl:6,html:`
+<p>Если известно среднее, то известна и <b>сумма</b>: <span class="m">сумма = среднее · количество</span>. Дальше — простое вычитание.</p>
+<div class="box ex"><b>Пример</b>Средний возраст пятерых друзей — 13 лет. Возраст четверых: 12, 14, 13, 11. Сколько лет пятому?<br>1) Общая сумма возрастов: 13 · 5 = 65.<br>2) Сумма четверых: 12 + 14 + 13 + 11 = 50.<br>3) Пятому: 65 − 50 = <b>15 лет</b>.</div>
+<div class="box ex"><b>Сколько нужно набрать?</b>За 4 теста средний балл 70. Чтобы после 5-го теста среднее стало 72, нужна сумма 72 · 5 = 360. Уже есть 70 · 4 = 280. Нужно набрать 360 − 280 = <b>80</b>.</div>
+<div class="box tip"><b>Запомни</b>В любой задаче «найди число по среднему» сначала переходи от среднего к сумме.</div>`},
+{title:'Если изменить все значения сразу',lvl:7,html:`
+<div class="box rule"><b>Прибавили ко всем одно и то же число c</b>Среднее и медиана тоже увеличиваются на c. Размах <b>не меняется</b> — все точки сдвинулись вместе, расстояние между крайними то же.</div>
+<div class="box ex"><b>Пример</b>2, 4, 9: среднее 5, размах 7. Прибавим ко всем 10: 12, 14, 19 → среднее 15, размах 19 − 12 = 7.</div>
+<div class="figrow"><div class="fig">${dotplot([2,4,9],{mean:5,w:250,lo:0,hi:20})}<div class="cap">было</div></div><div class="fig">${dotplot([12,14,19],{mean:15,w:250,lo:0,hi:20})}<div class="cap">+10 ко всем</div></div></div>
+<div class="box rule"><b>Умножили все значения на k</b>Среднее, медиана и размах тоже умножаются на k. Пример: умножим 2, 4, 9 на 3 → 6, 12, 27: среднее 15 = 5 · 3, размах 21 = 7 · 3.</div>
+<div class="box tip"><b>Как понять без формул</b>Если всем в классе поставили на 1 балл больше — средний балл вырос на 1. Если цены всех товаров выросли вдвое — средняя цена тоже вдвое.</div>`},
+{title:'Хитрости для задач со звёздочкой',lvl:8,html:`
+<ol class="steps"><li><b>Работай с суммами, а не со средними.</b> «Среднее 10 чисел — 7» значит «сумма равна 70». Убрали число, среднее 9 оставшихся — 6, значит их сумма 54. Убрали 70 − 54 = 16.</li>
+<li><b>Общее среднее двух групп</b> — это не среднее двух средних! Сложи суммы обеих групп и раздели на общее количество.</li>
+<li><b>«Каким наибольшим может быть…»</b> — сделай все остальные числа как можно меньше, но так, чтобы условия выполнялись.</li>
+<li><b>Последовательные числа</b> (например, 15, 16, 17, 18, 19) стоят симметрично, поэтому их среднее равно середине — 17.</li></ol>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>Упорядочь набор — так легче всё найти.</li>
+<li>min — наименьшее, max — наибольшее; размах = max − min.</li>
+<li>Среднее = сумма : количество. Сумма = среднее · количество.</li>
+<li>Медиана — середина упорядоченного набора; при чётном количестве — среднее двух средних чисел.</li>
+<li>Выброс сильно двигает среднее и почти не двигает медиану.</li>
+<li>Таблица: сумма = Σ(значение · частота), количество = сумма частот.</li>
+<li>+c ко всем: среднее +c, размах тот же. ·k: всё ·k.</li></ul>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Формулы',title:'Обозначения и формулы',rows:[
+['n','«эн» — количество значений','Сколько всего чисел в наборе (повторы тоже считаются).','5, 3, 5, 4&nbsp;→ n&nbsp;=&nbsp;4'],
+['min','«минимум»','Самое маленькое значение.','min(4, −2, 7)&nbsp;=&nbsp;−2'],
+['max','«максимум»','Самое большое значение.','max(4, −2, 7)&nbsp;=&nbsp;7'],
+['R','«размах» = max − min','Расстояние от самого маленького до самого большого. Показывает разброс.','7 − (−2)&nbsp;=&nbsp;9'],
+[XB,'«икс с чертой» — среднее арифметическое','Сумма всех значений, делённая на их количество. «Поделить поровну».',`(4 + 5 + 9) : 3 = 6`],
+['Σ','«сигма» — сумма','Сложить всё подряд.','Σ&nbsp;=&nbsp;4 + 5 + 9&nbsp;=&nbsp;18'],
+['Me','«медиана»','Середина упорядоченного набора.','3, 5, <b>8</b>, 9, 20&nbsp;→ Me&nbsp;=&nbsp;8'],
+[XB+'&nbsp;·&nbsp;n','сумма = среднее · количество','Если знаешь среднее и количество — знаешь сумму.','среднее 7, n&nbsp;=&nbsp;10&nbsp;→ Σ&nbsp;=&nbsp;70'],
+['f','«частота»','Сколько раз значение встречается в наборе (в таблице).','четвёрок 10&nbsp;→ f&nbsp;=&nbsp;10'],
+['x + c','сдвиг всех значений','Среднее и медиана +c, размах не меняется.','среднее 5&nbsp;→ 5 + c'],
+['k · x','умножение всех значений','Среднее, медиана и размах умножаются на k.','среднее 5, k&nbsp;=&nbsp;3&nbsp;→ 15']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Среднее «чувствует» каждое число (и выброс тоже), медиана смотрит только на середину, размах — только на края.</div>`};
+
+/* ---------- generators ---------- */
+const gens=[];
+const G=(lvl,make,star)=>gens.push({lvl,make,star});
+const DAYS=['пн','вт','ср','чт','пт','сб','вс'];
+
+/* L0 — min, max, n */
+G(0,()=>{let t,negs;do{t=range(1,7).map(()=>R(-8,6));negs=[...new Set(t.filter(v=>v<0))].sort((a,b)=>a-b);}while(negs.length<2||new Set(t).size<5);
+const mn=Math.min(...t);const s=sortN(t);
+return {type:'num',q:`Температура воздуха утром (°C) за неделю:${tbl([DAYS,t.map(N)])}Какая была <b>самая низкая</b> температура (минимум)?`,ans:mn,
+hint:'Минус — это мороз. Чем больше число после минуса, тем холоднее.',
+short:`Минимум — ${N(mn)} °C: это самое маленькое число в наборе.`,
+explain:`Минимум — самое маленькое значение. Расставим температуры по возрастанию:<br>${BOLD(s,[0])}<br>Самая низкая — <b>${N(mn)} °C</b>.<div class="box err"><b>Ловушка</b>Среди отрицательных меньше то, у которого больше число после минуса: ${N(negs[0])} < ${N(negs[negs.length-1])}, ведь ${N(negs[0])} °C холоднее, чем ${N(negs[negs.length-1])} °C.</div>`,
+explain2:`Представь термометр, положенный набок: слева холодно, справа тепло. Отметим каждый день точкой:<div class="fig">${dotplot(t,{hl:[mn]})}</div>Самая левая точка (выделена) — ${N(mn)}. Это и есть минимум.`};});
+G(0,()=>{let sc;do{sc=range(1,6).map(()=>R(15,99)*10);}while(new Set(sc).size<6);const nm=sample(NAMES,6);const mx=Math.max(...sc);const who=nm[sc.indexOf(mx)];
+const srt=sc.map((v,i)=>({v,n:nm[i]})).sort((a,b)=>b.v-a.v);
+return {type:'num',q:`Очки игроков в компьютерной игре:${tbl([['Игрок','Очки']].concat(nm.map((x,i)=>[x,N(sc[i])])))}Найди <b>максимум</b> — наибольший результат.`,ans:mx,
+short:`Больше всех у ${who} — ${mx} очков.`,
+explain:`Максимум — самое большое значение. Расставим по убыванию:<br>${srt.map((x,i)=>i===0?`<b>${x.n} — ${x.v}</b>`:`${x.n} — ${x.v}`).join(', ')}.<br>Ответ: <b>${mx}</b>.`,
+explain2:`Сравнивай числа как на соревновании «на вылет»: бери первое число и сравнивай со следующим; кто больше — остаётся «чемпионом».<br>${(()=>{let c=sc[0];const o=[];for(let i=1;i<sc.length;i++){const nc=Math.max(c,sc[i]);o.push(`${c} и ${sc[i]} → остаётся ${nc}`);c=nc;}return o.join('<br>');})()}<br>Чемпион — ${mx}.`};});
+G(0,()=>{const n=R(9,14);const m=range(1,n).map(()=>pick([2,3,3,4,4,4,5,5,5]));const c={2:0,3:0,4:0,5:0};m.forEach(v=>c[v]++);
+const parts=[5,4,3,2].filter(k=>c[k]).map(k=>`${k} — ${c[k]} ${plural(c[k],'раз','раза','раз')}`);
+return {type:'num',q:`Оценки Артёма по истории за четверть: ${m.join(', ')}.<br>Сколько <b>значений</b> в этом наборе (n)?`,ans:n,
+hint:'Каждая оценка — отдельное значение, даже если она повторяется.',
+short:`Всего ${n} ${plural(n,'оценка','оценки','оценок')}: каждое число в списке — отдельное значение.`,
+explain:`Значение — это каждая отдельная оценка. Повторы <b>тоже считаются</b>: две пятёрки — это две разные оценки.<br>Посчитаем по видам: ${parts.join(', ')}.<br>Всего: ${[5,4,3,2].filter(k=>c[k]).map(k=>c[k]).join(' + ')} = <b>${n}</b>.<div class="box err"><b>Ошибка</b>Ответ ${[2,3,4,5].filter(k=>c[k]).length} — это сколько <i>разных</i> оценок. А спрашивают, сколько всего значений.</div>`,
+explain2:`Считай, как будто это тетради на парте: каждую оценку — пальцем по очереди:<br>${m.map((v,i)=>`${v}<sub>${i+1}</sub>`).join(' ')}<br>Маленькие номера внизу — это счёт. Последний номер — ${n}.`};});
+G(0,()=>{for(;;){let a,negs;do{a=sample(range(-9,9),6);negs=a.filter(v=>v<0);}while(negs.length<2||negs.length>4);
+const ok=sortN(a);const desc=ok.slice().reverse();
+const wrong1=a.filter(v=>v<0).sort((x,y)=>Math.abs(x)-Math.abs(y)).concat(ok.filter(v=>v>=0));
+const wrong2=ok.filter((_,i)=>i!==2);
+const f=x=>x.map(N).join(', ');
+const cand=[f(ok),f(desc),f(wrong1),f(wrong2)];
+if(new Set(cand).size<4)continue;
+const opts=shuffle(cand);
+return {type:'choice',q:`Расставь набор <span class="m">${f(a)}</span> <b>по возрастанию</b>. Какой вариант правильный?`,opts,ans:opts.indexOf(f(ok)),
+short:`По возрастанию: ${f(ok)} — от самого маленького к самому большому.`,
+explain:`«По возрастанию» — от самого маленького к самому большому, и <b>ни одно число не теряем</b>.<br>Правильно: <b>${f(ok)}</b>.<br>• «${f(desc)}» — это по убыванию.<br>• «${f(wrong1)}» — отрицательные расставлены неверно: ${N(Math.min(...negs))} меньше, чем ${N(Math.max(...negs))}.<br>• «${f(wrong2)}» — потеряно число ${N(ok[2])}.`,
+explain2:`Нарисуй числовую прямую и отметь числа точками:<div class="fig">${dotplot(a)}</div>Теперь просто прочитай точки <b>слева направо</b>: ${f(ok)}. Чем левее — тем меньше, поэтому ${N(Math.min(...negs))} стоит левее ${N(Math.max(...negs))}.`};}});
+
+/* L1 — range */
+G(1,()=>{let t;do{t=range(1,6).map(()=>R(-9,8));}while(Math.min(...t)>=0||Math.max(...t)<=0||new Set(t).size<5);
+const mx=Math.max(...t),mn=Math.min(...t),r=mx-mn;
+return {type:'num',q:`Температура (°C), которую Артём записывал каждые 4 часа: ${LS(t)}.<br>Найди <b>размах</b> температур.`,ans:r,
+hint:'Размах = максимум − минимум. Осторожно с минусом!',
+short:`${N(mx)} − ${P(mn)} = ${N(mx)} + ${N(-mn)} = ${r}.`,
+explain:`Размах = max − min.<br>max = ${N(mx)}, min = ${N(mn)}.<br>Размах = ${N(mx)} − ${P(mn)} = ${N(mx)} + ${N(-mn)} = <b>${r}</b> °C.<div class="box err"><b>Ловушка</b>Если написать ${N(mx)} − ${N(-mn)} = ${N(mx+mn)}, то потеряешь минус. Вычесть отрицательное число — то же самое, что прибавить положительное.</div>`,
+explain2:`Посчитай по шагам на числовой прямой. От ${N(mn)} до 0 — ${-mn} ${plural(-mn,'шаг','шага','шагов')}, от 0 до ${N(mx)} — ещё ${mx}. Всего ${-mn} + ${mx} = ${r}.<div class="fig">${dotplot(t,{range:true})}</div>`};});
+G(1,()=>{let p;do{p=range(1,6).map(()=>R(69,159));}while(new Set(p).size<6);const mx=Math.max(...p),mn=Math.min(...p),r=mx-mn;
+return {type:'num',q:`Одна и та же тетрадь стоит в шести магазинах: ${LS(p)} ₽.<br>Найди размах цен.`,ans:r,
+short:`${mx} − ${mn} = ${r} ₽.`,
+explain:`1) Самая высокая цена (max): ${mx} ₽.<br>2) Самая низкая (min): ${mn} ₽.<br>3) Размах = ${mx} − ${mn} = <b>${r} ₽</b>.<br>Смысл: в самом дорогом магазине тетрадь дороже, чем в самом дешёвом, на ${r} ₽.`,
+explain2:`Размах отвечает на вопрос «<b>на сколько</b> самое большое больше самого маленького?». Упорядочим: ${BOLD(sortN(p),[0,5])}. Сравниваем только крайние: ${mx} − ${mn} = ${r}. Средние числа для размаха не важны.`};});
+G(1,()=>{let a,b;do{a=range(1,5).map(()=>R(8,30));b=range(1,5).map(()=>R(8,30));}while(Math.abs((Math.max(...a)-Math.min(...a))-(Math.max(...b)-Math.min(...b)))<3);
+const nm=sample(NAMES,2);const ra=Math.max(...a)-Math.min(...a),rb=Math.max(...b)-Math.min(...b);const opts=[nm[0],nm[1]];const ans=ra<rb?0:1;
+return {type:'choice',q:`Очки двух баскетболистов в пяти матчах:<br>${nm[0]}: ${LS(a)}<br>${nm[1]}: ${LS(b)}<br>Чьи результаты <b>стабильнее</b> (у кого меньше размах)?`,opts,ans,
+short:`Размах: ${nm[0]} — ${ra}, ${nm[1]} — ${rb}. Меньше у ${opts[ans]}.`,
+explain:`Стабильный игрок — тот, у кого результаты <b>мало различаются</b>, то есть размах меньше.<br>${nm[0]}: ${Math.max(...a)} − ${Math.min(...a)} = ${ra}.<br>${nm[1]}: ${Math.max(...b)} − ${Math.min(...b)} = ${rb}.<br>${ra<rb?ra:rb} < ${ra<rb?rb:ra} → стабильнее <b>${opts[ans]}</b>.`,
+explain2:`Посмотри на точки: у кого они кучнее, тот стабильнее.<div class="figrow"><div class="fig">${dotplot(a,{range:true,w:240,lo:5,hi:30})}<div class="cap">${nm[0]}</div></div><div class="fig">${dotplot(b,{range:true,w:240,lo:5,hi:30})}<div class="cap">${nm[1]}</div></div></div>`};});
+G(1,()=>{const mn=R(140,152),r=R(15,30),mx=mn+r;const findMax=Math.random()<.5;
+return {type:'num',q:findMax?`Рост самого низкого ученика в классе — ${mn} см, а размах роста — ${r} см. Какой рост у самого высокого?`:`Рост самого высокого ученика в классе — ${mx} см, а размах роста — ${r} см. Какой рост у самого низкого?`,ans:findMax?mx:mn,
+short:findMax?`max = min + размах = ${mn} + ${r} = ${mx} см.`:`min = max − размах = ${mx} − ${r} = ${mn} см.`,
+explain:`Размах = max − min, то есть самый высокий выше самого низкого на ${r} см.<br>${findMax?`Значит, max = min + размах = ${mn} + ${r} = <b>${mx} см</b>.`:`Значит, min = max − размах = ${mx} − ${r} = <b>${mn} см</b>.`}`,
+explain2:`Представь, что ученики встали по росту. Размах — это разница между последним и первым в шеренге. ${findMax?`Первый — ${mn} см, последний на ${r} см выше: ${mn} + ${r} = ${mx}.`:`Последний — ${mx} см, первый на ${r} см ниже: ${mx} − ${r} = ${mn}.`} Проверка: ${mx} − ${mn} = ${r} ✓.`};});
+
+/* L2 — mean */
+G(2,()=>{let n,m;do{n=R(5,8);m=range(1,n).map(()=>pick([2,3,4,4,5,5]));}while(sum(m)%n||new Set(m).size<2);const s=sum(m),av=s/n;
+return {type:'num',q:`Оценки Артёма по физике: ${m.join(', ')}. Найди средний балл.`,ans:av,
+hint:'Сложи все оценки и раздели на их количество.',
+short:`(${m.join(' + ')}) : ${n} = ${s} : ${n} = ${av}.`,
+explain:`Среднее = сумма : количество.<br>1) Сумма: ${m.join(' + ')} = ${s}.<br>2) Количество оценок: ${n}.<br>3) Среднее: ${s} : ${n} = <b>${av}</b>.`,
+explain2:`Представь, что оценки — это кубики в стопках: ${m.join(', ')}. Перекладываем кубики из высоких стопок в низкие, пока все стопки не станут одинаковыми. Всего кубиков ${s}, стопок ${n} → в каждой по ${s} : ${n} = ${av}.<div class="fig">${dotplot(m,{mean:av,lo:2,hi:5})}</div>`};});
+G(2,()=>{let t;do{t=range(1,5).map(()=>R(-9,5));}while(sum(t)%5||t.filter(v=>v<0).length<2||t.filter(v=>v>0).length<1||new Set(t).size<4);const s=sum(t),av=s/5;
+return {type:'num',q:`Температура в полдень за 5 дней (°C): ${LS(t)}. Найди среднюю температуру.`,ans:av,
+hint:'Складывая, помни про минусы: прибавить −3 — то же, что вычесть 3.',
+short:`Сумма ${N(s)}, среднее ${N(s)} : 5 = ${N(av)}.`,
+explain:`1) Сумма: ${plusExpr(t)} = ${N(s)}.<br>2) Делим на количество дней: ${N(s)} : 5 = <b>${N(av)}</b> °C.`,
+explain2:`Сложи отдельно «тепло» и «мороз»:<br>плюсовые: ${t.filter(v=>v>0).map(N).join(' + ')||'0'} = ${sum(t.filter(v=>v>0))};<br>минусовые: ${t.filter(v=>v<0).map(N).join(' ')} → всего ${N(sum(t.filter(v=>v<0)))}.<br>Вместе: ${sum(t.filter(v=>v>0))} + ${P(sum(t.filter(v=>v<0)))} = ${N(s)}. Делим на 5: ${N(av)}.<div class="fig">${dotplot(t,{mean:av})}</div>`};});
+G(2,()=>{let h;do{h=range(1,5).map(()=>R(148,176));}while(new Set(h).size<5);const s=sum(h),av=rnd(s/5);const nm=sample(NAMES,5);
+return {type:'num',q:`Рост пятерых друзей (см):${tbl([['Имя','Рост, см']].concat(nm.map((x,i)=>[x,h[i]])))}Найди средний рост.`,ans:av,
+short:`${s} : 5 = ${N(av)} см.`,
+explain:`1) Сумма: ${h.join(' + ')} = ${s}.<br>2) Друзей 5 → ${s} : 5 = <b>${N(av)} см</b>.<br>Проверка: ${N(av)} лежит между min = ${Math.min(...h)} и max = ${Math.max(...h)} ✓.`,
+explain2:`Хитрый способ считать большие числа: вычти из всех одно «удобное» число, например 150.<br>${h.map(v=>`${v} − 150 = ${N(v-150)}`).join('<br>')}<br>Среднее этих остатков: ${plusExpr(h.map(v=>v-150))} = ${N(s-750)}; ${N(s-750)} : 5 = ${N(rnd((s-750)/5))}.<br>Возвращаем 150: 150 + ${P(rnd((s-750)/5))} = ${N(av)}.`};});
+G(2,()=>{const n=R(4,9),m=pick([85,120,150,240,250,90,135]);
+return {type:'num',q:`Мама сделала ${n} ${plural(n,'покупку','покупки','покупок')}. Средняя стоимость одной покупки — ${m} ₽. Сколько она потратила всего?`,ans:n*m,
+hint:'Сумма = среднее · количество.',
+short:`${m} · ${n} = ${n*m} ₽.`,
+explain:`Среднее = сумма : количество. Значит, наоборот: <b>сумма = среднее · количество</b>.<br>${m} · ${n} = <b>${n*m} ₽</b>.`,
+explain2:`Среднее — это «как будто все покупки стоили одинаково». Если бы каждая из ${n} покупок стоила ровно ${m} ₽, всего вышло бы ${n} · ${m} = ${n*m} ₽. Настоящие цены разные, но сумма та же — для этого среднее и придумано.`};});
+G(2,()=>{let a,s,me,av,mid;do{a=sample(range(1,15),3);s=sum(a);av=s/3;me=median(a);mid=(Math.min(...a)+Math.max(...a))/2;}while(s%3||new Set([av,s,me,mid]).size<4);
+const cand=[av,s,me,mid].map(N);const opts=shuffle(cand);
+return {type:'choice',q:`Чему равно среднее арифметическое чисел <span class="m">${a.join(', ')}</span>?`,opts,ans:opts.indexOf(N(av)),
+short:`(${a.join(' + ')}) : 3 = ${s} : 3 = ${av}.`,
+explain:`Среднее = сумма : количество = (${a.join(' + ')}) : 3 = ${s} : 3 = <b>${av}</b>.<br>Почему не другие:<br>• ${s} — это только сумма, забыли разделить на 3;<br>• ${N(me)} — это медиана (число посередине), а не среднее;<br>• ${N(mid)} — середина между min и max, тоже не среднее.`,
+explain2:`Проверь ответ «поровну»: если всем трём числам дать по ${av}, получится ${av} + ${av} + ${av} = ${s} — та же сумма, что у ${a.join(' + ')}. Значит, ${av} — верно. Для ${N(me)} так не выйдет: ${N(me)} · 3 = ${N(me*3)} ≠ ${s}.`};});
+
+/* L3 — median */
+G(3,()=>{let a,s;do{a=sample(range(10,60),7);s=sortN(a);}while(a[3]===s[3]);const me=s[3];
+return {type:'num',q:`Сколько минут семь ребят тратили на домашку: ${a.join(', ')}. Найди медиану.`,ans:me,
+hint:'Сначала упорядочь числа по возрастанию!',
+short:`По возрастанию: ${BOLD(s,[3])}. Середина — ${me}.`,
+explain:`1) Упорядочим: ${BOLD(s,[3])}.<br>2) Чисел 7 — нечётное количество, середина — <b>4-е</b> число (3 слева, 3 справа).<br>Me = <b>${me}</b>.<div class="box err"><b>Ошибка</b>В исходном списке посередине стоит ${a[3]}, но список не упорядочен — так медиану брать нельзя.</div>`,
+explain2:crossHtml(s)+`<div class="fig">${dotplot(a,{median:me})}</div>`};});
+G(3,()=>{let a,s,me;do{a=sample(range(10,50),6);s=sortN(a);me=rnd((s[2]+s[3])/2);}while(false);
+return {type:'num',q:`Очки команды в шести играх: ${a.join(', ')}. Найди медиану.`,ans:me,
+hint:'Чисел чётное количество — посередине окажутся два числа.',
+short:`${BOLD(s,[2,3])} → (${s[2]} + ${s[3]}) : 2 = ${N(me)}.`,
+explain:`1) Упорядочим: ${BOLD(s,[2,3])}.<br>2) Чисел 6 — чётное количество, посередине <b>два</b> числа: 3-е и 4-е — ${s[2]} и ${s[3]}.<br>3) Медиана — их среднее: (${s[2]} + ${s[3]}) : 2 = ${s[2]+s[3]} : 2 = <b>${N(me)}</b>.`,
+explain2:crossHtml(s)+`<div class="fig">${dotplot(a,{median:me})}</div>Пунктир делит точки пополам: 3 слева и 3 справа.`};});
+G(3,()=>{let m,s;do{m=range(1,9).map(()=>pick([2,3,4,5]));s=sortN(m);}while(new Set(m).size<3||m[4]===s[4]);const me=s[4];
+return {type:'num',q:`Оценки по русскому: ${m.join(', ')}. Найди медиану.`,ans:me,
+short:`${BOLD(s,[4])} — пятое число из девяти.`,
+explain:`1) По возрастанию: ${BOLD(s,[4])}.<br>2) Значений 9, середина — 5-е (по 4 с каждой стороны).<br>Me = <b>${me}</b>.<br>Одинаковые оценки при упорядочивании тоже выписываем все, ни одну не выкидываем.`,
+explain2:crossHtml(s)};});
+G(3,()=>{let a,s,n,me,av,cand;do{n=pick([4,6]);a=sample(range(1,20),n);s=sortN(a);me=rnd((s[n/2-1]+s[n/2])/2);av=mean(a);cand=[me,s[n/2-1],s[n/2],av].map(N);}while(new Set(cand).size<4);
+const opts=shuffle(cand);
+return {type:'choice',q:`Чему равна медиана набора <span class="m">${a.join(', ')}</span>?`,opts,ans:opts.indexOf(N(me)),
+short:`По возрастанию: ${BOLD(s,[n/2-1,n/2])}, Me = (${s[n/2-1]} + ${s[n/2]}) : 2 = ${N(me)}.`,
+explain:`1) Упорядочим: ${BOLD(s,[n/2-1,n/2])}.<br>2) Чисел ${n} — чётное количество, в середине два: ${s[n/2-1]} и ${s[n/2]}.<br>3) Me = (${s[n/2-1]} + ${s[n/2]}) : 2 = <b>${N(me)}</b>.<br>${N(s[n/2-1])} и ${N(s[n/2])} — это только одно из двух средних чисел, а ${N(av)} — среднее арифметическое всего набора, а не медиана.`,
+explain2:`Медиана — это граница, которая делит набор <b>пополам</b>. Слева от ${N(me)}: ${s.slice(0,n/2).join(', ')} (${n/2} ${plural(n/2,'число','числа','чисел')}), справа: ${s.slice(n/2).join(', ')} (${n/2}). Ровно поровну ✓.<div class="fig">${dotplot(a,{median:me})}</div>`};});
+
+/* L4 — outliers */
+const OUT=[{t:'Зарплаты семи сотрудников фирмы (тыс. ₽)',lo:28,hi:45,olo:180,ohi:350,u:'тыс. ₽',who:'сотрудников'},
+ {t:'Время (мин), за которое семь учеников дошли до школы',lo:6,hi:18,olo:55,ohi:80,u:'мин',who:'учеников'},
+ {t:'Сколько книг прочитали за год семеро друзей',lo:3,hi:12,olo:60,ohi:90,u:'книг',who:'друзей'}];
+function outSet(){for(;;){const c=pick(OUT);const b=range(1,6).map(()=>R(c.lo,c.hi));const o=R(c.olo,c.ohi);const a=shuffle(b.concat([o]));if(sum(a)%7===0&&new Set(b).size>=5)return {c,a,o,s:sortN(a),av:sum(a)/7,me:sortN(a)[3]};}}
+G(4,()=>{const d=outSet();const below=d.a.filter(v=>v<d.av).length;
+return {type:'num',q:`${d.c.t}: ${d.a.join(', ')}. Найди среднее арифметическое.`,ans:d.av,
+short:`${sum(d.a)} : 7 = ${d.av} ${d.c.u}.`,
+explain:`1) Сумма: ${d.a.join(' + ')} = ${sum(d.a)}.<br>2) Делим на 7: ${sum(d.a)} : 7 = <b>${d.av}</b>.<br>Заметь: среднее ${d.av} больше, чем у ${below} ${plural(below,'человека','человек','человек')} из 7! Виновато одно число — <b>${d.o}</b>, это выброс.`,
+explain2:`Посмотри на картинку: шесть точек кучкой слева и одна (${d.o}) далеко справа. Она «тянет» среднее к себе, как тяжёлый груз на одном конце качелей.<div class="fig">${dotplot(d.a,{mean:d.av,hl:[d.o]})}</div>Без выброса среднее было бы ${N(rnd((sum(d.a)-d.o)/6))}.`};});
+G(4,()=>{const d=outSet();
+return {type:'num',q:`${d.c.t}: ${d.a.join(', ')}. Найди медиану.`,ans:d.me,
+short:`По возрастанию: ${BOLD(d.s,[3])}. Me = ${d.me}.`,
+explain:`1) Упорядочим: ${BOLD(d.s,[3])}.<br>2) Чисел 7, середина — 4-е число: <b>${d.me}</b>.<br>Выброс ${d.o} стоит в самом конце и на медиану почти не влияет: будь он хоть в 10 раз больше, медиана осталась бы ${d.me}.`,
+explain2:crossHtml(d.s)+`<div class="fig">${dotplot(d.a,{median:d.me,hl:[d.o]})}</div>`};});
+G(4,()=>{const d=outSet();const opts=['Среднее арифметическое','Медиана','Максимум','Размах'];
+return {type:'choice',q:`${d.c.t}: ${d.a.join(', ')}.<br>Какая величина лучше всего показывает <b>типичное</b> значение в этой группе?`,opts,ans:1,
+short:`Есть выброс (${d.o}), поэтому медиана (${d.me}) честнее среднего (${d.av}).`,
+explain:`Посчитаем обе «средние» величины:<br>• среднее = ${sum(d.a)} : 7 = ${d.av};<br>• медиана = ${d.me}.<br>Среднее ${d.av} больше почти всех значений — его «утащил» выброс ${d.o}. Медиана ${d.me} — как у большинства. Поэтому типичное значение лучше показывает <b>медиана</b>.<br>Максимум (${d.o}) — это только одно, самое большое значение, а размах (${d.o-d.s[0]}) показывает разброс, а не типичное значение.`,
+explain2:`Представь, что новый человек спрашивает: «Сколько тут обычно?» Если сказать «${d.av}», он удивится — почти ни у кого столько нет. Если сказать «${d.me}» — это правда для середины группы.<div class="fig">${dotplot(d.a,{mean:d.av,median:d.me,hl:[d.o]})}</div>`};});
+G(4,()=>{let h,k;do{h=range(1,5).map(()=>R(140,170));k=R(0,4);}while(new Set(h).size<5);const real=h[k];const wrong=h.slice();wrong[k]=real*10;
+const aw=rnd(sum(wrong)/5),ar=rnd(sum(h)/5),mw=median(wrong),mr=median(h);const opts=['Среднее','Медиана','Изменятся одинаково'];
+return {type:'choice',q:`Учитель записал рост пятерых учеников: ${wrong.join(', ')} см. Ошибка: вместо ${real} он написал ${real*10}. Что изменится <b>сильнее</b>, когда ошибку исправят?`,opts,ans:0,
+short:`Среднее изменится на ${N(rnd(aw-ar))} см, медиана — на ${N(rnd(mw-mr))} см.`,
+explain:`Посчитаем до и после исправления.<br>С ошибкой: среднее = ${sum(wrong)} : 5 = ${N(aw)}, медиана = ${N(mw)}.<br>После: среднее = ${sum(h)} : 5 = ${N(ar)}, медиана = ${N(mr)}.<br>Среднее изменилось на ${N(rnd(aw-ar))} см, медиана — на ${N(rnd(mw-mr))} см. Сильнее меняется <b>среднее</b>: оно учитывает каждое число, а медиана смотрит только на середину.`,
+explain2:`Мысленный эксперимент: число ${real*10} — самое большое, оно стоит на краю. Медиане всё равно, насколько большое число на краю, — главное, что оно справа от середины. А в сумму для среднего ошибка добавила лишние ${real*10-real} см, и после деления на 5 это ${N(rnd((real*10-real)/5))} см.`};});
+
+/* L5 — frequency table */
+function freqData(vals,lo,hi){for(;;){const c=vals.map(()=>R(lo,hi));const n=sum(c),s=sum(vals.map((v,i)=>v*c[i]));if(n>=8&&n<=30&&(s*100)%n===0&&c.filter(x=>x>0).length>=3)return {c,n,s,av:rnd(s/n)};}}
+function freqExplain(vals,c,n,s,vl){return tbl([[vl,'Сколько раз',vl+' · сколько']].concat(vals.map((v,i)=>[N(v),c[i],`${N(v)} · ${c[i]} = ${N(v*c[i])}`]),[['Итого',n,s]]),{lastBold:true});}
+G(5,()=>{const v=[2,3,4,5];const d=freqData(v,0,8);
+return {type:'num',q:`Итоги контрольной в классе:${tbl([['Оценка'].concat(v),['Сколько учеников'].concat(d.c)],{firstCol:true,head:false})}Найди средний балл класса.`,ans:d.av,
+hint:'Сначала сумма всех оценок: каждую оценку умножь на число учеников, которые её получили.',
+short:`Сумма ${d.s}, учеников ${d.n}: ${d.s} : ${d.n} = ${N(d.av)}.`,
+explain:`${freqExplain(v,d.c,d.n,d.s,'Оценка')}1) Учеников (количество значений): ${d.c.join(' + ')} = ${d.n}.<br>2) Сумма оценок: ${v.map((x,i)=>`${x}·${d.c[i]}`).join(' + ')} = ${d.s}.<br>3) Среднее: ${d.s} : ${d.n} = <b>${N(d.av)}</b>.<div class="box err"><b>Ошибка</b>(2 + 3 + 4 + 5) : 4 = 3,5 — так нельзя: оценок разное количество.</div>`,
+explain2:`Распишем таблицу обратно в обычный список оценок:<br>${v.map((x,i)=>Array(d.c[i]).fill(x).join(', ')).filter(Boolean).join(', ')}.<br>Это ${d.n} ${plural(d.n,'оценка','оценки','оценок')}, их сумма ${d.s}. Умножение «оценка · сколько» — просто быстрый способ сложить одинаковые числа: например, ${v[2]} + ${v[2]} + … (${d.c[2]} раз) = ${v[2]} · ${d.c[2]} = ${v[2]*d.c[2]}.`};});
+G(5,()=>{const v=[0,1,2,3,4];const d=freqData(v,1,7);
+return {type:'num',q:`Сколько голов забивала команда в матчах сезона:${tbl([['Голов в матче'].concat(v),['Сколько матчей'].concat(d.c)],{firstCol:true,head:false})}Найди среднее число голов за матч.`,ans:d.av,
+short:`${d.s} голов за ${d.n} матчей: ${d.s} : ${d.n} = ${N(d.av)}.`,
+explain:`${freqExplain(v,d.c,d.n,d.s,'Голов')}1) Всего матчей: ${d.c.join(' + ')} = ${d.n}.<br>2) Всего голов: ${v.map((x,i)=>`${x}·${d.c[i]}`).join(' + ')} = ${d.s}.<br>3) Среднее: ${d.s} : ${d.n} = <b>${N(d.av)}</b>.`,
+explain2:`Подумай про реальный смысл: «${d.c[2]} матчей по 2 гола» — это ${2*d.c[2]} голов, «${d.c[0]} матчей по 0 голов» — 0 голов, но эти матчи всё равно считаются! Поэтому делим на все ${d.n} матчей, а не на 5 (число столбцов таблицы). Всего голов ${d.s}, среднее ${N(d.av)}.`};});
+G(5,()=>{const v=[2,3,4,5];let c,n;do{c=v.map(()=>R(1,8));n=sum(c);}while(n%2===0||n<9);const list=[].concat(...v.map((x,i)=>Array(c[i]).fill(x)));const pos=(n+1)/2;const me=list[pos-1];
+let acc=0;const cum=v.map((x,i)=>{const a=acc+1;acc+=c[i];return `${x}: места ${a}–${acc}`;});
+return {type:'num',q:`Оценки за диктант:${tbl([['Оценка'].concat(v),['Сколько учеников'].concat(c)],{firstCol:true,head:false})}Найди медиану оценок.`,ans:me,
+hint:'Сначала посчитай, сколько всего оценок, и найди номер середины.',
+short:`Всего ${n}, середина — ${pos}-е место, там оценка ${me}.`,
+explain:`1) Всего оценок: ${c.join(' + ')} = ${n} — нечётное количество, середина — ${pos}-е место (${(n-1)/2} слева и ${(n-1)/2} справа).<br>2) Таблица уже упорядочена. Считаем места подряд:<br>${cum.join('<br>')}<br>3) ${pos}-е место попадает на оценку <b>${me}</b>.`,
+explain2:`Выпишем все оценки по порядку и найдём середину:<br>${list.map((x,i)=>i===pos-1?`<b><u>${x}</u></b>`:x).join(', ')}<br>Подчёркнута ${pos}-я — это ${me}.<div class="box err"><b>Не путай</b>Медиана — это одна из <b>оценок</b> (2, 3, 4, 5), а не число из строки «сколько учеников».</div>`};});
+G(5,()=>{let v,c;do{v=sortN(sample(range(2,12).map(x=>x*5),R(4,5)));c=v.map(()=>R(1,9));}while(Math.max(...c)-Math.min(...c)===v[v.length-1]-v[0]||Math.max(...c)===Math.min(...c));const r=v[v.length-1]-v[0];
+return {type:'num',q:`Сколько минут ученики тратят на дорогу до школы:${tbl([['Время, мин'].concat(v),['Сколько учеников'].concat(c)],{firstCol:true,head:false})}Найди размах времени.`,ans:r,
+short:`Размах по значениям: ${v[v.length-1]} − ${v[0]} = ${r} мин.`,
+explain:`Значения здесь — это <b>время</b>: ${v.join(', ')} мин. Частоты (сколько учеников) на размах не влияют.<br>Размах = max − min = ${v[v.length-1]} − ${v[0]} = <b>${r}</b> мин.<div class="box err"><b>Ловушка</b>${Math.max(...c)} − ${Math.min(...c)} = ${Math.max(...c)-Math.min(...c)} — это разница между числами учеников, а не размах времени.</div>`,
+explain2:`Задай себе вопрос: «Какое самое маленькое <b>время</b> встречается? А самое большое?» Самый быстрый доходит за ${v[0]} мин, самый долгий — за ${v[v.length-1]} мин. Разница ${r} мин. Сколько там человек — неважно, хоть один.`};});
+
+/* L6 — missing value */
+G(6,()=>{for(;;){const n=R(4,6),m=R(11,15);const k=range(1,n-1).map(()=>m+R(-3,3));const x=n*m-sum(k);if(x<m-4||x>m+4||x<8)continue;
+return {type:'num',q:`Средний возраст ${n} участников кружка — ${m} лет. Возраст ${n-1} из них: ${k.join(', ')}. Сколько лет последнему участнику?`,ans:x,
+hint:'Сначала найди сумму возрастов всех участников: среднее · количество.',
+short:`${m} · ${n} − (${k.join(' + ')}) = ${n*m} − ${sum(k)} = ${x}.`,
+explain:`1) Сумма возрастов всех: ${m} · ${n} = ${n*m}.<br>2) Сумма известных: ${k.join(' + ')} = ${sum(k)}.<br>3) Последний: ${n*m} − ${sum(k)} = <b>${x}</b>.<br>Проверка: (${k.join(' + ')} + ${x}) : ${n} = ${n*m} : ${n} = ${m} ✓.`,
+explain2:`Подумай через «отклонения от ${m}»: у известных ${k.map(v=>v-m>=0?'+'+(v-m):'−'+(m-v)).join(', ')} (относительно ${m}). Вместе это ${N(sum(k)-m*(n-1))}. Чтобы среднее было ровно ${m}, у последнего отклонение должно «уравновесить»: ${N(-(sum(k)-m*(n-1)))}. Значит, ему ${m} ${x>=m?'+':'−'} ${Math.abs(x-m)} = ${x}.`};}});
+G(6,()=>{for(;;){const cur=R(60,85),T=cur+R(2,5);const need=5*T-4*cur;if(need>100||need<cur)continue;
+return {type:'num',q:`За 4 теста у Артёма средний балл ${cur} (тест оценивается от 0 до 100). Сколько баллов ему нужно набрать в 5-м тесте, чтобы средний балл стал ${T}?`,ans:need,
+short:`Нужно ${T} · 5 − ${cur} · 4 = ${5*T} − ${4*cur} = ${need}.`,
+explain:`Переходим от средних к суммам.<br>1) Сейчас сумма: ${cur} · 4 = ${4*cur}.<br>2) Нужная сумма после 5 тестов: ${T} · 5 = ${5*T}.<br>3) Не хватает: ${5*T} − ${4*cur} = <b>${need}</b> баллов.<div class="box err"><b>Ошибка</b>Ответ ${T} неверный: если набрать ${T}, среднее станет (${4*cur} + ${T}) : 5 = ${N(rnd((4*cur+T)/5))} — меньше ${T}, ведь старые тесты «тянут вниз».</div>`,
+explain2:`Каждый из 4 старых тестов на ${T-cur} ниже цели ${T}: всего не хватает ${T-cur} · 4 = ${4*(T-cur)} ${plural(4*(T-cur),'балл','балла','баллов')}. Пятый тест должен дать цель ${T} <b>плюс</b> покрыть эту нехватку: ${T} + ${4*(T-cur)} = ${need}.`};}});
+G(6,()=>{for(;;){const m=R(-5,2);const t=range(1,6).map(()=>m+R(-4,4));const x=7*m-sum(t);if(x<m-5||x>m+5)continue;
+return {type:'num',q:`Средняя температура за неделю — ${N(m)} °C. С понедельника по субботу было: ${LS(t)}. Какая температура была в воскресенье?`,ans:x,
+short:`${N(m)} · 7 − (${N(sum(t))}) = ${N(7*m)} − ${P(sum(t))} = ${N(x)}.`,
+explain:`1) Сумма за всю неделю: ${P(m)} · 7 = ${N(7*m)}.<br>2) Сумма за 6 дней: ${plusExpr(t)} = ${N(sum(t))}.<br>3) Воскресенье: ${N(7*m)} − ${P(sum(t))} = <b>${N(x)}</b> °C.`,
+explain2:`Проверим ответ подстановкой: ${plusExpr(t.concat([x]))} = ${N(7*m)}; ${N(7*m)} : 7 = ${N(m)} ✓. Главная идея та же, что и с положительными числами: сумма = среднее · количество, а потом вычитаем известное. Только аккуратно с минусами.`};}});
+G(6,()=>{for(;;){const n=R(4,7);const m=range(1,n).map(()=>pick([3,4,4,5,3]));const S=sum(m);if(2*S>=9*n)continue;let k=0;while(2*(S+5*k)<9*(n+k))k++;if(k<1||k>8)continue;
+const avk=rnd((S+5*k)/(n+k)),avk1=rnd((S+5*(k-1))/(n+k-1));
+return {type:'num',q:`У Артёма оценки: ${m.join(', ')}. Чтобы в четверти вышла пятёрка, средний балл должен быть <b>не меньше 4,5</b>. Какое наименьшее число пятёрок ему нужно ещё получить?`,ans:k,
+hint:'Добавляй пятёрки по одной и каждый раз считай среднее.',
+short:`С ${k} ${plural(k,'пятёркой','пятёрками','пятёрками')}: ${S+5*k} : ${n+k} = ${N(avk)} ≥ 4,5.`,
+explain:`Сейчас: сумма ${S}, оценок ${n}, среднее ${N(rnd(S/n))} — мало.<br>Добавляем пятёрки по одной:<br>${range(1,k).map(j=>`${j}: (${S} + ${5*j}) : ${n+j} = ${N(rnd((S+5*j)/(n+j)))} ${2*(S+5*j)>=9*(n+j)?'≥ 4,5 ✅':'< 4,5'}`).join('<br>')}<br>Ответ: <b>${k}</b>.`,
+explain2:`Взгляд «через недостачу»: каждая оценка ниже 4,5 создаёт «долг». ${m.map(v=>`${v} → ${v<4.5?'долг '+N(4.5-v):'запас '+N(v-4.5)}`).join(', ')}. Всего долг ${N(rnd(4.5*n-S))}. Каждая пятёрка даёт запас 0,5. Нужно ${N(rnd(4.5*n-S))} : 0,5 = <b>${k}</b> ${plural(k,'пятёрка','пятёрки','пятёрок')}.`};}});
+
+/* L7 — transformations */
+G(7,()=>{const m=R(52,85)/10,c=R(1,3);
+return {type:'num',q:`Средняя оценка жюри у участников конкурса — ${N(m)} балла. Жюри решило добавить каждому участнику по ${c} ${plural(c,'баллу','балла','баллов')}. Какой станет средняя оценка?`,ans:rnd(m+c),
+short:`${N(m)} + ${c} = ${N(rnd(m+c))}.`,
+explain:`Если ко <b>всем</b> значениям прибавить одно и то же число, среднее увеличится на это же число.<br>${N(m)} + ${c} = <b>${N(rnd(m+c))}</b>.<br>Почему: сумма увеличилась на ${c} · n, а потом мы делим на n — получается ровно +${c}.`,
+explain2:`Проверим на маленьком примере: оценки 6, 7, 8 — среднее 7. Добавим каждому ${c}: ${6+c}, ${7+c}, ${8+c} — среднее ${7+c}. Выросло ровно на ${c}. Так будет с любым набором.`};});
+G(7,()=>{const mode=pick(['price','m']);
+if(mode==='price'){const m=pick([120,145,230,85,64]),k=pick([2,3]);return {type:'num',q:`Средняя цена товаров в ларьке — ${m} ₽. Хозяин поднял <b>все</b> цены в ${k} раза. Какой стала средняя цена?`,ans:m*k,short:`${m} · ${k} = ${m*k} ₽.`,
+explain:`Если все значения умножить на ${k}, сумма тоже умножится на ${k}, а количество не изменится. Значит, среднее умножится на ${k}: ${m} · ${k} = <b>${m*k} ₽</b>.`,
+explain2:`Пример: два товара по 10 и 30 ₽, среднее 20. Цены в ${k} раза больше: ${10*k} и ${30*k}, среднее ${20*k} = 20 · ${k}. Так и здесь: ${m} · ${k} = ${m*k}.`};}
+const m=R(135,175)/100;return {type:'num',q:`Средний рост баскетбольной команды малышей — ${N(m)} м. Сколько это в сантиметрах?`,ans:Math.round(m*100),short:`${N(m)} · 100 = ${Math.round(m*100)} см.`,
+explain:`Чтобы перевести метры в сантиметры, каждый рост умножают на 100. Тогда и среднее умножится на 100: ${N(m)} · 100 = <b>${Math.round(m*100)} см</b>.`,
+explain2:`Можно сначала перевести рост каждого в сантиметры, потом найти среднее, — получится то же самое: при умножении всех значений на 100 среднее тоже умножается на 100.`};});
+G(7,()=>{let a;do{a=sample(range(1,20),4);}while(false);const c=R(2,9);const b=a.map(v=>v+c);const r=Math.max(...a)-Math.min(...a);
+const opts=['Не изменится',`Увеличится на ${c}`,`Увеличится на ${2*c}`,`Увеличится в ${c} раз${c<5?'а':''}`];
+return {type:'choice',q:`К каждому числу набора <span class="m">${a.join(', ')}</span> прибавили ${c}. Что произойдёт с размахом?`,opts,ans:0,
+short:`Было ${r}, стало ${Math.max(...b)} − ${Math.min(...b)} = ${r}.`,
+explain:`Новый набор: ${b.join(', ')}.<br>Размах было: ${Math.max(...a)} − ${Math.min(...a)} = ${r}.<br>Размах стал: ${Math.max(...b)} − ${Math.min(...b)} = ${r}.<br><b>Не изменился</b>: и максимум, и минимум выросли на ${c}, а их разница осталась прежней. (А вот среднее и медиана увеличились на ${c}.)`,
+explain2:`Представь двух ребят на лестнице: один на 3-й ступеньке, другой на 8-й, между ними 5 ступенек. Оба поднялись на ${c} ступенек выше — между ними всё равно 5. Размах — это расстояние между крайними, а сдвиг не меняет расстояний.<div class="figrow"><div class="fig">${dotplot(a,{range:true,w:240,lo:0,hi:30})}<div class="cap">было</div></div><div class="fig">${dotplot(b,{range:true,w:240,lo:0,hi:30})}<div class="cap">+${c} ко всем</div></div></div>`};});
+G(7,()=>{const me=R(4,15),k=pick([2,3]),c=pick([1,3,5,-1,-2]);const ans=k*me+c;
+return {type:'num',q:`Медиана набора чисел равна ${me}. Каждое число умножили на ${k}, а потом ${c>0?'прибавили':'вычли'} ${Math.abs(c)}. Чему равна медиана нового набора?`,ans,
+short:`${me} · ${k} ${c>0?'+':'−'} ${Math.abs(c)} = ${ans}.`,
+explain:`Медиана — это число посередине. Если со всеми числами сделать одно и то же действие, <b>порядок не изменится</b> (большие останутся большими), и в середине окажется то же самое число — только изменённое.<br>${me} · ${k} = ${me*k}, затем ${c>0?'+':'−'} ${Math.abs(c)} = <b>${ans}</b>.`,
+explain2:`Маленький пример: набор 1, ${me}, ${me+10} — медиана ${me}. Новые числа: ${k*1+c}, ${k*me+c}, ${k*(me+10)+c}. Посередине по-прежнему «бывшее ${me}», теперь это ${ans}.`};});
+
+/* L8 — stars */
+G(8,()=>{for(;;){const n=R(6,12),a=R(5,12),b=a+pick([-2,-1,1,2]);const x=n*a-(n-1)*b;if(x<1||x>40||b<1)continue;
+return {type:'num',q:`Среднее арифметическое ${n} чисел равно ${a}. Одно число вычеркнули, и среднее оставшихся стало равно ${b}. Какое число вычеркнули?`,ans:x,
+hint:'Переходи от средних к суммам: было сколько? стало сколько?',
+short:`${n} · ${a} − ${n-1} · ${b} = ${n*a} − ${(n-1)*b} = ${x}.`,
+explain:`1) Сумма всех ${n} чисел: ${n} · ${a} = ${n*a}.<br>2) Осталось ${n-1} ${plural(n-1,'число','числа','чисел')}, их сумма: ${n-1} · ${b} = ${(n-1)*b}.<br>3) Вычеркнули разницу: ${n*a} − ${(n-1)*b} = <b>${x}</b>.`,
+explain2:`Проверка на «здравый смысл»: среднее ${b<a?'уменьшилось':'выросло'} — значит, вычеркнули число ${b<a?'больше':'меньше'} среднего ${a}. ${x} ${x>a?'>':'<'} ${a} ✓.<br>Ещё способ: пусть у оставшихся ${n-1} чисел каждое по ${b} (сумма ${(n-1)*b}). Чтобы вместе с вычеркнутым среднее было ${a}, нужна сумма ${n*a}. Вычеркнутое = ${n*a} − ${(n-1)*b} = ${x}.`};}},true);
+G(8,()=>{for(;;){const n=R(10,20),a=R(12,15),b=a+R(1,3);const t=(n+1)*b-n*a;if(t<24||t>65)continue;
+return {type:'num',q:`Средний возраст ${n} ребят в походе — ${a} лет. К ним присоединился руководитель, и средний возраст всей группы стал ${b} лет. Сколько лет руководителю?`,ans:t,
+short:`${n+1} · ${b} − ${n} · ${a} = ${(n+1)*b} − ${n*a} = ${t}.`,
+explain:`1) Сумма возрастов ребят: ${n} · ${a} = ${n*a}.<br>2) Теперь людей ${n+1}, сумма возрастов: ${n+1} · ${b} = ${(n+1)*b}.<br>3) Руководителю: ${(n+1)*b} − ${n*a} = <b>${t}</b> лет.<div class="box err"><b>Ошибка</b>Думать, что руководителю ${b} лет или ${a+b}. Один человек поднял среднее для ${n+1} человек на ${b-a} — значит, он намного старше.</div>`,
+explain2:`Взгляд «добавки»: руководитель «раздал» всем ${n+1} людям (вместе с собой) по ${b-a} ${plural(b-a,'году','года','лет')} сверх ${a}. Для этого ему нужно быть старше ${a} на ${(n+1)*(b-a)}: ${a} + ${n+1} · ${b-a} = ${t} ✓.`};}},true);
+G(8,()=>{for(;;){const M=R(8,15),Me=R(4,M-1),dist=Math.random()<.5;const e=dist?5*M-1-2-Me-(Me+1):5*M-1-1-Me-Me;const lowest=dist?[1,2,Me,Me+1]:[1,1,Me,Me];if(e<=lowest[3]||(dist&&Me<3))continue;
+return {type:'num',q:`Пять ${dist?'<b>различных</b> ':''}натуральных чисел имеют среднее арифметическое ${M} и медиану ${Me}. Каким <b>наибольшим</b> может быть самое большое из них?`,ans:e,
+hint:'Сумма всех пяти известна. Чтобы самое большое было как можно больше, остальные сделай как можно меньше.',
+short:`Сумма ${5*M}; остальные минимально: ${lowest.join(', ')}; ${5*M} − ${sum(lowest)} = ${e}.`,
+explain:`1) Сумма пяти чисел: ${M} · 5 = ${5*M}.<br>2) Упорядочим: a ≤ b ≤ ${Me} ≤ d ≤ e (медиана — третье число).<br>3) Чтобы e было наибольшим, остальные — как можно меньше:<br>• a и b — самые маленькие натуральные${dist?', причём разные: 1 и 2':': 1 и 1'};<br>• d не может быть меньше медианы${dist?' и должно отличаться от неё: d = '+(Me+1):': d = '+Me}.<br>4) e = ${5*M} − (${lowest.join(' + ')}) = <b>${e}</b>.<br>Набор: ${lowest.join(', ')}, ${e} — среднее ${5*M} : 5 = ${M}, медиана ${Me} ✓.`,
+explain2:`Представь, что у пятерых ${5*M} конфет и «средний» (третий по количеству) получил ${Me}. Чтобы последний получил как можно больше, первым двум даём минимум (${dist?'1 и 2 — по-разному':'по 1'}), четвёртому — не меньше, чем третьему (${dist?Me+1:Me}). Всё остальное — последнему: ${5*M} − ${sum(lowest)} = ${e}.`};}},true);
+G(8,()=>{const more=Math.random()<.5;let a;do{a=sample(range(1,20),4);}while(sum(a)%4);const av=sum(a)/4;
+const opts=['Нет, никогда','Да, если среди чисел есть отрицательные','Да, если чисел очень много','Да, если все числа одинаковые'];
+return {type:'choice',q:`Может ли среднее арифметическое нескольких чисел быть <b>${more?'больше каждого':'меньше каждого'}</b> из этих чисел?`,opts,ans:0,
+short:`Среднее всегда между минимумом и максимумом.`,
+explain:`Нет. Допустим, среднее ${more?'больше':'меньше'} каждого числа. Тогда если заменить каждое число на среднее, сумма ${more?'увеличится':'уменьшится'}. Но «все числа равны среднему» — это как раз та же самая сумма (сумма = среднее · n)! Противоречие.<br>Пример: ${a.join(', ')} → среднее ${av}, а min = ${Math.min(...a)}, max = ${Math.max(...a)}: ${Math.min(...a)} ≤ ${av} ≤ ${Math.max(...a)}.<br>Отрицательные числа и количество ничего не меняют; если все числа одинаковые, среднее <b>равно</b> им, а не ${more?'больше':'меньше'}.`,
+explain2:`Вспомни картинку «поделить поровну»: из высоких стопок кубики перекладывают в низкие. Стопки, которая станет выше самой высокой, получиться не может — кубики берутся только из имеющихся. Поэтому среднее не выше максимума и не ниже минимума.<div class="fig">${dotplot(a,{mean:av})}</div>`};},true);
+G(8,()=>{const k=pick([4,5,6,7]),a=R(5,40);const m=rnd(a+(k-1)/2),last=a+k-1;
+return {type:'num',q:`Среднее арифметическое ${k} последовательных натуральных чисел равно ${N(m)}. Найди наибольшее из этих чисел.`,ans:last,
+hint:'Последовательные числа стоят «симметрично» вокруг своего среднего.',
+short:`Числа: ${range(a,last).join(', ')}; наибольшее ${last}.`,
+explain:`Последовательные числа идут через 1 и стоят симметрично, поэтому их среднее — это середина.<br>${k%2?`Чисел ${k} (нечётное) — среднее ${N(m)} само стоит посередине, справа от него ещё ${(k-1)/2}: ${N(m)} + ${(k-1)/2} = <b>${last}</b>.`:`Чисел ${k} (чётное) — среднее ${N(m)} лежит между двумя средними числами ${Math.floor(m)} и ${Math.ceil(m)}. Справа от ${Math.ceil(m)} ещё ${k/2-1}: ${Math.ceil(m)} + ${k/2-1} = <b>${last}</b>.`}<br>Весь набор: ${range(a,last).join(', ')}.`,
+explain2:`Способ через сумму: сумма = ${N(m)} · ${k} = ${N(m*k)}. Пусть первое число x, тогда числа x, x + 1, …, x + ${k-1}; их сумма ${k}x + ${(k-1)*k/2} = ${N(m*k)}. Значит, ${k}x = ${N(m*k-(k-1)*k/2)}, x = ${a}, наибольшее x + ${k-1} = ${last}.`};},true);
+G(8,()=>{for(;;){const n1=R(10,15),a1=R(160,172),n2=R(10,15),a2=R(152,163);const S=n1*a1+n2*a2,n=n1+n2;if((S*10)%n||a1===a2)continue;const av=rnd(S/n);const naive=rnd((a1+a2)/2);if(naive===av)continue;
+return {type:'num',q:`В классе ${n1} мальчиков со средним ростом ${a1} см и ${n2} девочек со средним ростом ${a2} см. Найди средний рост всего класса.`,ans:av,
+hint:'Это не среднее двух чисел! Найди сумму ростов всех учеников.',
+short:`(${n1}·${a1} + ${n2}·${a2}) : ${n} = ${S} : ${n} = ${N(av)}.`,
+explain:`1) Сумма ростов мальчиков: ${n1} · ${a1} = ${n1*a1}.<br>2) Девочек: ${n2} · ${a2} = ${n2*a2}.<br>3) Всего учеников ${n}, сумма ${S}.<br>4) Среднее: ${S} : ${n} = <b>${N(av)} см</b>.<div class="box err"><b>Ошибка</b>(${a1} + ${a2}) : 2 = ${N(naive)} — так можно, только если мальчиков и девочек поровну. ${n1!==n2?`Здесь ${n1>n2?'мальчиков':'девочек'} больше, и общее среднее ближе к ${n1>n2?a1:a2}.`:''}</div>`,
+explain2:`Представь, что все ученики встали в один ряд. Среднее «по ряду» = сумма ростов : число людей. Группе, где людей больше, достаётся больше «голосов». ${N(av)} лежит между ${a2} и ${a1} ✓${n1!==n2?`, и ближе к ${n1>n2?a1:a2}, потому что ${n1>n2?'мальчиков':'девочек'} больше`:''}.`};}},true);
+G(8,()=>{const n=R(5,10),m=R(5,20),c=R(1,5),d=n*R(1,4);const ans=m+c+d/n;
+return {type:'num',q:`Среднее арифметическое ${n} чисел равно ${m}. Каждое число увеличили на ${c}, а потом самое большое из них увеличили ещё на ${d}. Чему стало равно среднее?`,ans,
+short:`${m} + ${c} + ${d} : ${n} = ${ans}.`,
+explain:`1) Сумма была ${m} · ${n} = ${m*n}.<br>2) Прибавили ${c} к каждому из ${n} чисел: сумма выросла на ${c} · ${n} = ${c*n}.<br>3) Ещё +${d} к одному числу: сумма выросла на ${d}.<br>4) Новая сумма: ${m*n} + ${c*n} + ${d} = ${m*n+c*n+d}. Среднее: ${m*n+c*n+d} : ${n} = <b>${ans}</b>.`,
+explain2:`По шагам со средним: +${c} ко всем → среднее +${c} = ${m+c}. Потом +${d} к одному числу — это как будто ${d} «разделили поровну» на ${n} чисел: +${d} : ${n} = +${d/n}. Итог ${m+c} + ${d/n} = ${ans}.`};},true);
+
+window.TOPIC={id:'srednee',title:'Среднее, минимум, максимум и размах',subtitle:'Вероятность и статистика · 8 класс',
+intro:`<p>Здесь всё про то, как описать набор чисел одним-двумя числами: самое маленькое и самое большое, размах, среднее арифметическое и медиана. Разберём, почему один «выброс» может обмануть среднее, как считать среднее по таблице и как найти пропавшее число. Читай по порядку — разделы короткие, с примерами из жизни.</p>`,
+theory,symbols,figs:{},
+levels:['Набор данных, минимум и максимум','Размах','Среднее арифметическое','Медиана','Выбросы: среднее или медиана','Таблица частот','Неизвестное значение по среднему','Если изменить все значения','★ Задачи олимпиадного уровня'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Функция y = k/x. Гипербола — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY='trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div></div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':return Math.abs(H.parseNum(val)-t.ans)<1e-9;
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  const fb=$('#fb');
+  if(ok){
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}</h3>${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      <div class="ans">Правильный ответ: ${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%).</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,num:N,frac}=H;
+const M=s=>`<span class="m">${s}</span>`;
+/* k/x как HTML-дробь; отрицательное k — минус перед дробью */
+const fx=(k,den)=>{den=den||'x';return k<0?`−${frac(N(-k),den)}`:frac(N(k),den);};
+const Yk=(k,den)=>M(`y = ${fx(k,den)}`);
+const P=(x,y)=>`(${N(x)}; ${N(y)})`;
+const par=v=>v<0?`(${N(v)})`:N(v);
+const sgn=v=>v>0?1:v<0?-1:0;
+const T=k=>`y = ${k<0?'−':''}${Math.abs(k)}/x`;                    // подпись для SVG
+const den=a=>a>0?`x − ${a}`:`x + ${-a}`;                            // x − a
+const tailB=b=>b>0?` + ${b}`:b<0?` − ${-b}`:'';                     // + b
+const shiftF=(k,a,b)=>M(`y = ${fx(k,den(a))}${tailB(b)}`);
+const shiftT=(k,a,b)=>`y = ${k<0?'−':''}${Math.abs(k)}/(${den(a)})${tailB(b)}`;
+const lineT=(m,b)=>{if(m===0)return `y = ${N(b)}`;const mm=m===1?'':m===-1?'−':N(m);return `y = ${mm}x${tailB(b)}`;};
+const divs=n=>{n=Math.abs(n);const r=[];for(let i=1;i<=n;i++)if(n%i===0)r.push(i);return r;};
+const nz=(a,b)=>{let v=0;while(v===0)v=R(a,b);return v;};
+const QN=['I','II','III','IV'];
+const quarterOf=(x,y)=>x>0&&y>0?0:x<0&&y>0?1:x<0&&y<0?2:3;
+const quartersK=k=>k>0?'I и III':'II и IV';
+const tbl=(rows)=>`<table style="border-collapse:collapse;margin:6px 0;font-size:16px">${rows.map((r,ri)=>`<tr>${r.map((c,ci)=>`<td style="border:1px solid var(--line);padding:3px 10px;text-align:center;${ci===0?'font-weight:700;color:var(--accent-ink)':''}${ri===0?';background:var(--accent-soft)':''}">${c}</td>`).join('')}</tr>`).join('')}</table>`;
+
+/* =====================================================================
+   SVG: координатная плоскость + гипербола по веткам
+   c = {xr:[a,b], yr:[a,b], w, curves:[{k,a,b,col,dash,label,lx,only}], lines:[{m,b}|{vx}],
+        asym:[{x}|{y}], points:[{x,y,label,col,proj}], segs, rects, polys, texts, quarters, ticks}
+   ===================================================================== */
+function plot(c){
+  const xr=c.xr||[-6,6],yr=c.yr||[-6,6],W=c.w||300,pad=c.pad||16;
+  const u=(W-2*pad)/(xr[1]-xr[0]);
+  const Hh=Math.round(u*(yr[1]-yr[0])+2*pad);
+  const X=x=>pad+(x-xr[0])*u,Y=y=>pad+(yr[1]-y)*u;
+  const f1=v=>Math.round(v*10)/10;
+  const fs=c.fs||(u>=17?11:10);
+  const step=c.step||(u>=21?1:u>=11?2:5);
+  const X0=X(0),Y0=Y(0);
+  const occ=[],dots=[];
+  let g='',lab='';
+  const addSeg=(x1,y1,x2,y2)=>{const d=Math.hypot(x2-x1,y2-y1),n=Math.max(1,Math.ceil(d/2));for(let i=0;i<=n;i++)dots.push([x1+(x2-x1)*i/n,y1+(y2-y1)*i/n]);};
+  const addPoly=pts=>{for(let i=1;i<pts.length;i++)addSeg(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1]);};
+  const box=(x,y,t,anc,f)=>{const w=String(t).length*f*0.62+5;const x0=anc==='end'?x-w:anc==='middle'?x-w/2:x;return {x0,y0:y-f*0.82-1,x1:x0+w,y1:y+f*0.22+1};};
+  const inter=(a,b)=>a.x0<b.x1&&b.x0<a.x1&&a.y0<b.y1&&b.y0<a.y1;
+  const hitD=b=>dots.some(([px,py])=>px>=b.x0-1.5&&px<=b.x1+1.5&&py>=b.y0-1.5&&py<=b.y1+1.5);
+  const inside=b=>b.x0>=2&&b.x1<=W-2&&b.y0>=2&&b.y1<=Hh-2;
+  const hasV=xr[0]<=0&&xr[1]>=0,hasH=yr[0]<=0&&yr[1]>=0;
+  const hitA=b=>(hasV&&X0>=b.x0-2&&X0<=b.x1+2)||(hasH&&Y0>=b.y0-2&&Y0<=b.y1+2);
+  const halo=`stroke="var(--card)" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke"`;
+  function place(t,px,py,cands,o){
+    o=o||{};const f=o.f||fs;
+    let pickc=null;
+    if(o.tick){const b0=box(px+cands[0][0],py+cands[0][1],t,cands[0][2],f);if(occ.some(q=>inter(q,b0)))return '';}
+    for(const cd of cands){const b=box(px+cd[0],py+cd[1],t,cd[2],f);if(inside(b)&&!occ.some(q=>inter(q,b))&&!hitD(b)&&(o.axes===false||!hitA(b))){pickc=[cd,b];break;}}
+    if(!pickc){if(!o.must)return '';let best=1e9;
+      for(const cd of cands.concat(cands.map(q=>[q[0]*2,q[1]*1.8,q[2]]))){const b=box(px+cd[0],py+cd[1],t,cd[2],f);if(!inside(b))continue;
+        const pen=dots.filter(([qx,qy])=>qx>=b.x0-1.5&&qx<=b.x1+1.5&&qy>=b.y0-1.5&&qy<=b.y1+1.5).length+40*occ.filter(q=>inter(q,b)).length+(o.axes!==false&&hitA(b)?8:0);
+        if(pen<best){best=pen;pickc=[cd,b];}}
+      if(!pickc){const cd=cands[0];pickc=[cd,box(px+cd[0],py+cd[1],t,cd[2],f)];}}
+    occ.push(pickc[1]);const cd=pickc[0];
+    return `<text x="${f1(px+cd[0])}" y="${f1(py+cd[1])}" text-anchor="${cd[2]}" font-size="${f}" font-weight="${o.bold?700:500}" fill="${o.col||'var(--ink)'}" ${halo}>${t}</text>`;
+  }
+  const around=(d)=>[[d,-d,'start'],[d,d+8,'start'],[-d,-d,'end'],[-d,d+8,'end'],[0,-d-2,'middle'],[0,d+12,'middle'],[d+2,4,'start'],[-d-2,4,'end']];
+  /* фон и сетка */
+  g+=`<rect x="0.5" y="0.5" width="${W-1}" height="${Hh-1}" rx="10" fill="var(--card)" stroke="var(--line)"/>`;
+  for(let i=Math.ceil(xr[0]);i<=xr[1];i++)if(i!==0)g+=`<line x1="${f1(X(i))}" y1="${f1(Y(yr[0]))}" x2="${f1(X(i))}" y2="${f1(Y(yr[1]))}" stroke="var(--line)" stroke-width="1"/>`;
+  for(let j=Math.ceil(yr[0]);j<=yr[1];j++)if(j!==0)g+=`<line x1="${f1(X(xr[0]))}" y1="${f1(Y(j))}" x2="${f1(X(xr[1]))}" y2="${f1(Y(j))}" stroke="var(--line)" stroke-width="1"/>`;
+  /* закрашенные области */
+  (c.rects||[]).forEach(r=>{const x1=Math.min(X(0),X(r.x)),x2=Math.max(X(0),X(r.x)),y1=Math.min(Y(0),Y(r.y)),y2=Math.max(Y(0),Y(r.y));
+    g+=`<rect x="${f1(x1)}" y="${f1(y1)}" width="${f1(x2-x1)}" height="${f1(y2-y1)}" fill="var(--hl)" fill-opacity="${r.op||0.3}" stroke="var(--hl)" stroke-width="1.5"/>`;});
+  (c.polys||[]).forEach(p=>{g+=`<polygon points="${p.pts.map(q=>f1(X(q[0]))+','+f1(Y(q[1]))).join(' ')}" fill="var(--hl)" fill-opacity="${p.op||0.35}" stroke="var(--hl)" stroke-width="1.5"/>`;});
+  /* оси */
+  if(yr[0]<=0&&yr[1]>=0){g+=`<line x1="${f1(X(xr[0]))}" y1="${f1(Y0)}" x2="${f1(X(xr[1])+4)}" y2="${f1(Y0)}" stroke="var(--fig)" stroke-width="1.4"/><polygon points="${f1(X(xr[1])+6)},${f1(Y0)} ${f1(X(xr[1])-2)},${f1(Y0-4)} ${f1(X(xr[1])-2)},${f1(Y0+4)}" fill="var(--fig)"/>`;}
+  if(xr[0]<=0&&xr[1]>=0){g+=`<line x1="${f1(X0)}" y1="${f1(Y(yr[0]))}" x2="${f1(X0)}" y2="${f1(Y(yr[1])-4)}" stroke="var(--fig)" stroke-width="1.4"/><polygon points="${f1(X0)},${f1(Y(yr[1])-6)} ${f1(X0-4)},${f1(Y(yr[1])+2)} ${f1(X0+4)},${f1(Y(yr[1])+2)}" fill="var(--fig)"/>`;}
+  /* асимптоты (пунктир) */
+  (c.asym||[]).forEach(a=>{
+    if(a.x!=null){g+=`<line x1="${f1(X(a.x))}" y1="${f1(Y(yr[0]))}" x2="${f1(X(a.x))}" y2="${f1(Y(yr[1]))}" stroke="var(--fig)" stroke-width="1.3" stroke-dasharray="5 4"/>`;addSeg(X(a.x),Y(yr[0]),X(a.x),Y(yr[1]));}
+    else{g+=`<line x1="${f1(X(xr[0]))}" y1="${f1(Y(a.y))}" x2="${f1(X(xr[1]))}" y2="${f1(Y(a.y))}" stroke="var(--fig)" stroke-width="1.3" stroke-dasharray="5 4"/>`;addSeg(X(xr[0]),Y(a.y),X(xr[1]),Y(a.y));}
+  });
+  /* отрезки */
+  (c.segs||[]).forEach(s=>{g+=`<line x1="${f1(X(s.x1))}" y1="${f1(Y(s.y1))}" x2="${f1(X(s.x2))}" y2="${f1(Y(s.y2))}" stroke="${s.col||'var(--fig)'}" stroke-width="${s.sw||1.3}" ${s.dash===false?'':'stroke-dasharray="4 3"'}/>`;addSeg(X(s.x1),Y(s.y1),X(s.x2),Y(s.y2));});
+  /* прямые */
+  (c.lines||[]).forEach(l=>{
+    let a,b;
+    if(l.vx!=null){a=[l.vx,yr[0]];b=[l.vx,yr[1]];}
+    else if(l.m===0){a=[xr[0],l.b];b=[xr[1],l.b];}
+    else{let lo=xr[0],hi=xr[1];const p1=(yr[0]-l.b)/l.m,p2=(yr[1]-l.b)/l.m;lo=Math.max(lo,Math.min(p1,p2));hi=Math.min(hi,Math.max(p1,p2));if(lo>=hi)return;a=[lo,l.m*lo+l.b];b=[hi,l.m*hi+l.b];}
+    g+=`<line x1="${f1(X(a[0]))}" y1="${f1(Y(a[1]))}" x2="${f1(X(b[0]))}" y2="${f1(Y(b[1]))}" stroke="${l.col||'var(--hl)'}" stroke-width="2.2" ${l.dash?'stroke-dasharray="7 4"':''}/>`;
+    addSeg(X(a[0]),Y(a[1]),X(b[0]),Y(b[1]));
+    l._p=[a,b];
+  });
+  /* гиперболы: каждая ветка — отдельная ломаная, ветки никогда не соединяются */
+  (c.curves||[]).forEach(cv=>{
+    const k=cv.k,a=cv.a||0,b=cv.b||0;const f=x=>k/(x-a)+b;cv._br=[];
+    [1,-1].forEach(s=>{
+      if(cv.only&&cv.only!==s)return;
+      const Ye=(s*k>0)?yr[1]:yr[0];
+      let t0=k/(Ye-b);if(!(t0*s>0))t0=s*1e-3;
+      const xFar=s>0?xr[1]:xr[0];
+      let x0=a+t0;
+      if(s>0&&x0<xr[0])x0=xr[0];if(s<0&&x0>xr[1])x0=xr[1];
+      if(s>0?x0>=xFar:x0<=xFar)return;
+      const xs=[];const n=140;
+      for(let i=0;i<=n;i++)xs.push(x0+(xFar-x0)*i/n);
+      const yA=f(x0),yB=f(xFar);
+      for(let i=1;i<n;i++){const yy=yA+(yB-yA)*i/n;const xx=a+k/(yy-b);if((xx-x0)*(xx-xFar)<0)xs.push(xx);}
+      xs.sort((p,q)=>p-q);
+      const pts=xs.map(x=>{let y=f(x);y=Math.max(yr[0],Math.min(yr[1],y));return [X(x),Y(y)];});
+      g+=`<polyline points="${pts.map(p=>f1(p[0])+','+f1(p[1])).join(' ')}" fill="none" stroke="${cv.col||'var(--accent)'}" stroke-width="${cv.sw||2.4}" stroke-linejoin="round" stroke-linecap="round" ${cv.dash?`stroke-dasharray="${cv.dash}"`:''}/>`;
+      addPoly(pts);cv._br.push(s);
+    });
+  });
+  /* оси: подписи x, y */
+  if(yr[0]<=0&&yr[1]>=0)lab+=place('x',X(xr[1])+2,Y0,[[0,fs+5,'end'],[0,-6,'end']],{must:true,axes:false,f:fs+2,bold:true});
+  if(xr[0]<=0&&xr[1]>=0)lab+=place('y',X0,Y(yr[1]),[[7,8,'start'],[-7,8,'end']],{must:true,axes:false,f:fs+2,bold:true});
+  /* точки */
+  (c.points||[]).forEach(p=>{
+    if(p.proj){g+=`<line x1="${f1(X(p.x))}" y1="${f1(Y(p.y))}" x2="${f1(X(p.x))}" y2="${f1(Y0)}" stroke="var(--fig)" stroke-width="1.1" stroke-dasharray="3 3"/><line x1="${f1(X(p.x))}" y1="${f1(Y(p.y))}" x2="${f1(X0)}" y2="${f1(Y(p.y))}" stroke="var(--fig)" stroke-width="1.1" stroke-dasharray="3 3"/>`;addSeg(X(p.x),Y(p.y),X(p.x),Y0);addSeg(X(p.x),Y(p.y),X0,Y(p.y));}
+  });
+  (c.points||[]).forEach(p=>{
+    const col=p.col==='ok'?'var(--ok)':p.col==='bad'?'var(--bad)':'var(--accent-ink)';
+    g+=`<circle cx="${f1(X(p.x))}" cy="${f1(Y(p.y))}" r="${p.r||4}" fill="${col}" stroke="var(--card)" stroke-width="1.5"/>`;
+    occ.push({x0:X(p.x)-5,y0:Y(p.y)-5,x1:X(p.x)+5,y1:Y(p.y)+5});
+  });
+  (c.points||[]).forEach(p=>{
+    if(!p.label)return;const sx=p.x>=0?1:-1,sy=p.y>=0?1:-1;
+    const base=[[7*sx,sy>0?-7:15,sx>0?'start':'end'],[7*sx,sy>0?15:-7,sx>0?'start':'end'],[-7*sx,sy>0?-7:15,sx>0?'end':'start'],[-7*sx,sy>0?15:-7,sx>0?'end':'start'],[0,-10,'middle'],[0,18,'middle'],[9,4,'start'],[-9,4,'end']];
+    lab+=place(p.label,X(p.x),Y(p.y),base,{must:true,f:fs+1,bold:true,col:p.col==='bad'?'var(--bad)':p.col==='ok'?'var(--ok)':'var(--accent-ink)'});
+  });
+  /* подписи кривых */
+  (c.curves||[]).forEach(cv=>{
+    if(!cv.label)return;const k=cv.k,a=cv.a||0,b=cv.b||0,f=x=>k/(x-a)+b;
+    const xs=(cv.lx!=null?[cv.lx]:[]).concat([a+2.5,a+3.5,a+1.8,a+4.5,a-2.5,a-3.5,a-1.8,a-4.5,a+1.2,a-1.2,a+5.5,a-5.5]);
+    let done='';
+    for(const x of xs){if(x<=xr[0]+0.3||x>=xr[1]-0.3)continue;const y=f(x);if(y<=yr[0]+0.3||y>=yr[1]-0.3)continue;
+      done=place(cv.label,X(x),Y(y),around(7),{f:fs+1,bold:true,col:cv.lcol||cv.col||'var(--accent-ink)'});if(done)break;}
+    if(!done){const x=xs[0],y=Math.max(yr[0]+1,Math.min(yr[1]-1,f(x)));done=place(cv.label,X(x),Y(y),around(7),{must:true,f:fs+1,bold:true,col:cv.lcol||cv.col||'var(--accent-ink)'});}
+    lab+=done;
+  });
+  /* подписи прямых */
+  (c.lines||[]).forEach(l=>{
+    if(!l.label||!l._p)return;const [a,b]=l._p;let done='';
+    for(const t of [0.85,0.15,0.7,0.3,0.5]){const x=a[0]+(b[0]-a[0])*t,y=a[1]+(b[1]-a[1])*t;done=place(l.label,X(x),Y(y),around(7),{f:fs+1,bold:true,col:l.lcol||'var(--ink)'});if(done)break;}
+    if(!done)done=place(l.label,X(a[0]+(b[0]-a[0])*0.85),Y(a[1]+(b[1]-a[1])*0.85),around(7),{must:true,f:fs+1,bold:true});
+    lab+=done;
+  });
+  /* свободный текст */
+  (c.texts||[]).forEach(t=>{lab+=place(t.t,X(t.x),Y(t.y),[[0,4,'middle'],[0,-8,'middle'],[0,16,'middle'],[10,4,'start'],[-10,4,'end']],{must:true,f:t.f||fs+1,bold:t.bold!==false,col:t.col||'var(--accent-ink)',axes:t.axes});});
+  if(c.quarters){[[1,1,'I'],[-1,1,'II'],[-1,-1,'III'],[1,-1,'IV']].forEach(([sx,sy,t],i)=>{const x=(sx>0?xr[1]:xr[0])/2,y=(sy>0?yr[1]:yr[0])/2;
+    lab+=place(t,X(x),Y(y)-(c.quarters==='signs'?6:-6),[[0,0,'middle'],[0,-12,'middle'],[0,12,'middle']],{must:true,f:22,bold:true,col:'var(--accent-ink)'});
+    if(c.quarters==='signs')lab+=place(['(+; +)','(−; +)','(−; −)','(+; −)'][i],X(x),Y(y)+14,[[0,0,'middle'],[0,8,'middle']],{must:true,f:13,col:'var(--ink)'});});}
+  /* числа на осях — пропускаем, если мешают линиям */
+  if(c.ticks!==false){
+    for(let i=Math.ceil(xr[0]);i<xr[1];i++){if(i===0||i%step!==0||!(yr[0]<=0&&yr[1]>=0))continue;
+      lab+=place(N(i),X(i),Y0,[[0,fs+3,'middle'],[0,-4,'middle']],{axes:false,tick:true});}
+    for(let j=Math.ceil(yr[0]);j<yr[1];j++){if(j===0||j%step!==0||!(xr[0]<=0&&xr[1]>=0))continue;
+      lab+=place(N(j),X0,Y(j),[[-4,fs*0.36,'end'],[4,fs*0.36,'start']],{axes:false,tick:true});}
+    if(xr[0]<=0&&yr[0]<=0)lab+=place('0',X0,Y0,[[-4,fs+3,'end'],[4,fs+3,'start']],{axes:false});
+  }
+  return `<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="${c.aria||'Координатная плоскость'}" style="font-family:system-ui,sans-serif">${g}${lab}</svg>`;
+}
+const fig=(c,cap)=>`<div class="fig">${plot(c)}</div>${cap?`<p class="small" style="text-align:center">${cap}</p>`:''}`;
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Обратная пропорциональность — что это в жизни',lvl:0,html:`
+<p>Представь: от дома до бабушки <b>120 км</b>. Чем быстрее едешь, тем меньше времени в пути.</p>
+${tbl([['Скорость v, км/ч','20','40','60','120'],['Время t, ч','6','3','2','1']])}
+<p>Скорость выросла в 2 раза (20 → 40) — время уменьшилось в 2 раза (6 → 3). Скорость в 3 раза больше (20 → 60) — время в 3 раза меньше (6 → 2).</p>
+<div class="box rule"><b>Обратная пропорциональность</b>Две величины <b>обратно пропорциональны</b>, если: во сколько раз увеличилась одна, во столько же раз уменьшилась другая.<br>Главный признак: их <b>произведение всегда одно и то же</b>. Здесь v·t = 20·6 = 40·3 = 60·2 = 120·1 = 120 (это весь путь).</div>
+<div class="box ex"><b>Ещё пример: рабочие и дни</b>Забор красят 2 маляра за 6 дней. Вся работа = 2·6 = 12 «человеко-дней». Если маляров 4 — справятся за 12 : 4 = 3 дня. Если 3 маляра — за 12 : 3 = 4 дня. Больше людей — меньше дней.</div>
+<div class="box err"><b>Не перепутай с прямой пропорциональностью</b>Тетради: 1 шт. — 20 ₽, 3 шт. — 60 ₽. Тут <b>оба растут вместе</b> — это прямая пропорциональность (y = kx). А обратная — когда одно растёт, а другое во столько же раз <b>падает</b>.</div>`},
+{title:'Формула y = k/x. Почему x ≠ 0',lvl:1,html:`
+<p>Если произведение x·y всегда равно одному и тому же числу k, то <span class="m">y = ${frac('k','x')}</span>. Это и есть <b>функция обратной пропорциональности</b>.</p>
+<div class="box rule"><b>Формула</b>${M(`y = ${frac('k','x')}`)}, где <b>k</b> — число (коэффициент), k ≠ 0.<br>Примеры: ${Yk(6)}, ${Yk(-4)}, ${Yk(1)}. В первом k = 6, во втором k = −4.</div>
+<p><b>Как посчитать y:</b> подставь x и раздели. Для ${Yk(6)}: при x = 2 получаем y = 6 : 2 = 3; при x = −3 получаем y = 6 : (−3) = −2.</p>
+<div class="box tip"><b>Почему x не может быть 0</b>На ноль делить нельзя. Представь: 6 конфет делим на 0 друзей — сколько получит каждый? Вопрос не имеет смысла: друзей-то нет. Поэтому для функции ${Yk(6)} число x = 0 просто <b>запрещено</b>. Говорят: «x ≠ 0» или «область определения — все числа, кроме нуля».</div>
+<div class="box err"><b>И y тоже никогда не 0</b>Дробь ${frac('k','x')} равна нулю, только если k = 0. А k ≠ 0. Сколько бы ты ни делил 6, нуль не получится: 6 : 1000 = 0,006 — маленькое, но не ноль.</div>`},
+{title:'Точка на графике. Как найти k',lvl:2,html:`
+<p>Точка <span class="m">A(x; y)</span> лежит на графике, если её координаты <b>подходят к формуле</b>. Первое число — x, второе — y.</p>
+<div class="box rule"><b>Проверка точки</b>Подставь x в формулу, посчитай y и сравни со вторым числом точки. Совпало — лежит, нет — не лежит.<br>Ещё быстрее: перемножь координаты. Если <b>x·y = k</b> — точка на графике.</div>
+<div class="box ex"><b>Пример</b>${Yk(12)}. Точка (3; 4): 3·4 = 12 ✅ лежит. Точка (−2; 6): (−2)·6 = −12 ≠ 12 ❌ не лежит. Точка (−3; −4): (−3)·(−4) = 12 ✅ лежит.</div>
+<div class="box rule"><b>Как найти k по точке</b>Если график проходит через точку (x; y), то <b>k = x·y</b>.<br>Пример: через (−2; 5) → k = (−2)·5 = −10, функция ${Yk(-10)}.</div>
+<div class="box tip"><b>Как найти x по известному y</b>Из x·y = k следует <b>x = k : y</b>. Для ${Yk(12)} и y = −3: x = 12 : (−3) = −4.</div>`},
+{title:'Таблица значений и график по точкам',lvl:3,html:`
+<p>Строим график ${Yk(6)}. Берём удобные x — те, на которые 6 делится нацело (и положительные, и отрицательные):</p>
+${tbl([['x','−6','−3','−2','−1','1','2','3','6'],['y','−1','−2','−3','−6','6','3','2','1']])}
+<p>Отмечаем точки на клетчатой плоскости и <b>плавно</b> соединяем: отдельно правые точки, отдельно левые.</p>
+<div class="figrow"><div class="fig">${plot({w:250,xr:[-7,7],yr:[-7,7],points:[[1,6],[2,3],[3,2],[6,1],[-1,-6],[-2,-3],[-3,-2],[-6,-1]].map(p=>({x:p[0],y:p[1]}))})}<div class="cap">1) отметили точки</div></div>
+<div class="fig">${plot({w:250,xr:[-7,7],yr:[-7,7],curves:[{k:6,label:'y = 6/x',lx:4.6}],points:[[1,6],[2,3],[3,2],[6,1],[-1,-6],[-2,-3],[-3,-2],[-6,-1]].map(p=>({x:p[0],y:p[1],r:3}))})}<div class="cap">2) соединили плавной линией</div></div></div>
+<p>Получилась кривая из <b>двух отдельных частей</b>. Она называется <b>гипербола</b>, а части — <b>ветви гиперболы</b>.</p>
+<div class="box err"><b>Частая ошибка</b>Соединить точку (−1; −6) с точкой (1; 6) через ноль. Нельзя! При x = 0 функции нет, поэтому ветви <b>не соединяются</b>. И ветви — не ломаные, а гладкие кривые.</div>`},
+{title:'Координатные четверти',lvl:4,html:`
+<p>Оси x и y делят плоскость на 4 части — <b>четверти</b>. Их нумеруют римскими цифрами <b>против часовой стрелки</b>, начиная с правой верхней.</p>
+${fig({w:260,xr:[-5,5],yr:[-5,5],quarters:'signs',ticks:false})}
+<div class="box rule"><b>Знаки координат</b>I четверть: x &gt; 0, y &gt; 0 — (+; +)<br>II четверть: x &lt; 0, y &gt; 0 — (−; +)<br>III четверть: x &lt; 0, y &lt; 0 — (−; −)<br>IV четверть: x &gt; 0, y &lt; 0 — (+; −)</div>
+<div class="box tip"><b>Как запомнить</b>Начинаем с «самой хорошей» четверти, где всё плюс, и идём <b>против часовой стрелки</b>, как будто открываешь банку: I → II → III → IV.</div>`},
+{title:'Где ветви гиперболы: знак k',lvl:4,html:`
+<div class="figrow">
+<div class="fig">${plot({w:230,xr:[-6,6],yr:[-6,6],curves:[{k:4,label:'y = 4/x',lx:3.6}]})}<div class="cap"><b>k &gt; 0</b>: ветви в I и III четвертях</div></div>
+<div class="fig">${plot({w:230,xr:[-6,6],yr:[-6,6],curves:[{k:-4,label:'y = −4/x',lx:-3.4}]})}<div class="cap"><b>k &lt; 0</b>: ветви во II и IV четвертях</div></div></div>
+<div class="box rule"><b>Правило</b><b>k &gt; 0</b> → ветви в <b>I и III</b> четвертях.<br><b>k &lt; 0</b> → ветви во <b>II и IV</b> четвертях.</div>
+<p><b>Почему так?</b> Если k = 4 &gt; 0, то при x &gt; 0 получается y = 4 : (плюс) = плюс — точка (+; +), это I четверть. При x &lt; 0: y = 4 : (минус) = минус — точка (−; −), III четверть.<br>Если k = −4, всё наоборот: при x &gt; 0 y отрицательный (IV четверть), при x &lt; 0 — положительный (II четверть).</p>
+<div class="box tip"><b>Как запомнить</b>Плюс — ветви «на диагонали» I–III (как у прямой y = x). Минус — «на другой диагонали» II–IV (как у y = −x).</div>`},
+{title:'Как k меняет форму',lvl:[4,7],html:`
+<p>Чем больше |k| (число k без знака), тем <b>дальше</b> ветви от осей и от начала координат. Чем меньше |k| — тем сильнее ветвь «прижимается» к осям.</p>
+${fig({w:300,xr:[-1,8],yr:[-1,8],curves:[{k:1,col:'var(--ok)',label:'k = 1',lx:3,lcol:'var(--ink)'},{k:4,label:'k = 4',lx:4.2,lcol:'var(--ink)'},{k:9,col:'var(--hl)',dash:'7 4',label:'k = 9',lx:5.6,lcol:'var(--ink)'}]},'Правые ветви графиков y = 1/x, y = 4/x и y = 9/x')}
+<div class="box tip"><b>Быстрая проверка по картинке</b>Посмотри, какой y при <b>x = 1</b>: он равен k (ведь k : 1 = k). У y = 4/x график проходит через (1; 4), у y = 9/x — через (1; 9). Ещё удобная точка — на «диагонали»: у y = 4/x это (2; 2), у y = 9/x — (3; 3).</div>`},
+{title:'Оси — асимптоты: ближе, ближе, но не касается',lvl:5,html:`
+<p>Посчитаем ${Yk(6)} для больших x:</p>
+${tbl([['x','1','10','100','1000'],['y','6','0,6','0,06','0,006']])}
+<p>y становится всё меньше, почти ноль — но <b>никогда не ноль</b>. Значит, ветвь всё ближе к оси Ox, но <b>не касается</b> её.</p>
+<p>А для x, близких к нулю: x = 0,1 → y = 60; x = 0,01 → y = 600. Ветвь улетает вверх, всё ближе к оси Oy, но и её не касается (x = 0 запрещён).</p>
+<div class="box rule"><b>Асимптота</b>Прямая, к которой график <b>неограниченно приближается, но не достигает</b>, называется <b>асимптотой</b>. У гиперболы ${M(`y = ${frac('k','x')}`)} асимптоты — обе оси координат.<br>Поэтому график <b>не пересекает</b> ни ось Ox, ни ось Oy и не проходит через точку (0; 0).</div>
+<div class="box tip"><b>Аналогия</b>Делишь одну пиццу на всё больше гостей: на 10, на 100, на 1000… Кусочек всё меньше, но пока пицца есть, кусок не станет ровно нулём.</div>`},
+{title:'Симметрия относительно начала координат',lvl:5,html:`
+${fig({w:260,xr:[-5,5],yr:[-5,5],curves:[{k:6}],segs:[{x1:2,y1:3,x2:-2,y2:-3}],points:[{x:2,y:3,label:'A(2; 3)'},{x:-2,y:-3,label:'B(−2; −3)'},{x:0,y:0,r:3}]})}
+<p>Точка A(2; 3) лежит на ${Yk(6)}: 2·3 = 6. Поменяем у обеих координат знак: B(−2; −3). Тоже лежит: (−2)·(−3) = 6.</p>
+<div class="box rule"><b>Правило</b>Если точка (a; b) на гиперболе, то и точка <b>(−a; −b)</b> на ней. Гипербола <b>симметрична относительно начала координат</b> O(0; 0): одна ветвь — это другая, повёрнутая на пол-оборота вокруг O.</div>
+<div class="box tip"><b>Зачем это нужно</b>Построил правую ветвь — левую получишь «бесплатно»: просто поменяй у всех точек знаки.</div>`},
+{title:'Возрастает или убывает',lvl:[5,6],html:`
+<div class="box rule"><b>Правило</b><b>k &gt; 0</b>: на каждой ветви функция <b>убывает</b> (идёшь вправо — график спускается).<br><b>k &lt; 0</b>: на каждой ветви функция <b>возрастает</b> (идёшь вправо — график поднимается).</div>
+<p>Проверим на ${Yk(6)}: x = 1 → 6, x = 2 → 3, x = 3 → 2. x растёт, y падает — убывает. Для ${Yk(-6)}: x = 1 → −6, x = 2 → −3, x = 3 → −2. −6 &lt; −3 &lt; −2 — растёт.</p>
+<div class="box err"><b>Ловушка</b>Нельзя сказать «${Yk(6)} убывает везде». Сравни x = −1 и x = 1: −1 &lt; 1, а y(−1) = −6 &lt; y(1) = 6 — тут y вырос! Убывание — <b>отдельно на каждой ветви</b> (при x &lt; 0 и при x &gt; 0), а при переходе через x = 0 график «перескакивает» на другую ветвь.</div>`},
+{title:'Сравнение значений',lvl:6,html:`
+<ol class="steps">
+<li><b>x разных знаков</b> (один &lt; 0, другой &gt; 0). Смотри только на знаки y. При k &gt; 0: y положительный при x &gt; 0 и отрицательный при x &lt; 0. Плюс всегда больше минуса.</li>
+<li><b>x одного знака</b> (оба на одной ветви). Пользуйся правилом: k &gt; 0 — убывает (больше x → меньше y); k &lt; 0 — возрастает (больше x → больше y).</li>
+<li><b>Не уверен — посчитай</b> оба значения и сравни числа.</li></ol>
+<div class="box ex"><b>Пример</b>${Yk(12)}: сравни y(3) и y(4). Оба x положительные, k &gt; 0 — убывает, значит y(3) &gt; y(4). Проверка: 12 : 3 = 4, 12 : 4 = 3, и 4 &gt; 3 ✅.</div>`},
+{title:'Определяем k по графику',lvl:7,html:`
+${fig({w:260,xr:[-5,5],yr:[-5,5],curves:[{k:-6}],points:[{x:2,y:-3,label:'(2; −3)',proj:true}]})}
+<ol class="steps"><li>Найди на графике точку, которая стоит <b>точно в узле клеток</b> (обе координаты — целые числа).</li>
+<li>Спустись от неё к осям и прочитай координаты: здесь x = 2, y = −3.</li>
+<li>Перемножь: <b>k = x·y</b> = 2·(−3) = −6. Функция ${Yk(-6)}.</li></ol>
+<div class="box tip"><b>Проверка знака</b>Ветви во II и IV четвертях → k должно быть отрицательным. Получили −6 — сходится ✅.</div>`},
+{title:'Пересечение гиперболы с прямой',lvl:8,html:`
+<p>Общая точка двух графиков — это точка, координаты которой подходят <b>к обеим формулам</b>. Поэтому приравниваем правые части.</p>
+<div class="box ex"><b>Пример 1: горизонтальная прямая</b>${Yk(6)} и y = 2. Решаем ${frac(6,'x')} = 2 → x = 6 : 2 = 3. Точка (3; 2). Одна точка: прямая y = m (m ≠ 0) пересекает гиперболу ровно один раз. А y = 0 (ось Ox) — ни разу.</div>
+<div class="box ex"><b>Пример 2: прямая y = x + 3 и ${Yk(4)}</b>Решаем ${frac(4,'x')} = x + 3. Пробуем удобные x (делители 4): x = 1 → слева 4, справа 4 ✅. x = −4 → слева −1, справа −1 ✅. Точки (1; 4) и (−4; −1).</div>
+${fig({w:280,xr:[-6,6],yr:[-6,6],curves:[{k:4,label:'y = 4/x',lx:2.8}],lines:[{m:1,b:3,label:'y = x + 3'}],points:[{x:1,y:4,label:'(1; 4)'},{x:-4,y:-1,label:'(−4; −1)'}]})}
+<div class="box rule"><b>Сколько общих точек у y = k/x и y = mx</b>Решаем ${frac('k','x')} = mx → x² = ${frac('k','m')}.<br>Если k и m <b>одного знака</b> — две точки (прямая идёт через те же четверти, что и ветви).<br>Если <b>разных знаков</b> — ни одной (прямая в «других» четвертях).</div>`},
+{title:'★ Сдвинутая гипербола и хитрые задачи',lvl:9,html:`
+<p>График ${shiftF(3,2,1)} — это обычная гипербола ${Yk(3)}, <b>сдвинутая</b> на 2 вправо и на 1 вверх.</p>
+${fig({w:280,xr:[-3,8],yr:[-4,7],curves:[{k:3,a:2,b:1}],asym:[{x:2},{y:1}],points:[{x:2,y:1,label:'(2; 1)',col:'bad'}],texts:[{x:5.5,y:5.5,t:'y = 3/(x−2) + 1'}]})}
+<div class="box rule"><b>y = k/(x − a) + b</b>Асимптоты: прямые <b>x = a</b> (там знаменатель 0) и <b>y = b</b> (дробь не бывает 0, значит y ≠ b).<br>Центр симметрии — точка <b>(a; b)</b>.<br>Прямая y = b — единственная горизонтальная прямая, у которой с графиком нет общих точек.</div>
+<div class="box err"><b>Ловушка со знаком</b>В ${shiftF(3,-2,1)} написано «x + 2» = «x − (−2)», значит a = −2: сдвиг <b>влево</b>, центр (−2; 1).</div>
+<div class="box ex"><b>Выделяем целую часть</b>${M(`y = ${frac('2x + 1','x − 1')}`)}. Числитель: 2x + 1 = 2(x − 1) + 3. Делим: ${M(`y = 2 + ${frac(3,'x − 1')}`)}. Это гипербола k = 3 с центром (1; 2).</div>
+<div class="box ex"><b>Площадь прямоугольника — всегда |k|</b>Из любой точки (x; y) гиперболы опусти перпендикуляры на оси. Получится прямоугольник со сторонами |x| и |y|, его площадь |x·y| = |k|.</div>
+${fig({w:260,xr:[-1,7],yr:[-1,7],curves:[{k:6,label:'y = 6/x',lx:5}],rects:[{x:1.5,y:4},{x:4,y:1.5}],texts:[{x:0.75,y:3,t:'S = 6'},{x:3,y:0.75,t:'S = 6'}]})}
+<div class="box tip"><b>Целые точки</b>Точка (x; y) на ${Yk(12)} с целыми координатами — это x, на который 12 делится нацело. Делители 12: 1, 2, 3, 4, 6, 12 и ещё столько же со знаком минус. Всего 12 точек.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>Обратная пропорциональность: x·y = k, ${M(`y = ${frac('k','x')}`)}, k ≠ 0, x ≠ 0, y ≠ 0.</li>
+<li>График — гипербола, две ветви, не соединяются.</li>
+<li>k &gt; 0 — I и III четверти, убывает на каждой ветви; k &lt; 0 — II и IV, возрастает.</li>
+<li>Оси — асимптоты: график к ним приближается, но не касается.</li>
+<li>Симметрия: (a; b) на графике → (−a; −b) тоже.</li>
+<li>Точка на графике ⇔ x·y = k. По точке: k = x·y.</li>
+<li>Пересечение с прямой: приравняй правые части.</li></ul>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Формулы',title:'Формулы и обозначения',rows:[
+[M(`y = ${frac('k','x')}`),'Обратная пропорциональность, «игрек равно ка, делённое на икс»','y получается делением числа k на x. Чем больше x, тем меньше |y|.',`${Yk(8)}: ${M('x = 2 → y = 4')}`],
+['k','Коэффициент обратной пропорциональности','Постоянное число в формуле. Оно равно произведению x·y для любой точки графика.',`${Yk(-5)} → ${M('k = −5')}`],
+['x·y = k','Главное свойство','Перемножь координаты любой точки графика — получишь k.',`(2; 4) на ${Yk(8)}: ${M('2·4 = 8')}`],
+['x ≠ 0','«Икс не равен нулю»','На ноль делить нельзя, поэтому x = 0 подставлять нельзя.','y = 6/0 — не существует'],
+['A(x; y)','Точка с координатами','Сначала x (вправо-влево), потом y (вверх-вниз). Между ними точка с запятой.','A(−2; 3): 2 влево, 3 вверх'],
+['Ox, Oy','Оси координат','Ox — горизонтальная ось (ось абсцисс), Oy — вертикальная (ось ординат).','O(0; 0) — начало координат'],
+['I, II, III, IV','Координатные четверти','Части плоскости. Нумерация против часовой стрелки с правой верхней.','(−1; −5) — III четверть'],
+['k &gt; 0','Положительный k','Ветви в I и III четвертях, функция убывает на каждой ветви.',Yk(3)],
+['k &lt; 0','Отрицательный k','Ветви во II и IV четвертях, функция возрастает на каждой ветви.',Yk(-3)],
+['асимптота','Прямая-«ограничитель»','График приближается к ней сколько угодно близко, но не касается.',`Ox и Oy для ${M('y = k/x')}`],
+['|k|','Модуль k («k без знака»)','Площадь прямоугольника под любой точкой гиперболы.','|−6| = 6'],
+[M(`y = ${frac('k','x − a')} + b`),'Сдвинутая гипербола','Та же гипербола, сдвинутая на a вправо и на b вверх. Центр (a; b).',`${shiftF(6,2,3)}: центр (2; 3)`]
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Всё решается одной формулой: <b>x·y = k</b>. Нашёл две координаты — нашёл k. Знаешь k и одну координату — найдёшь другую делением.</div>`};
+
+/* ---------- task helpers ---------- */
+const KP=[6,8,10,12,15,16,18,20,24,30,36];
+function pairK(k,maxAbs){ // целые точки (x; y) с x·y = k
+  maxAbs=maxAbs||99;const r=[];divs(k).forEach(d=>{[d,-d].forEach(x=>{const y=k/x;if(Math.abs(x)<=maxAbs&&Math.abs(y)<=maxAbs)r.push([x,y]);});});return r;
+}
+const okP=(k,x,y)=>x!==0&&x*y===k;
+function checkRows(k,pts){return pts.map(([x,y])=>`${P(x,y)}: ${par(x)}·${par(y)} = ${N(x*y)} ${x*y===k?'✅ = '+N(k):'❌ ≠ '+N(k)}`).join('<br>');}
+const gens=[];
+const G=(lvl,make,star)=>gens.push({lvl,make,star});
+
+/* L0 — жизнь */
+G(0,()=>{for(;;){const v1=pick([40,50,60,80,90,100,120]),t1=R(2,6),S=v1*t1;
+ const v2s=range(30,150,10).filter(v=>v!==v1&&S%v===0);if(!v2s.length)continue;const v2=pick(v2s),t2=S/v2;
+ return {type:'num',q:`Машина доехала из города в деревню за ${t1} ч со скоростью ${v1} км/ч. За сколько часов она проедет <b>этот же путь</b> со скоростью ${v2} км/ч?`,ans:t2,ph:'часов',
+ hint:'Сначала найди длину пути: скорость умножить на время.',
+ short:`Путь ${v1}·${t1} = ${S} км, время ${S} : ${v2} = ${t2} ч.`,
+ explain:`Путь один и тот же, меняются скорость и время — это <b>обратная пропорциональность</b>: v·t = путь.<br>1) Путь: ${v1}·${t1} = <b>${S} км</b>.<br>2) Новое время: ${S} : ${v2} = <b>${t2} ч</b>.<br>${v2>v1?`Скорость стала больше — время меньше, всё логично.`:`Скорость стала меньше — время больше, всё логично.`}`,
+ explain2:`Проверь себя таблицей: произведение «скорость·время» в обеих строках должно быть одинаковым.${tbl([['v, км/ч',v1,v2],['t, ч',t1,t2],['v·t',S,S]])}${v2*t2===S?'Совпало — ответ верный.':''} Если бы ты умножил время на отношение скоростей «в ту же сторону», получилось бы, что быстрее едешь — дольше в пути, а так не бывает.`};}});
+G(0,()=>{for(;;){const n1=R(2,8),d1=R(3,12),W=n1*d1;const n2s=range(2,12).filter(n=>n!==n1&&W%n===0);if(!n2s.length)continue;const n2=pick(n2s),d2=W/n2;
+ return {type:'num',q:`${n1} ${plural(n1,'рабочий','рабочих','рабочих')} строят сарай за ${d1} ${plural(d1,'день','дня','дней')}. За сколько дней построят такой же сарай ${n2} ${plural(n2,'рабочий','рабочих','рабочих')}, если все работают одинаково?`,ans:d2,ph:'дней',
+ hint:'Посчитай всю работу в «человеко-днях»: людей умножить на дни.',
+ short:`Работа ${n1}·${d1} = ${W} человеко-дней; ${W} : ${n2} = ${d2}.`,
+ explain:`Больше рабочих — меньше дней: это обратная пропорциональность. Произведение «рабочие·дни» — это вся работа, она не меняется.<br>1) Вся работа: ${n1}·${d1} = <b>${W}</b> человеко-${plural(W,'день','дня','дней')}.<br>2) Делим на ${n2} рабочих: ${W} : ${n2} = <b>${d2}</b>.`,
+ explain2:`Представь, что сарай — это ${W} кирпичных «порций», и один рабочий за день делает одну порцию. ${n2} ${plural(n2,'рабочий','рабочих','рабочих')} за день сделают ${n2} порций. Сколько дней нужно на ${W}? ${W} : ${n2} = ${d2}.<br>Проверка: ${n2}·${d2} = ${n2*d2} = ${n1}·${d1} ✅.`};}});
+G(0,()=>{const yes=pick(['Скорость поезда и время в пути на одном и том же маршруте','Число рабочих и число дней, за которые они выполнят одну и ту же работу','Число друзей и количество конфет у каждого, если один пакет делят поровну','Длина и ширина прямоугольника с одной и той же площадью 24 см²']);
+ const no=sample([['Количество одинаковых тетрадей и их общая стоимость','прямая пропорциональность: тетрадей в 2 раза больше — платишь в 2 раза больше'],['Сторона квадрата и его периметр','прямая пропорциональность: P = 4a, оба растут вместе'],['Возраст человека и его рост','формулы нет: рост с возрастом меняется как попало, а потом вообще перестаёт'],['Время в пути и пройденный путь при одной скорости','прямая пропорциональность: S = v·t, больше времени — больше путь'],['Сторона квадрата и его площадь','S = a²: сторона в 2 раза больше — площадь в 4 раза больше, это не пропорциональность']],3);
+ const opts=shuffle([yes,...no.map(x=>x[0])]);
+ return {type:'choice',q:'Какие величины <b>обратно пропорциональны</b>?',opts,ans:opts.indexOf(yes),
+ short:`«${yes}»: одна увеличивается в несколько раз — другая во столько же раз уменьшается.`,
+ explain:`Обратная пропорциональность: одна величина <b>растёт</b> в n раз — другая <b>уменьшается</b> в n раз, а их произведение постоянно.<br>• «${yes}» — да, так и есть.<br>${no.map(x=>`• «${x[0]}» — нет: ${x[1]}.`).join('<br>')}`,
+ explain2:`Проведи мысленный эксперимент: «увеличь первую величину в 2 раза». Что станет со второй?<br>• Уменьшится ровно в 2 раза → обратная пропорциональность.<br>• Увеличится в 2 раза → прямая.<br>• Что-то другое → ни то, ни другое.<br>Только для «${yes}» ответ — «уменьшится в 2 раза».`};});
+G(0,()=>{for(;;){const c=pick([12,18,24,30,36,48,60]);const ds=divs(c).filter(d=>d>1&&d<c);const [x1,x2]=sample(ds,2);if(!x2)continue;const y1=c/x1,y2=c/x2;
+ return {type:'num',q:`Величины x и y обратно пропорциональны. При x = ${x1} значение y = ${y1}. Найди y при x = ${x2}.`,ans:y2,
+ hint:'У обратно пропорциональных величин произведение x·y всегда одно и то же.',
+ short:`x·y = ${x1}·${y1} = ${c}, значит y = ${c} : ${x2} = ${y2}.`,
+ explain:`Для обратной пропорциональности <b>x·y = const</b>.<br>1) Находим это число: ${x1}·${y1} = <b>${c}</b> (это и есть k).<br>2) При x = ${x2}: y = ${c} : ${x2} = <b>${y2}</b>.`,
+ explain2:`Таблица:${tbl([['x',x1,x2],['y',y1,'?']])}Произведение в каждом столбике — ${c}. Какое число нужно умножить на ${x2}, чтобы получить ${c}? Это ${y2}: ${x2}·${y2} = ${c} ✅.`};}});
+
+/* L1 — формула */
+G(1,()=>{const k=pick(KP)*pick([1,-1]);const x=pick(divs(k).filter(d=>d<=12))*pick([1,-1]);const y=k/x;
+ return {type:'num',q:`Функция задана формулой ${Yk(k)}. Найди y при x = ${N(x)}.`,ans:y,
+ short:`y = ${N(k)} : ${par(x)} = ${N(y)}.`,
+ explain:`Подставляем x = ${N(x)} в формулу вместо x:<br>${M(`y = ${fx(k,par(x))}`)} = ${N(k)} : ${par(x)} = <b>${N(y)}</b>.<br>Знак: ${sgn(k)===sgn(x)?'числа одного знака → результат плюс':'числа разных знаков → результат минус'}.`,
+ explain2:`Проверка умножением: найденный y умножь на x — должно получиться k.<br>${par(y)}·${par(x)} = ${N(x*y)} = k ✅. Так всегда можно проверить деление: «какое число, умноженное на ${par(x)}, даст ${N(k)}?» — это ${N(y)}.`};});
+G(1,()=>{const pr=pick([[5,2],[7,2],[9,2],[3,2],[5,4],[7,4],[9,4],[3,4],[15,2],[15,4]]);const k=pr[0]*pick([1,-1]),x=pr[1]*pick([1,-1]),y=k/x;
+ return {type:'num',q:`Для функции ${Yk(k)} найди значение y при x = ${N(x)}. Ответ запиши десятичной дробью.`,ans:y,ph:'например 2,5',
+ short:`${N(k)} : ${par(x)} = ${N(y)}.`,
+ explain:`${M(`y = ${fx(k,par(x))}`)}. Делим: ${Math.abs(k)} : ${Math.abs(x)} = ${N(Math.abs(y))}. Знак ${y<0?'минус (числа разных знаков)':'плюс (числа одного знака)'}.<br>Ответ: <b>${N(y)}</b>.`,
+ explain2:`Деление не обязано быть нацело. ${Math.abs(k)} : ${Math.abs(x)} — это ${Math.floor(Math.abs(y))} целых и остаток ${Math.abs(k)%Math.abs(x)}; ${Math.abs(k)%Math.abs(x)} : ${Math.abs(x)} = ${N(Math.abs(y)%1)}. Вместе ${N(Math.abs(y))}. Проверка: ${N(y)}·${par(x)} = ${N(k)} ✅.`};});
+G(1,()=>{const k=pick([2,3,4,5,6,7,8,9,12])*pick([1,-1]);const opts=shuffle(['0',N(k),'1','−1']);
+ return {type:'choice',q:`При каком значении x формула ${Yk(k)} <b>не имеет смысла</b>?`,opts,ans:opts.indexOf('0'),
+ short:'При x = 0 пришлось бы делить на ноль, а это нельзя.',
+ explain:`x стоит в <b>знаменателе</b> дроби. Знаменатель не может быть нулём: на ноль делить нельзя. Значит, x = 0 подставить нельзя.<br>А при x = ${N(k)} получится y = 1, при x = 1 — y = ${N(k)}, при x = −1 — y = ${N(-k)}. Всё считается.`,
+ explain2:`Попробуй честно поделить ${Math.abs(k)} на 0. Деление — обратное умножению: «какое число, умноженное на 0, даст ${Math.abs(k)}?» Любое число, умноженное на 0, даёт 0, а не ${Math.abs(k)}. Такого числа нет → делить на 0 нельзя → x = 0 запрещён.`};});
+G(1,()=>{const k=pick([12,18,24,36,-12,-18,-24,-36]);const cand=shuffle(pairK(k,12).map(p=>p[0]));const xs=cand.slice(0,5).sort((a,b)=>a-b);const bi=R(0,4);const byX=Math.random()<0.5;
+ const ys=xs.map(x=>k/x);const row1=['x',...xs.map((x,i)=>!byX&&i===bi?'?':N(x))],row2=['y',...ys.map((y,i)=>byX&&i===bi?'?':N(y))];
+ const ans=byX?ys[bi]:xs[bi];
+ return {type:'num',q:`Заполни пропуск в таблице значений функции ${Yk(k)}.${tbl([row1,row2])}Какое число стоит на месте «?»?`,ans,
+ short:byX?`y = ${N(k)} : ${par(xs[bi])} = ${N(ans)}.`:`x = ${N(k)} : ${par(ys[bi])} = ${N(ans)}.`,
+ explain:byX?`Знаем x = ${N(xs[bi])}, ищем y. Подставляем: y = ${N(k)} : ${par(xs[bi])} = <b>${N(ans)}</b>.`:`Здесь неизвестен <b>x</b>, а y = ${N(ys[bi])}. Из x·y = ${N(k)} получаем x = k : y = ${N(k)} : ${par(ys[bi])} = <b>${N(ans)}</b>.`,
+ explain2:`В каждом столбике таблицы произведение x·y равно ${N(k)}: ${xs.map((x,i)=>i===bi?'':`${par(x)}·${par(ys[i])} = ${N(k)}`).filter(Boolean).join('; ')}. Найди число, которое в пустом столбике даст то же произведение: ${byX?`${par(xs[bi])}·${par(ans)}`:`${par(ans)}·${par(ys[bi])}`} = ${N(k)} ✅.`};});
+G(1,()=>{const k=pick(KP)*pick([1,-1]);const c=pick(divs(k).filter(d=>d<=12))*pick([1,-1]);const x=k/c;
+ return {type:'num',q:`Функция задана формулой ${Yk(k)}. При каком x значение функции равно ${N(c)}?`,ans:x,
+ hint:'Подставь y и подумай, на что нужно разделить k, чтобы получилось это число.',
+ short:`x = ${N(k)} : ${par(c)} = ${N(x)}.`,
+ explain:`Надо решить уравнение ${M(`${fx(k)} = ${N(c)}`)}.<br>Из x·y = k: x = k : y = ${N(k)} : ${par(c)} = <b>${N(x)}</b>.<br>Проверка: ${N(k)} : ${par(x)} = ${N(c)} ✅.`,
+ explain2:`Вопрос можно прочитать так: «на какое число нужно поделить ${N(k)}, чтобы получилось ${N(c)}?» Если ${N(k)} : x = ${N(c)}, то x = ${N(k)} : ${par(c)} = ${N(x)}. Это как «12 конфет поделили между друзьями, каждому досталось 3 — сколько друзей? 12 : 3 = 4».`};});
+G(1,()=>{const k=pick([4,6,8,10,12,-4,-6,-8,-10,-12]);const st=pick([
+ {t:`y может быть равен 0`,v:false,w:`${fx(k)} = 0 только если k = 0, а здесь k = ${N(k)}. Как ни дели ${Math.abs(k)}, ноль не получится.`,w2:`Попробуй большие x: x = 100 → y = ${N(k/100)}, x = 1000 → y = ${N(k/1000)}. Близко к нулю, но не ноль.`},
+ {t:`x может быть равен 0`,v:false,w:`x стоит в знаменателе, на ноль делить нельзя.`,w2:`Деление на 0 — вопрос «какое число, умноженное на 0, даёт ${Math.abs(k)}?» Такого числа нет.`},
+ {t:`y может быть равен 1000`,v:true,w:`Да: возьмём x = ${N(k)} : 1000 = ${N(k/1000)}. Тогда y = ${N(k)} : ${N(k/1000)} = 1000.`,w2:`Чем ближе x к нулю, тем больше |y|. При x = ${N(k/1000)} как раз получится 1000.`},
+ {t:`x может быть отрицательным`,v:true,w:`Да: например, x = −2, тогда y = ${N(k)} : (−2) = ${N(k/-2)}. Запрещён только x = 0.`,w2:`На отрицательные числа делить можно. Запрет один — делить на ноль.`},
+ {t:`при x = 1 значение y равно ${N(k)}`,v:true,w:`${N(k)} : 1 = ${N(k)}. Поэтому точка (1; k) всегда на графике.`,w2:`Любое число, делённое на 1, равно самому себе.`}]);
+ return {type:'choice',q:`Верно или неверно для функции ${Yk(k)}: <b>${st.t}</b>?`,opts:['Верно','Неверно'],ans:st.v?0:1,short:st.w,explain:st.w,explain2:st.w2};});
+
+/* L2 — точка на графике */
+G(2,()=>{for(;;){const k=pick(KP)*pick([1,-1]);const x=pick(divs(k).filter(d=>d<=10))*pick([1,-1]);const yt=k/x;const lies=Math.random()<0.5;
+ const fake=pick([-yt,k*x,yt+1]);const y=lies?yt:fake;if(!lies&&(y===yt||x*y===k||Math.abs(y)>200))continue;
+ return {type:'choice',q:`Лежит ли точка ${M('A'+P(x,y))} на графике функции ${Yk(k)}?`,opts:['Да, лежит','Нет, не лежит'],ans:lies?0:1,
+ short:`При x = ${N(x)}: y = ${N(k)} : ${par(x)} = ${N(yt)}${lies?' — совпало.':` ≠ ${N(y)}.`}`,
+ explain:`Подставим x = ${N(x)} в формулу: y = ${N(k)} : ${par(x)} = <b>${N(yt)}</b>.<br>У точки A второе число ${N(y)}. ${lies?'Совпадает → точка <b>лежит</b> на графике.':`Не совпадает (${N(yt)} ≠ ${N(y)}) → точка <b>не лежит</b>.`}${!lies&&y===k*x?'<br>Похоже, кто-то умножил k на x вместо деления. В формуле — деление!':''}`,
+ explain2:`Быстрый способ: перемножь координаты. На графике ${Yk(k)} у каждой точки x·y = ${N(k)}.<br>${par(x)}·${par(y)} = ${N(x*y)}. ${x*y===k?'Равно k ✅ — лежит.':`Не равно ${N(k)} ❌ — не лежит.`}`};}});
+G(2,()=>{const p=nz(-6,6),q=nz(-8,8);const k=p*q;
+ return {type:'num',q:`График функции ${M(`y = ${frac('k','x')}`)} проходит через точку ${M('M'+P(p,q))}. Найди k.`,ans:k,
+ short:`k = x·y = ${par(p)}·${par(q)} = ${N(k)}.`,
+ explain:`Раз точка на графике, её координаты подходят к формуле: ${M(`${N(q)} = ${frac('k',par(p))}`)}.<br>Чтобы найти делимое, умножаем частное на делитель: k = ${par(q)}·${par(p)} = <b>${N(k)}</b>.<br>Короче: <b>k = x·y</b>.`,
+ explain2:`Проверка: функция ${Yk(k)}. Подставим x = ${N(p)}: y = ${N(k)} : ${par(p)} = ${N(k/p)} — как у точки M ✅.<br>И знак сходится: точка в ${QN[quarterOf(p,q)]} четверти, а ${k>0?'k > 0 — ветви в I и III':'k < 0 — ветви во II и IV'}.`};});
+G(2,()=>{for(;;){const k=pick([6,8,12,-6,-8,-12,10,-10]);const good=sample(pairK(k,12),R(2,3));const cand=[];
+ good.forEach(([x,y])=>cand.push([x,y]));
+ const [gx,gy]=pick(pairK(k,12));[[gx,-gy],[-gx,gy],[gx,gy+1],[gy===0?1:gx+1,gy]].forEach(p=>cand.push(p));
+ const uniq=[];cand.forEach(p=>{if(p[0]!==0&&!uniq.some(q=>q[0]===p[0]&&q[1]===p[1]))uniq.push(p);});
+ const opts5=shuffle(uniq).slice(0,5);const ansI=opts5.map((p,i)=>okP(k,p[0],p[1])?i:-1).filter(i=>i>=0);
+ if(ansI.length<1||ansI.length===opts5.length||opts5.length<4)continue;
+ return {type:'multi',q:`Какие точки лежат на графике функции ${Yk(k)}? Выбери все.`,opts:opts5.map(p=>P(p[0],p[1])),ans:ansI,
+ short:`На графике те точки, где x·y = ${N(k)}.`,
+ explain:`Для каждой точки перемножаем координаты и сравниваем с k = ${N(k)}:<br>${checkRows(k,opts5)}`,
+ explain2:`Можно подставлять x и считать y. Например: ${opts5.slice(0,3).map(([x,y])=>`x = ${N(x)} → y = ${N(k)} : ${par(x)} = ${N(k/x)}${k/x===y?' — совпало':` (а у точки ${N(y)})`}`).join('; ')}.<br>Обрати внимание на знаки: ${k>0?'при k > 0 у координат точки должны быть <b>одинаковые</b> знаки':'при k < 0 у координат точки должны быть <b>разные</b> знаки'}.`};}});
+G(2,()=>{for(;;){const p=nz(-5,5),q=nz(-6,6);const k=p*q;if(Math.abs(k)<4)continue;const rs=divs(k).map(d=>d*pick([1,-1])).filter(r=>r!==p&&Math.abs(r)<=12);if(!rs.length)continue;const r=pick(rs),y=k/r;
+ return {type:'num',q:`График функции ${M(`y = ${frac('k','x')}`)} проходит через точку ${M(P(p,q))}. Найди значение этой функции при x = ${N(r)}.`,ans:y,
+ hint:'Сначала найди k по точке, потом подставь новый x.',
+ short:`k = ${par(p)}·${par(q)} = ${N(k)}; y = ${N(k)} : ${par(r)} = ${N(y)}.`,
+ explain:`Два шага.<br>1) Находим k: k = x·y = ${par(p)}·${par(q)} = <b>${N(k)}</b>. Функция ${Yk(k)}.<br>2) Подставляем x = ${N(r)}: y = ${N(k)} : ${par(r)} = <b>${N(y)}</b>.`,
+ explain2:`Без поиска формулы: у всех точек графика произведение одно и то же. ${par(p)}·${par(q)} = ${N(k)}, значит ${par(r)}·y = ${N(k)}, y = ${N(y)}.${tbl([['x',N(p),N(r)],['y',N(q),'?'],['x·y',N(k),N(k)]])}`};}});
+
+/* L3 — таблица и точки */
+G(3,()=>{const k=pick([12,-12,6,-6,8,-8]);const xs=shuffle(pairK(k,12).map(p=>p[0])).slice(0,4).sort((a,b)=>a-b);
+ const T0={n:'k/x',f:x=>k/x},F=[{n:'kx',f:x=>k*x,w:`это y = ${N(k)}·x — умножение вместо деления`},{n:'-k/x',f:x=>-k/x,w:`знаки перепутаны: это y = ${N(-k)}/x`},{n:'k-x',f:x=>k-x,w:`это y = ${N(k)} − x, произведения разные`}];
+ const mk=f=>tbl([['x',...xs.map(N)],['y',...xs.map(x=>N(f(x)))]]);
+ const all=shuffle([T0,...F]);
+ return {type:'choice',q:`Какая таблица — это таблица значений функции ${Yk(k)}?`,opts:all.map(o=>mk(o.f)),ans:all.indexOf(T0),ansText:mk(T0.f),
+ short:`В правильной таблице в каждом столбике x·y = ${N(k)}.`,
+ explain:`Проверяем любой столбик: должно быть x·y = ${N(k)}. Возьмём x = ${N(xs[0])}: y = ${N(k)} : ${par(xs[0])} = ${N(k/xs[0])}.<br>Ищем таблицу, где под ${N(xs[0])} стоит ${N(k/xs[0])}, и проверяем остальные: ${xs.map(x=>`${par(x)}·${par(k/x)} = ${N(k)}`).join('; ')} ✅.<br>Остальные таблицы: ${F.map(o=>o.w).join('; ')}.`,
+ explain2:`Совсем короткий признак: у ${Yk(k)} при <b>x = 1</b> всегда y = k, а при ${k>0?'k > 0 знаки x и y совпадают':'k < 0 знаки x и y разные'}. ${k>0?'Значит, в правильной таблице под отрицательными x — отрицательные y, под положительными — положительные.':'Значит, в правильной таблице под отрицательными x — положительные y и наоборот.'} И самое надёжное: перемножь числа в столбике — должно получиться ${N(k)}.`};});
+G(3,()=>{for(;;){const k=pick([6,-6,4,-4,8,-8]);const pts=sample(pairK(k,6),4);const [bx,by]=pick(pairK(k,6));
+ const bad=[bx,-by];if(pts.some(q=>q[0]===bad[0]&&q[1]===bad[1]))continue;const all=shuffle(pts.concat([bad]));const L=['A','B','C','D','E'];const bi=all.indexOf(bad);
+ const pic=plot({w:280,xr:[-7,7],yr:[-7,7],points:all.map((p,i)=>({x:p[0],y:p[1],label:L[i]}))});
+ return {type:'choice',q:`Артём отметил точки, чтобы построить график ${Yk(k)}. Одну точку он отметил <b>неправильно</b>. Какую?`,pic,opts:L,ans:bi,ansText:`${L[bi]}${P(bad[0],bad[1])}`,
+ short:`${L[bi]}${P(bad[0],bad[1])}: ${par(bad[0])}·${par(bad[1])} = ${N(bad[0]*bad[1])} ≠ ${N(k)}.`,
+ explain:`Прочитаем координаты каждой точки и перемножим (должно быть ${N(k)}):<br>${all.map((p,i)=>`${L[i]}${P(p[0],p[1])}: ${par(p[0])}·${par(p[1])} = ${N(p[0]*p[1])} ${p[0]*p[1]===k?'✅':'❌'}`).join('<br>')}<br>Ошибка в точке <b>${L[bi]}</b>: правильная точка с x = ${N(bad[0])} — это ${P(bad[0],-bad[1])}. Артём перепутал знак y.`,
+ explain2:`Нарисуем настоящий график — сразу видно, какая точка «выпала»:<div class="fig">${plot({w:280,xr:[-7,7],yr:[-7,7],curves:[{k}],points:all.map((p,i)=>({x:p[0],y:p[1],label:L[i],col:i===bi?'bad':undefined}))})}</div>Ещё подсказка: при ${k>0?'k > 0 точки должны быть только в I и III четвертях':'k < 0 точки должны быть только во II и IV четвертях'}, а точка ${L[bi]} — в ${QN[quarterOf(bad[0],bad[1])]} четверти.`};}});
+
+/* L4 — четверти */
+G(4,()=>{const k=pick([2,3,5,7,8,10,12,15,0.5])*pick([1,-1]);const opts=['I и III','II и IV','I и II','III и IV'];const ans=k>0?0:1;
+ return {type:'choice',q:`В каких координатных четвертях расположен график функции ${Yk(k)}?`,opts:opts.map(o=>o+' четверти'),ans,
+ short:`k = ${N(k)} ${k>0?'> 0 → I и III':'< 0 → II и IV'}.`,
+ explain:`Смотрим на знак k. Здесь k = ${N(k)} ${k>0?'— положительное':'— отрицательное'}.<br>${k>0?'При x > 0 y положительный (точки (+; +), I четверть), при x < 0 — отрицательный ((−; −), III четверть).':'При x > 0 y отрицательный (точки (+; −), IV четверть), при x < 0 — положительный ((−; +), II четверть).'}<br>Ответ: <b>${opts[ans]}</b>. Варианты «I и II», «III и IV» невозможны: гипербола симметрична относительно начала координат, ветви всегда в противоположных четвертях.`,
+ explain2:`Подставь два числа: x = 1 → y = ${N(k)}, точка ${P(1,k)} — ${QN[quarterOf(1,k)]} четверть. x = −1 → y = ${N(-k)}, точка ${P(-1,-k)} — ${QN[quarterOf(-1,-k)]} четверть.<div class="fig">${plot({w:220,xr:[-6,6],yr:[-6,6],curves:[{k}],quarters:true,ticks:false})}</div>`};});
+G(4,()=>{const c=pick([2,3,4,6]),k=c*pick([1,-1]);
+ const o=[{t:'ok',s:plot({w:200,curves:[{k}]})},{t:'opp',s:plot({w:200,curves:[{k:-k}]})},{t:'line',s:plot({w:200,lines:[{m:sgn(k),b:0,col:'var(--accent)'}]})},{t:'half',s:plot({w:200,curves:[{k,only:-1}]})}];
+ const all=shuffle(o);
+ return {type:'choice',pics:true,q:`Какой из рисунков — график функции ${Yk(k)}?`,opts:all.map(x=>x.s),ans:all.findIndex(x=>x.t==='ok'),ansText:`гипербола из двух ветвей в ${quartersK(k)} четвертях`,
+ short:`k = ${N(k)} ${k>0?'> 0':'< 0'} → две ветви в ${quartersK(k)} четвертях.`,
+ explain:`График ${Yk(k)} — <b>гипербола</b>, у неё <b>две ветви</b>. Так как k = ${N(k)} ${k>0?'> 0':'< 0'}, ветви в <b>${quartersK(k)}</b> четвертях.<br>Почему не другие:<br>• гипербола в ${quartersK(-k)} четвертях — это ${Yk(-k)}, знак другой;<br>• прямая — это график ${M(lineT(sgn(k),0))}, а не гиперболы (прямая проходит через (0; 0), а гипербола — нет);<br>• одна ветвь — это только половина графика, правая часть потеряна.`,
+ explain2:`Проверь по точке: при x = 1 должно быть y = ${N(k)}, при x = −1 — y = ${N(-k)}. Найди рисунок, где линия проходит через ${P(1,k)} <b>и</b> через ${P(-1,-k)} и при этом не пересекает оси.<div class="fig">${plot({w:220,curves:[{k}],points:[{x:1,y:k,label:P(1,k)},{x:-1,y:-k,label:P(-1,-k)}]})}</div>`};});
+G(4,()=>{const k=pick([2,3,4,6,8,9])*pick([1,-1]);
+ return {type:'choice',q:`На рисунке — график функции ${M(`y = ${frac('k','x')}`)}. Какой знак у k?`,pic:plot({w:260,curves:[{k}]}),opts:['k > 0','k < 0'],ans:k>0?0:1,
+ short:`Ветви в ${quartersK(k)} четвертях → ${k>0?'k > 0':'k < 0'}.`,
+ explain:`Смотрим, где ветви: в <b>${quartersK(k)}</b> четвертях. ${k>0?'I и III — значит x и y одного знака, их произведение k положительно: <b>k > 0</b>.':'II и IV — значит x и y разных знаков, их произведение k отрицательно: <b>k < 0</b>.'}`,
+ explain2:`Возьми любую точку справа от оси Oy (x > 0). Она ${k>0?'выше':'ниже'} оси Ox, значит y ${k>0?'> 0':'< 0'}. k = x·y = (плюс)·(${k>0?'плюс':'минус'}) = ${k>0?'плюс':'минус'}. Например, точка ${P(1,k)}: k = 1·${par(k)} = ${N(k)}.`};});
+G(4,()=>{const x=nz(-9,9),y=nz(-9,9);const q=quarterOf(x,y);const opts=QN.map(t=>t+' четверть');
+ return {type:'choice',q:`В какой координатной четверти лежит точка ${M(P(x,y))}?`,opts,ans:q,
+ short:`x ${x>0?'> 0':'< 0'}, y ${y>0?'> 0':'< 0'} → ${QN[q]} четверть.`,
+ explain:`Смотрим на знаки: x = ${N(x)} ${x>0?'плюс':'минус'}, y = ${N(y)} ${y>0?'плюс':'минус'} → (${x>0?'+':'−'}; ${y>0?'+':'−'}).<br>I — (+; +), II — (−; +), III — (−; −), IV — (+; −). Ответ: <b>${QN[q]}</b>.`,
+ explain2:`Иди от начала координат: на ${Math.abs(x)} ${x>0?'вправо':'влево'}, потом на ${Math.abs(y)} ${y>0?'вверх':'вниз'}.<div class="fig">${plot({w:220,xr:[-10,10],yr:[-10,10],quarters:true,ticks:false,points:[{x,y,label:P(x,y),proj:true}]})}</div>Четверти нумеруем против часовой стрелки, начиная с правой верхней.`};});
+G(4,()=>{const p=nz(-6,6),q=nz(-6,6);const k=p*q;const opts=['I и III','II и IV','I и II','III и IV'].map(o=>o+' четвертях');const ans=k>0?0:1;
+ return {type:'choice',q:`График функции ${M(`y = ${frac('k','x')}`)} проходит через точку ${M(P(p,q))}. В каких четвертях лежит график?`,opts,ans,
+ short:`k = ${par(p)}·${par(q)} = ${N(k)} ${k>0?'> 0':'< 0'} → ${quartersK(k)}.`,
+ explain:`1) Находим k: k = ${par(p)}·${par(q)} = ${N(k)}.<br>2) k ${k>0?'> 0 → ветви в I и III':'< 0 → ветви во II и IV'} четвертях.`,
+ explain2:`Можно без вычислений. Точка ${P(p,q)} в ${QN[quarterOf(p,q)]} четверти — значит, там одна ветвь. Вторая ветвь симметрична ей относительно начала координат, то есть в противоположной четверти: ${QN[quarterOf(-p,-q)]}. Вместе: ${quartersK(k)}.`};});
+
+/* L5 — свойства */
+G(5,()=>{for(;;){const p=nz(-6,6),q=nz(-6,6);if(Math.abs(p)===Math.abs(q))continue;const k=p*q;const ok=P(-p,-q);const d=[P(-p,q),P(p,-q),P(-q,p)];const opts=shuffle([ok,...d]);if(new Set(opts).size<4)continue;
+ return {type:'choice',q:`Точка ${M('A'+P(p,q))} лежит на графике функции ${M(`y = ${frac('k','x')}`)}. Какая из точек <b>тоже обязательно</b> лежит на этом графике?`,opts,ans:opts.indexOf(ok),
+ short:`Гипербола симметрична относительно O: меняем оба знака → ${ok}.`,
+ explain:`k = ${par(p)}·${par(q)} = ${N(k)}. Проверим варианты (нужно x·y = ${N(k)}):<br>${opts.map(o=>{const m=o.match(/\((.+); (.+)\)/);const a=H.parseNum(m[1]),b=H.parseNum(m[2]);return `${o}: ${par(a)}·${par(b)} = ${N(a*b)} ${a*b===k?'✅':'❌'}`;}).join('<br>')}<br>Подходит только <b>${ok}</b> — у неё поменяли знак у <b>обеих</b> координат.`,
+ explain2:`Гипербола симметрична относительно начала координат. Если повернуть картинку на пол-оборота вокруг O, точка ${P(p,q)} перейдёт в ${ok}.<div class="fig">${plot({w:240,xr:[-7,7],yr:[-7,7],curves:[{k}],segs:[{x1:p,y1:q,x2:-p,y2:-q}],points:[{x:p,y:q,label:'A'},{x:-p,y:-q,label:"A'",col:'ok'},{x:0,y:0,r:3}]})}</div>Минус на минус даёт плюс, поэтому произведение не меняется: ${par(-p)}·${par(-q)} = ${N(k)}.`};}});
+G(5,()=>{const k=pick([2,3,4,5,6,8,-2,-3,-4,-5,-6,-8]);const st=pick([
+ {t:`График пересекает ось Ox`,v:false,w:`Чтобы пересечь ось Ox, нужно y = 0. Но ${fx(k)} = 0 невозможно (k = ${N(k)} ≠ 0). График только приближается к оси Ox.`,w2:`Посчитай при больших x: x = 10 → ${N(k/10)}, x = 100 → ${N(k/100)}, x = 1000 → ${N(k/1000)}. Всё ближе к нулю, но ноль никогда.`},
+ {t:`График пересекает ось Oy`,v:false,w:`На оси Oy x = 0, а x = 0 подставлять нельзя. График лишь приближается к оси Oy.`,w2:`Подставь x, близкие к 0: x = 0,1 → y = ${N(k*10)}; x = 0,01 → y = ${N(k*100)}. y уходит всё дальше, а x = 0 так и не наступает.`},
+ {t:`График проходит через точку (0; 0)`,v:false,w:`x = 0 нельзя подставлять, поэтому точки с x = 0 на графике нет вовсе.`,w2:`Проверь умножением: 0·0 = 0 ≠ ${N(k)}. Не лежит.`},
+ {t:`График состоит из двух ветвей, которые не соединяются`,v:true,w:`Да. Ветви разделены осью Oy: при x = 0 функция не существует, поэтому перейти с одной ветви на другую нельзя.`,w2:`Представь реку на месте оси Oy без моста: на один берег попадают все x < 0, на другой — все x > 0.`},
+ {t:`Оси координат — асимптоты графика`,v:true,w:`Да: график неограниченно приближается к осям Ox и Oy, но не касается их.`,w2:`Асимптота — это «линия, к которой подходишь всё ближе, но никогда не дойдёшь». Для гиперболы ${Yk(k)} это обе оси.`},
+ {t:`При больших x график почти сливается с осью Ox, но не касается её`,v:true,w:`Да: при x = 1000 y = ${N(k/1000)} — почти ноль, но не ноль.`,w2:`Делишь ${Math.abs(k)} на огромное число — получаешь крошечное, но не нулевое число.`}]);
+ return {type:'choice',q:`Верно или неверно про график функции ${Yk(k)}: <b>${st.t}</b>?`,opts:['Верно','Неверно'],ans:st.v?0:1,short:st.w,explain:st.w,
+ explain2:st.w2+`<div class="fig">${plot({w:220,curves:[{k}]})}</div>`};});
+G(5,()=>{const k=pick([2,4,6,8,12,-2,-4,-6,-8,-12]);const side=pick([1,-1]);const inc=k<0;const a=side>0?1:-4,b=side>0?4:-1;const ya=k/a,yb=k/b;
+ return {type:'choice',q:`Как ведёт себя функция ${Yk(k)} при ${side>0?'x > 0':'x < 0'}?`,opts:['Возрастает','Убывает'],ans:inc?0:1,
+ short:`k = ${N(k)} ${k>0?'> 0 → убывает':'< 0 → возрастает'} на каждой ветви.`,
+ explain:`Правило: k &gt; 0 — функция убывает на каждой ветви, k &lt; 0 — возрастает. Здесь k = ${N(k)}, значит <b>${inc?'возрастает':'убывает'}</b>.<br>Проверка числами: x = ${N(a)} → y = ${N(ya)}; x = ${N(b)} → y = ${N(yb)}. x увеличился, а y ${yb>ya?'тоже увеличился':'уменьшился'}.`,
+ explain2:`Представь, что идёшь по ${side>0?'правой':'левой'} ветви слева направо, как по горке:<div class="fig">${plot({w:220,curves:[{k,only:side}],points:[{x:a,y:ya,label:P(a,ya)},{x:b,y:yb,label:P(b,yb)}]})}</div>${inc?'Дорога идёт вверх — функция возрастает.':'Дорога идёт вниз — функция убывает.'}`};});
+G(5,()=>{const k=pick([3,5,6,7,8,12,-3,-5,-6,-8,-12]);const opts=shuffle(['0',N(k),'1','становится всё больше и больше']);
+ return {type:'choice',q:`Для функции ${Yk(k)} посчитали:${tbl([['x','10','100','1000','10000'],['y',N(k/10),N(k/100),N(k/1000),N(k/10000)]])}К какому числу приближается y, если x становится всё больше?`,opts,ans:opts.indexOf('0'),
+ short:`y всё ближе к 0 — ось Ox является асимптотой.`,
+ explain:`Смотри на нижнюю строку: ${N(k/10)}, ${N(k/100)}, ${N(k/1000)}, ${N(k/10000)}… Каждое следующее в 10 раз ближе к нулю. Значит, y <b>приближается к 0</b>, но не становится нулём. Поэтому график прижимается к оси Ox, не касаясь её.`,
+ explain2:`Это как делить один торт ${Math.abs(k)} кг на всё большее число гостей: на 10, 100, 1000… Каждому достаётся всё меньше, почти ничего — но всё-таки не ноль. Вариант «${N(k)}» — это y при x = 1, а не при больших x.`};});
+G(5,()=>{for(;;){const k=pick([2,3,4,5,6,-2,-3,-4,-5,-6]);const pool=[
+ {t:'График лежит в I и III четвертях',v:k>0,w:k>0?'k > 0':'k < 0, значит II и IV'},
+ {t:'График лежит во II и IV четвертях',v:k<0,w:k<0?'k < 0':'k > 0, значит I и III'},
+ {t:`График проходит через точку ${P(1,k)}`,v:true,w:`1·${par(k)} = ${N(k)}`},
+ {t:`График проходит через точку ${P(-1,k)}`,v:false,w:`(−1)·${par(k)} = ${N(-k)} ≠ ${N(k)}`},
+ {t:'График пересекает ось Oy',v:false,w:'x = 0 нельзя'},
+ {t:'При x > 0 функция убывает',v:k>0,w:k>0?'k > 0 — убывает':'k < 0 — возрастает'},
+ {t:'При x < 0 функция возрастает',v:k<0,w:k<0?'k < 0 — возрастает':'k > 0 — убывает'},
+ {t:'y может принимать любое значение, кроме 0',v:true,w:`для любого y ≠ 0 найдётся x = ${N(k)} : y`}];
+ const opts=sample(pool,5);const ans=opts.map((o,i)=>o.v?i:-1).filter(i=>i>=0);if(!ans.length||ans.length===5)continue;
+ return {type:'multi',q:`Выбери все <b>верные</b> утверждения про функцию ${Yk(k)}.`,opts:opts.map(o=>o.t),ans,
+ short:opts.map(o=>`${o.v?'✅':'❌'} ${o.t} (${o.w})`).join('<br>'),
+ explain:`Разбираем каждое (k = ${N(k)} ${k>0?'> 0':'< 0'}):<br>${opts.map(o=>`• ${o.t} — <b>${o.v?'верно':'неверно'}</b>: ${o.w}.`).join('<br>')}`,
+ explain2:`Посмотри на график и проверяй утверждения глазами:<div class="fig">${plot({w:240,curves:[{k,label:T(k)}],points:[{x:1,y:k,label:P(1,k)}]})}</div>Ветви в ${quartersK(k)} четвертях; идя вправо по ветви, линия ${k>0?'спускается (убывает)':'поднимается (возрастает)'}; оси она не пересекает.`};}});
+
+/* L6 — сравнение */
+G(6,()=>{for(;;){const k0=pick([1,-1]);const s=pick([1,-1]);const [x1,x2]=sample([1,2,3,4,5,6],2).map(v=>v*s);const L=H.lcm(x1,x2)*pick([1,2]);const k=k0*L;const y1=k/x1,y2=k/x2;const opts=['>','<','='];const ans=y1>y2?0:y1<y2?1:2;
+ return {type:'choice',q:`Сравни значения функции ${Yk(k)}: ${M(`y(${N(x1)}) ? y(${N(x2)})`)}. Какой знак поставить вместо «?»?`,opts,ans,
+ short:`y(${N(x1)}) = ${N(y1)}, y(${N(x2)}) = ${N(y2)} → ${opts[ans]}.`,
+ explain:`Оба x ${s>0?'положительные':'отрицательные'} — это одна ветвь. k = ${N(k)} ${k>0?'> 0, функция убывает: больше x → меньше y':'< 0, функция возрастает: больше x → больше y'}.<br>${N(x1)} ${x1>x2?'>':'<'} ${N(x2)}, поэтому y(${N(x1)}) <b>${opts[ans]}</b> y(${N(x2)}).<br>Проверка: ${N(k)} : ${par(x1)} = ${N(y1)}, ${N(k)} : ${par(x2)} = ${N(y2)}.${k>0&&s>0?'':' Типичная ошибка — думать «больше x — больше y». Для гиперболы это зависит от знака k!'}`,
+ explain2:`Просто посчитай оба значения и сравни числа:${tbl([['x',N(x1),N(x2)],['y',N(y1),N(y2)]])}${N(y1)} ${opts[ans]} ${N(y2)}. ${y1<0&&y2<0?'Помни: из двух отрицательных больше то, что ближе к нулю.':''}`};}});
+G(6,()=>{const k=pick([2,3,5,7,10,12])*pick([1,-1]);const a=-R(1,9),b=R(1,9);const swap=Math.random()<0.5;const x1=swap?b:a,x2=swap?a:b;const y1=k/x1,y2=k/x2;const opts=['>','<','='];const ans=y1>y2?0:1;
+ return {type:'choice',q:`Сравни: ${M(`y(${N(x1)}) ? y(${N(x2)})`)} для функции ${Yk(k)}.`,opts,ans,
+ short:`Значения разных знаков: ${y1>0?'первое плюс':'первое минус'}, ${y2>0?'второе плюс':'второе минус'}.`,
+ explain:`Здесь x разных знаков, значит точки на <b>разных ветвях</b>. Считать не обязательно — достаточно знаков.<br>k = ${N(k)}: при x &gt; 0 y ${k>0?'положительный':'отрицательный'}, при x &lt; 0 — ${k>0?'отрицательный':'положительный'}.<br>y(${N(x1)}) ${y1>0?'> 0':'< 0'}, y(${N(x2)}) ${y2>0?'> 0':'< 0'}. Положительное больше отрицательного: <b>${opts[ans]}</b>.<br>Ловушка: правило «${k>0?'убывает':'возрастает'}» работает только на одной ветви, тут его применять нельзя.`,
+ explain2:`Посчитаем: y(${N(x1)}) = ${N(k)} : ${par(x1)} ${Number.isInteger(y1)?'= '+N(y1):'≈ '+N(Math.round(y1*100)/100)}; y(${N(x2)}) = ${N(k)} : ${par(x2)} ${Number.isInteger(y2)?'= '+N(y2):'≈ '+N(Math.round(y2*100)/100)}. Знаки разные — плюс больше минуса.`};});
+G(6,()=>{for(;;){const k=pick([12,24,-12,-24,36,-36]);const xs=sample(divs(k).filter(d=>d<=12).flatMap(d=>[d,-d]),3);const ys=xs.map(x=>k/x);const mx=Math.max(...ys);const i=ys.indexOf(mx);
+ const opts=xs.map(x=>`y(${N(x)})`);if(new Set(ys).size<3)continue;
+ return {type:'choice',q:`Для функции ${Yk(k)} какое из значений <b>наибольшее</b>?`,opts,ans:i,
+ short:`${xs.map((x,j)=>`y(${N(x)}) = ${N(ys[j])}`).join(', ')}.`,
+ explain:`Считаем каждое:<br>${xs.map((x,j)=>`y(${N(x)}) = ${N(k)} : ${par(x)} = ${N(ys[j])}`).join('<br>')}<br>Наибольшее — <b>${N(mx)}</b>, это y(${N(xs[i])}).`,
+ explain2:`Сначала смотри на знаки: ${k>0?'при k > 0 большие значения дают положительные x':'при k < 0 положительные значения дают отрицательные x'}. ${(()=>{const pos=xs.filter(x=>k/x>0);return pos.length>1?`Среди них (${pos.map(N).join(', ')}) больше y у того x, который ближе к нулю: делим на меньшее по модулю число.`:pos.length===1?`Такой x один — ${N(pos[0])}, он и даёт наибольшее.`:'Положительных значений нет — из отрицательных больше то, что ближе к нулю.';})()}`};}});
+
+/* L7 — читаем график */
+G(7,()=>{for(;;){const p=R(1,5),q=R(1,5);if(p*q<2)continue;const s=pick([1,-1]),sx=pick([1,-1]);const k=s*p*q;const px=sx*p,py=k/px;
+ return {type:'num',q:`На рисунке — график функции ${M(`y = ${frac('k','x')}`)}. Отмеченная точка стоит в узле клеток. Найди k.`,pic:plot({w:280,curves:[{k}],points:[{x:px,y:py,proj:true}]}),ans:k,
+ hint:'Прочитай координаты отмеченной точки и перемножь их.',
+ short:`Точка ${P(px,py)}: k = ${par(px)}·${par(py)} = ${N(k)}.`,
+ explain:`1) Читаем координаты точки: x = ${N(px)} (по горизонтали), y = ${N(py)} (по вертикали).<br>2) k = x·y = ${par(px)}·${par(py)} = <b>${N(k)}</b>.<br>3) Проверка знаком: ветви в ${quartersK(k)} четвертях → k ${k>0?'> 0':'< 0'} ✅.`,
+ explain2:`Проверь по другой точке графика. Симметричная точка ${P(-px,-py)} тоже на графике, и ${par(-px)}·${par(-py)} = ${N(k)}. Также при x = 1 у графика y = ${N(k)}${Math.abs(k)<=6?' — найди это место на рисунке':' (это выше рамки рисунка, поэтому пользуемся узлом клеток)'}.${tbl([['x',N(px),N(-px),'1'],['y',N(py),N(-py),N(k)]])}`};}});
+G(7,()=>{for(;;){const t=pick([2,3,4,6,8])*pick([1,-1]);const others=sample([1,2,3,4,6,8,9,12].filter(v=>v!==Math.abs(t)),2).map(v=>v*sgn(t));const ks=shuffle([t,-t,...others]);
+ return {type:'choice',pics:true,q:`Какой из графиков — график функции ${Yk(t)}?`,opts:ks.map(k=>plot({w:200,curves:[{k}]})),ans:ks.indexOf(t),ansText:`гипербола через точку ${P(1,t)}${Math.abs(t)%2===0?` и ${P(2,t/2)}`:''} в ${quartersK(t)} четвертях`,
+ short:`Ветви в ${quartersK(t)} четвертях и через ${P(1,t)}.`,
+ explain:`Два шага.<br>1) Знак: k = ${N(t)} ${t>0?'> 0 → I и III':'< 0 → II и IV'} четверти. Это отсекает гиперболу ${Yk(-t)}.<br>2) Размер: при x = 1 должно быть y = ${N(t)}${Math.abs(t)%2===0?`, при x = 2 — y = ${N(t/2)}`:`, при x = ${N(t)} — y = 1`}. На неправильных графиках ветвь проходит ${others.map(o=>`через ${P(1,o)}`).join(' или ')} — это ${others.map(o=>Yk(o)).join(' и ')}.`,
+ explain2:`Правило «чем больше |k|, тем дальше ветви от осей». |k| = ${Math.abs(t)}. Сравни с другими: ${others.map(o=>`у ${Yk(o)} ветвь ${Math.abs(o)>Math.abs(t)?'дальше от осей':'ближе к осям'}`).join(', ')}.<div class="fig">${plot({w:220,curves:[{k:t}],points:[{x:1,y:t,label:P(1,t)}].concat(Math.abs(t)%2===0?[{x:2,y:t/2,label:P(2,t/2)}]:[])})}</div>`};}});
+G(7,()=>{for(;;){const p=R(1,5),q=R(1,5);const s=pick([1,-1]);const k=s*p*q;if(Math.abs(k)<4)continue;const px=pick([1,-1])*p,py=k/px;const rs=divs(k).flatMap(d=>[d,-d]).filter(r=>r!==px&&r!==-px&&Math.abs(r)<=12);if(!rs.length)continue;const r=pick(rs),y=k/r;
+ return {type:'num',q:`На рисунке — график функции ${M(`y = ${frac('k','x')}`)}. Найди значение функции при x = ${N(r)}.`,pic:plot({w:280,curves:[{k}],points:[{x:px,y:py,proj:true,label:'A'}]}),ans:y,
+ hint:'Сначала по точке A найди k.',
+ short:`A${P(px,py)}: k = ${N(k)}; y(${N(r)}) = ${N(k)} : ${par(r)} = ${N(y)}.`,
+ explain:`1) Точка A${P(px,py)} на графике → k = ${par(px)}·${par(py)} = ${N(k)}. Функция ${Yk(k)}.<br>2) y(${N(r)}) = ${N(k)} : ${par(r)} = <b>${N(y)}</b>.`,
+ explain2:`Таблица: у всех точек произведение одинаковое.${tbl([['x',N(px),N(r)],['y',N(py),'?'],['x·y',N(k),N(k)]])}${par(r)}·? = ${N(k)} → ? = ${N(y)}.${Math.abs(y)<=6&&Math.abs(r)<=6?' Можешь найти эту точку и на рисунке.':''}`};}});
+
+/* L8 — пересечение с прямой */
+G(8,()=>{const k=pick(KP)*pick([1,-1]);const c=pick(divs(k).filter(d=>d<=12))*pick([1,-1]);const x=k/c;
+ return {type:'num',q:`Найди абсциссу (x) точки пересечения графиков ${Yk(k)} и ${M('y = '+N(c))}.`,ans:x,
+ short:`${fx(k)} = ${N(c)} → x = ${N(k)} : ${par(c)} = ${N(x)}.`,
+ explain:`В общей точке y одинаковые, поэтому приравниваем: ${M(`${fx(k)} = ${N(c)}`)}.<br>x = ${N(k)} : ${par(c)} = <b>${N(x)}</b>. Точка пересечения ${P(x,c)}.`,
+ explain2:`Проверка подстановкой: в ${Yk(k)} при x = ${N(x)} получаем y = ${N(k)} : ${par(x)} = ${N(c)}, и у прямой y = ${N(c)} везде. Совпало ✅.${Math.abs(x)<=6&&Math.abs(c)<=6?`<div class="fig">${plot({w:240,curves:[{k}],lines:[{m:0,b:c,label:'y = '+N(c)}],points:[{x,y:c,label:P(x,c)}]})}</div>`:''}`};});
+G(8,()=>{for(;;){const k=pick([2,3,4,6,8,9,12])*pick([1,-1]);const m=pick([1,2,3,0.5])*pick([1,-1]);const cnt=k/m>0?2:0;const opts=['0','1','2','бесконечно много'];
+ const pk=k;
+ return {type:'choice',q:`Сколько общих точек у графиков ${Yk(k)} и ${M(lineT(m,0))}?`,opts,ans:cnt===2?2:0,
+ short:cnt?`k и m одного знака — две точки.`:`k и m разных знаков — общих точек нет.`,
+ explain:`Приравниваем: ${M(`${fx(k)} = ${N(m)}x`)} → x² = ${N(k)} : ${par(m)} = ${N(k/m)}.<br>${cnt?`Квадрат может равняться положительному числу ${N(k/m)} при двух x (плюс и минус) → <b>2 точки</b>.`:`Квадрат числа не бывает отрицательным, а ${N(k/m)} &lt; 0 → решений нет, <b>0 точек</b>.`}`,
+ explain2:`По картинке: гипербола в ${quartersK(k)} четвертях, а прямая ${M(lineT(m,0))} проходит через (0; 0) и ${m>0?'I и III':'II и IV'} четверти.${cnt?' Они в одних и тех же четвертях — в каждой встретятся по разу.':' Они в разных четвертях — никогда не встретятся.'}<div class="fig">${plot({w:240,curves:[{k:pk}],lines:[{m,b:0,label:lineT(m,0)}]})}</div>`};}});
+G(8,()=>{for(;;){const r=R(1,4),m=pick([1,2,3,-1,-2,-3]);const k=m*r*r;if(Math.abs(k)>36)continue;
+ return {type:'set',q:`Найди абсциссы всех точек пересечения графиков ${Yk(k)} и ${M(lineT(m,0))}.`,ans:[-r,r],ph:'например: −1, 1',keys:['−'],
+ hint:'Приравняй правые части и умножь обе части на x.',
+ short:`x² = ${N(k)} : ${par(m)} = ${r*r} → x = ±${r}.`,
+ explain:`${M(`${fx(k)} = ${N(m)}x`)}. Умножаем на x (x ≠ 0): ${N(k)} = ${N(m)}x², значит x² = ${N(k)} : ${par(m)} = ${r*r}.<br>Квадрат равен ${r*r} у двух чисел: <b>${r}</b> и <b>−${r}</b> (ведь (−${r})² = ${r*r} тоже). Ответ: ${r} и −${r}.`,
+ explain2:`Проверка подстановкой:<br>x = ${r}: гипербола ${N(k)} : ${r} = ${N(k/r)}, прямая ${N(m)}·${r} = ${N(m*r)} ✅.<br>x = −${r}: гипербола ${N(k)} : (−${r}) = ${N(-k/r)}, прямая ${N(m)}·(−${r}) = ${N(-m*r)} ✅.${Math.abs(k/r)<=6?`<div class="fig">${plot({w:240,curves:[{k}],lines:[{m,b:0}],points:[{x:r,y:k/r,label:P(r,k/r)},{x:-r,y:-k/r,label:P(-r,-k/r)}]})}</div>`:''}`};}});
+G(8,()=>{for(;;){const r1=nz(-4,4),r2=nz(-5,5);if(r1===r2||r1===-r2)continue;const k=-r1*r2,b=-(r1+r2);
+ const on=(x,y)=>x!==0&&x*y===k&&y===x+b;const y1=r1+b,y2=r2+b;if([y1,y2].some(v=>Math.abs(v)>6)||Math.abs(r2)>6)continue;
+ const cand=[[r1,y1],[r2,y2],[-r1,-y1],[y1,r1],[0,b],[r1,-y1]];const uq=[];cand.forEach(p=>{if(!uq.some(q=>q[0]===p[0]&&q[1]===p[1]))uq.push(p);});
+ const opts=shuffle(uq).slice(0,5);const ans=opts.map((p,i)=>on(p[0],p[1])?i:-1).filter(i=>i>=0);if(ans.length<1||ans.length===opts.length)continue;
+ const line=lineT(1,b);
+ return {type:'multi',q:`Какие из точек являются <b>общими точками</b> графиков ${Yk(k)} и ${M(line)}? Выбери все.`,opts:opts.map(p=>P(p[0],p[1])),ans,
+ short:`Общие точки: ${[[r1,y1],[r2,y2]].map(p=>P(p[0],p[1])).join(' и ')}.`,
+ explain:`Общая точка должна подходить <b>к обеим</b> формулам. Проверяем каждую: (1) x·y = ${N(k)}? (2) y = x ${b>0?'+ '+b:'− '+(-b)}?<br>${opts.map(([x,y])=>`${P(x,y)}: ${x===0?'x = 0 — гиперболе не подходит ❌':`${par(x)}·${par(y)} = ${N(x*y)} ${x*y===k?'✅':'❌'}; ${N(x)} ${b>0?'+ '+b:'− '+(-b)} = ${N(x+b)} ${x+b===y?'✅':'❌'}`}`).join('<br>')}<br>Обе проверки прошли только у ${[[r1,y1],[r2,y2]].map(p=>P(p[0],p[1])).join(' и ')}.`,
+ explain2:`Нарисуем оба графика — общие точки там, где линии встречаются:<div class="fig">${plot({w:260,xr:[-7,7],yr:[-7,7],curves:[{k}],lines:[{m:1,b,label:line}],points:[{x:r1,y:y1,label:P(r1,y1),col:'ok'},{x:r2,y:y2,label:P(r2,y2),col:'ok'}]})}</div>Алгебраически: ${fx(k)} = x ${b>0?'+ '+b:'− '+(-b)} — и точки (x; y), которые подходят, мы проверили подстановкой.`};}});
+G(8,()=>{const k=pick([2,3,4,5,6])*pick([1,-1]);const ln=pick([{t:'y = '+R(1,5),n:1,w:'горизонтальная прямая выше оси Ox (или ниже) встречает ровно одну ветвь ровно один раз'},{t:'y = −'+R(1,5),n:1,w:'горизонтальная прямая y = c (c ≠ 0) пересекает гиперболу ровно в одной точке: x = k : c'},{t:'y = 0',n:0,w:'это сама ось Ox, а гипербола её не пересекает (y ≠ 0)'},{t:'x = 0',n:0,w:'это ось Oy, а x = 0 подставлять нельзя'},{t:'x = '+R(1,5),n:1,w:'вертикальная прямая x = c (c ≠ 0) пересекает график в одной точке: y = k : c'}]);
+ const opts=['0','1','2','бесконечно много'];
+ const lm=ln.t.match(/^([xy]) = (.+)$/);const v=H.parseNum(lm[2]);
+ return {type:'choice',q:`Сколько общих точек у графика ${Yk(k)} и прямой ${M(ln.t)}?`,opts,ans:ln.n,
+ short:`${ln.n} — ${ln.w}.`,
+ explain:`${ln.t==='y = 0'?`Решаем ${fx(k)} = 0: дробь равна нулю, только если числитель 0, а k = ${N(k)}. Решений нет → <b>0</b>.`:ln.t==='x = 0'?`При x = 0 формула не имеет смысла (делить на 0 нельзя), так что точек с x = 0 на графике нет → <b>0</b>.`:lm[1]==='y'?`Решаем ${fx(k)} = ${N(v)}: x = ${N(k)} : ${par(v)} = ${N(k/v)} — одно решение → <b>1</b> точка ${P(k/v,v)}.`:`Подставляем x = ${N(v)}: y = ${N(k)} : ${N(v)} = ${N(k/v)} — одно значение → <b>1</b> точка ${P(v,k/v)}.`}`,
+ explain2:`Картинка всё показывает:<div class="fig">${plot({w:240,curves:[{k}],lines:[lm[1]==='y'?{m:0,b:v,label:ln.t}:{vx:v,label:ln.t}]})}</div>${ln.w[0].toUpperCase()+ln.w.slice(1)}.`};});
+
+/* L9 — ★ */
+G(9,()=>{for(;;){const a=nz(-4,4),b=nz(-4,4),k=pick([1,2,3,4,6])*pick([1,-1]);const ok=P(a,b);const opts=shuffle([ok,P(-a,b),P(b,a),P(-a,-b)]);if(new Set(opts).size<4)continue;
+ const xr=[Math.min(-1,a-5),Math.max(1,a+5)],yr=[Math.min(-1,b-5),Math.max(1,b+5)];
+ return {type:'choice',q:`Найди центр симметрии графика ${shiftF(k,a,b)}.`,opts,ans:opts.indexOf(ok),
+ short:`Знаменатель ${den(a)} = 0 при x = ${N(a)}, дробь ≠ 0 → y ≠ ${N(b)}. Центр ${ok}.`,
+ explain:`Это гипербола ${Yk(k)}, сдвинутая так, что её центр (бывшее начало координат) попал в точку (a; b).<br>• Вертикальная асимптота — там, где знаменатель равен 0: ${den(a)} = 0 → <b>x = ${N(a)}</b>.<br>• Горизонтальная — дробь никогда не равна 0, значит y никогда не равен ${N(b)}: <b>y = ${N(b)}</b>.<br>Центр — пересечение асимптот: <b>${ok}</b>.${a<0?`<br>Ловушка: «${den(a)}» = «x − (${N(a)})», поэтому x = ${N(a)}, а не ${N(-a)}.`:''}`,
+ explain2:`Нарисуем: пунктир — асимптоты, точка — центр.<div class="fig">${plot({w:280,xr,yr,curves:[{k,a,b}],asym:[{x:a},{y:b}],points:[{x:a,y:b,label:ok,col:'bad'}]})}</div>Проверка симметрии числами: x = ${N(a+1)} → y = ${N(k+b)}; x = ${N(a-1)} → y = ${N(-k+b)}. Середина этих точек: ((${N(a+1)} + ${par(a-1)}) : 2; (${N(k+b)} + ${par(-k+b)}) : 2) = ${ok} ✅.`};}},true);
+G(9,()=>{for(;;){const p=R(1,4),a=nz(-3,3),q=nz(-7,7);const c=q+p*a;if(c===0)continue;
+ const num=`${p===1?'':p}x ${q>0?'+ '+q:'− '+(-q)}`;
+ return {type:'num',q:`Функцию ${M(`y = ${frac(num,den(a))}`)} можно записать в виде ${M(`y = ${p} + ${frac('c',den(a))}`)}. Найди c.`,ans:c,
+ hint:`Представь числитель как ${p}·(${den(a)}) + остаток.`,
+ short:`${num} = ${p}(${den(a)}) ${c>0?'+ '+c:'− '+(-c)} → c = ${N(c)}.`,
+ explain:`Выделяем целую часть. Раскроем ${p}(${den(a)}) = ${p===1?'':p}x ${-p*a>0?'+ '+(-p*a):'− '+(p*a)}. Чтобы получить числитель ${num}, нужно ещё прибавить ${par(q)} − ${par(-p*a)} = ${N(c)}:<br>${num} = ${p}(${den(a)}) ${c>0?'+ '+c:'− '+(-c)}.<br>Делим на ${den(a)}: ${M(`y = ${p} ${c>0?'+':'−'} ${frac(Math.abs(c),den(a))}`)}. Значит <b>c = ${N(c)}</b>.<br>Это гипербола с k = ${N(c)} и центром ${P(a,p)}.`,
+ explain2:`Проверка подстановкой любого x, например x = ${N(a+1)}: исходная дробь ${M(`${frac(`${p*(a+1)+q}`,'1')}`)} = ${N(p*(a+1)+q)}; новая запись: ${p} + ${N(c)} : 1 = ${N(p+c)}. ${p*(a+1)+q===p+c?'Совпало ✅.':''} Ещё x = ${N(a+2)}: ${N(p*(a+2)+q)} : 2 = ${N((p*(a+2)+q)/2)} и ${p} + ${N(c)} : 2 = ${N(p+c/2)} ✅.`};}},true);
+G(9,()=>{for(;;){const k=pick([6,8,10,12,15,20,24])*pick([1,-1]);const x=pick([7,9,11,-7,-9,13,2.5,-2.5]);const y=k/x;if(Number.isInteger(y))continue;const S=Math.abs(k);
+ const yS=Math.round(y*1000)/1000;
+ return {type:'num',q:`Точка M с абсциссой x = ${N(x)} лежит на графике ${Yk(k)}. Из M опустили перпендикуляры на оси координат. Найди площадь получившегося прямоугольника (одна вершина — начало координат).`,ans:S,
+ hint:'Не спеши считать y десятичной дробью. Площадь = |x|·|y|, а x·y для точки гиперболы — это…',
+ short:`S = |x·y| = |k| = ${S}.`,
+ explain:`Стороны прямоугольника — это |x| и |y| точки M. Площадь S = |x|·|y| = |x·y|.<br>А для любой точки гиперболы x·y = k = ${N(k)}. Значит <b>S = |${N(k)}| = ${S}</b> — неважно, какой x!<br>(y = ${M(fx(k,par(x)))} — некрасивое число, но оно и не нужно.)`,
+ explain2:`Посмотри на несколько точек одной гиперболы: у всех прямоугольники разной формы, но одинаковой площади.<div class="fig">${plot({w:260,xr:[-1,7],yr:[-1,7],curves:[{k:6,label:'y = 6/x',lx:5.2}],rects:[{x:1.5,y:4},{x:4,y:1.5}],texts:[{x:0.75,y:3,t:'S = 6'},{x:3,y:0.75,t:'S = 6'}]})}</div>Для y = 6/x: 1,5·4 = 6 и 4·1,5 = 6. У нас: ${N(x)}·${M(fx(k,par(x)))} = ${N(k)}, площадь ${S}.`};}},true);
+G(9,()=>{const k=pick([6,8,10,12,16,18,20,24,30,36])*pick([1,-1]);const d=divs(k);const cnt=2*d.length;
+ let brute=0;for(let x=-Math.abs(k);x<=Math.abs(k);x++)if(x!==0&&k%x===0)brute++;
+ return {type:'num',q:`Сколько точек с <b>целыми</b> координатами лежит на графике ${Yk(k)}?`,ans:brute,
+ hint:`x должен быть целым и таким, чтобы ${Math.abs(k)} делилось на x нацело. Не забудь отрицательные x.`,
+ short:`Делители ${Math.abs(k)}: ${d.join(', ')} — ${d.length} шт., со знаками ± получаем ${cnt}.`,
+ explain:`Точка (x; y) целая, если x — целый и y = ${N(k)} : x — тоже целый. Значит, x — <b>делитель ${Math.abs(k)}</b> (положительный или отрицательный).<br>Положительные делители ${Math.abs(k)}: ${d.join(', ')} — их ${d.length}.<br>Отрицательных столько же. Всего <b>${cnt}</b> точек.`,
+ explain2:`Выпишем все точки, где x &gt; 0:<br>${d.map(x=>P(x,k/x)).join(', ')}.<br>По симметрии относительно начала координат к каждой добавляется точка с противоположными знаками: ${d.slice(0,3).map(x=>P(-x,-k/x)).join(', ')}… Итого ${d.length}·2 = ${cnt}.`};},true);
+G(9,()=>{const a=nz(-4,4),b=nz(-5,5),k=pick([2,3,4,6,8])*pick([1,-1]);
+ return {type:'num',q:`При каком значении m прямая ${M('y = m')} <b>не имеет общих точек</b> с графиком ${shiftF(k,a,b)}?`,ans:b,
+ hint:'Какое значение y никогда не получится, если дробь не может быть равна нулю?',
+ short:`Дробь ≠ 0, поэтому y ≠ ${N(b)}; m = ${N(b)}.`,
+ explain:`Решаем ${M(`${fx(k,den(a))}${tailB(b)} = m`)} → ${M(`${fx(k,den(a))} = m ${b>0?'−':'+'} ${Math.abs(b)}`)}.<br>• Если m ${b>0?'−':'+'} ${Math.abs(b)} ≠ 0, то ${den(a)} = ${N(k)} : (m ${b>0?'−':'+'} ${Math.abs(b)}) — решение есть.<br>• Если m ${b>0?'−':'+'} ${Math.abs(b)} = 0, получаем ${fx(k,den(a))} = 0 — невозможно, ведь числитель ${N(k)} ≠ 0.<br>Значит, <b>m = ${N(b)}</b>. Прямая y = ${N(b)} — горизонтальная асимптота.`,
+ explain2:`Посмотри на картинку: прямая y = ${N(b)} — пунктир, к которому ветви подходят, но не касаются. Любая другая горизонтальная прямая пересекает одну из ветвей.<div class="fig">${plot({w:280,xr:[Math.min(-1,a-5),Math.max(1,a+5)],yr:[Math.min(-1,b-5),Math.max(1,b+5)],curves:[{k,a,b}],asym:[{x:a},{y:b}],texts:[{x:Math.max(1,a+5)-1.3,y:b,t:'y = '+N(b),col:'var(--bad)'}]})}</div>`};},true);
+G(9,()=>{for(;;){const p=R(1,3),q=R(p+1,6);const c=p+q,k=p*q;if(c>8)continue;const S=(q*q-p*p)/2;
+ const sh=Math.abs((p*p-q*q))/2;if(Math.abs(S-sh)>1e-9)continue;
+ return {type:'num',q:`Прямая ${M(lineT(-1,c))} пересекает гиперболу ${Yk(k)} в точках A и B. Найди площадь треугольника OAB (O — начало координат).`,ans:S,
+ hint:`Сначала найди A и B (подбери x: делители ${k}). Потом из треугольника, который прямая отсекает от осей, вырежи лишнее.`,
+ short:`A${P(p,q)}, B${P(q,p)}; S = ${c}²/2 − 2·(${c}·${p}/2) = ${N(S)}.`,
+ explain:`1) Точки пересечения: ${fx(k)} = −x + ${c}. Подбираем x среди делителей ${k}: x = ${p} → ${k}:${p} = ${q} и −${p} + ${c} = ${q} ✅; x = ${q} → ${p} и ${p} ✅. A${P(p,q)}, B${P(q,p)}.<br>2) Прямая отсекает от осей треугольник с катетами ${c} и ${c}: площадь ${c}·${c} : 2 = ${N(c*c/2)}.<br>3) Из него вырезаем два треугольника у осей: O, (0; ${c}), A — основание ${c}, высота ${p} (расстояние от A до Oy) → ${N(c*p/2)}; и O, (${c}; 0), B — тоже ${N(c*p/2)}.<br>4) S(OAB) = ${N(c*c/2)} − ${N(c*p/2)} − ${N(c*p/2)} = <b>${N(S)}</b>.`,
+ explain2:`Картинка:<div class="fig">${plot({w:270,xr:[-1,c+1],yr:[-1,c+1],curves:[{k}],lines:[{m:-1,b:c}],polys:[{pts:[[0,0],[p,q],[q,p]]}],points:[{x:p,y:q,label:'A'+P(p,q)},{x:q,y:p,label:'B'+P(q,p)},{x:0,y:0,r:3}]})}</div>Другой способ — «формула шнурков» (площадь через координаты): S = |x₁·y₂ − x₂·y₁| : 2 = |${p}·${p} − ${q}·${q}| : 2 = ${N(S)} ✅.`};}},true);
+G(9,()=>{for(;;){const p=pick([2,3,4,5,-1,-2,-3]),c=nz(-8,8);const kk=c*p/(p-1);if(!Number.isInteger(kk)||kk===0)continue;const k=kk;
+ if(Math.abs(k/p-(k-c))>1e-9)continue;
+ return {type:'num',q:`График функции ${M(`y = ${frac('k','x')}`)} проходит через точку ${M(`(${N(p)}; k ${c>0?'−':'+'} ${Math.abs(c)})`)}. Найди k.`,ans:k,
+ hint:'Подставь координаты точки в формулу и реши уравнение относительно k.',
+ short:`k ${c>0?'−':'+'} ${Math.abs(c)} = k : ${par(p)} → k = ${N(k)}.`,
+ explain:`Подставляем x = ${N(p)}, y = k ${c>0?'−':'+'} ${Math.abs(c)}: ${M(`k ${c>0?'−':'+'} ${Math.abs(c)} = ${frac('k',par(p))}`)}.<br>Умножим обе части на ${par(p)}: ${N(p)}k ${c*p>0?'−':'+'} ${Math.abs(c*p)} = k.<br>${N(p)}k − k = ${N(c*p)} → ${N(p-1)}k = ${N(c*p)} → k = ${N(c*p)} : ${par(p-1)} = <b>${N(k)}</b>.`,
+ explain2:`Проверка: точка (${N(p)}; ${N(k)} ${c>0?'−':'+'} ${Math.abs(c)}) = ${P(p,k-c)}. Перемножаем: ${par(p)}·${par(k-c)} = ${N(p*(k-c))} = k ✅.<br>Здесь k стоит в двух местах сразу, поэтому нельзя просто «перемножить координаты» — сначала составь уравнение.`};}},true);
+G(9,()=>{for(;;){const p=R(1,3),a=nz(-3,3),q=nz(-8,8);const c=q+p*a;if(c===0||Math.abs(c)>12)continue;
+ let brute=0;for(let x=a-Math.abs(c)-2;x<=a+Math.abs(c)+2;x++){if(x===a)continue;if((p*x+q)%(x-a)===0)brute++;}
+ const d=divs(c);if(brute!==2*d.length)continue;
+ const num=`${p===1?'':p}x ${q>0?'+ '+q:'− '+(-q)}`;
+ return {type:'num',q:`Сколько точек с целыми координатами лежит на графике ${M(`y = ${frac(num,den(a))}`)}?`,ans:brute,
+ hint:`Выдели целую часть: ${num} = ${p}(${den(a)}) + …`,
+ short:`y = ${p} ${c>0?'+':'−'} ${Math.abs(c)}/(${den(a)}); ${den(a)} — делитель ${Math.abs(c)}: ${2*d.length} вариантов.`,
+ explain:`1) Выделяем целую часть: ${num} = ${p}(${den(a)}) ${c>0?'+ '+c:'− '+(-c)}, поэтому ${M(`y = ${p} ${c>0?'+':'−'} ${frac(Math.abs(c),den(a))}`)}.<br>2) y целый ⇔ дробь целая ⇔ ${den(a)} делит ${Math.abs(c)}.<br>3) Делители ${Math.abs(c)}: ±${d.join(', ±')} — это ${2*d.length} значений ${den(a)}, и каждому соответствует свой x.<br>Ответ: <b>${brute}</b>.`,
+ explain2:`Выпишем все точки:<br>${d.flatMap(t=>[t,-t]).map(t=>{const x=a+t;return P(x,p+c/t);}).join(', ')}.<br>Проверим одну подстановкой: x = ${N(a+d[0])} → (${p*(a+d[0])+q}) : (${d[0]}) = ${N((p*(a+d[0])+q)/d[0])} ✅.`};}},true);
+
+window.TOPIC={id:'giperbola',title:'Функция y = k/x и её график — гипербола',subtitle:'Алгебра · 8 класс',
+intro:`<p>Здесь всё про обратную пропорциональность: что это в жизни, формула ${M(`y = ${frac('k','x')}`)}, как построить её график — гиперболу, где лежат ветви, как найти k по точке или по картинке и где гипербола пересекается с прямой. В конце — задачи со звёздочкой уровня олимпиад. Читай по порядку, а потом переходи к задачам.</p>`,
+theory,symbols,figs:{},
+levels:['Обратная пропорциональность в жизни','Формула y = k/x: считаем значения','Точка на графике и k = x·y','Таблица и построение по точкам','Четверти и знак k','Свойства гиперболы','Сравнение значений','Читаем график','Пересечение с прямой','★ Задачи уровня олимпиад / Сириус'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Квадратные корни — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY='trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div></div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':return Math.abs(H.parseNum(val)-t.ans)<1e-9;
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  const fb=$('#fb');
+  if(ok){
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}</h3>${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      <div class="ans">Правильный ответ: ${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%).</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const sq=x=>H.sqrt(x);
+const fr=(a,b)=>H.frac(a,b);
+const N=x=>H.num(x);
+const M=s=>`<span class="m">${s}</span>`;
+const isSq=n=>n>=0&&Math.round(Math.sqrt(n))**2===n;
+/* n = k²·m, m без квадратных множителей */
+function simp(n){let k=1;for(let d=2;d*d<=n;d++){while(n%(d*d)===0){n/=d*d;k*=d;}}return [k,n];}
+/* k√m как HTML */
+function rad(k,m){if(m===1)return N(k);const s=k<0?'−':'';const a=Math.abs(k);return s+(a===1?'':a)+sq(m);}
+/* k√m как обычный текст (для ввода) */
+function radTxt(k,m){if(m===1)return String(k);return (k===1?'':k===-1?'-':String(k))+'√'+m;}
+function parseRad(raw){
+  let s=String(raw).replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/sqrt/gi,'√').replace(/√\((\d+)\)/g,'√$1');
+  let m=s.match(/^(-?)(\d*)√(\d+)$/);
+  if(m)return {k:(m[1]?-1:1)*(m[2]===''?1:+m[2]),m:+m[3]};
+  if(/^-?\d+$/.test(s))return {k:+s,m:1};
+  return null;
+}
+/* поля для задачи с ответом вида k√m */
+function radAns(k,m){return {type:'text',ans:[radTxt(k,m)],ansText:M(rad(k,m)),
+  check:raw=>{const p=parseRad(raw);return !!p&&p.k===k&&p.m===m;},right:radTxt(k,m),keys:['√'],ph:'например: 5√3'};}
+/* варианты ответа: правильный + ловушки без повторов */
+function mk(correct,traps){const o=[correct];traps.forEach(t=>{if(!o.includes(t))o.push(t);});const s=shuffle(o);return {opts:s,ans:s.indexOf(correct)};}
+const NS=[2,3,5,6,7,10,11,13,14,15];   // не квадраты
+
+/* ---------- рисунки ---------- */
+function squareFig(side){
+  const c=Math.min(18,Math.floor(150/side)),L=c*side,x0=40,y0=24;
+  let s=`<svg viewBox="0 0 320 ${L+60}" width="320" role="img" aria-label="Квадрат со стороной ${side}" style="font-family:system-ui,sans-serif">`;
+  s+=`<rect x="${x0}" y="${y0}" width="${L}" height="${L}" fill="var(--hl)" fill-opacity=".35" stroke="var(--fig)" stroke-width="1.8"/>`;
+  for(let i=1;i<side;i++){s+=`<line x1="${x0+i*c}" y1="${y0}" x2="${x0+i*c}" y2="${y0+L}" stroke="var(--fig)" stroke-opacity=".35"/><line x1="${x0}" y1="${y0+i*c}" x2="${x0+L}" y2="${y0+i*c}" stroke="var(--fig)" stroke-opacity=".35"/>`;}
+  s+=`<text x="${x0+L/2}" y="${y0-8}" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent-ink)">сторона ${side}</text>`;
+  s+=`<text x="${x0-10}" y="${y0+L/2+5}" text-anchor="end" font-size="15" font-weight="700" fill="var(--accent-ink)">${side}</text>`;
+  s+=`<text x="${x0+L+14}" y="${y0+L/2-6}" font-size="15" fill="var(--ink)">площадь</text><text x="${x0+L+14}" y="${y0+L/2+14}" font-size="15" font-weight="700" fill="var(--ink)">${side*side} клеток</text>`;
+  s+=`<text x="160" y="${y0+L+28}" text-anchor="middle" font-size="15" fill="var(--ink)">√${side*side} = ${side}, потому что ${side}² = ${side*side}</text>`;
+  return s+'</svg>';
+}
+function nline(n){
+  const a=Math.floor(Math.sqrt(n)),X=i=>40+80*i;
+  let s=`<svg viewBox="0 0 320 118" width="320" role="img" aria-label="√${n} на числовой прямой" style="font-family:system-ui,sans-serif">`;
+  s+=`<line x1="10" y1="56" x2="306" y2="56" stroke="var(--fig)" stroke-width="1.6"/><path d="M306,51 L315,56 L306,61 Z" fill="var(--fig)"/>`;
+  s+=`<line x1="${X(1)}" y1="56" x2="${X(2)}" y2="56" stroke="var(--hl)" stroke-width="6" stroke-opacity=".7"/>`;
+  for(let i=0;i<4;i++){const v=a-1+i;if(v<0)continue;
+    s+=`<line x1="${X(i)}" y1="49" x2="${X(i)}" y2="63" stroke="var(--fig)" stroke-width="1.6"/>`;
+    s+=`<text x="${X(i)}" y="82" text-anchor="middle" font-size="15" font-weight="700" fill="var(--ink)">${v}</text>`;
+    s+=`<text x="${X(i)}" y="101" text-anchor="middle" font-size="12" fill="var(--muted)">= √${v*v}</text>`;}
+  const px=X(1)+80*(Math.sqrt(n)-a);
+  s+=`<circle cx="${px.toFixed(1)}" cy="56" r="5.5" fill="var(--accent-ink)"/>`;
+  s+=`<text x="${px.toFixed(1)}" y="34" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent-ink)">√${n}</text>`;
+  return s+'</svg>';
+}
+function sqTable(){
+  let h='<table style="border-collapse:collapse;margin:8px auto;font-size:16px;text-align:center"><tr>';
+  const cell='style="border:1px solid var(--line);padding:4px 8px"';
+  for(let r=0;r<2;r++){
+    h+=`<tr><td ${cell}><b>n</b></td>${range(1+r*10,10+r*10).map(i=>`<td ${cell}>${i}</td>`).join('')}</tr>`;
+    h+=`<tr><td ${cell}><b>n²</b></td>${range(1+r*10,10+r*10).map(i=>`<td ${cell}><b>${i*i}</b></td>`).join('')}</tr>`;
+  }
+  return '<div style="overflow-x:auto">'+h.replace('<tr><tr>','<tr>')+'</table></div>';
+}
+
+/* ---------- теория ---------- */
+const theory=[
+{title:'Что такое квадратный корень',lvl:0,html:`
+<p>Сначала вспомним, что такое <b>квадрат числа</b>: число умножаем само на себя. <span class="m">7² = 7 · 7 = 49</span>.</p>
+<p><b>Квадратный корень</b> — это обратное действие. Вопрос звучит так: <b>«Какое число нужно возвести в квадрат, чтобы получилось 49?»</b> Ответ: 7. Пишут <span class="m">${sq(49)} = 7</span>.</p>
+<div class="box ex"><b>Картинка, которая всё объясняет</b>Квадрат сложили из 49 клеточек. Какая у него сторона? Корень как раз и отвечает на этот вопрос: «знаю площадь — найди сторону».</div>
+<div class="fig">${squareFig(7)}</div>
+<p>Значок <b>√</b> называется <b>знак корня</b> (или радикал). Число под ним — <b>подкоренное выражение</b>.</p>
+<div class="box err"><b>Корень из отрицательного числа не существует</b>Попробуй найти ${sq('−4')}. Нужно число, квадрат которого равен −4. Но любое число в квадрате — <b>не меньше нуля</b>: 2² = 4, (−2)² = 4, 0² = 0. Минус на минус даёт плюс! Поэтому ${sq('−4')} <b>не имеет смысла</b> (в 8 классе так и говорят: «выражение не имеет смысла»).</div>
+<div class="box tip"><b>Как запомнить</b>Под корнем может быть только число ≥ 0. Площадь квадрата не бывает отрицательной — и под корнем тоже.</div>`},
+{title:'Арифметический квадратный корень',lvl:0,html:`
+<p>Хитрость: в квадрат дают 49 <b>два</b> числа — 7 и −7, ведь (−7)² = 49 тоже. Какое из них считать «корнем»?</p>
+<div class="box rule"><b>Определение</b><b>Арифметический квадратный корень</b> из числа a (a ≥ 0) — это <b>неотрицательное</b> число, квадрат которого равен a.<br>Значит: ${sq(49)} = 7 (а не −7 и не ±7). Знак √ <b>всегда</b> даёт число ≥ 0.</div>
+<p>Из определения сразу получаются два правила:</p>
+<ul class="steps"><li><span class="m">${sq('a')} ≥ 0</span> — корень никогда не бывает отрицательным.</li>
+<li><span class="m">(${sq('a')})² = a</span> — «извлекли корень и возвели в квадрат» — вернулись к тому же числу. Например, <span class="m">(${sq(13)})² = 13</span>, <span class="m">(${sq(2)})² = 2</span>.</li></ul>
+<div class="box ex"><b>Корни из дробей и десятичных</b>${sq('0,25')} = 0,5, потому что 0,5 · 0,5 = 0,25.<br>${sq('0,09')} = 0,3 (а не 0,03!), потому что 0,3² = 0,09.<br>${sq(fr(4,9))} = ${fr(2,3)}, потому что ${fr(2,3)} · ${fr(2,3)} = ${fr(4,9)}.</div>
+<div class="box err"><b>Частая ошибка с десятичными</b>${sq('0,09')} ≠ 0,03. Проверь: 0,03² = 0,0009. Правило: <b>знаков после запятой в корне вдвое меньше</b>, чем под корнем: 0,09 (два знака) → 0,3 (один знак).</div>`},
+{title:'Таблица квадратов',lvl:1,html:`
+<p>Числа 1, 4, 9, 16, 25… называют <b>точными квадратами</b> — из них корень извлекается «нацело». Эту таблицу полезно знать наизусть хотя бы до 15² = 225.</p>
+${sqTable()}
+<div class="box tip"><b>Как запомнить быстрее</b>Квадраты чисел, кончающихся на 5: 15² = 225, 25² = 625, 35² = 1225. Правило: число десятков умножь на следующее (2 · 3 = 6) и припиши 25 → 625.</div>
+<p>Если число <b>не</b> точный квадрат (например, 2, 3, 50), корень из него — <b>бесконечная непериодическая дробь</b> (иррациональное число): ${sq(2)} ≈ 1,414… Такой корень обычно оставляют со значком √.</p>`},
+{title:'Между какими целыми числами лежит корень',lvl:1,html:`
+<p>Главное правило: <b>чем больше число под корнем, тем больше корень</b>. Если 49 &lt; 50 &lt; 64, то ${sq(49)} &lt; ${sq(50)} &lt; ${sq(64)}, то есть <span class="m">7 &lt; ${sq(50)} &lt; 8</span>.</p>
+<div class="fig">${nline(50)}</div>
+<ol class="steps"><li>Найди в таблице квадратов два соседних квадрата: снизу и сверху от числа. Для 50: 49 и 64.</li>
+<li>Их корни — 7 и 8. Значит, ${sq(50)} между 7 и 8.</li>
+<li>50 ближе к 49, чем к 64, поэтому ${sq(50)} ближе к 7: ${sq(50)} ≈ 7,07.</li></ol>
+<div class="box rule"><b>Как сравнить число и корень</b>Преврати число в корень: <span class="m">7 = ${sq(49)}</span>. Теперь сравниваем подкоренные числа: 49 &lt; 50, значит <span class="m">7 &lt; ${sq(50)}</span>.</div>
+<div class="box err"><b>Ловушка</b>${sq(50)} — это не 25! Корень — не половина. 25 · 25 = 625, а не 50.</div>`},
+{title:'Уравнение x² = a',lvl:2,html:`
+<p>Тут спрашивают: <b>какие числа</b> в квадрате дают a? Их может быть два, одно или ни одного.</p>
+<div class="box rule"><b>Три случая</b>
+<b>a > 0</b> — два корня: <span class="m">x = ${sq('a')}</span> и <span class="m">x = −${sq('a')}</span> (пишут <span class="m">x = ±${sq('a')}</span>).<br>
+<b>a = 0</b> — один корень: x = 0.<br>
+<b>a &lt; 0</b> — корней нет (квадрат не бывает отрицательным).</div>
+<div class="box ex"><b>Примеры</b>x² = 25 → x = 5 или x = −5.<br>x² = 7 → x = ${sq(7)} или x = −${sq(7)}.<br>x² = 0 → x = 0.<br>x² = −9 → корней нет.</div>
+<div class="box err"><b>Главная ошибка</b>Забыть отрицательный корень. В уравнении <b>x² = 25</b> ответ — <b>два числа</b>: 5 и −5. Проверь: (−5)² = 25 ✅. А вот <b>${sq(25)}</b> — это только 5. Разница: в уравнении ищем все x, а значок √ даёт одно неотрицательное число.</div>
+<div class="box ex"><b>Чуть сложнее</b>(x − 2)² = 9. Что-то в квадрате равно 9 — значит, это «что-то» равно 3 или −3:<br>x − 2 = 3 → x = 5; x − 2 = −3 → x = −1.</div>`},
+{title:'Корень из квадрата: √a² = |a|',lvl:3,html:`
+<p>Кажется, что ${sq('a²')} = a. Но это верно <b>только для a ≥ 0</b>! Проверим на a = −5:</p>
+<p class="m">${sq('(−5)²')} = ${sq(25)} = 5 &nbsp;(а не −5!)</p>
+<p>Корень всегда даёт неотрицательное число, поэтому минус «пропадает». Это ровно то, что делает <b>модуль</b>.</p>
+<div class="box rule"><b>Правило</b><span class="m">${sq('a²')} = |a|</span>.<br>Если a ≥ 0, то |a| = a. Если a &lt; 0, то |a| = −a (минус на минус — получается положительное).</div>
+<div class="box tip"><b>Что такое модуль простыми словами</b>|a| — это расстояние от нуля до числа на прямой. Расстояние не бывает отрицательным: |5| = 5, |−5| = 5.</div>
+<div class="box err"><b>Ловушка с корнями внутри</b>${sq('(2 − √5)²')} = |2 − ${sq(5)}|. Так как ${sq(5)} ≈ 2,24 > 2, число 2 − ${sq(5)} отрицательное. Значит, ответ: <b>${sq(5)} − 2</b> (переставили, чтобы было положительно).</div>`},
+{title:'Свойства корней: умножение и деление',lvl:4,html:`
+<div class="box rule"><b>Корень из произведения и частного</b>
+<span class="m">${sq('a · b')} = ${sq('a')} · ${sq('b')}</span> (a ≥ 0, b ≥ 0)<br>
+<span class="m">${sq(fr('a','b'))} = ${fr(sq('a'),sq('b'))}</span> (a ≥ 0, b > 0)</div>
+<p>Это работает в обе стороны, и это очень удобно:</p>
+<div class="box ex"><b>Слева направо — разбить на удобные</b>${sq('16 · 25')} = ${sq(16)} · ${sq(25)} = 4 · 5 = 20.<br>${sq(fr(9,49))} = ${fr(3,7)}.</div>
+<div class="box ex"><b>Справа налево — склеить в один корень</b>${sq(2)} · ${sq(8)} = ${sq(16)} = 4.<br>${fr(sq(75),sq(3))} = ${sq(25)} = 5.</div>
+<div class="box err"><b>С суммой так НЕЛЬЗЯ!</b><span class="m">${sq('a + b')} ≠ ${sq('a')} + ${sq('b')}</span>.<br>Проверка: ${sq('9 + 16')} = ${sq(25)} = 5, а ${sq(9)} + ${sq(16)} = 3 + 4 = 7. Не равно!<br>Сначала посчитай сумму под корнем, потом извлекай корень.</div>
+<div class="box tip"><b>Как запомнить</b>Корень дружит с умножением и делением, но не дружит со сложением и вычитанием.</div>`},
+{title:'Вынесение множителя из-под корня',lvl:5,html:`
+<p>${sq(72)} не извлекается нацело. Но его можно <b>упростить</b>: вытащить из-под корня всё, что извлекается.</p>
+<ol class="steps"><li>Найди <b>самый большой точный квадрат</b>, на который делится число. Для 72: пробуем 4, 9, 16, 25, 36… 72 = 36 · 2.</li>
+<li>Разбей: ${sq(72)} = ${sq('36 · 2')} = ${sq(36)} · ${sq(2)}.</li>
+<li>${sq(36)} = 6. Ответ: <b>6${sq(2)}</b> (читается «шесть корней из двух»).</li></ol>
+<div class="box ex"><b>Ещё примеры</b>${sq(50)} = ${sq('25 · 2')} = 5${sq(2)}.<br>${sq(48)} = ${sq('16 · 3')} = 4${sq(3)}.<br>${sq(200)} = ${sq('100 · 2')} = 10${sq(2)}.</div>
+<div class="box err"><b>Не останавливайся на полпути</b>${sq(72)} = ${sq('4 · 18')} = 2${sq(18)} — не до конца! Под корнем 18 = 9 · 2, ещё можно вынести 3. Итог всё равно 6${sq(2)}. Упрощено до конца, когда под корнем нет ни одного квадратного множителя (4, 9, 16, …).</div>
+<h3>Обратное действие — внесение под корень</h3>
+<p>Число перед корнем возводим в квадрат и умножаем на то, что под корнем: <span class="m">3${sq(5)} = ${sq('9 · 5')} = ${sq(45)}</span>.</p>
+<div class="box tip"><b>Зачем вносить</b>Чтобы сравнивать. Что больше: 2${sq(7)} или 3${sq(3)}? Вносим: ${sq(28)} и ${sq(27)}. 28 > 27, значит 2${sq(7)} больше.</div>
+<div class="box err"><b>Минус под корень не вносят</b>−3${sq(2)} = −${sq(18)}. Минус остаётся снаружи: под корнем отрицательных чисел быть не может.</div>`},
+{title:'Подобные корни и скобки',lvl:6,html:`
+<p>Корни с <b>одинаковым</b> числом под знаком складывают как одинаковые предметы: 3 яблока + 5 яблок = 8 яблок.</p>
+<p class="m">3${sq(2)} + 5${sq(2)} = 8${sq(2)}</p>
+<div class="box err"><b>Разные корни не складываются</b>${sq(2)} + ${sq(3)} ≠ ${sq(5)}. Яблоки и груши в одну кучу не сложишь. ${sq(2)} + ${sq(3)} так и остаётся.</div>
+<div class="box ex"><b>Сначала упрости — потом складывай</b>${sq(8)} + ${sq(18)} = 2${sq(2)} + 3${sq(2)} = 5${sq(2)}. Сначала кажутся разными, а после вынесения множителя — подобные!</div>
+<h3>Раскрываем скобки</h3>
+<p>Работают обычные правила и формулы сокращённого умножения. Главное помнить: <span class="m">(${sq('a')})² = a</span>.</p>
+<ul class="steps"><li><span class="m">(${sq(7)} − ${sq(3)})(${sq(7)} + ${sq(3)}) = 7 − 3 = 4</span> — разность квадратов, корни исчезли!</li>
+<li><span class="m">(${sq(3)} + ${sq(2)})² = 3 + 2${sq(6)} + 2 = 5 + 2${sq(6)}</span> — квадрат суммы, не забудь удвоенное произведение.</li>
+<li><span class="m">(3${sq(2)})² = 9 · 2 = 18</span> — в квадрат возводим и 3, и корень.</li></ul>`},
+{title:'Избавление от иррациональности в знаменателе',lvl:7,html:`
+<p>Дробь с корнем внизу, например ${fr(1,sq(3))}, считается «некрасивой». Её переписывают так, чтобы внизу было обычное число. Для этого умножаем верх и низ на одно и то же — дробь от этого не меняется.</p>
+<div class="box rule"><b>Случай 1: внизу один корень</b>Умножаем на этот же корень: ${fr(1,sq(3))} = ${fr('1 · '+sq(3),sq(3)+' · '+sq(3))} = ${fr(sq(3),3)}.<br>${fr(6,sq(3))} = ${fr('6'+sq(3),3)} = 2${sq(3)}.</div>
+<div class="box rule"><b>Случай 2: внизу сумма или разность с корнем</b>Умножаем на <b>сопряжённое</b> выражение — то же самое, но с другим знаком посередине. Тогда внизу сработает разность квадратов:<br>
+${fr(1,sq(5)+' − '+sq(2))} = ${fr(sq(5)+' + '+sq(2),'('+sq(5)+' − '+sq(2)+')('+sq(5)+' + '+sq(2)+')')} = ${fr(sq(5)+' + '+sq(2),'5 − 2')} = ${fr(sq(5)+' + '+sq(2),3)}.</div>
+<div class="box tip"><b>Как запомнить</b>«Сопряжённое» — как пара перчаток: левая и правая. ${sq(5)} − ${sq(2)} и ${sq(5)} + ${sq(2)} — пара. Перемножил пару — корни исчезли.</div>
+<div class="box err"><b>Частая ошибка</b>Умножить только знаменатель. Тогда дробь меняется! Умножать нужно <b>и числитель, и знаменатель</b>.</div>`},
+{title:'Упрощение выражений с корнями',lvl:8,html:`
+<ol class="steps"><li>Вынеси множители из-под всех корней (${sq(12)} = 2${sq(3)}, ${sq(27)} = 3${sq(3)}).</li>
+<li>Сложи подобные.</li>
+<li>Раскрой скобки по формулам, помня, что (${sq('a')})² = a.</li>
+<li>Если корень в знаменателе — избавься от него.</li></ol>
+<div class="box ex"><b>Пример</b>${fr(sq(12)+' + '+sq(27),sq(3))} = ${fr('2'+sq(3)+' + 3'+sq(3),sq(3))} = ${fr('5'+sq(3),sq(3))} = 5.</div>
+<div class="box ex"><b>Пример со значением выражения</b>Найди x² − 2x при x = 1 + ${sq(3)}.<br>Хитрость: x² − 2x = (x − 1)² − 1. А x − 1 = ${sq(3)}. Значит, (${sq(3)})² − 1 = 3 − 1 = 2.<br>Можно и «в лоб»: x² = 1 + 2${sq(3)} + 3 = 4 + 2${sq(3)}; 2x = 2 + 2${sq(3)}; разность 2. Ответ тот же.</div>`},
+{title:'★ Олимпиадные приёмы',lvl:9,html:`
+<h3>1) «Корень в корне»</h3>
+<p>Как упростить ${M(sq('7 + 4'+sq(3)))}? Догадаемся, что под корнем — полный квадрат: ${M(`(a + ${sq('b')})² = a² + b + 2a${sq('b')}`)}. Нужно a² + b = 7 и ${M(`2a${sq('b')} = 4${sq(3)}`)} → a = 2, b = 3. Проверка: ${M(`(2 + ${sq(3)})² = 4 + 4${sq(3)} + 3 = 7 + 4${sq(3)}`)} ✅.<br>Значит, ${sq('7 + 4'+sq(3))} = 2 + ${sq(3)}.</p>
+<div class="box err"><b>Со знаком минус — осторожно</b>${sq('3 − 2'+sq(2))} = |1 − ${sq(2)}| = ${sq(2)} − 1, потому что 1 − ${sq(2)} &lt; 0. Тот же модуль, что в разделе про ${sq('a²')}.</div>
+<h3>2) Сравнение без калькулятора</h3>
+<p>Что больше: ${sq(3)} + ${sq(5)} или ${sq(2)} + ${sq(6)}? Оба числа положительные — значит, можно сравнить их квадраты:<br>(${sq(3)} + ${sq(5)})² = 8 + 2${sq(15)}, (${sq(2)} + ${sq(6)})² = 8 + 2${sq(12)}. 15 > 12 → первое больше.</p>
+<h3>3) Телескопическая сумма</h3>
+<p>Избавимся от корня в знаменателе: ${fr(1,sq('n')+' + '+sq('n + 1'))} = ${sq('n + 1')} − ${sq('n')} (знаменатель после умножения на сопряжённое равен (n + 1) − n = 1).<br>Тогда ${fr(1,'1 + '+sq(2))} + ${fr(1,sq(2)+' + '+sq(3))} + … + ${fr(1,sq(8)+' + '+sq(9))} = (${sq(2)} − 1) + (${sq(3)} − ${sq(2)}) + … + (${sq(9)} − ${sq(8)}). Почти всё сокращается, как в складной подзорной трубе: остаётся ${sq(9)} − 1 = 2.</p>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>${sq('a')} — неотрицательное число, квадрат которого равен a. Только для a ≥ 0.</li>
+<li>(${sq('a')})² = a; ${sq('a²')} = |a|.</li>
+<li>x² = a: два корня ±${sq('a')} (a > 0), один корень 0 (a = 0), нет корней (a &lt; 0).</li>
+<li>${sq('ab')} = ${sq('a')} · ${sq('b')}, ${sq(fr('a','b'))} = ${fr(sq('a'),sq('b'))}. С суммой так нельзя!</li>
+<li>${sq(72)} = ${sq('36 · 2')} = 6${sq(2)} — ищи самый большой квадратный множитель.</li>
+<li>Складываются только одинаковые корни: 3${sq(2)} + 5${sq(2)} = 8${sq(2)}.</li>
+<li>Корень в знаменателе: умножь верх и низ на корень или на сопряжённое.</li></ul>`}
+];
+
+/* ---------- знаки ---------- */
+const symbols={tab:'Знаки',title:'Знаки и формулы темы',rows:[
+['√','Знак корня, «корень квадратный из…»','Ищем неотрицательное число, которое в квадрате даёт то, что под корнем. Под корнем — только числа ≥ 0.',M(`${sq(49)} = 7`)],
+['x²','«x в квадрате»','Умножить число само на себя.',M('7² = 7 · 7 = 49')],
+['|a|','Модуль a','Расстояние от нуля до числа. Всегда ≥ 0: убирает минус.',M('|−5| = 5, |3| = 3')],
+['±','«Плюс-минус»','Сразу два числа: со знаком плюс и со знаком минус. Так пишут два корня уравнения.',M('x² = 9 → x = ±3')],
+['≈','«Приблизительно равно»','Число записано не точно, а округлённо.',M(`${sq(2)} ≈ 1,41`)],
+['∅','«Корней нет»','Уравнение не имеет решений. В тренажёре так отвечают на x² = −4.',M('x² = −4 → ∅')],
+[M(`(${sq('a')})²`),'«Квадрат корня из a равен a»','Извлекли корень и возвели в квадрат — вернулись к тому же числу.',M(`(${sq(13)})² = 13`)],
+[M(sq('a²')),'«Корень из a в квадрате равен модулю a»','Корень из квадрата — модуль. Если a было отрицательным, минус исчезает.',M(`${sq('(−6)²')} = 6`)],
+[M(sq('ab')),'«Корень из произведения равен произведению корней»',`${M(`${sq('ab')} = ${sq('a')} · ${sq('b')}`)} (a, b ≥ 0). Работает в обе стороны.`,M(`${sq(2)} · ${sq(8)} = ${sq(16)} = 4`)],
+[M(sq(fr('a','b'))),'«Корень из дроби»',`${M(`${sq(fr('a','b'))} = ${fr(sq('a'),sq('b'))}`)} — корень из числителя делить на корень из знаменателя.`,M(`${sq(fr(9,16))} = ${fr(3,4)}`)],
+[M('a'+sq('b')),'«a корней из b»','Число перед корнем — множитель: a · √b. Получается при вынесении множителя.',M(`${sq(72)} = 6${sq(2)}`)],
+[M(`${sq('a')} ± ${sq('b')}`),'Сопряжённые выражения','Одинаковые, но с разными знаками посередине. Их произведение — без корней: a − b.',M(`(${sq(5)} − ${sq(2)})(${sq(5)} + ${sq(2)}) = 3`)]
+],after:`<div class="box err" style="margin-top:14px"><b>Главный запрет</b>${sq('a + b')} ≠ ${sq('a')} + ${sq('b')}. Проверка: ${sq('9 + 16')} = 5, а 3 + 4 = 7.</div>`};
+
+/* ---------- генераторы ---------- */
+const gens=[];
+const G=(lvl,make,star)=>gens.push({lvl,make,star});
+
+/* L0 — что такое корень */
+G(0,()=>{const n=R(2,15),s=n*n;
+return {type:'num',q:`Вычисли ${M(sq(s))}.`,ans:n,
+hint:`Какое число нужно умножить само на себя, чтобы получилось ${s}?`,
+short:`${n} · ${n} = ${s}, значит ${sq(s)} = ${n}.`,
+explain:`${sq(s)} — это число, которое <b>в квадрате даёт ${s}</b>. Перебираем по таблице квадратов:<br>${n>2?`${n-1}² = ${(n-1)**2} — мало,<br>`:''}<b>${n}² = ${s}</b> — подходит!<br>${n+1}² = ${(n+1)**2} — уже больше.<br>Ответ: <b>${n}</b>. Отрицательное −${n} не берём: знак √ всегда даёт число ≥ 0.`,
+explain2:`Представь квадрат, сложенный из ${s} клеточек. Какой длины его сторона? Если сторона ${n}, то клеток ${n} · ${n} = ${s}. Корень — это и есть «сторона по площади».${n<=9?`<div class="fig">${squareFig(n)}</div>`:''}`};});
+G(0,()=>{const v=pick([['0,04','0,2',2,100],['0,09','0,3',3,100],['0,16','0,4',4,100],['0,25','0,5',5,100],['0,36','0,6',6,100],['0,49','0,7',7,100],['0,64','0,8',8,100],['0,81','0,9',9,100],['1,21','1,1',11,100],['1,44','1,2',12,100],['0,0001','0,01',1,10000],['0,0004','0,02',2,10000]]);
+const [s,r,d,den]=v,ans=d/Math.sqrt(den),dn=v[0].split(',')[1].length,rt=Math.round(Math.sqrt(den));
+return {type:'num',q:`Вычисли ${M(sq(s))}.`,ans,
+hint:'Сначала представь, что запятой нет. Потом подумай, сколько знаков после запятой должно быть.',
+short:`${r} · ${r} = ${s}.`,
+explain:`Ищем число, которое в квадрате даёт ${s}.<br>1) Без запятой: ${d*d} = ${d}², значит цифры ответа — «${d}».<br>2) Знаков после запятой: под корнем ${dn}, в ответе — <b>вдвое меньше</b>, то есть ${dn/2}.<br>Ответ: <b>${r}</b>. Проверка: ${r} · ${r} = ${s} ✅.<div class="box err"><b>Ловушка</b>Частая ошибка — оставить столько же знаков после запятой (${N(d/den)}) или разделить ${s} на 2. Проверяй умножением: ответ, умноженный сам на себя, должен дать ${s}.</div>`,
+explain2:`Переведём в обыкновенную дробь: ${s} = ${fr(d*d,den)}. Извлекаем корень из числителя и знаменателя по отдельности: ${sq(fr(d*d,den))} = ${fr(sq(d*d),sq(den))} = ${fr(d,rt)} = ${r}.`};});
+G(0,()=>{const a=pick([4,9,16,25,36,49,64,81]);const bad=`${sq('−'+a)}`;
+const opts=shuffle([M(sq(a)),M('−'+sq(a)),M(sq(0)),M(bad)]);const ans=opts.indexOf(M(bad));
+return {type:'choice',q:'Какое из выражений <b>не имеет смысла</b>?',opts,ans,
+short:`Под корнем стоит отрицательное число −${a} — так нельзя.`,
+explain:`Проверим каждое:<br>• ${sq(a)} = ${Math.sqrt(a)} — имеет смысл.<br>• −${sq(a)} = −${Math.sqrt(a)} — имеет смысл: минус стоит <b>снаружи</b> корня, под корнем ${a} ≥ 0.<br>• ${sq(0)} = 0 — имеет смысл (0² = 0).<br>• ${bad} — <b>не имеет смысла</b>: нужно число, квадрат которого равен −${a}, а квадрат любого числа ≥ 0.<div class="box err"><b>Не перепутай</b>−${sq(a)} (минус снаружи) — можно. ${bad} (минус внутри) — нельзя.</div>`,
+explain2:`Попробуй найти ${bad} перебором: ${Math.sqrt(a)}² = ${a}, (−${Math.sqrt(a)})² = ${a} (минус на минус — плюс), 0² = 0. Ни разу не получилось −${a}. Как ни старайся — квадрат не бывает отрицательным. Значит, такого корня нет.`};});
+G(0,()=>{const k=pick(NS.concat([17,19,21,23])),m=R(1,9),plus=Math.random()<0.5;const ans=plus?k+m:k*m;
+const q=plus?`(${sq(k)})² + ${m}`:`${m} · (${sq(k)})²`;
+return {type:'num',q:`Вычисли ${M(q)}.`,ans,
+hint:'Что получится, если извлечь корень, а потом возвести в квадрат?',
+short:`(${sq(k)})² = ${k}, дальше ${plus?`${k} + ${m}`:`${m} · ${k}`} = ${ans}.`,
+explain:`${sq(k)} — это такое число, которое <b>в квадрате даёт ${k}</b> (так оно определено!). Значит, (${sq(k)})² = <b>${k}</b>, ничего считать не нужно.<br>Дальше: ${plus?`${k} + ${m}`:`${m} · ${k}`} = <b>${ans}</b>.`,
+explain2:`Проверь на «хорошем» числе: (${sq(9)})² = 3² = 9. Корень и квадрат «гасят» друг друга, как «надел шапку — снял шапку». С ${k} то же самое: (${sq(k)})² = ${k}, хотя сам ${sq(k)} ≈ ${N(Math.round(Math.sqrt(k)*100)/100)} — некруглое число.`};});
+
+/* L1 — таблица квадратов и оценка */
+G(1,()=>{let n;do{n=R(5,230);}while(isSq(n));const a=Math.floor(Math.sqrt(n));
+const T=(x,y)=>`между ${x} и ${y}`;const c=T(a,a+1);
+const h=Math.floor(n/2);const o=mk(c,[T(a-1,a),T(a+1,a+2),T(h,h+1)]);
+return {type:'choice',q:`Между какими соседними целыми числами находится ${M(sq(n))}?`,opts:o.opts,ans:o.ans,
+hint:'Найди в таблице квадратов два соседних квадрата: меньше и больше этого числа.',
+short:`${a}² = ${a*a} &lt; ${n} &lt; ${(a+1)**2} = ${a+1}², значит ${a} &lt; ${sq(n)} &lt; ${a+1}.`,
+explain:`Ищем два соседних точных квадрата вокруг ${n}:<br>${a}² = <b>${a*a}</b> — меньше ${n};<br>${a+1}² = <b>${(a+1)**2}</b> — больше ${n}.<br>Чем больше число под корнем, тем больше корень: ${sq(a*a)} &lt; ${sq(n)} &lt; ${sq((a+1)**2)}, то есть <b>${a} &lt; ${sq(n)} &lt; ${a+1}</b>.${h!==a&&h!==a+1&&h!==a-1?`<div class="box err"><b>Ловушка</b>«Между ${h} и ${h+1}» — это если поделить ${n} на 2. Но корень — не половина: ${h}² = ${h*h}, это гораздо больше ${n}.</div>`:''}`,
+explain2:`Посмотри на числовую прямую. Под каждым целым числом подписано, корнем из чего оно является. ${n} лежит между ${a*a} и ${(a+1)**2} — значит, ${sq(n)} лежит между ${a} и ${a+1}.<div class="fig">${nline(n)}</div>`};});
+G(1,()=>{let a,n;do{a=R(3,12);n=a*a+pick([-3,-2,-1,1,2,3,a,-a]);}while(n<2||isSq(n));
+const big=a*a>n;const opts=[M(`${a} > ${sq(n)}`),M(`${a} &lt; ${sq(n)}`),M(`${a} = ${sq(n)}`)];
+return {type:'choice',q:`Сравни числа ${M(a)} и ${M(sq(n))}.`,opts,ans:big?0:1,
+hint:`Представь ${a} в виде корня: ${a} = √?`,
+short:`${a} = ${sq(a*a)}, а ${a*a} ${big?'>':'<'} ${n}.`,
+explain:`Чтобы сравнить, превратим ${a} тоже в корень: ${a} = ${sq(a*a)} (ведь ${a}² = ${a*a}).<br>Теперь сравниваем числа под корнями: ${a*a} ${big?'>':'<'} ${n}.<br>Больше число под корнем — больше корень, поэтому <b>${a} ${big?'>':'<'} ${sq(n)}</b>.`,
+explain2:`Можно сравнить квадраты обоих чисел (оба положительные, так можно): ${a}² = ${a*a}, (${sq(n)})² = ${n}. ${a*a} ${big?'больше':'меньше'} ${n} — значит, и ${a} ${big?'больше':'меньше'} ${sq(n)}. Как у двух квадратов: у кого площадь больше, у того и сторона больше.`};});
+G(1,()=>{let p,q;do{p=R(2,40);q=p+R(15,90);}while(isSq(p)||isSq(q));
+const ints=[];for(let k=1;k*k<q;k++)if(k*k>p)ints.push(k);
+return {type:'num',q:`Сколько целых чисел лежит на числовой прямой между ${M(sq(p))} и ${M(sq(q))}?`,ans:ints.length,
+hint:`Найди, между какими целыми числами лежит каждый корень.`,
+short:`Это числа ${ints.join(', ')} — всего ${ints.length}.`,
+explain:`1) ${sq(p)}: ${Math.floor(Math.sqrt(p))}² = ${Math.floor(Math.sqrt(p))**2} &lt; ${p} &lt; ${Math.ceil(Math.sqrt(p))**2}, значит ${Math.floor(Math.sqrt(p))} &lt; ${sq(p)} &lt; ${Math.ceil(Math.sqrt(p))}.<br>2) ${sq(q)}: ${Math.floor(Math.sqrt(q))**2} &lt; ${q} &lt; ${Math.ceil(Math.sqrt(q))**2}, значит ${Math.floor(Math.sqrt(q))} &lt; ${sq(q)} &lt; ${Math.ceil(Math.sqrt(q))}.<br>3) Целые числа между корнями: от ${ints[0]} до ${ints[ints.length-1]}: <b>${ints.join(', ')}</b> — всего <b>${ints.length}</b>.`,
+explain2:`Другой способ: целое k лежит между ${sq(p)} и ${sq(q)}, если k² лежит между ${p} и ${q}. Выпишем квадраты: ${ints.map(k=>`${k}² = ${k*k}`).join(', ')} — все между ${p} и ${q}. ${ints[0]-1>0?`(${ints[0]-1}² = ${(ints[0]-1)**2} — слишком мало, `:'('}${ints[ints.length-1]+1}² = ${(ints[ints.length-1]+1)**2} — слишком много.) Подходит ${ints.length} ${plural(ints.length,'число','числа','чисел')}.`};});
+
+/* L2 — уравнение x² = a */
+G(2,()=>{const n=R(2,13);
+return {type:'set',q:`Реши уравнение ${M(`x² = ${n*n}`)}. Запиши все корни.`,ans:[-n,n],ph:'например: −2, 2',keys:['−','∅'],
+hint:'Какие числа в квадрате дают это число? Их два!',
+short:`${n}² = ${n*n} и (−${n})² = ${n*n}, поэтому x = ±${n}.`,
+explain:`Ищем <b>все</b> числа, квадрат которых равен ${n*n}.<br>• ${n}² = ${n*n} ✅<br>• (−${n})² = (−${n}) · (−${n}) = ${n*n} ✅ (минус на минус — плюс!)<br>Ответ: <b>x = ${n}</b> и <b>x = −${n}</b>.<div class="box err"><b>Частая ошибка</b>Написать только ${n}. Отрицательный корень тоже подходит — проверь подстановкой.</div>`,
+explain2:`Сравни две записи: ${sq(n*n)} = ${n} — это одно число (так договорились, знак √ даёт число ≥ 0). А в уравнении x² = ${n*n} спрашивают: «какие x подходят?» — и тут подходят оба: ${n} и −${n}. Представь, что на прямой ты отходишь от нуля на ${n} шагов — вправо или влево. В квадрате получится одно и то же.`};});
+G(2,()=>{const zero=Math.random()<0.3,k=R(1,30);const a=zero?0:-k;
+return {type:'set',q:`Реши уравнение ${M(`x² = ${N(a)}`)}. Если корней нет, нажми ∅.`,ans:zero?[0]:[],keys:['−','∅'],
+hint:'Может ли квадрат числа быть таким?',
+short:zero?'Только 0² = 0, корень один: x = 0.':`Квадрат не бывает отрицательным, поэтому корней нет.`,
+explain:zero?`x² = 0 только когда x = 0: любое другое число в квадрате даёт положительное число. Ответ: <b>один корень x = 0</b>.`:`Квадрат любого числа ≥ 0: положительное в квадрате — положительное, отрицательное в квадрате — тоже положительное (минус на минус), 0² = 0.<br>Число −${k} отрицательное, его квадратом никогда не получить. Ответ: <b>корней нет (∅)</b>.<div class="box err"><b>Ловушка</b>Ответ «x = ±${sq(k)}» неверен: проверь — (${sq(k)})² = ${k}, а не −${k}.</div>`,
+explain2:zero?`Подставь любые числа: 1² = 1, (−1)² = 1, 0,1² = 0,01. Ноль получается только из нуля. Значит, ровно один корень.`:`Представь квадрат на клетчатой бумаге: его площадь x². Может ли площадь быть −${k} клеток? Нет — площадь не бывает меньше нуля. Значит, такого x нет.`};});
+G(2,()=>{const k=pick(NS.concat([17,19,21,22,23]));
+const c=M(`x = ${sq(k)} и x = −${sq(k)}`);const o=mk(c,[M(`x = ${sq(k)}`),M(`x = ${N(k/2)} и x = −${N(k/2)}`),'корней нет']);
+return {type:'choice',q:`Реши уравнение ${M(`x² = ${k}`)}.`,opts:o.opts,ans:o.ans,
+short:`(${sq(k)})² = ${k} и (−${sq(k)})² = ${k}.`,
+explain:`${k} — не точный квадрат, корень не извлекается нацело. Но число, которое в квадрате даёт ${k}, всё равно существует — это ${sq(k)} ≈ ${N(Math.round(Math.sqrt(k)*100)/100)}.<br>Корней <b>два</b>: x = ${sq(k)} и x = −${sq(k)} (короче: x = ±${sq(k)}).<br>• «Только ${sq(k)}» — потеряли отрицательный корень.<br>• «±${N(k/2)}» — корень перепутали с делением на 2: (${N(k/2)})² = ${N(k*k/4)} ≠ ${k}.<br>• «Корней нет» — неверно: ${k} > 0, значит корни есть.`,
+explain2:`Проверка подстановкой: (−${sq(k)})² = (−${sq(k)}) · (−${sq(k)}) = ${sq(k)} · ${sq(k)} = ${k} ✅. Число ${sq(k)} «некрасивое», но это обычное число на прямой, примерно ${N(Math.round(Math.sqrt(k)*10)/10)}.`};});
+G(2,()=>{const p=R(1,7),q=R(1,8),pl=Math.random()<0.5;const ans=pl?[q-p,-q-p]:[p+q,p-q];
+const lhs=pl?`(x + ${p})²`:`(x − ${p})²`;
+return {type:'set',q:`Реши уравнение ${M(`${lhs} = ${q*q}`)}.`,ans,ph:'например: −2, 5',keys:['−','∅'],
+hint:`Что-то в квадрате равно ${q*q}. Чему может быть равно это «что-то»?`,
+short:`${pl?`x + ${p}`:`x − ${p}`} = ±${q} → x = ${N(ans[0])} или x = ${N(ans[1])}.`,
+explain:`Обозначим скобку буквой: t = ${pl?`x + ${p}`:`x − ${p}`}. Тогда t² = ${q*q}, значит t = ${q} или t = −${q}.<br>1) ${pl?`x + ${p}`:`x − ${p}`} = ${q} → x = ${pl?`${q} − ${p}`:`${q} + ${p}`} = <b>${N(ans[0])}</b>.<br>2) ${pl?`x + ${p}`:`x − ${p}`} = −${q} → x = ${pl?`−${q} − ${p}`:`−${q} + ${p}`} = <b>${N(ans[1])}</b>.`,
+explain2:`Проверим подстановкой оба ответа:<br>x = ${N(ans[0])}: ${pl?`(${N(ans[0])} + ${p})`:`(${N(ans[0])} − ${p})`}² = ${q}² = ${q*q} ✅<br>x = ${N(ans[1])}: ${pl?`(${N(ans[1])} + ${p})`:`(${N(ans[1])} − ${p})`}² = (−${q})² = ${q*q} ✅<br>Частая ошибка — найти только первый ответ, забыв, что скобка может быть и −${q}.`};});
+
+/* L3 — √a² = |a| */
+G(3,()=>{const n=R(2,15);
+return {type:'num',q:`Вычисли ${M(sq(`(−${n})²`))}.`,ans:n,
+short:`(−${n})² = ${n*n}, ${sq(n*n)} = ${n}.`,
+explain:`Действуем по порядку:<br>1) Сначала то, что под корнем: (−${n})² = (−${n}) · (−${n}) = ${n*n}.<br>2) Потом корень: ${sq(n*n)} = <b>${n}</b>.<div class="box err"><b>Ловушка</b>Ответ −${n} неверен: корень (знак √) никогда не даёт отрицательное число. Правило: ${sq('a²')} = |a| = |−${n}| = ${n}.</div>`,
+explain2:`Представь: ты сделал ${n} шагов назад (это −${n}). Квадрат «стирает» направление — остаётся ${n*n}. А корень возвращает только количество шагов: ${n}. Направление («назад») уже потерялось.`};});
+G(3,()=>{const v=pick(['a','x','b']);const opts=[M(v),M('−'+v),M('±'+v),M(v+'²')];
+return {type:'choice',q:`Известно, что ${M(v+' &lt; 0')}. Чему равно ${M(sq(v+'²'))}?`,opts,ans:1,
+short:`${sq(v+'²')} = |${v}|, а при ${v} &lt; 0 модуль |${v}| = −${v}.`,
+explain:`Правило: ${sq(v+'²')} = <b>|${v}|</b>. Так как ${v} отрицательное, |${v}| = <b>−${v}</b> (минус перед отрицательным числом делает его положительным).<br>• «${v}» — неверно: ${v} отрицательное, а корень не может быть отрицательным.<br>• «±${v}» — корень даёт одно число, не два.<br>• «${v}²» — корень и квадрат «гасят» друг друга, квадрат не остаётся.`,
+explain2:`Проверь на числе: пусть ${v} = −3. Тогда ${sq(`(−3)²`)} = ${sq(9)} = 3. А −${v} = −(−3) = 3 ✅. Вариант «${v}» дал бы −3 ❌. Запись «−${v}» выглядит отрицательной, но при отрицательном ${v} это положительное число.`};});
+G(3,()=>{let p,q;do{p=R(1,5);q=pick(NS.concat([17,19,21,22,23]));}while(isSq(q));
+const neg=p*p<q;const A=`${p} − ${sq(q)}`,B=`${sq(q)} − ${p}`;const c=M(neg?B:A);
+const opts=shuffle([M(A),M(B),M(`${p} + ${sq(q)}`),M(`±(${A})`)]);
+return {type:'choice',q:`Упрости ${M(sq(`(${p} − ${sq(q)})²`))}.`,opts,ans:opts.indexOf(c),
+hint:`${sq('a²')} = |a|. Какой знак у числа ${p} − ${sq(q)}?`,
+short:`${sq(q)} ≈ ${N(Math.round(Math.sqrt(q)*100)/100)} ${neg?'>':'<'} ${p}, поэтому |${A}| = ${neg?B:A}.`,
+explain:`1) По правилу ${sq('a²')} = |a|: ${sq(`(${A})²`)} = |${A}|.<br>2) Узнаём знак: ${p} = ${sq(p*p)}, и ${p*p} ${neg?'<':'>'} ${q}, значит ${p} ${neg?'<':'>'} ${sq(q)}. Число ${A} <b>${neg?'отрицательное':'положительное'}</b>.<br>3) ${neg?`Модуль отрицательного числа — это число с обратным знаком: |${A}| = −(${A}) = <b>${B}</b>.`:`Модуль положительного числа — оно само: |${A}| = <b>${A}</b>.`}${neg?`<div class="box err"><b>Ловушка</b>«${A}» выглядит естественно, но это отрицательное число (≈ ${N(Math.round((p-Math.sqrt(q))*100)/100)}), а корень не бывает отрицательным.</div>`:''}`,
+explain2:`Посчитай приближённо: ${sq(q)} ≈ ${N(Math.round(Math.sqrt(q)*100)/100)}, ${A} ≈ ${N(Math.round((p-Math.sqrt(q))*100)/100)}. Квадрат этого числа ≈ ${N(Math.round((p-Math.sqrt(q))**2*100)/100)}, корень из него ≈ ${N(Math.round(Math.abs(p-Math.sqrt(q))*100)/100)} — положительное число. Из вариантов положительное и равное ему — только ${neg?B:A}.`};});
+G(3,()=>{const k=R(2,12),v=pick(['a','x']);const plus=Math.random()<0.35;const ans=plus?0:2*k;
+const e=plus?`${sq(v+'²')} + ${v}`:`${sq(v+'²')} − ${v}`;
+return {type:'num',q:`Найди значение выражения ${M(e)} при ${M(`${v} = −${k}`)}.`,ans,
+hint:`Сначала посчитай ${sq(v+'²')} при ${v} = −${k}. Помни: корень не бывает отрицательным.`,
+short:`${sq(v+'²')} = |−${k}| = ${k}; ${plus?`${k} + (−${k}) = 0`:`${k} − (−${k}) = ${2*k}`}.`,
+explain:`1) ${sq(v+'²')} = ${sq(`(−${k})²`)} = ${sq(k*k)} = <b>${k}</b> (не −${k}!).<br>2) ${plus?`${k} + (−${k}) = <b>0</b>`:`${k} − (−${k}) = ${k} + ${k} = <b>${2*k}</b>`}.<div class="box err"><b>Ловушка</b>Если «сократить» ${sq(v+'²')} до ${v}, получится ${plus?`−${k} + (−${k}) = −${2*k}`:`−${k} − (−${k}) = 0`} — это неверно, потому что ${sq(v+'²')} = |${v}|, а не ${v}.</div>`,
+explain2:`Подставляй число <b>сразу</b>, не упрощая выражение: под корнем (−${k})² = ${k*k}. Корень из ${k*k} — это ${k}. Дальше обычный счёт: ${plus?`${k} + (−${k})`:`${k} − (−${k})`} = ${ans}. Минус перед скобкой с минусом даёт плюс.`};});
+
+/* L4 — свойства */
+G(4,()=>{let a,b;do{a=R(2,9);b=R(2,9);}while(a===b);
+return {type:'num',q:`Вычисли ${M(sq(`${a*a} · ${b*b}`))}.`,ans:a*b,
+hint:'Корень из произведения равен произведению корней.',
+short:`${sq(a*a)} · ${sq(b*b)} = ${a} · ${b} = ${a*b}.`,
+explain:`Свойство: ${sq('ab')} = ${sq('a')} · ${sq('b')}.<br>${sq(`${a*a} · ${b*b}`)} = ${sq(a*a)} · ${sq(b*b)} = ${a} · ${b} = <b>${a*b}</b>.<br>Так проще, чем сначала перемножать ${a*a} · ${b*b} = ${a*a*b*b} и искать корень из большого числа.`,
+explain2:`Проверка «в лоб»: ${a*a} · ${b*b} = ${a*a*b*b}. Подходит ли ${a*b}? ${a*b} · ${a*b} = ${a*a*b*b} ✅. Видишь — свойство работает, а считать проще.`};});
+G(4,()=>{const p=pick([[2,8],[2,18],[3,12],[3,27],[5,20],[2,32],[6,24],[7,28],[5,45],[2,50],[3,48],[10,40]]);const s=Math.round(Math.sqrt(p[0]*p[1]));
+return {type:'num',q:`Вычисли ${M(`${sq(p[0])} · ${sq(p[1])}`)}.`,ans:s,
+hint:'Объедини под одним корнем.',
+short:`${sq(p[0])} · ${sq(p[1])} = ${sq(p[0]*p[1])} = ${s}.`,
+explain:`По отдельности ${sq(p[0])} и ${sq(p[1])} не извлекаются. Используем свойство «справа налево»: ${sq('a')} · ${sq('b')} = ${sq('ab')}.<br>${sq(p[0])} · ${sq(p[1])} = ${sq(`${p[0]} · ${p[1]}`)} = ${sq(p[0]*p[1])} = <b>${s}</b>.`,
+explain2:`Можно и так: вынесем множитель из ${sq(p[1])} = ${sq(`${p[1]/p[0]} · ${p[0]}`)} = ${Math.round(Math.sqrt(p[1]/p[0]))}${sq(p[0])}. Тогда ${sq(p[0])} · ${Math.round(Math.sqrt(p[1]/p[0]))}${sq(p[0])} = ${Math.round(Math.sqrt(p[1]/p[0]))} · (${sq(p[0])})² = ${Math.round(Math.sqrt(p[1]/p[0]))} · ${p[0]} = ${s}.`};});
+G(4,()=>{const n=pick([2,3,5,6,7]),k=R(2,9),m=n*k*k;
+return {type:'num',q:`Вычисли ${M(fr(sq(m),sq(n)))}.`,ans:k,
+short:`${fr(sq(m),sq(n))} = ${sq(`${m} : ${n}`)} = ${sq(k*k)} = ${k}.`,
+explain:`Свойство: ${fr(sq('a'),sq('b'))} = ${sq(fr('a','b'))} — можно объединить под одним корнем.<br>${fr(sq(m),sq(n))} = ${sq(fr(m,n))} = ${sq(k*k)} = <b>${k}</b>.`,
+explain2:`Проверка умножением: если ответ ${k}, то ${k} · ${sq(n)} должно быть равно ${sq(m)}. Внесём ${k} под корень: ${k}${sq(n)} = ${sq(`${k*k} · ${n}`)} = ${sq(m)} ✅.`};});
+G(4,()=>{let p,q;do{p=R(1,9);q=R(2,12);}while(H.gcd(p,q)!==1||p>=q);
+return {type:'num',q:`Вычисли ${M(sq(fr(p*p,q*q)))}. Ответ можно записать дробью через «/».`,ans:p/q,ansText:M(fr(p,q)),ph:'например: 3/5',
+short:`${sq(p*p)} = ${p}, ${sq(q*q)} = ${q} → ${fr(p,q)}.`,
+explain:`Корень из дроби = корень из числителя, делённый на корень из знаменателя:<br>${sq(fr(p*p,q*q))} = ${fr(sq(p*p),sq(q*q))} = <b>${fr(p,q)}</b>.<br>Записать можно так: ${p}/${q}.`,
+explain2:`Проверка: ${fr(p,q)} · ${fr(p,q)} = ${fr(p+' · '+p,q+' · '+q)} = ${fr(p*p,q*q)} ✅. При умножении дробей числители перемножаются отдельно и знаменатели отдельно — поэтому и корень берётся отдельно.`};});
+G(4,()=>{const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[12,16,20]]);const [a,b,c]=t;
+const o=mk(String(c),[String(a+b),String(a*a+b*b),N((a*a+b*b)/2)]);
+return {type:'choice',q:`Вычисли ${M(sq(`${a*a} + ${b*b}`))}.`,opts:o.opts,ans:o.ans,
+short:`${a*a} + ${b*b} = ${c*c}, ${sq(c*c)} = ${c}.`,
+explain:`Под корнем <b>сумма</b>, а корень из суммы <b>не равен</b> сумме корней! Поэтому сначала складываем: ${a*a} + ${b*b} = ${c*c}. Потом извлекаем корень: ${sq(c*c)} = <b>${c}</b>.<div class="box err"><b>Ловушка</b>${sq(a*a)} + ${sq(b*b)} = ${a} + ${b} = ${a+b} — неправильно. Свойство ${sq('ab')} = ${sq('a')} · ${sq('b')} есть только для умножения.</div>`,
+explain2:`Проверим вариант ${a+b}: ${a+b}² = ${(a+b)**2}, а под корнем ${c*c}. Не совпало — значит, ${a+b} не может быть ответом. А ${c}² = ${c*c} ✅. Правило: сначала всё, что под корнем, потом сам корень — как сначала скобки, потом остальное.`};});
+
+/* L5 — вынесение и внесение множителя */
+G(5,()=>{const m=pick([2,3,5,6,7,10]),k=R(2,m>5?6:9),n=k*k*m;
+const sm=[];for(let d=2;d<k;d++)if(k%d===0)sm.push(d);
+return {...radAns(k,m),q:`Вынеси множитель из-под знака корня: ${M(sq(n))}. Упрости до конца.`,
+hint:`Найди самый большой точный квадрат (4, 9, 16, 25, 36, 49, 64, 81, 100…), на который делится ${n}.`,
+short:`${n} = ${k*k} · ${m}, ${sq(n)} = ${sq(k*k)} · ${sq(m)} = ${rad(k,m)}.`,
+explain:`1) Ищем самый большой точный квадрат, на который делится ${n}: это <b>${k*k}</b> (${n} = ${k*k} · ${m}).<br>2) ${sq(n)} = ${sq(`${k*k} · ${m}`)} = ${sq(k*k)} · ${sq(m)} = <b>${rad(k,m)}</b>.<br>Под корнем осталось ${m} — из него больше ничего не вынести.${sm.length?`<div class="box err"><b>Не на полпути</b>Если взять квадрат поменьше, например ${sm[0]*sm[0]}: ${sq(n)} = ${rad(sm[0],n/(sm[0]*sm[0]))} — под корнем ${n/(sm[0]*sm[0])} ещё делится на ${(k/sm[0])**2}, упрощение не закончено.</div>`:''}<br>Вводить так: <b>${radTxt(k,m)}</b> (кнопка √ под полем).`,
+explain2:`Проверка обратным действием: внесём ${k} под корень — ${rad(k,m)} = ${sq(`${k}² · ${m}`)} = ${sq(`${k*k} · ${m}`)} = ${sq(n)} ✅.<br>Аналогия: ${sq(n)} — это «коробка», в которой лежит ${k*k} · ${m}. Число ${k*k} — «круглое» (точный квадрат), оно выходит наружу как ${k}. А ${m} так и остаётся внутри.`};});
+G(5,()=>{const m=pick([2,3,5,6,7,10,11]),k=R(2,9);
+return {type:'num',q:`Внеси множитель под знак корня: ${M(rad(k,m)+' = '+sq('?'))}. Какое число будет под корнем?`,ans:k*k*m,
+hint:`Число перед корнем надо возвести в квадрат.`,
+short:`${rad(k,m)} = ${sq(`${k*k} · ${m}`)} = ${sq(k*k*m)}.`,
+explain:`Чтобы внести ${k} под корень, превратим его в корень: ${k} = ${sq(k*k)}.<br>Тогда ${rad(k,m)} = ${sq(k*k)} · ${sq(m)} = ${sq(`${k*k} · ${m}`)} = ${sq(k*k*m)}. Ответ: <b>${k*k*m}</b>.<div class="box err"><b>Ловушка</b>${sq(k*m)} — неверно: под корень ${k} попадает <b>в квадрате</b>. Проверка: ${sq(k*m)} ≈ ${N(Math.round(Math.sqrt(k*m)*100)/100)}, а ${rad(k,m)} ≈ ${N(Math.round(k*Math.sqrt(m)*100)/100)}.</div>`,
+explain2:`Это действие, обратное вынесению. Проверь: из ${sq(k*k*m)} выносим ${k*k} → получаем ${k}${sq(m)} ✅. Шаг «внесения» один: <b>число перед корнем в квадрат и умножить на подкоренное</b>: ${k}² · ${m} = ${k*k*m}.`};});
+G(5,()=>{let a,m,b,n;do{a=R(2,7);m=pick([2,3,5,6,7]);b=R(2,7);n=pick([2,3,5,6,7]);}while(a*a*m===b*b*n||m===n);
+const A=a*a*m,B=b*b*n,big=A>B;const opts=[M(`${rad(a,m)} > ${rad(b,n)}`),M(`${rad(a,m)} &lt; ${rad(b,n)}`),M(`${rad(a,m)} = ${rad(b,n)}`)];
+return {type:'choice',q:`Сравни ${M(rad(a,m))} и ${M(rad(b,n))}.`,opts,ans:big?0:1,
+hint:'Внеси множители под корень и сравни подкоренные числа.',
+short:`${rad(a,m)} = ${sq(A)}, ${rad(b,n)} = ${sq(B)}; ${A} ${big?'>':'<'} ${B}.`,
+explain:`Вносим множители под корень:<br>${rad(a,m)} = ${sq(`${a*a} · ${m}`)} = ${sq(A)};<br>${rad(b,n)} = ${sq(`${b*b} · ${n}`)} = ${sq(B)}.<br>${A} ${big?'>':'<'} ${B}, значит <b>${rad(a,m)} ${big?'>':'<'} ${rad(b,n)}</b>.${(a>b)!==big?`<div class="box err"><b>Ловушка</b>Смотреть только на числа перед корнем нельзя: ${a} ${a>b?'>':'<'} ${b}, но ответ обратный — важно и то, что под корнем.</div>`:''}`,
+explain2:`Возведём оба числа в квадрат (они положительные, так можно): (${rad(a,m)})² = ${a*a} · ${m} = ${A}, (${rad(b,n)})² = ${b*b} · ${n} = ${B}. У кого квадрат больше, тот и больше. Приближённо: ${N(Math.round(a*Math.sqrt(m)*100)/100)} и ${N(Math.round(b*Math.sqrt(n)*100)/100)}.`};});
+G(5,()=>{const k=R(2,6),m=pick([2,3,5,6,7]);const s=k*k*m;
+const c=M('−'+sq(s));const o=mk(c,[M(sq(s)),M(sq('−'+s)),M('−'+sq(k*m))]);
+return {type:'choice',q:`Внеси множитель под знак корня: ${M('−'+rad(k,m))}.`,opts:o.opts,ans:o.ans,
+short:`Минус остаётся снаружи: −${rad(k,m)} = −${sq(s)}.`,
+explain:`Здесь множитель −${k}. Под корень вносим только <b>положительную часть</b> ${k}, а минус оставляем снаружи:<br>−${rad(k,m)} = −(${k}${sq(m)}) = −${sq(`${k*k} · ${m}`)} = <b>−${sq(s)}</b>.<br>• ${sq('−'+s)} — не имеет смысла (под корнем отрицательное).<br>• ${sq(s)} — потерян минус: число стало положительным, а было отрицательным.<br>• −${sq(k*m)} — ${k} внесли без возведения в квадрат.`,
+explain2:`Проверь знак: −${rad(k,m)} — отрицательное число (≈ −${N(Math.round(k*Math.sqrt(m)*100)/100)}). Корень ${sq(s)} всегда положительный. Чтобы получилось то же отрицательное число, перед корнем нужен минус: −${sq(s)} ≈ −${N(Math.round(Math.sqrt(s)*100)/100)} ✅.`};});
+
+/* L6 — подобные корни, скобки */
+G(6,()=>{let m,a,b,c;do{m=pick([2,3,5]);[a,b,c]=sample([1,2,3,4,5],3);}while(a+b-c<1);const k=a+b-c;
+const t=x=>sq(x*x*m);
+return {...radAns(k,m),q:`Упрости: ${M(`${t(a)} + ${t(b)} − ${t(c)}`)}.`,
+hint:`Вынеси множитель из-под каждого корня — получатся подобные.`,
+short:`${rad(a,m)} + ${rad(b,m)} − ${rad(c,m)} = ${rad(k,m)}.`,
+explain:`1) Выносим множители:<br>${[a,b,c].map(x=>x===1?`${t(x)} уже простой`:`${t(x)} = ${sq(`${x*x} · ${m}`)} = ${rad(x,m)}`).join(';<br>')}.<br>2) Теперь все корни одинаковые — ${sq(m)}. Складываем числа перед ними: ${a} + ${b} − ${c} = ${k}.<br>Ответ: <b>${rad(k,m)}</b> (ввод: ${radTxt(k,m)}).<div class="box err"><b>Ловушка</b>Нельзя складывать числа под корнем: ${sq(a*a*m+b*b*m-c*c*m)} — неверно.</div>`,
+explain2:`Думай про ${sq(m)} как про «яблоко». После вынесения: ${a} ${plural(a,'яблоко','яблока','яблок')} + ${b} ${plural(b,'яблоко','яблока','яблок')} − ${c} ${plural(c,'яблоко','яблока','яблок')} = ${k} ${plural(k,'яблоко','яблока','яблок')}. То есть ${rad(k,m)}.<br>Приближённая проверка: ${N(Math.round((a+b-c)*Math.sqrt(m)*100)/100)} ≈ ${N(Math.round((Math.sqrt(a*a*m)+Math.sqrt(b*b*m)-Math.sqrt(c*c*m))*100)/100)} ✅.`};});
+G(6,()=>{let a,b;do{a=R(3,30);b=R(2,a-1);}while(isSq(a)||isSq(b));
+return {type:'num',q:`Вычисли ${M(`(${sq(a)} − ${sq(b)})(${sq(a)} + ${sq(b)})`)}.`,ans:a-b,
+hint:'Узнаёшь формулу (x − y)(x + y)?',
+short:`Разность квадратов: (${sq(a)})² − (${sq(b)})² = ${a} − ${b} = ${a-b}.`,
+explain:`Это формула <b>разности квадратов</b>: (x − y)(x + y) = x² − y².<br>Здесь x = ${sq(a)}, y = ${sq(b)}:<br>(${sq(a)})² − (${sq(b)})² = ${a} − ${b} = <b>${a-b}</b>.`,
+explain2:`Раскроем скобки «в лоб»: ${sq(a)}·${sq(a)} + ${sq(a)}·${sq(b)} − ${sq(b)}·${sq(a)} − ${sq(b)}·${sq(b)}.<br>Средние слагаемые ${sq(a*b)} и −${sq(a*b)} уничтожают друг друга. Остаётся ${a} − ${b} = ${a-b}. Корни исчезли — в этом и сила формулы.`};});
+G(6,()=>{const [a,b]=sample([2,3,5,6,7,10,11],2).sort((x,y)=>x-y);const [k,m]=simp(a*b);
+const c=M(`${a+b} + ${rad(2*k,m)}`);const o=mk(c,[M(`${a+b}`),M(`${a+b} + ${rad(k,m)}`),M(`${a+b} − ${rad(2*k,m)}`)]);
+return {type:'choice',q:`Раскрой скобки: ${M(`(${sq(a)} + ${sq(b)})²`)}.`,opts:o.opts,ans:o.ans,
+short:`${a} + 2${sq(a*b)} + ${b} = ${a+b} + ${rad(2*k,m)}.`,
+explain:`Квадрат суммы: (x + y)² = x² + <b>2xy</b> + y².<br>x² = (${sq(a)})² = ${a}; y² = (${sq(b)})² = ${b}; 2xy = 2${sq(a)}${sq(b)} = 2${sq(a*b)}${k>1?` = ${rad(2*k,m)}`:''}.<br>Итого: <b>${a+b} + ${rad(2*k,m)}</b>.<div class="box err"><b>Ловушка</b>Ответ «${a+b}» — забыли удвоенное произведение 2xy. (x + y)² ≠ x² + y².</div>`,
+explain2:`Проверка приближённо: ${sq(a)} + ${sq(b)} ≈ ${N(Math.round((Math.sqrt(a)+Math.sqrt(b))*100)/100)}, в квадрате ≈ ${N(Math.round((Math.sqrt(a)+Math.sqrt(b))**2*10)/10)}. А ${a+b} + ${rad(2*k,m)} ≈ ${N(Math.round((a+b+2*Math.sqrt(a*b))*10)/10)} ✅. Число ${a+b} слишком маленькое — без 2xy не хватает.`};});
+G(6,()=>{const k=R(2,6),m=pick([2,3,5,7]);const c=String(k*k*m);
+const o=mk(c,[String(k*m),String(2*k*m),String(k*k+m)]);
+return {type:'choice',q:`Вычисли ${M(`(${rad(k,m)})²`)}.`,opts:o.opts,ans:o.ans,
+short:`${k}² · (${sq(m)})² = ${k*k} · ${m} = ${k*k*m}.`,
+explain:`В квадрат возводится <b>всё произведение</b>: и ${k}, и ${sq(m)}.<br>(${k} · ${sq(m)})² = ${k}² · (${sq(m)})² = ${k*k} · ${m} = <b>${k*k*m}</b>.<br>• ${k*m} — возвели в квадрат только корень, а ${k} забыли.<br>• ${2*k*m} — «квадрат» перепутали с умножением на 2.`,
+explain2:`Распиши квадрат как умножение: ${rad(k,m)} · ${rad(k,m)} = ${k} · ${k} · ${sq(m)} · ${sq(m)} = ${k*k} · ${m} = ${k*k*m}.`};});
+
+/* L7 — иррациональность в знаменателе */
+G(7,()=>{const m=pick([2,3,5,6,7,10]),k=R(1,5),a=k*m;
+return {...radAns(k,m),q:`Избавься от иррациональности в знаменателе: ${M(fr(a,sq(m)))}.`,
+hint:`Умножь числитель и знаменатель на ${sq(m)}.`,
+short:`${fr(a+' · '+sq(m),sq(m)+' · '+sq(m))} = ${fr(a+sq(m),m)} = ${rad(k,m)}.`,
+explain:`Умножаем <b>и числитель, и знаменатель</b> на ${sq(m)} (дробь не меняется — это как умножить на 1):<br>${fr(a,sq(m))} = ${fr(a+' · '+sq(m),sq(m)+' · '+sq(m))} = ${fr(a+sq(m),m)}.<br>Сокращаем ${a} и ${m}: ${a} : ${m} = ${k}.<br>Ответ: <b>${rad(k,m)}</b> (ввод: ${radTxt(k,m)}).`,
+explain2:`Другой способ: представь ${a} как ${k} · ${m} = ${k} · ${sq(m)} · ${sq(m)} (ведь ${sq(m)} · ${sq(m)} = ${m}). Тогда ${fr(`${k===1?'':k+' · '}${sq(m)} · ${sq(m)}`,sq(m))} — один ${sq(m)} сокращается, остаётся ${rad(k,m)}.<br>Приближённо: ${a} : ${N(Math.round(Math.sqrt(m)*1000)/1000)} ≈ ${N(Math.round(a/Math.sqrt(m)*100)/100)}, и ${rad(k,m)} ≈ ${N(Math.round(k*Math.sqrt(m)*100)/100)} ✅.`};});
+G(7,()=>{let a,b;do{a=R(4,15);b=R(2,a-2);}while(isSq(a)||isSq(b)||a-b<2);const d=a-b;
+const sa=sq(a),sb=sq(b);
+const c=M(fr(`${sa} + ${sb}`,d));const o=mk(c,[M(fr(`${sa} − ${sb}`,d)),M(fr(`${sa} + ${sb}`,a+b)),M(`${sa} + ${sb}`)]);
+return {type:'choice',q:`Избавься от иррациональности в знаменателе: ${M(fr(1,`${sa} − ${sb}`))}.`,opts:o.opts,ans:o.ans,
+hint:'Умножь на сопряжённое выражение — с другим знаком посередине.',
+short:`Знаменатель: (${sa} − ${sb})(${sa} + ${sb}) = ${a} − ${b} = ${d}.`,
+explain:`Умножаем числитель и знаменатель на <b>сопряжённое</b> ${sa} + ${sb}:<br>${fr(`1 · (${sa} + ${sb})`,`(${sa} − ${sb})(${sa} + ${sb})`)}.<br>Внизу разность квадратов: ${a} − ${b} = ${d}.<br>Ответ: <b>${fr(`${sa} + ${sb}`,d)}</b>.<br>• С минусом наверху — умножили на то же самое, а не на сопряжённое (так корни внизу не исчезнут).<br>• ${a+b} внизу — перепутали знак в разности квадратов: (${sa})² − (${sb})² = ${a} − ${b}.<br>• Без знаменателя — забыли, что внизу осталось ${d}.`,
+explain2:`Проверим приближённо: ${sa} − ${sb} ≈ ${N(Math.round((Math.sqrt(a)-Math.sqrt(b))*1000)/1000)}, значит 1 : это ≈ ${N(Math.round(1/(Math.sqrt(a)-Math.sqrt(b))*1000)/1000)}. А (${sa} + ${sb}) : ${d} ≈ ${N(Math.round((Math.sqrt(a)+Math.sqrt(b))/d*1000)/1000)} ✅. Остальные варианты дают другие числа.`};});
+G(7,()=>{let a,b;do{a=R(4,20);b=R(2,a-2);}while(isSq(a)||isSq(b)||a-b<2);const c=a-b;const sa=sq(a),sb=sq(b);
+const cr=M(`${sa} − ${sb}`);const o=mk(cr,[M(`${sa} + ${sb}`),M(fr(`${sa} − ${sb}`,c)),M(`${c}(${sa} − ${sb})`)]);
+return {type:'choice',q:`Упрости: ${M(fr(c,`${sa} + ${sb}`))}.`,opts:o.opts,ans:o.ans,
+short:`${fr(`${c}(${sa} − ${sb})`,`${a} − ${b}`)} = ${sa} − ${sb}.`,
+explain:`Умножаем верх и низ на сопряжённое ${sa} − ${sb}:<br>${fr(`${c}(${sa} − ${sb})`,`(${sa} + ${sb})(${sa} − ${sb})`)} = ${fr(`${c}(${sa} − ${sb})`,`${a} − ${b}`)} = ${fr(`${c}(${sa} − ${sb})`,c)}.<br>${c} сокращается. Ответ: <b>${sa} − ${sb}</b>.<br>Вариант «${c}(${sa} − ${sb})» — забыли разделить на знаменатель ${c}; «… / ${c}» — забыли умножить числитель на ${c}.`,
+explain2:`Хитрый взгляд: ${c} = ${a} − ${b} = (${sa} − ${sb})(${sa} + ${sb}). Тогда ${fr(`(${sa} − ${sb})(${sa} + ${sb})`,`${sa} + ${sb}`)} — скобка ${sa} + ${sb} сокращается, остаётся ${sa} − ${sb}.`};});
+
+/* L8 — упрощение выражений */
+G(8,()=>{let m,k,j;do{m=pick([2,3,5,6,7]);k=R(1,5);j=R(2,5);}while(k===j);const A=k*k*m,B=j*j*m;
+return {type:'num',q:`Вычисли ${M(fr(`${sq(A)} + ${sq(B)}`,sq(m)))}.`,ans:k+j,
+short:`${rad(k,m)} + ${rad(j,m)} = ${rad(k+j,m)}; делим на ${sq(m)} → ${k+j}.`,
+explain:`1) Выносим множители: ${k===1?`${sq(A)} оставляем`:`${sq(A)} = ${rad(k,m)}`}, ${sq(B)} = ${rad(j,m)}.<br>2) Складываем подобные: ${rad(k,m)} + ${rad(j,m)} = ${rad(k+j,m)}.<br>3) Делим: ${fr(rad(k+j,m),sq(m))} = <b>${k+j}</b>.`,
+explain2:`Можно делить каждое слагаемое отдельно: ${fr(sq(A),sq(m))} + ${fr(sq(B),sq(m))} = ${sq(A/m)} + ${sq(B/m)} = ${k} + ${j} = ${k+j}. Как ${fr('a + b','c')} = ${fr('a','c')} + ${fr('b','c')}.`};});
+G(8,()=>{let p,q;do{p=R(1,7);q=R(2,40);}while(isSq(q));
+return {type:'num',q:`Вычисли ${M(`(${p} − ${sq(q)})(${p} + ${sq(q)})`)}.`,ans:p*p-q,
+short:`${p}² − (${sq(q)})² = ${p*p} − ${q} = ${N(p*p-q)}.`,
+explain:`Разность квадратов: (x − y)(x + y) = x² − y², где x = ${p}, y = ${sq(q)}.<br>${p}² − (${sq(q)})² = ${p*p} − ${q} = <b>${N(p*p-q)}</b>.${p*p-q<0?'<br>Ответ отрицательный — это нормально: ${sq(q)} больше '+p+', поэтому первая скобка отрицательная.':''}`,
+explain2:`Раскроем «в лоб»: ${p}·${p} + ${p}${sq(q)} − ${p}${sq(q)} − ${sq(q)}·${sq(q)} = ${p*p} − ${q} = ${N(p*p-q)}. Средние слагаемые взаимно уничтожились.`};});
+G(8,()=>{const a=pick([2,3,5,6,7]),b=R(1,4);const s=a+b*b;
+const c=M(`${s} − ${rad(2*b,a)}`);const o=mk(c,[M(`${N(a-b*b)}`),M(`${s}`),M(`${s} − ${rad(b,a)}`),M(`${s} + ${rad(2*b,a)}`)]);
+return {type:'choice',q:`Раскрой скобки: ${M(`(${sq(a)} − ${b})²`)}.`,opts:o.opts,ans:o.ans,
+short:`${a} − 2·${b}·${sq(a)} + ${b*b} = ${s} − ${rad(2*b,a)}.`,
+explain:`Квадрат разности: (x − y)² = x² − 2xy + y², где x = ${sq(a)}, y = ${b}.<br>x² = ${a}; 2xy = 2 · ${sq(a)} · ${b} = ${rad(2*b,a)}; y² = ${b*b}.<br>Итого: ${a} − ${rad(2*b,a)} + ${b*b} = <b>${s} − ${rad(2*b,a)}</b>.<div class="box err"><b>Ловушки</b>«${N(a-b*b)}» — перепутали с разностью квадратов. «${s}» — забыли удвоенное произведение.</div>`,
+explain2:`Проверка приближённо: ${sq(a)} ≈ ${N(Math.round(Math.sqrt(a)*1000)/1000)}, ${sq(a)} − ${b} ≈ ${N(Math.round((Math.sqrt(a)-b)*1000)/1000)}, в квадрате ≈ ${N(Math.round((Math.sqrt(a)-b)**2*1000)/1000)}. И ${s} − ${rad(2*b,a)} ≈ ${N(Math.round((s-2*b*Math.sqrt(a))*1000)/1000)} ✅.`};});
+G(8,()=>{let p,q;do{p=R(1,3);q=pick([2,3,5,6,7,10,11]);}while(false);const ans=q-p*p;
+return {type:'num',q:`Найди значение выражения ${M(`x² − ${2*p}x`)} при ${M(`x = ${p} + ${sq(q)}`)}.`,ans,
+hint:`Заметь: x² − ${2*p}x = (x − ${p})² − ${p*p}.`,
+short:`(x − ${p})² − ${p*p} = (${sq(q)})² − ${p*p} = ${N(ans)}.`,
+explain:`Хитрый путь: дополним до квадрата разности: x² − ${2*p}x = (x − ${p})² − ${p*p}.<br>При x = ${p} + ${sq(q)}: x − ${p} = ${sq(q)}, (${sq(q)})² = ${q}.<br>Значит, ${q} − ${p*p} = <b>${N(ans)}</b>.`,
+explain2:`Посчитаем «в лоб»:<br>x² = (${p} + ${sq(q)})² = ${p*p} + ${rad(2*p,q)} + ${q} = ${p*p+q} + ${rad(2*p,q)};<br>${2*p}x = ${2*p}(${p} + ${sq(q)}) = ${2*p*p} + ${rad(2*p,q)};<br>разность: ${p*p+q} + ${rad(2*p,q)} − ${2*p*p} − ${rad(2*p,q)} = ${N(ans)}. Корни сократились — ответ тот же.`};});
+
+/* L9 — ★ */
+G(9,()=>{const p=pick([2,3]);let q;do{q=pick([2,3,5,6,7,10,11]);}while(q===p);
+const A=p*p+q,B=2*p,plus=Math.random()<0.55;
+let correct;if(plus)correct=`${p} + ${sq(q)}`;else correct=p*p>q?`${p} − ${sq(q)}`:`${sq(q)} − ${p}`;
+const other=plus?(p*p>q?`${p} − ${sq(q)}`:`${sq(q)} − ${p}`):(p*p>q?`${sq(q)} − ${p}`:`${p} − ${sq(q)}`);
+const alt=plus?`${p} − ${sq(q)}`:`${p} + ${sq(q)}`;
+const o=mk(M(correct),[M(other),M(alt),M(`${sq(p)} + ${sq(q)}`),M(`${q} + ${sq(p)}`)].filter((x,i,a)=>a.indexOf(x)===i).slice(0,3));
+const expr=`${A} ${plus?'+':'−'} ${rad(B,q)}`;
+const val=Math.sqrt(A+(plus?1:-1)*B*Math.sqrt(q));
+return {type:'choice',q:`Упрости ${M(sq(expr))}.`,opts:o.opts,ans:o.ans,
+hint:`Попробуй записать ${expr} как (${p} ${plus?'+':'−'} ${sq(q)})².`,
+short:`(${p} ${plus?'+':'−'} ${sq(q)})² = ${p*p} ${plus?'+':'−'} ${rad(B,q)} + ${q} = ${expr}${plus?'':`, а |${p} − ${sq(q)}| = ${correct}`}.`,
+explain:`Ищем, квадратом чего является ${expr}. Удвоенное произведение — это ${rad(B,q)} = 2 · ${p} · ${sq(q)}. Значит, пробуем числа ${p} и ${sq(q)}:<br>(${p} ${plus?'+':'−'} ${sq(q)})² = ${p}² ${plus?'+':'−'} 2·${p}·${sq(q)} + (${sq(q)})² = ${p*p} ${plus?'+':'−'} ${rad(B,q)} + ${q} = ${expr} ✅.<br>Значит, ${sq(expr)} = ${sq(`(${p} ${plus?'+':'−'} ${sq(q)})²`)} = |${p} ${plus?'+':'−'} ${sq(q)}|.<br>${plus?`Число ${p} + ${sq(q)} положительное, модуль не меняет его. Ответ: <b>${correct}</b>.`:`${p} = ${sq(p*p)} ${p*p>q?'>':'<'} ${sq(q)}, поэтому ${p} − ${sq(q)} ${p*p>q?'> 0, модуль ничего не меняет':'< 0, модуль переставляет'}. Ответ: <b>${correct}</b>.`}${!plus&&p*p<q?`<div class="box err"><b>Ловушка</b>«${p} − ${sq(q)}» — отрицательное число, а корень не может быть отрицательным.</div>`:''}`,
+explain2:`Проверка калькулятором в уме: ${sq(q)} ≈ ${N(Math.round(Math.sqrt(q)*1000)/1000)}. Под корнем ${A} ${plus?'+':'−'} ${B} · ${N(Math.round(Math.sqrt(q)*1000)/1000)} ≈ ${N(Math.round((A+(plus?1:-1)*B*Math.sqrt(q))*1000)/1000)}, корень ≈ ${N(Math.round(val*1000)/1000)}. А ${correct} ≈ ${N(Math.round(val*1000)/1000)} ✅. Приём «угадай квадрат»: под внешним корнем ищем a² + b² + 2ab, где 2ab — слагаемое с корнем.`};},true);
+G(9,()=>{const p=pick([1,2,3]);let q;do{q=R(p*p+1,p===3?20:15);}while(isSq(q));const A=q+p*p,B=2*p;
+const bt=rad(B,q);const ans=2*p;
+return {type:'num',q:`Вычисли ${M(`${sq(`${A} + ${bt}`)} − ${sq(`${A} − ${bt}`)}`)}.`,ans,
+hint:`Под каждым корнем — полный квадрат: (${sq(q)} ± ${p})².`,
+short:`(${sq(q)} + ${p}) − (${sq(q)} − ${p}) = ${ans}.`,
+explain:`1) (${sq(q)} + ${p})² = ${q} + ${bt} + ${p*p} = ${A} + ${bt}, значит ${sq(`${A} + ${bt}`)} = ${sq(q)} + ${p}.<br>2) (${sq(q)} − ${p})² = ${A} − ${bt}, значит ${sq(`${A} − ${bt}`)} = |${sq(q)} − ${p}| = ${sq(q)} − ${p} (так как ${q} > ${p*p}, ${sq(q)} > ${p}).<br>3) Разность: (${sq(q)} + ${p}) − (${sq(q)} − ${p}) = <b>${ans}</b>.`,
+explain2:`Другой способ — обозначь всё выражение буквой t и возведи в квадрат:<br>t² = (${A} + ${bt}) + (${A} − ${bt}) − 2${sq(`(${A} + ${bt})(${A} − ${bt})`)} = ${2*A} − 2${sq(`${A*A} − ${B*B*q}`)} = ${2*A} − 2${sq(A*A-B*B*q)} = ${2*A} − ${2*Math.round(Math.sqrt(A*A-B*B*q))} = ${ans*ans}.<br>t > 0 (первый корень больше), значит t = ${sq(ans*ans)} = ${ans}.`};},true);
+G(9,()=>{let a,b,c,d;for(;;){const S=R(7,17);a=R(2,S-2);b=S-a;c=R(2,S-2);d=S-c;if(a>b)[a,b]=[b,a];if(c>d)[c,d]=[d,c];if(a!==c&&a*b!==c*d&&a!==b&&c!==d&&![a,b,c,d].some(isSq))break;}
+const L=Math.sqrt(a)+Math.sqrt(b),Rr=Math.sqrt(c)+Math.sqrt(d);const big=L>Rr;const S=a+b;
+const lhs=`${sq(a)} + ${sq(b)}`,rhs=`${sq(c)} + ${sq(d)}`;
+const opts=[M(`${lhs} > ${rhs}`),M(`${lhs} &lt; ${rhs}`),M(`${lhs} = ${rhs}`)];
+return {type:'choice',q:`Не пользуясь калькулятором, сравни ${M(lhs)} и ${M(rhs)}.`,opts,ans:big?0:1,
+hint:'Оба числа положительные. Сравни их квадраты.',
+short:`Квадраты: ${S} + 2${sq(a*b)} и ${S} + 2${sq(c*d)}; ${a*b} ${big?'>':'<'} ${c*d}.`,
+explain:`Оба числа положительные, поэтому больше то, у которого <b>больше квадрат</b>.<br>(${lhs})² = ${a} + 2${sq(a*b)} + ${b} = ${S} + 2${sq(a*b)};<br>(${rhs})² = ${c} + 2${sq(c*d)} + ${d} = ${S} + 2${sq(c*d)}.<br>Слагаемое ${S} одинаковое, сравниваем ${sq(a*b)} и ${sq(c*d)}: ${a*b} ${big?'>':'<'} ${c*d}.<br>Ответ: <b>${lhs} ${big?'>':'<'} ${rhs}</b>.`,
+explain2:`Закономерность: если суммы под корнями равны (${a} + ${b} = ${c} + ${d} = ${S}), то больше та сумма корней, где числа <b>ближе друг к другу</b> (их произведение больше). Пары: ${a} и ${b} (разница ${b-a}), ${c} и ${d} (разница ${d-c}). Приближённо: ${N(Math.round(L*1000)/1000)} и ${N(Math.round(Rr*1000)/1000)}.`};},true);
+G(9,()=>{const n=pick([3,4,5,6,7,10]),last=n*n;const ans=n-1;
+let s=0;for(let k=1;k<last;k++)s+=1/(Math.sqrt(k)+Math.sqrt(k+1));
+const t=k=>fr(1,`${k===1?'1':sq(k)} + ${sq(k+1)}`);
+return {type:'num',q:`Вычисли сумму ${M(`${t(1)} + ${t(2)} + ${t(3)} + … + ${t(last-1)}`)}.`,ans,
+hint:`Избавься от иррациональности в одной дроби ${fr(1,sq('k')+' + '+sq('k + 1'))}. Что получится?`,
+short:`Каждая дробь = ${sq('k + 1')} − ${sq('k')}; сумма = ${sq(last)} − 1 = ${ans}.`,
+explain:`1) Возьмём одну дробь и умножим на сопряжённое: ${fr(1,sq('k')+' + '+sq('k + 1'))} = ${fr(sq('k + 1')+' − '+sq('k'),'(k + 1) − k')} = ${sq('k + 1')} − ${sq('k')}.<br>2) Перепишем всю сумму:<br>(${sq(2)} − 1) + (${sq(3)} − ${sq(2)}) + (${sq(4)} − ${sq(3)}) + … + (${sq(last)} − ${sq(last-1)}).<br>3) Соседние слагаемые уничтожаются: +${sq(2)} и −${sq(2)}, +${sq(3)} и −${sq(3)}… Остаются только самое последнее и самое первое: ${sq(last)} − 1 = ${n} − 1 = <b>${ans}</b>.`,
+explain2:`Это как подзорная труба (поэтому сумму называют «телескопической»): каждое колено заходит в соседнее, и снаружи видны только два конца. Проверь на маленьком случае: ${t(1)} + ${t(2)} + ${t(3)} = (${sq(2)} − 1) + (${sq(3)} − ${sq(2)}) + (2 − ${sq(3)}) = 2 − 1 = 1 ✅. Здесь последний корень ${sq(last)} = ${n}, поэтому ответ ${n} − 1. (Компьютер, сложив все ${last-1} ${plural(last-1,'дробь','дроби','дробей')}, получает ${N(Math.round(s*1e6)/1e6)}.)`};},true);
+G(9,()=>{const Nn=R(20,99);const good=[];for(let n=1;n<=Nn;n++)if(isSq(Nn-n))good.push(n);
+const sqs=good.map(n=>Nn-n).sort((x,y)=>x-y);
+return {type:'num',q:`При скольких натуральных значениях ${M('n')} число ${M(sq(`${Nn} − n`))} является целым?`,ans:good.length,
+hint:`${Nn} − n должно быть точным квадратом: 0, 1, 4, 9, … И не забудь, что n ≥ 1.`,
+short:`${Nn} − n ∈ {${sqs.join(', ')}} → ${good.length} ${plural(good.length,'значение','значения','значений')} n.`,
+explain:`${sq(`${Nn} − n`)} — целое, когда под корнем точный квадрат (и не отрицательное число).<br>n натуральное (n ≥ 1), значит ${Nn} − n ≤ ${Nn-1}. Подходят квадраты от 0 до ${Nn-1}: <b>${sqs.join(', ')}</b> — их ${good.length}.<br>Соответствующие n: ${sqs.map(s=>Nn-s).join(', ')}.<br>Ответ: <b>${good.length}</b>.<div class="box err"><b>Не забудь ноль</b>${sq(0)} = 0 — тоже целое число (это n = ${Nn}).</div>`,
+explain2:`Подставляй с конца: n = ${Nn} → ${sq(0)} = 0 ✅; n = ${Nn-1} → ${sq(1)} = 1 ✅; n = ${Nn-4} → ${sq(4)} = 2 ✅; … последний: n = ${Nn-sqs[sqs.length-1]} → ${sq(sqs[sqs.length-1])} = ${Math.round(Math.sqrt(sqs[sqs.length-1]))} ✅. Следующий квадрат ${(Math.round(Math.sqrt(sqs[sqs.length-1]))+1)**2} уже больше ${Nn-1} — дал бы n ≤ 0, а n натуральное. Всего ${good.length}.`};},true);
+G(9,()=>{const n=pick([2017,2020,2024,2025,2026,2030,1001,999]);
+const lhs=`${sq(n-1)} + ${sq(n+1)}`,rhs=`2${sq(n)}`;const opts=[M(`${lhs} &lt; ${rhs}`),M(`${lhs} > ${rhs}`),M(`${lhs} = ${rhs}`)];
+const diff=Math.sqrt(n-1)+Math.sqrt(n+1)-2*Math.sqrt(n);
+return {type:'choice',q:`Не пользуясь калькулятором, сравни ${M(lhs)} и ${M(rhs)}.`,opts,ans:diff<0?0:1,
+hint:'Сравни квадраты обоих чисел.',
+short:`Квадраты: ${2*n} + 2${sq(`${n*n} − 1`)} и ${2*n} + 2${sq(n*n)}; ${n*n} − 1 &lt; ${n*n}.`,
+explain:`Числа положительные — сравниваем квадраты.<br>(${lhs})² = ${n-1} + ${n+1} + 2${sq(`${n-1} · ${n+1}`)} = ${2*n} + 2${sq(`${n}² − 1`)}.<br>(${rhs})² = 4 · ${n} = ${2*n} + 2${sq(`${n}²`)}.<br>(${n-1})(${n+1}) = ${n}² − 1 — это разность квадратов, и она меньше ${n}². Значит, первый квадрат меньше: <b>${lhs} &lt; ${rhs}</b>.`,
+explain2:`Проверь закономерность на маленьких числах: ${sq(0)} + ${sq(2)} ≈ 1,414, а 2${sq(1)} = 2 — меньше. ${sq(3)} + ${sq(5)} ≈ 3,968, а 2${sq(4)} = 4 — меньше. Чем дальше числа под корнем друг от друга при той же сумме, тем меньше сумма корней. Здесь ${n-1} и ${n+1} «раздвинуты», а ${n} и ${n} — «вместе».`};},true);
+G(9,()=>{const pairs=[];for(let a=2;a<=15;a++)for(let b=1;b<a;b++){if(isSq(a)||isSq(b)&&b!==1)continue;if(isSq(a*b))continue;if(a-b>=2&&(2*(a+b))%(a-b)===0)pairs.push([a,b]);}
+const [a,b]=pick(pairs);const ans=2*(a+b)/(a-b);const sa=sq(a),sb=b===1?'1':sq(b);
+const num=(Math.sqrt(a)+Math.sqrt(b))/(Math.sqrt(a)-Math.sqrt(b))+(Math.sqrt(a)-Math.sqrt(b))/(Math.sqrt(a)+Math.sqrt(b));
+return {type:'num',q:`Вычисли ${M(`${fr(`${sa} + ${sb}`,`${sa} − ${sb}`)} + ${fr(`${sa} − ${sb}`,`${sa} + ${sb}`)}`)}.`,ans,
+hint:'Приведи дроби к общему знаменателю.',
+short:`${fr(`(${sa} + ${sb})² + (${sa} − ${sb})²`,`${a} − ${b}`)} = ${fr(2*(a+b),a-b)} = ${ans}.`,
+explain:`Общий знаменатель: (${sa} − ${sb})(${sa} + ${sb}) = ${a} − ${b} = ${a-b}.<br>Числитель: (${sa} + ${sb})² + (${sa} − ${sb})² = (${a} + 2${sq(a*b)} + ${b}) + (${a} − 2${sq(a*b)} + ${b}) = ${2*(a+b)} — корни сократились!<br>Итого: ${fr(2*(a+b),a-b)} = <b>${ans}</b>.`,
+explain2:`Можно избавиться от иррациональности в каждой дроби отдельно:<br>${fr(`${sa} + ${sb}`,`${sa} − ${sb}`)} = ${fr(`(${sa} + ${sb})²`,a-b)} = ${fr(`${a+b} + 2${sq(a*b)}`,a-b)}, а ${fr(`${sa} − ${sb}`,`${sa} + ${sb}`)} = ${fr(`${a+b} − 2${sq(a*b)}`,a-b)}.<br>Сумма: ${fr(2*(a+b),a-b)} = ${ans}. Приближённо компьютер даёт ${N(Math.round(num*1e6)/1e6)} ✅.`};},true);
+
+window.TOPIC={id:'korni',title:'Квадратные корни',subtitle:'Алгебра · 8 класс',
+intro:`<p>Здесь всё про квадратные корни: что это такое, почему из отрицательного числа корня нет, как оценивать и сравнивать корни, как выносить множитель и избавляться от корня в знаменателе. В конце — олимпиадные хитрости. Читай по порядку, разделы короткие, а потом переходи к задачам.</p>`,
+theory,symbols,figs:{},
+levels:['Что такое корень','Таблица квадратов и оценка корня','Уравнение x² = a','√a² = |a|','Свойства корней','Вынесение и внесение множителя','Подобные корни и скобки','Корень в знаменателе','Упрощение выражений','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

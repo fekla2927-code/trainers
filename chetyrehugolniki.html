@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Четырёхугольники — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY='trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div></div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':return Math.abs(H.parseNum(val)-t.ans)<1e-9;
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  const fb=$('#fb');
+  if(ok){
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}</h3>${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      <div class="ans">Правильный ответ: ${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%).</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,num:N}=H;
+
+/* =====================================================================
+   Geometry SVG helper (math coords, y up → auto-fit into ≤ 320 px)
+   ===================================================================== */
+const D2R=Math.PI/180;
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(a,k)=>[a[0]*k,a[1]*k];
+const len=a=>Math.hypot(a[0],a[1]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
+const unit=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l];};
+const polar=(p,L,d)=>[p[0]+L*Math.cos(d*D2R),p[1]+L*Math.sin(d*D2R)];
+const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+const foot=(p,a,b)=>{const d=sub(b,a);const t=dot(sub(p,a),d)/dot(d,d);return lerp(a,b,t);};
+const inter=(a,b,c,d)=>{const r=sub(b,a),s=sub(d,c);const den=r[0]*s[1]-r[1]*s[0];const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den;return add(a,mul(r,t));};
+const angAt=(v,a,b)=>{const u=unit(sub(a,v)),w=unit(sub(b,v));return Math.acos(Math.max(-1,Math.min(1,dot(u,w))))/D2R;};
+const r1=x=>Math.round(x*10)/10;
+const tw=(t,fs)=>{t=String(t).replace(/<[^>]+>/g,'');let w=0;for(const ch of t)w+=/[°·,.\s₁₂₃₄]/.test(ch)?fs*0.36:/[0-9]/.test(ch)?fs*0.56:fs*0.64;return w;};
+const SUB={A1:'A₁',A2:'A₂',A3:'A₃',A4:'A₄',B1:'B₁',B2:'B₂',B3:'B₃',B4:'B₄'};
+
+function geo(o){
+  const P={};for(const k in o.P)if(Array.isArray(o.P[k]))P[k]=o.P[k];const W=o.W||300,MH=o.maxH||220,pad=o.pad==null?30:o.pad;
+  const all=Object.values(P).concat(o.extra||[]);
+  const x0=Math.min(...all.map(p=>p[0])),x1=Math.max(...all.map(p=>p[0]));
+  const y0=Math.min(...all.map(p=>p[1])),y1=Math.max(...all.map(p=>p[1]));
+  const bw=Math.max(x1-x0,1e-6),bh=Math.max(y1-y0,1e-6);
+  const s=Math.min((W-2*pad)/bw,(MH-2*pad)/bh);
+  const w=Math.round(bw*s+2*pad),h=Math.round(bh*s+2*pad);
+  const X=p=>[pad+(p[0]-x0)*s,pad+(y1-p[1])*s];
+  const Q={};for(const k in P)Q[k]=X(P[k]);
+  const g=k=>Array.isArray(k)?X(k):Q[k];
+  const polys=o.poly||[];
+  const cen=pts=>[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];
+  const allC=cen(Object.values(Q));
+  const pstr=pts=>pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ');
+  const T=(x,y,t,fs,col,wt,anc)=>`<text x="${r1(x)}" y="${r1(y+fs*0.36)}" text-anchor="${anc||'middle'}" font-size="${fs}" font-weight="${wt||600}" fill="${col||'var(--ink)'}">${t}</text>`;
+  const place=(p,d,t,fs,gap)=>{const ww=tw(t,fs),hh=fs*0.78;const k=gap+0.5*(ww*Math.abs(d[0])+hh*Math.abs(d[1]));return [p[0]+d[0]*k,p[1]+d[1]*k];};
+  let out=`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${o.aria||'Чертёж'}" style="font-family:system-ui,sans-serif">`;
+  const LS=[];const ln=(A,B,attr)=>{LS.push([A,B]);return `<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" ${attr}/>`;};
+  if(o.grid){const G=o.grid;for(let x=G[0];x<=G[2]+1e-9;x++){const a=X([x,G[1]]),b=X([x,G[3]]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}
+    for(let y=G[1];y<=G[3]+1e-9;y++){const a=X([G[0],y]),b=X([G[2],y]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}}
+  (o.fill||[]).forEach(f=>{const pts=(f.pts||f).map(g);out+=`<polygon points="${pstr(pts)}" fill="${f.col||'var(--hl)'}" fill-opacity="${f.op||0.35}" stroke="none"/>`;});
+  polys.forEach(pl=>{out+=`<polygon points="${pstr(pl.map(g))}" fill="none" stroke="var(--fig)" stroke-width="2.2" stroke-linejoin="round"/>`;pl.forEach((k,i)=>LS.push([g(k),g(pl[(i+1)%pl.length])]));});
+  (o.seg||[]).forEach(sg=>{const op=sg[2]||{};let A=g(sg[0]),B=g(sg[1]);if(op.ext){const e=mul(sub(B,A),op.ext);A=sub(A,e);B=add(B,e);}
+    out+=ln(A,B,`stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||1.7}" ${op.dash?'stroke-dasharray="6 4"':''} stroke-linecap="round"`);});
+  (o.tick||[]).forEach(tk=>{const A=g(tk[0]),B=g(tk[1]),n=tk[2]||1;const e=unit(sub(B,A)),nn=[-e[1],e[0]],m=mid(A,B);
+    for(let i=0;i<n;i++){const c=add(m,mul(e,(i-(n-1)/2)*5));out+=ln(add(c,mul(nn,6)),sub(c,mul(nn,6)),'stroke="var(--fig)" stroke-width="1.7"');}});
+  (o.rt||[]).forEach(rt=>{const Vv=g(rt[0]),u=unit(sub(g(rt[1]),Vv)),ww=unit(sub(g(rt[2]),Vv)),k=10;const a=add(Vv,mul(u,k)),b=add(a,mul(ww,k)),c=add(Vv,mul(ww,k));LS.push([a,b],[b,c]);
+    out+=`<path d="M${r1(a[0])},${r1(a[1])} L${r1(b[0])},${r1(b[1])} L${r1(c[0])},${r1(c[1])}" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`;});
+  const angInfo=(o.ang||[]).map(an=>{const op=an[4]||{};const Vv=g(an[0]),A=g(an[1]),B=g(an[2]);
+    const a1=Math.atan2(A[1]-Vv[1],A[0]-Vv[0]);let dl=Math.atan2(B[1]-Vv[1],B[0]-Vv[0])-a1;while(dl>Math.PI)dl-=2*Math.PI;while(dl<=-Math.PI)dl+=2*Math.PI;
+    const th=Math.abs(dl);const rr=op.r||(th<0.75?26:19);const n=op.n||1;
+    for(let i=0;i<n;i++){const r=rr+i*4;const p=[Vv[0]+r*Math.cos(a1),Vv[1]+r*Math.sin(a1)],q=[Vv[0]+r*Math.cos(a1+dl),Vv[1]+r*Math.sin(a1+dl)];
+      out+=`<path d="M${r1(p[0])},${r1(p[1])} A${r},${r} 0 0 ${dl>0?1:0} ${r1(q[0])},${r1(q[1])}" fill="none" stroke="${op.col||'var(--accent)'}" stroke-width="1.6"/>`;
+      let prev=p;for(let j=1;j<=6;j++){const an2=a1+dl*j/6;const c=[Vv[0]+r*Math.cos(an2),Vv[1]+r*Math.sin(an2)];LS.push([prev,c]);prev=c;}}
+    return {an,op,Vv,a1,dl,th,rr,n};});
+  (o.dots||[]).forEach(k=>{const p=g(k);out+=`<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="2.8" fill="var(--fig)"/>`;});
+  /* ---- collision-aware label placement ---- */
+  const boxes=[];
+  const segRect=(a,b,c,hw,hh)=>{const xmin=c[0]-hw,xmax=c[0]+hw,ymin=c[1]-hh,ymax=c[1]+hh;let t0=0,t1=1,hit=true;const dx=b[0]-a[0],dy=b[1]-a[1];const pp=[-dx,dx,-dy,dy],qq=[a[0]-xmin,xmax-a[0],a[1]-ymin,ymax-a[1]];
+    for(let i=0;i<4;i++){if(Math.abs(pp[i])<1e-12){if(qq[i]<0){hit=false;break;}}else{const r=qq[i]/pp[i];if(pp[i]<0){if(r>t1){hit=false;break;}if(r>t0)t0=r;}else{if(r<t0){hit=false;break;}if(r<t1)t1=r;}}}
+    if(hit)return -1;const pr=p=>Math.hypot(Math.max(xmin-p[0],0,p[0]-xmax),Math.max(ymin-p[1],0,p[1]-ymax));
+    const ps=p=>{const d=sub(b,a);const t=Math.max(0,Math.min(1,dot(sub(p,a),d)/Math.max(dot(d,d),1e-9)));return len(sub(p,lerp(a,b,t)));};
+    return Math.min(pr(a),pr(b),ps([xmin,ymin]),ps([xmax,ymin]),ps([xmin,ymax]),ps([xmax,ymax]));};
+  const clr=(c,hw,hh)=>{let m=Math.min(c[0]-hw,w-c[0]-hw,c[1]-hh,h-c[1]-hh)+1;for(const L of LS)m=Math.min(m,segRect(L[0],L[1],c,hw,hh));for(const bx of boxes)m=Math.min(m,Math.max(Math.abs(c[0]-bx[0])-hw-bx[2],Math.abs(c[1]-bx[1])-hh-bx[3]));return m;};
+  const choose=(cands,t,fs,thr)=>{const hw=tw(t,fs)/2+1,hh=fs*0.4+1;let best=cands[0],bs=-1e9;for(const c of cands){const v=clr(c,hw,hh);if(v>=thr){best=c;break;}if(v>bs){bs=v;best=c;}}boxes.push([best[0],best[1],hw,hh]);return best;};
+  let labels='';
+  const vdir=k=>{
+    if(o.dir&&o.dir[k]!=null){const d=o.dir[k];return [Math.cos(d*D2R),-Math.sin(d*D2R)];}
+    const p=Q[k];
+    for(const pl of polys){const i=pl.indexOf(k);if(i<0)continue;const n=pl.length;const u1=unit(sub(g(pl[(i-1+n)%n]),p)),u2=unit(sub(g(pl[(i+1)%n]),p));let d=add(u1,u2);
+      if(len(d)>0.15)return mul(unit(d),-1);const c=cen(pl.map(g));d=[-u1[1],u1[0]];if(dot(d,sub(c,p))>0)d=mul(d,-1);return d;}
+    for(const pl of polys){for(let i=0;i<pl.length;i++){const A=g(pl[i]),B=g(pl[(i+1)%pl.length]);const f=foot(p,A,B);const t=dot(sub(p,A),sub(B,A))/dot(sub(B,A),sub(B,A));
+      if(len(sub(f,p))<1&&t>0.02&&t<0.98){const e=unit(sub(B,A));let d=[-e[1],e[0]];if(dot(d,sub(cen(pl.map(g)),p))>0)d=mul(d,-1);return d;}}}
+    let d=sub(p,allC);if(len(d)<4)d=[0.7,0.7];return unit(d);};
+  (o.txt||[]).forEach(tx=>{const arr=Array.isArray(tx[0]);const p=arr?X(tx[0]):X([tx[0],tx[1]]);const t=arr?tx[1]:tx[2];const op=(arr?tx[2]:tx[3])||{};const fs=op.fs||14;
+    boxes.push([p[0],p[1],tw(t,fs)/2+1,fs*0.4+1]);labels+=T(p[0],p[1],t,fs,op.col||'var(--ink)',op.wt||600,op.anc);});
+  const labs=o.lab||Object.keys(P);
+  labs.forEach(k=>{const t=(o.names&&o.names[k])||SUB[k]||k;const d0=vdir(k);const th0=Math.atan2(d0[1],d0[0]);const cands=[];
+    for(const gp of [5,9])for(let j=0;j<=12;j++)for(const sg of (j?[1,-1]:[1])){const th=th0+sg*j*15*D2R;cands.push(place(Q[k],[Math.cos(th),Math.sin(th)],t,15,gp));}
+    const p=choose(cands,t,15,2.5);labels+=T(p[0],p[1],t,15,'var(--accent-ink)',700);});
+  (o.side||[]).forEach(sd=>{const op=sd[3]||{};const A=g(sd[0]),B=g(sd[1]);const e=unit(sub(B,A));let n=[-e[1],e[0]];const t0=op.t==null?0.5:op.t;
+    let c=allC;for(const pl of polys){const i=pl.indexOf(sd[0]),j=pl.indexOf(sd[1]);if(i>=0&&j>=0&&(Math.abs(i-j)===1||Math.abs(i-j)===pl.length-1)){c=cen(pl.map(g));break;}}
+    if(dot(n,sub(c,lerp(A,B,t0)))>0)n=mul(n,-1);if(op.flip)n=mul(n,-1);const fs=op.fs||14;const gp=op.gap==null?4:op.gap;const cands=[];
+    for(const nn of [n,mul(n,-1)])for(const gg of [gp,gp+5])for(const dt of [0,0.1,-0.1,0.2,-0.2,0.3,-0.3])cands.push(place(lerp(A,B,Math.max(0.08,Math.min(0.92,t0+dt))),nn,sd[2],fs,gg));
+    const p=choose(cands,sd[2],fs,2);labels+=T(p[0],p[1],sd[2],fs,op.col||'var(--ink)',600);});
+  angInfo.forEach(({an,op,Vv,a1,dl,th,rr,n})=>{if(!an[3])return;const fs=op.fs||14;const rad=Math.max(tw(an[3],fs),fs)/2+2;const d=Math.max(rr+(n-1)*4+rad+3,(rad+3)/Math.sin(th/2));const cands=[];
+    for(const dd of [0,7,14,22,32])for(const f of [0,0.3,-0.3,0.6,-0.6]){const am=a1+dl/2+f*dl/2;cands.push([Vv[0]+(d+dd)*Math.cos(am),Vv[1]+(d+dd)*Math.sin(am)]);}
+    const p=choose(cands,an[3],fs,1.5);labels+=T(p[0],p[1],an[3],fs,'var(--accent-ink)',700);});
+  return out+labels+'</svg>';
+}
+
+/* ---------- shape builders ---------- */
+function para(a,b,al){const A=[0,0],D=[a,0],B=polar(A,b,al),C=add(B,D);return {A,B,C,D};}
+function trap(a,b,al,de){const ca=Math.cos(al*D2R)/Math.sin(al*D2R),cd=Math.cos(de*D2R)/Math.sin(de*D2R);const h=(a-b)/(ca+cd);return {A:[0,0],B:[h*ca,h],C:[a-h*cd,h],D:[a,0],h};}
+function isoTrap(a,b,h){return {A:[0,0],B:[(a-b)/2,h],C:[(a+b)/2,h],D:[a,0]};}
+function withO(p){return Object.assign({},p,{O:inter(p.A,p.C,p.B,p.D)});}
+const Q4=['A','B','C','D'];
+/* convex quadrilateral with given angles (A bottom-left, B top-left, C top-right, D bottom-right) */
+function quadFromAngles(a,b,c,d){
+  for(let k=0;k<400;k++){const L1=10,L4=L1*(0.5+Math.random()*0.5);
+    const h1=0,h2=180-d,h3=h2+180-c,h4=h3+180-b;const u=x=>[Math.cos(x*D2R),Math.sin(x*D2R)];
+    const u1=u(h1),u2=u(h2),u3=u(h3),u4=u(h4);const rhs=mul(add(mul(u1,L1),mul(u4,L4)),-1);
+    const det=u2[0]*u3[1]-u2[1]*u3[0];if(Math.abs(det)<1e-6)continue;
+    const L2=(rhs[0]*u3[1]-rhs[1]*u3[0])/det,L3=(u2[0]*rhs[1]-u2[1]*rhs[0])/det;
+    const Ls=[L1,L2,L3,L4];if(Math.min(...Ls)<0.45*L1||Math.max(...Ls)>1.3*L1)continue;
+    const A=[0,0],D=[L1,0],C=add(D,mul(u2,L2)),B=add(C,mul(u3,L3));return {A,B,C,D};}
+  return null;}
+
+/* ---------- Euler classification diagram ---------- */
+function classify(hl){
+  const reg={1:[34,206],2:[62,152],3:[140,84],4:[152,140],5:[270,140],6:[211,140]};
+  let s=`<svg viewBox="0 0 320 232" width="320" role="img" aria-label="Классификация четырёхугольников" style="font-family:system-ui,sans-serif">`;
+  s+=`<rect x="6" y="6" width="308" height="220" rx="12" fill="none" stroke="var(--fig)" stroke-width="1.4"/>`;
+  s+=`<ellipse cx="62" cy="140" rx="46" ry="54" fill="none" stroke="var(--fig)" stroke-width="1.6"/>`;
+  s+=`<rect x="118" y="32" width="190" height="186" rx="14" fill="none" stroke="var(--fig)" stroke-width="1.6"/>`;
+  s+=`<circle cx="190" cy="140" r="56" fill="none" stroke="var(--fig)" stroke-width="1.6"/><circle cx="232" cy="140" r="56" fill="none" stroke="var(--fig)" stroke-width="1.6"/>`;
+  const t=(x,y,txt,fs,col,anc)=>`<text x="${x}" y="${y}" text-anchor="${anc||'middle'}" font-size="${fs}" font-weight="600" fill="${col||'var(--ink)'}">${txt}</text>`;
+  s+=t(14,23,'Четырёхугольники',12,'var(--muted)','start')+t(62,124,'трапеции',12,'var(--accent-ink)')+t(213,51,'параллелограммы',12,'var(--accent-ink)');
+  s+=t(172,212,'прямоугольники',11,'var(--accent-ink)')+t(262,212,'ромбы',11,'var(--accent-ink)');
+  if(hl!=='nonum')for(const k in reg){const [x,y]=reg[k];s+=`<circle cx="${x}" cy="${y-5}" r="11" fill="var(--card)" stroke="var(--accent)" stroke-width="1.4"/>`+t(x,y,k,14,'var(--ink)');}
+  else s+=t(211,144,'квадраты',11,'var(--ink)');
+  return s+'</svg>';
+}
+
+/* ---------- small helpers ---------- */
+const NG={3:'треугольник',4:'четырёхугольник',5:'пятиугольник',6:'шестиугольник',7:'семиугольник',8:'восьмиугольник',9:'девятиугольник',10:'десятиугольник',11:'одиннадцатиугольник',12:'двенадцатиугольник'};
+const NGg={5:'пятиугольника',6:'шестиугольника',7:'семиугольника',8:'восьмиугольника',9:'девятиугольника',10:'десятиугольника',11:'одиннадцатиугольника',12:'двенадцатиугольника'};
+const dg=x=>N(x)+'°';
+function regPoly(n,rad){const P={};const names='ABCDEFGHIKLM'.split('');for(let i=0;i<n;i++)P[names[i]]=polar([0,0],rad||5,-90-180/n+360*i/n+(n%2?0:0));return {P,names:names.slice(0,n)};}
+function triangFig(n){const {P,names}=regPoly(n);const seg=[];for(let i=2;i<n-1;i++)seg.push([names[0],names[i],{dash:true}]);
+  const fill=[];for(let i=1;i<n-1;i++)if(i%2)fill.push({pts:[names[0],names[i],names[i+1]],op:0.3});
+  const txt=[];for(let i=1;i<n-1;i++){const c=[(P[names[0]][0]+P[names[i]][0]+P[names[i+1]][0])/3,(P[names[0]][1]+P[names[i]][1]+P[names[i+1]][1])/3];txt.push([c,String(i),{fs:13,col:'var(--accent-ink)'}]);}
+  return geo({P,poly:[names],seg,fill,txt,W:200,maxH:190,pad:22,lab:[names[0]]});}
+const shapes={
+  convex5:{P:{a:[0,0],b:[5,0],c:[6,3],d:[2.5,5],e:[-1,3]}},
+  convex6:{P:{a:[1,0],b:[5,0],c:[6.5,2.5],d:[5,5],e:[1,5],f:[-0.5,2.5]}},
+  convex4:{P:{a:[0,0],b:[6,0.5],c:[5,4.5],d:[0.8,3.6]}},
+  dart:{P:{a:[0,0],b:[6,2.5],c:[0,5],d:[2,2.5]}},
+  house:{P:{a:[0,0],b:[6,0],c:[6,4.5],d:[3,2],e:[0,4.5]}},
+  ell:{P:{a:[0,0],b:[6,0],c:[6,2],d:[2.4,2],e:[2.4,5],f:[0,5]}},
+  star:{P:{a:[0,0],b:[3,1.4],c:[6,0],d:[4.8,3],e:[6,5.2],f:[3,4],g:[0,5.2],h:[1.2,2.6]}}
+};
+const shapeSvg=k=>{const P=shapes[k].P;return geo({P,poly:[Object.keys(P)],lab:[],W:170,maxH:120,pad:12,fill:[{pts:Object.keys(P),op:0.18}]});};
+
+/* ---------- theory figures ---------- */
+const thParaP=withO(para(7,4,62));
+const figPara=geo({P:thParaP,poly:[Q4],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],dots:['O'],tick:[['A','B',1],['C','D',1],['B','C',2],['A','D',2],['A','O',1],['O','C',1]],ang:[['A','D','B','',{n:1}],['C','B','D','',{n:1}],['B','A','C','',{n:2}],['D','C','A','',{n:2}]],dir:{O:-90},maxH:190});
+const bisP=(()=>{const p=para(9,5,64);p.K=add(p.B,[5,0]);return p;})();
+const figBis=geo({P:bisP,poly:[Q4],seg:[['A','K']],fill:[{pts:['A','B','K']}],tick:[['A','B',1],['B','K',1]],ang:[['A','K','D','',{n:1,r:30}],['A','B','K','',{n:1,r:24}],['K','B','A','',{n:1,r:22}]],maxH:180});
+const tGen=trap(10,4,62,48),tIso=isoTrap(10,4,4.2),tRight=trap(10,5,90,50);
+const figTrap3=[geo({P:tGen,poly:[Q4],W:200,maxH:130,pad:22}),geo({P:tIso,poly:[Q4],tick:[['A','B',1],['C','D',1]],ang:[['A','D','B','',{n:1}],['D','C','A','',{n:1}]],W:200,maxH:130,pad:22}),geo({P:tRight,poly:[Q4],rt:[['A','D','B'],['B','A','C']],W:200,maxH:130,pad:22})];
+const tm=(()=>{const p=isoTrap(10,4,5);p.M=mid(p.A,p.B);p.N=mid(p.C,p.D);return p;})();
+const figMid=geo({P:tm,poly:[Q4],seg:[['M','N',{dash:true,col:'var(--accent)',sw:2.2}]],tick:[['A','M',1],['M','B',1],['C','N',2],['N','D',2]],side:[['B','C','b'],['A','D','a'],['M','N','(a + b) : 2',{flip:true,col:'var(--accent-ink)',fs:13,gap:6}]],maxH:200});
+const thRect=withO(para(7,4,90));
+const figRect=geo({P:thRect,poly:[Q4],seg:[['A','C'],['B','D']],dots:['O'],tick:[['A','O',1],['O','C',1],['B','O',1],['O','D',1]],rt:[['A','D','B'],['B','A','C'],['C','B','D'],['D','C','A']],dir:{O:-90},maxH:180});
+const thRh=withO(para(5,5,58));
+const figRh=geo({P:thRh,poly:[Q4],seg:[['A','C'],['B','D']],rt:[['O','C','D']],ang:[['A','D','C','',{n:1,r:30}],['A','C','B','',{n:1,r:34}]],tick:[['A','B',1],['B','C',1],['C','D',1],['D','A',1]],dir:{O:-110},maxH:200});
+const thSq=withO(para(5,5,90));
+const figSq=geo({P:thSq,poly:[Q4],seg:[['A','C'],['B','D']],rt:[['O','C','D']],ang:[['A','D','C','45°',{r:30}],['A','C','B','45°',{r:30}]],tick:[['A','B',1],['B','C',1],['C','D',1],['D','A',1]],dir:{O:-90},W:220,maxH:200});
+function symFig(kind,w){w=w||150;const opt={W:w,maxH:120,pad:14,lab:[]};let P,seg=[],dots=[];
+  if(kind==='sq'){P=para(4,4,90);seg=[[mid(P.A,P.B),mid(P.C,P.D)],[mid(P.A,P.D),mid(P.B,P.C)],['A','C'],['B','D']];}
+  if(kind==='rect'){P=para(6,3.6,90);seg=[[mid(P.A,P.B),mid(P.C,P.D)],[mid(P.A,P.D),mid(P.B,P.C)]];}
+  if(kind==='rh'){P=para(4,4,60);seg=[['A','C'],['B','D']];}
+  if(kind==='trap'){P=isoTrap(7,3,3.4);seg=[[mid(P.A,P.D),mid(P.B,P.C)]];}
+  if(kind==='par'){P=withO(para(6,3.5,60));dots=['O'];opt.lab=['O'];opt.dir={O:-90};}
+  if(kind==='hex'){const r=regPoly(6,3);P={A:r.P.A,B:r.P.B,C:r.P.C,D:r.P.D,E:r.P.E,F:r.P.F};seg=[['A','D'],['B','E'],['C','F'],[mid(P.A,P.B),mid(P.D,P.E)],[mid(P.B,P.C),mid(P.E,P.F)],[mid(P.C,P.D),mid(P.F,P.A)]];}
+  if(kind==='tri'){P={A:[0,0],B:[2,3.4641],C:[4,0]};seg=[['A',mid(P.B,P.C)],['B',mid(P.A,P.C)],['C',mid(P.A,P.B)]];}
+  const keys=Object.keys(P).filter(k=>k!=='O');
+  return geo(Object.assign(opt,{P,poly:[keys],fill:[{pts:keys,op:0.15}],seg:seg.map(s=>[s[0],s[1],{dash:true,col:'var(--accent)',ext:0.12,sw:1.6}]),dots}));}
+const AX={sq:4,rect:2,rh:2,trap:1,par:0,hex:6,tri:3};
+const AXname={sq:'квадрат',rect:'прямоугольник (не квадрат)',rh:'ромб (не квадрат)',trap:'равнобедренная трапеция',par:'параллелограмм (не ромб и не прямоугольник)',hex:'правильный шестиугольник',tri:'равносторонний треугольник'};
+function thalesFig(k,lb){const O=[0,0];const u=[1,0],v=unit([Math.cos(38*D2R),Math.sin(38*D2R)]);const dir=unit([-0.45,1]);const P={O};const seg=[];const step=3;
+  for(let i=1;i<=k;i++){const A=mul(u,step*i);const B=inter(O,v,A,add(A,dir));P['A'+i]=A;P['B'+i]=B;seg.push(['A'+i,'B'+i,{col:'var(--accent)'}]);}
+  const endA=mul(u,step*(k+0.6)),endB=mul(v,len(P['B'+k])*1.12);
+  const tick=[];for(let i=1;i<=k;i++)tick.push([i===1?'O':'A'+(i-1),'A'+i,1]);
+  const dirs={O:200};for(let i=1;i<=k;i++){dirs['A'+i]=-90;dirs['B'+i]=120;}
+  return geo({P,extra:[endA,endB],seg:[['O',endA,{sw:2}],['O',endB,{sw:2}],...seg],tick,dir:dirs,side:lb||[],maxH:190});}
+
+/* =====================================================================
+   THEORY
+   ===================================================================== */
+const theory=[
+{title:'Многоугольник. Какой он бывает',lvl:0,html:`
+<p><b>Многоугольник</b> — это замкнутая ломаная: отрезки, соединённые «паровозиком», где последний вагон прицеплен к первому. Отрезки — <b>стороны</b>, их концы — <b>вершины</b>. Если вершин n, фигура называется <b>n-угольник</b>: у треугольника 3 вершины, у пятиугольника 5.</p>
+<p><b>Диагональ</b> — отрезок, который соединяет две вершины, <b>не соседние</b> друг с другом.</p>
+<p>Многоугольник называется <b>выпуклым</b>, если он лежит по одну сторону от каждой прямой, на которой лежит его сторона. Проще: у выпуклого нет «вмятин», все углы меньше 180°.</p>
+<div class="figrow">
+<div class="fig">${shapeSvg('convex5')}<div class="cap"><b>Выпуклый</b><br>вмятин нет</div></div>
+<div class="fig">${shapeSvg('house')}<div class="cap"><b>Невыпуклый</b><br>есть вмятина сверху</div></div>
+<div class="fig">${shapeSvg('dart')}<div class="cap"><b>Невыпуклый</b><br>«стрелка»</div></div></div>
+<div class="box tip"><b>Как проверить на глаз</b>Представь, что вершины — гвоздики, а вокруг натянули резинку. Если резинка легла ровно по всем сторонам — многоугольник выпуклый. Если какая-то вершина осталась «внутри», под резинкой не легла — невыпуклый.</div>
+<p>Дальше в этой теме мы говорим только о <b>выпуклых</b> многоугольниках.</p>`},
+{title:'Сумма углов многоугольника',lvl:0,html:`
+<p>Из одной вершины выпуклого n-угольника проведём все диагонали. Многоугольник разрежется на <b>треугольники</b>. Их всегда на 2 меньше, чем вершин: <b>n − 2</b>. А в каждом треугольнике сумма углов 180°.</p>
+<div class="figrow">
+<div class="fig">${triangFig(5)}<div class="cap">пятиугольник → 3 треугольника</div></div>
+<div class="fig">${triangFig(6)}<div class="cap">шестиугольник → 4 треугольника</div></div></div>
+<div class="box rule"><b>Формула</b>Сумма углов выпуклого n-угольника равна <span class="m">(n − 2) · 180°</span>.</div>
+<div class="box ex"><b>Примеры</b>Пятиугольник: (5 − 2) · 180° = 3 · 180° = 540°.<br>
+<b>Четырёхугольник:</b> (4 − 2) · 180° = <b>360°</b>. Это нужно помнить наизусть!<br>
+<b>Правильный</b> многоугольник — у которого все стороны и все углы равны. Каждый его угол = сумма : n. У правильного шестиугольника: 720° : 6 = 120°.</div>
+<div class="box err"><b>Частая ошибка</b>Умножить на n, а не на n − 2. У четырёхугольника не 4 · 180° = 720°, а 2 · 180° = 360°: диагональ режет его всего на 2 треугольника.</div>
+<div class="box tip"><b>Внешний угол</b>Если в вершине продолжить сторону, получится <b>внешний угол</b> = 180° − внутренний. Сумма внешних углов (по одному в каждой вершине) любого выпуклого многоугольника — всегда <b>360°</b>: обойдя фигуру, ты повернёшься ровно на полный круг.</div>`},
+{title:'Параллелограмм и его свойства',lvl:1,html:`
+<p><b>Параллелограмм</b> — четырёхугольник, у которого противоположные стороны попарно <b>параллельны</b>: AB ∥ CD и BC ∥ AD. Как будто ящик, который чуть «сплющили» вбок.</p>
+<div class="fig">${figPara}</div>
+<div class="box rule"><b>Свойства параллелограмма</b>
+1) <b>Противоположные стороны равны:</b> AB = CD, BC = AD (на рисунке одинаковые чёрточки).<br>
+2) <b>Противоположные углы равны:</b> ∠A = ∠C, ∠B = ∠D (одинаковые дужки).<br>
+3) <b>Сумма соседних углов равна 180°:</b> ∠A + ∠B = 180°. Это односторонние углы при параллельных прямых.<br>
+4) <b>Диагонали точкой пересечения делятся пополам:</b> AO = OC, BO = OD.</div>
+<div class="box ex"><b>Пример</b>∠A = 65°. Тогда ∠C = 65° (напротив), а ∠B = ∠D = 180° − 65° = 115°. Проверка: 65 + 115 + 65 + 115 = 360 ✅.</div>
+<div class="box ex"><b>Периметр</b>Стороны 7 и 4. Сторон всего четыре: 7, 4, 7, 4. <span class="m">P = 2 · (7 + 4) = 22</span>. А если известен периметр, то <b>одна сторона + соседняя = P : 2</b>.</div>
+<div class="box tip"><b>Как запомнить</b>У параллелограмма всё «парами»: пара равных сторон, пара равных углов, острый + тупой = 180°.</div>`},
+{title:'Диагонали, биссектриса и признаки параллелограмма',lvl:2,html:`
+<h3>Диагонали</h3>
+<p>Точка O, где пересекаются диагонали, — <b>середина</b> каждой из них. Если AC = 12, то AO = OC = 6. Если BO = 5, то BD = 10. Сами диагонали обычно <b>разные</b> по длине.</p>
+<h3>Биссектриса отсекает равнобедренный треугольник</h3>
+<div class="fig">${figBis}</div>
+<p>Проведём биссектрису угла A до стороны BC (точка K). Углы KAD и BKA — <b>накрест лежащие</b> при параллельных BC и AD, они равны. А ∠BAK = ∠KAD (биссектриса). Значит, в треугольнике ABK два угла равны — он <b>равнобедренный</b>: <span class="m">BK = AB</span>.</p>
+<div class="box ex"><b>Пример</b>AB = 5, биссектриса угла A делит BC на BK и KC = 4. Тогда BK = AB = 5, BC = 5 + 4 = 9, периметр = 2 · (5 + 9) = 28.</div>
+<h3>Признаки — как узнать, что перед нами параллелограмм</h3>
+<div class="box rule"><b>Четырёхугольник — параллелограмм, если:</b>
+1) две его стороны <b>равны и параллельны</b>; или<br>
+2) противоположные стороны <b>попарно равны</b>; или<br>
+3) диагонали точкой пересечения <b>делятся пополам</b>.</div>
+<div class="box err"><b>Ловушка</b>«Две стороны параллельны, а две другие равны» — это <b>не</b> признак! Так выглядит равнобедренная трапеция. В первом признаке равны и параллельны должны быть <b>одни и те же</b> две стороны.</div>`},
+{title:'Трапеция',lvl:3,html:`
+<p><b>Трапеция</b> — четырёхугольник, у которого две стороны параллельны, а две другие — нет. Параллельные стороны — <b>основания</b> (AD и BC), непараллельные — <b>боковые стороны</b> (AB и CD).</p>
+<div class="figrow">
+<div class="fig">${figTrap3[0]}<div class="cap"><b>Обычная</b></div></div>
+<div class="fig">${figTrap3[1]}<div class="cap"><b>Равнобедренная</b><br>боковые стороны равны</div></div>
+<div class="fig">${figTrap3[2]}<div class="cap"><b>Прямоугольная</b><br>боковая сторона ⊥ основаниям</div></div></div>
+<div class="box rule"><b>Углы трапеции</b>
+1) Углы <b>при боковой стороне</b> в сумме дают 180°: ∠A + ∠B = 180°, ∠C + ∠D = 180° (односторонние при BC ∥ AD).<br>
+2) В <b>равнобедренной</b> трапеции углы при каждом основании равны: ∠A = ∠D, ∠B = ∠C. И диагонали равны: AC = BD.</div>
+<div class="box ex"><b>Пример</b>Равнобедренная трапеция, ∠A = 70°. Тогда ∠D = 70°, ∠B = ∠C = 180° − 70° = 110°.</div>
+<h3>Высота в равнобедренной трапеции</h3>
+<p>Опустим высоту BH на большее основание. Если основания a и b, то <span class="m">AH = (a − b) : 2</span>: «лишняя» часть большего основания делится поровну между двумя краями.</p>
+<h3>Средняя линия</h3>
+<div class="fig">${figMid}</div>
+<p><b>Средняя линия</b> соединяет середины боковых сторон. Она параллельна основаниям и равна их <b>среднему арифметическому</b>: <span class="m">m = (a + b) : 2</span>. Основания 10 и 4 → средняя линия 7.</p>`},
+{title:'Прямоугольник',lvl:4,html:`
+<p><b>Прямоугольник</b> — параллелограмм, у которого <b>все углы прямые</b>. Он умеет всё, что умеет параллелограмм, и ещё одно:</p>
+<div class="fig">${figRect}</div>
+<div class="box rule"><b>Особое свойство</b>Диагонали прямоугольника <b>равны</b>: AC = BD. А раз они ещё и делятся пополам, то AO = BO = CO = DO.</div>
+<p>Поэтому треугольники AOB, BOC, COD, DOA — <b>равнобедренные</b>. Это главный ключ к задачам про углы в прямоугольнике.</p>
+<div class="box ex"><b>Пример</b>∠CAD = 30°. Треугольник AOD равнобедренный (AO = OD), значит ∠ODA = 30°, а ∠AOD = 180° − 30° − 30° = 120°.</div>
+<div class="box tip"><b>Признак прямоугольника</b>Если в параллелограмме диагонали равны — это прямоугольник.</div>`},
+{title:'Ромб и квадрат',lvl:4,html:`
+<p><b>Ромб</b> — параллелограмм, у которого <b>все стороны равны</b>.</p>
+<div class="fig">${figRh}</div>
+<div class="box rule"><b>Особое свойство ромба</b>Диагонали ромба <b>перпендикулярны</b> (AC ⊥ BD) и <b>делят его углы пополам</b>.</div>
+<div class="box ex"><b>Пример</b>∠A = 60°. Диагональ AC делит его пополам: ∠BAC = 30°. А ∠AOB = 90° всегда.</div>
+<p><b>Квадрат</b> — прямоугольник, у которого все стороны равны. Он одновременно и прямоугольник, и ромб, поэтому у него <b>все</b> свойства сразу: диагонали равны, перпендикулярны, делятся пополам и делят углы пополам — по 45°.</p>
+<div class="fig">${figSq}</div>`},
+{title:'Кто кем является: классификация',lvl:5,html:`
+<p>Четырёхугольники — как семья. Каждый следующий — «частный случай» предыдущего: у него все свойства «родителя» и ещё свои.</p>
+<div class="fig">${classify('nonum')}</div>
+<div class="box rule"><b>Читаем картинку</b>
+• Каждый <b>квадрат</b> — это и ромб, и прямоугольник (он в серединке, где круги пересекаются).<br>
+• Каждый ромб и каждый прямоугольник — <b>параллелограмм</b>.<br>
+• Но не каждый ромб — квадрат (ромб с углом 60° не квадрат), и не каждый прямоугольник — квадрат (3 × 5).<br>
+• <b>Трапеция</b> — отдельно: у неё только одна пара параллельных сторон, это <b>не</b> параллелограмм.</div>
+<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:15px"><thead><tr style="font-size:13px;color:var(--muted)"><th style="border-bottom:1px solid var(--line);padding:6px 4px">Свойство</th><th style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">Парал.</th><th style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">Прям.</th><th style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">Ромб</th><th style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">Квадр.</th></tr></thead><tbody><tr><td style="border-bottom:1px solid var(--line);padding:6px 4px">Диагонали делятся пополам</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td></tr><tr><td style="border-bottom:1px solid var(--line);padding:6px 4px">Диагонали равны</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">—</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">—</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td></tr><tr><td style="border-bottom:1px solid var(--line);padding:6px 4px">Диагонали перпендикулярны</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">—</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">—</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td></tr><tr><td style="border-bottom:1px solid var(--line);padding:6px 4px">Диагонали делят углы пополам</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">—</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">—</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td></tr><tr><td style="border-bottom:1px solid var(--line);padding:6px 4px">Все углы прямые</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">—</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">—</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td></tr><tr><td style="border-bottom:1px solid var(--line);padding:6px 4px">Все стороны равны</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">—</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">—</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td><td style="border-bottom:1px solid var(--line);padding:6px 4px;text-align:center">✅</td></tr></tbody></table></div>
+<div class="box tip"><b>Как запомнить</b>Прямоугольник — «про углы и равные диагонали». Ромб — «про стороны и перпендикулярные диагонали». Квадрат — «всё сразу».</div>`},
+{title:'Симметрия четырёхугольников',lvl:6,html:`
+<p><b>Ось симметрии</b> — прямая, по которой фигуру можно сложить, как листок, и половинки совпадут.</p>
+<div class="figrow">
+<div class="fig">${symFig('sq')}<div class="cap"><b>Квадрат</b> — 4 оси</div></div>
+<div class="fig">${symFig('rect')}<div class="cap"><b>Прямоугольник</b> — 2 оси</div></div>
+<div class="fig">${symFig('rh')}<div class="cap"><b>Ромб</b> — 2 оси (диагонали)</div></div>
+<div class="fig">${symFig('trap')}<div class="cap"><b>Равнобедр. трапеция</b> — 1 ось</div></div></div>
+<div class="box err"><b>Ловушка</b>У прямоугольника диагонали — <b>не</b> оси симметрии (сложи листок по диагонали — углы не совпадут). А у ромба оси — как раз диагонали.</div>
+<p><b>Центр симметрии</b> — точка, вокруг которой фигуру можно повернуть на 180°, и она совпадёт сама с собой. У <b>любого параллелограмма</b> (а значит, и у прямоугольника, ромба, квадрата) центр симметрии — точка пересечения диагоналей.</p>
+<div class="fig">${symFig('par',200)}</div>
+<p class="small" style="text-align:center">У обычного параллелограмма осей нет, но есть центр O. У трапеции центра симметрии нет.</p>`},
+{title:'Теорема Фалеса',lvl:6,html:`
+<p>Если на одной стороне угла отложить <b>равные отрезки</b> и через их концы провести <b>параллельные прямые</b>, то на другой стороне они тоже отсекут <b>равные</b> отрезки.</p>
+<div class="fig">${thalesFig(3)}</div>
+<div class="box ex"><b>Пример</b>OA₁ = A₁A₂ = A₂A₃, прямые A₁B₁ ∥ A₂B₂ ∥ A₃B₃. Если OB₁ = 2 см, то и B₁B₂ = B₂B₃ = 2 см, а OB₃ = 6 см.</div>
+<div class="box tip"><b>Зачем это нужно</b>Так делят отрезок на любое число равных частей без линейки с делениями. И отсюда же следует: прямая через середину боковой стороны трапеции параллельно основаниям попадает в середину другой боковой стороны.</div>`},
+{title:'Как решать задачи',lvl:7,html:`
+<ol class="steps">
+<li><b>Нарисуй и подпиши</b> всё, что дано: равные стороны — чёрточками, равные углы — дужками.</li>
+<li><b>Определи фигуру</b> и вспомни её свойства (таблица в разделе «Классификация»).</li>
+<li><b>Ищи равнобедренные треугольники</b> — их дают диагонали прямоугольника, биссектрисы в параллелограмме, диагонали ромба.</li>
+<li><b>Отношение углов</b> 1 : 2 : 3 : 4 — это «части». Сумма углов 360°, частей 10, одна часть 36°.</li>
+<li><b>Проверь ответ:</b> сумма углов 360°? стороны положительные? угол меньше 180°?</li></ol>
+<div class="box ex"><b>Классика</b>В прямоугольнике угол между диагоналями 60°. Тогда треугольник AOB равнобедренный с углом 60° при вершине — значит, <b>равносторонний</b>, и меньшая сторона равна половине диагонали.</div>`},
+{title:'Идеи для задач со звёздочкой',lvl:8,html:`
+<div class="box rule"><b>1. Биссектрисы соседних углов параллелограмма перпендикулярны</b>∠A + ∠B = 180°, половинки дают 90°, значит третий угол треугольника — тоже 90°.</div>
+<div class="box rule"><b>2. Средняя линия треугольника</b>Отрезок, соединяющий середины двух сторон треугольника, параллелен третьей стороне и равен её <b>половине</b>. (Это будет в учебнике чуть позже, но пользоваться можно уже сейчас.)</div>
+<div class="box rule"><b>3. Теорема Вариньона</b>Середины сторон <b>любого</b> четырёхугольника — вершины параллелограмма. Его стороны равны половинам диагоналей, поэтому его периметр = <b>сумма диагоналей</b> исходного четырёхугольника.</div>
+<div class="box rule"><b>4. Острых углов у выпуклого многоугольника — не больше трёх</b>Внешний угол при остром угле больше 90°, а сумма внешних углов — 360°. Четыре угла по «больше 90°» уже дают больше 360°.</div>
+<div class="box tip"><b>Совет</b>В «звёздочках» почти всегда работает один и тот же приём: найти равнобедренный треугольник, а потом посчитать углы.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>Сумма углов выпуклого n-угольника: (n − 2) · 180°. Четырёхугольник — 360°.</li>
+<li>Параллелограмм: противоположные стороны и углы равны, соседние углы — 180°, диагонали делятся пополам.</li>
+<li>Биссектриса угла параллелограмма отсекает равнобедренный треугольник.</li>
+<li>Трапеция: углы при боковой стороне — 180°; средняя линия (a + b) : 2.</li>
+<li>Прямоугольник: диагонали равны. Ромб: диагонали ⊥ и делят углы пополам. Квадрат: всё сразу.</li>
+<li>Квадрат — это и ромб, и прямоугольник. Трапеция — не параллелограмм.</li></ul>`}
+];
+
+/* ---------- symbols ---------- */
+const NW=t=>`<span style="white-space:nowrap;font-size:17px">${t}</span>`;
+const symbols={tab:'Формулы',title:'Знаки и формулы темы',rows:[
+[NW('(n − 2)·180°'),'Сумма углов n-угольника','Сколько градусов во всех углах выпуклого многоугольника вместе. n — число вершин.','n = 5: 3 · 180° = 540°'],
+['360°','Сумма углов четырёхугольника','Любого выпуклого: параллелограмма, трапеции, «кривого» четырёхугольника.','70° + 110° + 70° + 110° = 360°'],
+['∠A','«Угол A»','Угол при вершине A.','∠A = 60°'],
+[NW('∠ABC'),'«Угол ABC»','Угол с вершиной в <b>средней</b> букве (здесь B), стороны идут к A и к C.','∠BAC — угол при A между AB и AC'],
+['∥','«Параллельна»','Прямые никогда не пересекутся, как рельсы.','AD ∥ BC'],
+['⊥','«Перпендикулярна»','Прямые пересекаются под прямым углом 90°.','AC ⊥ BD (в ромбе)'],
+[NW('∠A + ∠B = 180°'),'Соседние углы параллелограмма','Острый + тупой = 180°. Так же — углы при боковой стороне трапеции.','65° + 115° = 180°'],
+[NW('P = 2(a + b)'),'Периметр параллелограмма','Сумма всех четырёх сторон: a, b, a, b.','2 · (7 + 4) = 22'],
+[NW('AO = OC'),'Диагонали делятся пополам','O — середина каждой диагонали параллелограмма.','AC = 12 → AO = 6'],
+[NW('m = (a + b) : 2'),'Средняя линия трапеции','Отрезок между серединами боковых сторон — среднее арифметическое оснований.','(10 + 4) : 2 = 7'],
+[NW('△ABC'),'«Треугольник ABC»','Треугольник с вершинами A, B, C.','△ABK — равнобедренный']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Четырёхугольник — 360°. Соседние углы параллелограмма — 180°. Биссектриса в параллелограмме → равнобедренный треугольник.</div>`};
+
+/* =====================================================================
+   GENERATORS
+   ===================================================================== */
+const gens=[];const G=(lvl,make,star)=>gens.push({lvl,star,make:()=>{for(let i=0;i<300;i++){const t=make();if(t)return t;}return null;}});
+const fig=s=>`<div class="fig">${s}</div>`;
+const opp={A:'C',B:'D',C:'A',D:'B'};
+const nbr={A:['B','D'],B:['A','C'],C:['B','D'],D:['A','C']};
+
+/* ===== L0: polygons ===== */
+G(0,()=>{const n=R(5,12);const s=(n-2)*180;
+return {type:'num',q:`Найди сумму углов выпуклого ${NGg[n]} (у него ${n} ${plural(n,'вершина','вершины','вершин')}).`,ans:s,
+hint:'Разрежь многоугольник диагоналями из одной вершины на треугольники. Сколько их получится?',
+short:`(${n} − 2) · 180° = ${n-2} · 180° = ${s}°.`,
+explain:`Сумма углов выпуклого n-угольника: <span class="m">(n − 2) · 180°</span>.<br>Здесь n = ${n}: (${n} − 2) · 180° = ${n-2} · 180° = <b>${s}°</b>.<div class="box err"><b>Почему не ${n} · 180° = ${n*180}°</b>Из одной вершины диагонали режут ${NG[n]} не на ${n}, а на ${n-2} ${plural(n-2,'треугольник','треугольника','треугольников')}: две стороны, соседние с этой вершиной, новых треугольников не дают.</div>`,
+explain2:`Посмотри на картинку: из вершины A проводим все диагонали.${n<=8?fig(triangFig(n)):''}Получается ${n-2} ${plural(n-2,'треугольник','треугольника','треугольников')}, и углы этих треугольников вместе как раз составляют все углы ${NGg[n]}. В каждом треугольнике 180°, поэтому всего ${n-2} · 180° = ${s}°.<br>Проверь на знакомом: у четырёхугольника 2 треугольника → 360° ✅.`};});
+G(0,()=>{const n=pick([5,6,8,9,10,12]);const s=(n-2)*180,a=s/n;
+return {type:'num',q:`Найди угол <b>правильного</b> ${NGg[n]} (все стороны и все углы равны).`,ans:a,
+hint:'Сначала найди сумму всех углов, потом раздели поровну.',
+short:`Сумма ${s}°, делим на ${n}: ${a}°.`,
+explain:`1) Сумма углов: (${n} − 2) · 180° = ${s}°.<br>2) У правильного многоугольника все ${n} углов одинаковые, поэтому каждый: ${s}° : ${n} = <b>${a}°</b>.`,
+explain2:`Другой способ — через внешние углы. Обходя многоугольник, в каждой вершине ты поворачиваешь на внешний угол, а всего поворачиваешься на полный круг 360°. Значит, каждый внешний угол = 360° : ${n} = ${360/n}°. А внутренний = 180° − ${360/n}° = ${a}°. Тот же ответ!`};});
+G(0,()=>{for(;;){const ang=[R(60,135),R(60,135),R(60,135)];const four=360-ang[0]-ang[1]-ang[2];if(four<60||four>135)continue;
+ const vals={A:four,B:ang[0],C:ang[1],D:ang[2]};const who=pick(Q4);const order=[who,...Q4.filter(x=>x!==who)];
+ const p=quadFromAngles(vals.A,vals.B,vals.C,vals.D);if(!p)continue;
+ const angs=Q4.map(k=>[k,nbr[k][0],nbr[k][1],k===who?'?':dg(vals[k])]);
+ const pic=geo({P:p,poly:[Q4],ang:angs,maxH:200});const known=Q4.filter(k=>k!==who);const sum=known.reduce((s,k)=>s+vals[k],0);
+ return {type:'num',q:`В выпуклом четырёхугольнике ABCD ${known.map(k=>`∠${k} = ${vals[k]}°`).join(', ')}. Найди ∠${who}.`,pic,ans:vals[who],
+ hint:'Чему равна сумма углов любого выпуклого четырёхугольника?',
+ short:`360° − ${sum}° = ${vals[who]}°.`,
+ explain:`Сумма углов выпуклого четырёхугольника равна <b>360°</b> (это (4 − 2) · 180°).<br>Сумма известных углов: ${known.map(k=>vals[k]).join(' + ')} = ${sum}°.<br>∠${who} = 360° − ${sum}° = <b>${vals[who]}°</b>.`,
+ explain2:`Проведи диагональ — четырёхугольник разрежется на два треугольника.${fig(geo({P:p,poly:[Q4],seg:[['A','C',{dash:true}]],fill:[{pts:['A','B','C'],op:0.25}],maxH:170}))}В каждом треугольнике 180°, вместе 180° + 180° = 360°. Остаётся «добрать» до 360°: 360 − ${sum} = ${vals[who]}.`};}});
+G(0,()=>{const cv=Math.random()<0.5;const C=['convex5','convex6','convex4'],NC=['dart','house','ell','star'];
+ const right=cv?pick(C):pick(NC);const others=cv?sample(NC,3):sample(C,3);const ks=shuffle([right,...others]);
+ return {type:'choice',pics:true,q:cv?'Какой из многоугольников <b>выпуклый</b>?':'Какой из многоугольников <b>невыпуклый</b>?',opts:ks.map(shapeSvg),ans:ks.indexOf(right),ansText:cv?'тот, у которого нет «вмятин»':'тот, у которого есть «вмятина» (угол больше 180°)',
+ short:cv?'У выпуклого нет вмятин: все углы меньше 180°.':'У невыпуклого есть вмятина — угол больше 180°.',
+ explain:`Многоугольник <b>выпуклый</b>, если он лежит по одну сторону от прямой, проведённой через любую его сторону. На практике: у него <b>нет вмятин</b>, все углы меньше 180°.<br>${cv?'У трёх фигур есть вмятина — угол «внутрь», больше 180°. Только у одной её нет.':'У трёх фигур вмятин нет, а у одной есть вершина, которая «вдавлена» внутрь, — угол там больше 180°. Она и невыпуклая.'}`,
+ explain2:`Проверка «резинкой»: представь, что в вершинах вбиты гвоздики и вокруг натянули резинку. У выпуклой фигуры резинка ляжет ровно по всем сторонам. У невыпуклой резинка «перепрыгнет» вмятину, и одна вершина останется внутри.`};});
+
+/* ===== L1: parallelogram angles & sides ===== */
+G(1,()=>{const al=Math.random()<0.6?R(40,80):R(100,140);const ask=pick(['B','C','D']);const p=para(R(7,9),R(4,5),al);
+ const ans=ask==='C'?al:180-al;
+ const pic=geo({P:p,poly:[Q4],ang:[['A','D','B',dg(al)],[ask,nbr[ask][0],nbr[ask][1],'?']],maxH:190});
+ return {type:'num',q:`ABCD — параллелограмм, ∠A = ${al}°. Найди ∠${ask}.`,pic,ans,
+ short:ask==='C'?`∠C противоположен ∠A, поэтому ∠C = ${al}°.`:`∠${ask} — соседний с ∠A: 180° − ${al}° = ${ans}°.`,
+ explain:ask==='C'?`∠A и ∠C — <b>противоположные</b> углы параллелограмма (стоят напротив друг друга). Противоположные углы параллелограмма равны: ∠C = ∠A = <b>${al}°</b>.`:`∠A и ∠${ask} — <b>соседние</b> углы (прилежат к одной стороне A${ask}). Их сумма 180°: ∠${ask} = 180° − ${al}° = <b>${ans}°</b>.<div class="box err"><b>Ошибка</b>Ответ ${al}° был бы верен для угла C — он напротив A. А ∠${ask} — рядом.</div>`,
+ explain2:ask==='C'?`Поверни параллелограмм на 180° вокруг точки пересечения диагоналей — он совпадёт сам с собой, и вершина A окажется на месте C. Значит, углы A и C одинаковые: ${al}°.`:`Стороны AD и BC параллельны, а A${ask} их пересекает. Углы A и ${ask} — односторонние, вместе они «выпрямляются» в 180°. ${al<90?'Острый':'Тупой'} ${al}° + ${al<90?'тупой':'острый'} ${ans}° = 180°. Посмотри: на картинке ∠${ask} ${ans>90?'тупой':'острый'} — это сходится с ответом.`};});
+G(1,()=>{const d=pick([20,30,40,50,60,70,80,100]);const x=(180-d)/2,y=x+d;const p=para(8,4.5,x);
+ const pic=geo({P:p,poly:[Q4],ang:[['A','D','B','x'],['B','A','C','x + '+d+'°']],maxH:180});
+ return {type:'num',q:`Один угол параллелограмма на ${d}° больше другого. Найди <b>больший</b> угол.`,pic,ans:y,
+ hint:'«Один угол больше другого» — значит, они разные, то есть соседние. Сумма соседних углов 180°.',
+ short:`x + (x + ${d}) = 180 → x = ${x}, больший ${y}°.`,
+ explain:`Равные углы не могут отличаться на ${d}°, значит, речь о <b>соседних</b> углах. Их сумма 180°.<br>Пусть меньший x, больший x + ${d}:<br>x + x + ${d} = 180 → 2x = ${180-d} → x = ${x}.<br>Больший угол: ${x} + ${d} = <b>${y}°</b>. Проверка: ${x} + ${y} = 180 ✅.`,
+ explain2:`Представь: два брата вместе весят 180 кг, старший тяжелее на ${d} кг. Убери «лишние» ${d} кг у старшего — станет поровну: (180 − ${d}) : 2 = ${x} кг каждому. Вернём старшему ${d}: ${x} + ${d} = ${y}. С углами — то же самое.`};});
+G(1,()=>{const k=pick([2,3,4,5,8]);const x=180/(k+1),y=k*x;const p=para(8,4.5,x);
+ const pic=geo({P:p,poly:[Q4],ang:[['A','D','B','x'],['B','A','C',k+'x']],maxH:180});
+ return {type:'num',q:`Один из углов параллелограмма в ${k} раза больше другого. Найди <b>больший</b> угол.`,pic,ans:y,
+ hint:'Разные углы параллелограмма — соседние, в сумме 180°.',short:`x + ${k}x = 180 → x = ${x}, больший ${y}°.`,
+ explain:`Разные углы параллелограмма — соседние, их сумма 180°.<br>x + ${k}x = 180 → ${k+1}x = 180 → x = ${x}°.<br>Больший: ${k} · ${x} = <b>${y}°</b>.`,
+ explain2:`Думай «частями»: меньший угол — 1 часть, больший — ${k} частей. Вместе ${k+1} ${plural(k+1,'часть','части','частей')} = 180°. Одна часть = 180 : ${k+1} = ${x}°. Больший = ${k} части = ${y}°.`};});
+G(1,()=>{const a=R(4,15),b=R(3,14);if(a===b)return null;const P2=2*(a+b);const p=para(Math.max(a,b),Math.min(a,b),R(55,70));const big=a>b;
+ const pic=geo({P:p,poly:[Q4],side:[['A','D',big?String(a):'?'],['A','B',big?'?':String(a)]],ang:[['A','D','B','']],maxH:180});
+ return {type:'num',q:`Периметр параллелограмма ABCD равен ${P2} см, сторона ${big?'AD':'AB'} = ${a} см. Найди сторону ${big?'AB':'AD'}.`,pic,ans:b,
+ hint:'Периметр — это две «соседние» стороны, взятые дважды.',short:`${P2} : 2 = ${a+b}; ${a+b} − ${a} = ${b} см.`,
+ explain:`Противоположные стороны параллелограмма равны, поэтому P = 2 · (AB + AD).<br>Половина периметра: ${P2} : 2 = ${a+b} — это AB + AD.<br>Значит, ${big?'AB':'AD'} = ${a+b} − ${a} = <b>${b} см</b>.<div class="box err"><b>Частая ошибка</b>${P2} − ${a} = ${P2-a} — так вычли только одну сторону, а сторон ${a} в периметре две.</div>`,
+ explain2:`Пройди вокруг забора: ${a} + ? + ${a} + ? = ${P2}. Две стороны по ${a} — это ${2*a}. На две оставшиеся приходится ${P2} − ${2*a} = ${2*b}, на одну — ${2*b} : 2 = ${b}.`};});
+G(1,()=>{for(;;){const x=R(35,80);if(x===45)continue;const lt=Math.random()<0.5;const each=lt?x:180-x;const S=2*each;const other=180-each;const big=Math.max(each,other);
+ const p=para(8,4.5,lt?x:180-x);return {type:'num',q:`Сумма двух углов параллелограмма равна ${S}°. Найди <b>больший</b> угол параллелограмма.`,ans:big,
+ hint:'Могут ли эти два угла быть соседними? Сумма соседних — ровно 180°.',short:`Это противоположные углы по ${each}°; соседний ${other}°; больший ${big}°.`,
+ explain:`Соседние углы дают в сумме ровно 180°, а у нас ${S}° — значит, это <b>противоположные</b> углы. Они равны: ${S} : 2 = ${each}°.<br>Два других угла: 180° − ${each}° = ${other}°.<br>Больший угол: <b>${big}°</b>.`,
+ explain2:`Выпиши все четыре угла параллелограмма: это α, β, α, β, где α + β = 180°. Какие два из них могут дать ${S}? α + β = 180 — не подходит. Значит, ${S} = α + α, α = ${each}. Тогда β = ${other}. Углы: ${each}°, ${other}°, ${each}°, ${other}°.${fig(geo({P:p,poly:[Q4],ang:[['A','D','B',dg(each)],['C','B','D',dg(each)],['B','A','C',dg(other)]],maxH:160}))}`};}});
+G(1,()=>{const T=[['Противоположные стороны равны','так по свойству параллелограмма'],['Противоположные углы равны','так по свойству параллелограмма'],['Диагонали точкой пересечения делятся пополам','так по свойству параллелограмма'],['Сумма соседних углов равна 180°','это односторонние углы при параллельных прямых']];
+ const F=[['Диагонали равны','это верно только для прямоугольника'],['Диагонали перпендикулярны','это верно только для ромба'],['Все стороны равны','это ромб, а не любой параллелограмм'],['Диагонали делят углы пополам','это верно только для ромба'],['Все углы равны','это прямоугольник']];
+ const t=sample(T,R(2,3)),f=sample(F,5-t.length);const opts=shuffle([...t.map(x=>({s:x,ok:1})),...f.map(x=>({s:x,ok:0}))]);
+ return {type:'multi',q:'Какие утверждения верны для <b>любого</b> параллелограмма? Выбери все.',opts:opts.map(o=>o.s[0]),ans:opts.map((o,i)=>o.ok?i:-1).filter(i=>i>=0),
+ short:'Свойства любого параллелограмма — только про «пары» и «пополам».',
+ explain:opts.map(o=>`• «${o.s[0]}» — ${o.ok?'<b>верно</b>':'<b>неверно</b>'}: ${o.s[1]}.`).join('<br>'),
+ explain2:`Проверка «контрпримером»: нарисуй сильно скошенный параллелограмм со сторонами 8 и 3. ${fig(geo({P:withO(para(8,3,45)),poly:[Q4],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],lab:Q4,maxH:130}))}Видно, что диагонали у него разные и не перпендикулярны, стороны разные. Значит, эти свойства — не для любого параллелограмма. А «пары» и «пополам» выполняются всегда.`};});
+
+/* ===== L2: diagonals, bisector, signs ===== */
+G(2,()=>{for(;;){const p=R(3,9),q=R(3,9),c=R(4,12);if(p+q<=c+1||p+c<=q+1||q+c<=p+1)continue;
+ const A=[0,0],O=[p,0];const x=(c*c-q*q+p*p)/(2*p);if(c*c-x*x<=0)continue;let B=[x,Math.sqrt(c*c-x*x)];const C=[2*p,0],D=sub(mul(O,2),B);
+ let pts={A,B,C,D,O};const ang=Math.atan2(D[1],D[0]);const rot=v=>[v[0]*Math.cos(-ang)-v[1]*Math.sin(-ang),v[0]*Math.sin(-ang)+v[1]*Math.cos(-ang)];
+ for(const k in pts)pts[k]=rot(pts[k]);if(pts.B[1]<0)for(const k in pts)pts[k]=[pts[k][0],-pts[k][1]];
+ const aA=angAt(pts.A,pts.B,pts.D);if(aA<45||aA>135)continue;const ad=len(pts.D);if(ad/c>2.6||c/ad>2.6)continue;
+ const ans=c+p+q;
+ const pic=geo({P:pts,poly:[Q4],seg:[['A','C'],['B','D']],fill:[{pts:['A','B','O']}],side:[['A','B',String(c)]],dots:['O'],dir:{O:-90},maxH:200});
+ return {type:'num',q:`Диагонали параллелограмма ABCD пересекаются в точке O. AC = ${2*p}, BD = ${2*q}, AB = ${c}. Найди периметр треугольника AOB.`,pic,ans,
+ hint:'Какую часть диагонали составляют AO и BO?',short:`AO = ${p}, BO = ${q}; P = ${c} + ${p} + ${q} = ${ans}.`,
+ explain:`Диагонали параллелограмма точкой пересечения <b>делятся пополам</b>:<br>AO = ${2*p} : 2 = ${p}, BO = ${2*q} : 2 = ${q}.<br>P(AOB) = AB + AO + BO = ${c} + ${p} + ${q} = <b>${ans}</b>.<div class="box err"><b>Ошибка</b>${c} + ${2*p} + ${2*q} = ${c+2*p+2*q} — так взяли целые диагонали, а у треугольника AOB стороны — только их <b>половинки</b>.</div>`,
+ explain2:`Посмотри на закрашенный треугольник: его стороны — AB и два «кусочка» диагоналей от вершины до точки O. Точка O стоит ровно посередине каждой диагонали, как центр качелей. Поэтому AO — половина AC (${p}), BO — половина BD (${q}). Складываем: ${c} + ${p} + ${q} = ${ans}.`};}});
+G(2,()=>{const a=R(3,9),c=R(2,8),al=R(52,72);const p=para(a+c,a,al);p.K=add(p.B,[a,0]);const P2=2*(2*a+c);
+ const pic=geo({P:p,poly:[Q4],seg:[['A','K']],side:[['A','B',String(a)],['K','C',String(c)]],ang:[['A','B','K','',{n:1,r:24}],['A','K','D','',{n:1,r:28}]],maxH:180});
+ const pic2=geo({P:p,poly:[Q4],seg:[['A','K']],fill:[{pts:['A','B','K']}],tick:[['A','B',1],['B','K',1]],side:[['A','B',String(a)],['B','K',String(a),{col:'var(--accent-ink)'}],['K','C',String(c)]],ang:[['A','B','K','',{n:1,r:24}],['A','K','D','',{n:1,r:28}],['K','B','A','',{n:1,r:22}]],maxH:180});
+ return {type:'num',q:`В параллелограмме ABCD биссектриса угла A пересекает сторону BC в точке K. AB = ${a}, KC = ${c}. Найди периметр параллелограмма.`,pic,ans:P2,
+ hint:'Биссектриса отсекает от параллелограмма равнобедренный треугольник. Какой?',short:`BK = AB = ${a}, BC = ${a+c}, P = 2 · (${a} + ${a+c}) = ${P2}.`,
+ explain:`1) ∠BAK = ∠KAD — AK биссектриса.<br>2) ∠BKA = ∠KAD — накрест лежащие при BC ∥ AD и секущей AK.<br>3) Значит, ∠BAK = ∠BKA, и треугольник ABK <b>равнобедренный</b>: BK = AB = ${a}.<br>4) BC = BK + KC = ${a} + ${c} = ${a+c}.<br>5) P = 2 · (AB + BC) = 2 · (${a} + ${a+c}) = <b>${P2}</b>.`,
+ explain2:`Отметим равные углы дужками:${fig(pic2)}Линии AK, BC и AD образуют букву «Z» — у неё углы на «изгибах» равны. Поэтому в закрашенном треугольнике ABK два угла одинаковые, а напротив равных углов — равные стороны: BK = AB = ${a}. Дальше просто: BC = ${a} + ${c} = ${a+c}, периметр = ${a} + ${a+c} + ${a} + ${a+c} = ${P2}.`};});
+G(2,()=>{const a=R(3,9),al=R(55,72);const p=para(2*a,a,al);p.K=add(p.B,[a,0]);const P2=6*a;
+ const pic=geo({P:p,poly:[Q4],seg:[['A','K']],tick:[['B','K',1],['K','C',1]],side:[['A','B',String(a)]],ang:[['A','B','K','',{n:1,r:24}],['A','K','D','',{n:1,r:28}]],maxH:180});
+ return {type:'num',q:`В параллелограмме ABCD биссектриса угла A проходит через середину K стороны BC. AB = ${a}. Найди периметр параллелограмма.`,pic,ans:P2,
+ hint:'Сначала найди BK: биссектриса отсекает равнобедренный треугольник.',short:`BK = AB = ${a}, BC = 2 · ${a} = ${2*a}, P = 2 · (${a} + ${2*a}) = ${P2}.`,
+ explain:`Биссектриса AK отсекает равнобедренный треугольник ABK (∠BAK = ∠KAD = ∠BKA), поэтому BK = AB = ${a}.<br>K — середина BC, значит BC = 2 · BK = ${2*a}.<br>P = 2 · (${a} + ${2*a}) = <b>${P2}</b>.`,
+ explain2:`Смотри на сторону BC: она состоит из двух равных половинок BK и KC. Первая половинка BK равна AB = ${a} (равнобедренный треугольник ABK). Значит, вся BC = ${a} + ${a} = ${2*a} — в два раза длиннее AB. Периметр: ${a} + ${2*a} + ${a} + ${2*a} = ${P2}.`};});
+G(2,()=>{const T=['Две его стороны равны и параллельны','Противоположные стороны попарно равны','Диагонали точкой пересечения делятся пополам','Противоположные стороны попарно параллельны'];
+ const F=[['Две стороны параллельны, а две другие равны','так выглядит равнобедренная трапеция — она не параллелограмм'],['Диагонали перпендикулярны','бывает «воздушный змей», у которого диагонали ⊥, но это не параллелограмм'],['Диагонали равны','у равнобедренной трапеции диагонали равны, а она не параллелограмм'],['Два противолежащих угла прямые','у «воздушного змея» с двумя прямыми углами противоположные стороны не параллельны'],['Две соседние стороны равны','так бывает у любого «воздушного змея»']];
+ const t=pick(T),f=sample(F,3);const opts=shuffle([t,...f.map(x=>x[0])]);
+ return {type:'choice',q:'Какое условие <b>гарантирует</b>, что четырёхугольник — параллелограмм?',opts,ans:opts.indexOf(t),
+ short:`«${t}» — это ${t.includes('параллельны')&&!t.includes('равны')?'определение':'признак'} параллелограмма.`,
+ explain:`Признаки параллелограмма: 1) две стороны <b>равны и параллельны</b>; 2) противоположные стороны попарно <b>равны</b>; 3) диагонали <b>делятся пополам</b>. (И ещё само определение: противоположные стороны попарно параллельны.)<br>Правильный вариант: «${t}».<br>Остальные не подходят:<br>${f.map(x=>`• «${x[0]}» — ${x[1]}.`).join('<br>')}`,
+ explain2:`Для каждого неверного варианта можно нарисовать фигуру, которая условию удовлетворяет, но параллелограммом <b>не</b> является. Например, равнобедренная трапеция:${fig(geo({P:isoTrap(8,4,3),poly:[Q4],tick:[['A','B',1],['C','D',1]],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],W:220,maxH:120,pad:22}))}У неё две стороны параллельны, две другие равны, диагонали равны — а это не параллелограмм. Значит, такие условия ничего не гарантируют.`};});
+G(2,()=>{for(;;){const x=R(20,60),y=R(20,60);if(x===y||x+y>120||x+y<50)continue;const AD=8,AB=AD*Math.sin(y*D2R)/Math.sin(x*D2R);if(AB<3.5||AB>9)continue;
+ const p=para(AD,AB,x+y);const ask=pick(['B','BCA','ACD']);
+ const ans=ask==='B'?180-x-y:ask==='BCA'?y:x;
+ const angs=[['A','B','C',dg(x)],['A','C','D',dg(y),{r:34}]];if(ask==='B')angs.push(['B','A','C','?']);if(ask==='BCA')angs.push(['C','B','A','?',{r:30}]);if(ask==='ACD')angs.push(['C','A','D','?',{r:30}]);
+ const pic=geo({P:p,poly:[Q4],seg:[['A','C']],ang:angs,maxH:200});const nm={B:'∠ABC',BCA:'∠BCA',ACD:'∠ACD'}[ask];
+ return {type:'num',q:`В параллелограмме ABCD диагональ AC образует со сторонами углы ∠BAC = ${x}° и ∠CAD = ${y}°. Найди ${nm}.`,pic,ans,
+ short:ask==='B'?`∠A = ${x+y}°, ∠B = 180° − ${x+y}° = ${ans}°.`:ask==='BCA'?`∠BCA = ∠CAD = ${y}° (накрест лежащие).`:`∠ACD = ∠BAC = ${x}° (накрест лежащие).`,
+ explain:ask==='B'?`1) ∠A = ∠BAC + ∠CAD = ${x}° + ${y}° = ${x+y}°.<br>2) ∠B — соседний с ∠A, поэтому ∠B = 180° − ${x+y}° = <b>${ans}°</b>.`:ask==='BCA'?`BC ∥ AD, AC — секущая. Углы BCA и CAD — <b>накрест лежащие</b>, они равны: ∠BCA = ∠CAD = <b>${y}°</b>.`:`AB ∥ CD, AC — секущая. Углы ACD и BAC — <b>накрест лежащие</b>, они равны: ∠ACD = ∠BAC = <b>${x}°</b>.`,
+ explain2:ask==='B'?`Посчитай углы в треугольнике ABC: ∠BAC = ${x}°, ∠BCA = ${y}° (он равен ∠CAD как накрест лежащий). Сумма углов треугольника 180°, поэтому ∠B = 180 − ${x} − ${y} = ${ans}°. Тот же ответ другим путём.`:`Ищи букву «Z»: ${ask==='BCA'?'BC, диагональ CA и AD':'AB, диагональ AC и CD'} рисуют зигзаг. В углах зигзага между параллельными прямыми углы одинаковые. Поэтому ответ ${ans}°.`};}});
+
+/* ===== L3: trapezoid ===== */
+G(3,()=>{for(;;){const al=R(45,80),de=R(45,80);const b=R(3,6);const t=trap(10,b,al,de);if(t.h<3||t.h>7)continue;const ask=pick(['B','C']);const ans=ask==='B'?180-al:180-de;
+ const pic=geo({P:t,poly:[Q4],ang:[['A','D','B',dg(al)],['D','C','A',dg(de)],[ask,nbr[ask][0],nbr[ask][1],'?']],maxH:190});
+ return {type:'num',q:`В трапеции ABCD с основаниями AD и BC ∠A = ${al}°, ∠D = ${de}°. Найди ∠${ask}.`,pic,ans,
+ hint:'Какие углы трапеции в сумме дают 180°?',short:`∠${ask} и ∠${ask==='B'?'A':'D'} — углы при боковой стороне: 180° − ${ask==='B'?al:de}° = ${ans}°.`,
+ explain:`Углы, прилежащие к одной <b>боковой стороне</b> трапеции, в сумме дают 180° (односторонние при BC ∥ AD).<br>∠${ask} прилежит к боковой стороне ${ask==='B'?'AB':'CD'} вместе с ∠${ask==='B'?'A':'D'}.<br>∠${ask} = 180° − ${ask==='B'?al:de}° = <b>${ans}°</b>.<div class="box err"><b>Ловушка</b>Угол ${ask==='B'?de:al}° здесь ни при чём: трапеция не равнобедренная, и противоположные углы у неё не связаны.</div>`,
+ explain2:`Основания — как два параллельных рельса, а боковая сторона ${ask==='B'?'AB':'CD'} — шпала наискосок. Сколько «отклонилась» шпала от одного рельса внизу (${ask==='B'?al:de}°), столько «добавится» до 180° наверху: 180 − ${ask==='B'?al:de} = ${ans}.`};}});
+G(3,()=>{const al=R(48,80);const t=isoTrap(10,R(3,5),0);const h=((10-(t.C[0]-t.B[0]))/2)*Math.tan(al*D2R);const p=isoTrap(10,t.C[0]-t.B[0],h);if(h>8)return null;
+ const ask=pick(['B','C','D']);const ans=ask==='D'?al:180-al;
+ const pic=geo({P:p,poly:[Q4],tick:[['A','B',1],['C','D',1]],ang:[['A','D','B',dg(al)],[ask,nbr[ask][0],nbr[ask][1],'?']],maxH:190});
+ return {type:'num',q:`ABCD — равнобедренная трапеция с основаниями AD и BC, ∠A = ${al}°. Найди ∠${ask}.`,pic,ans,
+ short:ask==='D'?`В равнобедренной трапеции углы при основании равны: ∠D = ∠A = ${al}°.`:`∠${ask} = 180° − ${al}° = ${ans}°.`,
+ explain:ask==='D'?`В <b>равнобедренной</b> трапеции углы при каждом основании равны: ∠D = ∠A = <b>${al}°</b>.`:ask==='B'?`∠A и ∠B прилежат к боковой стороне AB, их сумма 180°: ∠B = 180° − ${al}° = <b>${ans}°</b>.`:`1) Углы при основании AD равны: ∠D = ∠A = ${al}°.<br>2) ∠C и ∠D прилежат к боковой стороне CD: ∠C = 180° − ${al}° = <b>${ans}°</b>.`,
+ explain2:`Равнобедренная трапеция симметрична: если сложить её пополам по вертикальной оси, A совпадёт с D, а B — с C. Поэтому у неё всего два разных угла: острый ${al}° (внизу) и тупой ${180-al}° (наверху). Проверь: ${al} + ${180-al} + ${180-al} + ${al} = 360 ✅. ∠${ask} — ${ask==='D'?'нижний':'верхний'}, значит ${ans}°.`};});
+G(3,()=>{const a=R(8,20),b=R(3,a-2);if((a+b)%2&&Math.random()<0.7)return null;const m=(a+b)/2;const findM=Math.random()<0.55;
+ const p=trap(a,b,R(55,75),R(55,75));if(p.h<0.25*a||p.h>0.8*a)return null;p.M=mid(p.A,p.B);p.N=mid(p.C,p.D);
+ const pic=geo({P:p,poly:[Q4],seg:[['M','N',{dash:true,col:'var(--accent)',sw:2}]],tick:[['A','M',1],['M','B',1],['C','N',2],['N','D',2]],side:[['B','C',findM?String(b):'?'],['A','D',String(a)],['M','N',findM?'?':N(m),{flip:true,col:'var(--accent-ink)'}]],maxH:200});
+ if(findM)return {type:'num',q:`Основания трапеции равны ${a} и ${b}. Найди её среднюю линию MN.`,pic,ans:m,
+ short:`(${a} + ${b}) : 2 = ${N(m)}.`,explain:`Средняя линия трапеции равна полусумме оснований: <span class="m">m = (a + b) : 2</span>.<br>m = (${a} + ${b}) : 2 = ${a+b} : 2 = <b>${N(m)}</b>.`,
+ explain2:`Средняя линия проходит ровно посередине между основаниями, поэтому её длина — «средняя» между ними, как средняя оценка: (${a} + ${b}) : 2 = ${N(m)}. Проверка: ${N(m)} меньше ${a}, но больше ${b} — так и должно быть.`};
+ return {type:'num',q:`Средняя линия трапеции равна ${N(m)}, большее основание ${a}. Найди меньшее основание.`,pic,ans:b,
+ short:`a + b = 2 · ${N(m)} = ${a+b}; b = ${a+b} − ${a} = ${b}.`,explain:`m = (a + b) : 2, значит a + b = 2m = 2 · ${N(m)} = ${a+b}.<br>Меньшее основание: ${a+b} − ${a} = <b>${b}</b>.<div class="box err"><b>Ошибка</b>${N(m)} − ${a} или ${a} − ${N(m)} = ${N(a-m)} — неверно: средняя линия — это полусумма, сначала умножаем на 2.</div>`,
+ explain2:`Средняя линия ${N(m)} — «середина» между основаниями. Большее основание на ${N(a-m)} длиннее средней линии, значит меньшее на столько же короче: ${N(m)} − ${N(a-m)} = ${b}.`};});
+G(3,()=>{const b=R(3,9),a=b+2*R(2,6);const h=R(3,7);const p=isoTrap(a,b,h);p.H=[p.B[0],0];const askAH=Math.random()<0.6;const ans=askAH?(a-b)/2:(a+b)/2;
+ const pic=geo({P:p,poly:[Q4],seg:[['B','H',{dash:true}]],rt:[['H','D','B']],tick:[['A','B',1],['C','D',1]],side:[['B','C',String(b)],['A','D',String(a),{gap:6}]],maxH:190});
+ p.K=[p.C[0],0];const pic2=geo({P:p,poly:[Q4],seg:[['B','H',{dash:true}],['C','K',{dash:true}]],fill:[{pts:['A','B','H']},{pts:['K','C','D']}],rt:[['H','D','B'],['K','C','D']],side:[['B','C',String(b)],['H','K',String(b),{flip:true,col:'var(--accent-ink)'}],['A','H','?',{flip:true,col:'var(--accent-ink)'}],['K','D','?',{flip:true,col:'var(--accent-ink)'}]],lab:['A','B','C','D'],maxH:190});
+ return {type:'num',q:`В равнобедренной трапеции ABCD основания AD = ${a} и BC = ${b}. Из вершины B проведена высота BH. Найди ${askAH?'AH':'HD'}.`,pic,ans,
+ hint:'Проведи вторую высоту из C. Что получится посередине?',short:askAH?`AH = (${a} − ${b}) : 2 = ${ans}.`:`HD = ${a} − ${(a-b)/2} = ${ans} (это (a + b) : 2).`,
+ explain:`Проведём вторую высоту CK. Посередине получится прямоугольник HBCK, поэтому HK = BC = ${b}.<br>Треугольники ABH и DCK равны (трапеция равнобедренная), значит AH = KD.<br>AH = (${a} − ${b}) : 2 = ${(a-b)/2}.${askAH?`<br>Ответ: <b>${ans}</b>.`:`<br>HD = AD − AH = ${a} − ${(a-b)/2} = <b>${ans}</b>.`}`,
+ explain2:`«Разрежь» трапецию двумя высотами: посередине прямоугольник шириной ${b}, по краям два одинаковых треугольника.${fig(pic2)}На оба треугольника вместе приходится ${a} − ${b} = ${a-b}, на один — ${(a-b)/2}. ${askAH?'Это и есть AH.':`HD = прямоугольник + правый кусочек = ${b} + ${(a-b)/2} = ${ans}.`}`};});
+G(3,()=>{const b=R(3,8),c=R(3,8);const a=b+c;const P2=a+b+2*c;const p=isoTrap(a,b,c*Math.sqrt(3)/2);p.H=[p.B[0],0];
+ const pic=geo({P:p,poly:[Q4],ang:[['A','D','B','60°']],tick:[['A','B',1],['C','D',1]],side:[['B','C',String(b)],['A','D',String(a),{gap:6}]],maxH:180});
+ const pic2=geo({P:p,poly:[Q4],seg:[['B','H',{dash:true}]],rt:[['H','D','B']],fill:[{pts:['A','B','H']}],ang:[['A','D','B','60°'],['B','A','H','30°',{r:30}]],side:[['A','H',N(c/2),{col:'var(--accent-ink)'}],['B','C',String(b)]],maxH:180});
+ return {type:'num',q:`Основания равнобедренной трапеции равны ${a} и ${b}, а острый угол равен 60°. Найди периметр трапеции.`,pic,ans:P2,
+ hint:'Опусти высоту из вершины тупого угла. Какие углы будут в маленьком прямоугольном треугольнике?',short:`Боковая сторона = ${a} − ${b} = ${c}; P = ${a} + ${b} + 2 · ${c} = ${P2}.`,
+ explain:`1) Опустим высоту BH. AH = (${a} − ${b}) : 2 = ${N(c/2)}.<br>2) В прямоугольном треугольнике ABH ∠A = 60°, значит ∠ABH = 30°.<br>3) Катет против угла 30° равен половине гипотенузы: AH = AB : 2, поэтому AB = 2 · ${N(c/2)} = ${c}.<br>4) P = ${a} + ${b} + ${c} + ${c} = <b>${P2}</b>.`,
+ explain2:`${fig(pic2)}Закрашенный треугольник — «половинка равностороннего»: углы 30°, 60°, 90°. В нём короткий катет (${N(c/2)}) ровно вдвое меньше гипотенузы. Поэтому боковая сторона AB = ${c}. Получается правило-шпаргалка: в такой трапеции с углом 60° боковая сторона = разность оснований (${a} − ${b} = ${c}).`};});
+G(3,()=>{const de=R(40,80);const t=trap(10,R(4,6),90,de);if(t.h<3||t.h>7)return null;const ans=180-de;
+ const pic=geo({P:t,poly:[Q4],rt:[['A','D','B'],['B','A','C']],ang:[['D','C','A',dg(de)],['C','B','D','?']],maxH:190});
+ return {type:'num',q:`ABCD — прямоугольная трапеция с основаниями AD и BC, ∠A = 90°, ∠D = ${de}°. Найди ∠C.`,pic,ans,
+ short:`∠C + ∠D = 180° → ∠C = ${ans}°.`,
+ explain:`У прямоугольной трапеции боковая сторона AB перпендикулярна основаниям: ∠A = ∠B = 90°.<br>∠C и ∠D прилежат к боковой стороне CD, их сумма 180°: ∠C = 180° − ${de}° = <b>${ans}°</b>.`,
+ explain2:`Проверим через сумму углов четырёхугольника: 90° + 90° + ∠C + ${de}° = 360°. ∠C = 360 − 90 − 90 − ${de} = ${ans}°. Тот же ответ!`};});
+
+/* ===== L4: rectangle, rhombus, square ===== */
+G(4,()=>{for(;;){const d=R(8,20),c=R(3,d-3);const ad=Math.sqrt(d*d-c*c);if(ad/c>3||ad<c*0.8)continue;const p=withO(para(ad,c,90));const ans=c+d;
+ const pic=geo({P:p,poly:[Q4],seg:[['A','C'],['B','D']],fill:[{pts:['A','B','O']}],rt:[['A','D','B']],side:[['A','B',String(c)]],dots:['O'],dir:{O:-90},maxH:190});
+ return {type:'num',q:`В прямоугольнике ABCD диагонали пересекаются в точке O. AC = ${d}, AB = ${c}. Найди периметр треугольника AOB.`,pic,ans,
+ hint:'Какие отрезки у диагоналей прямоугольника равны?',short:`AO = BO = ${d} : 2 = ${N(d/2)}; P = ${c} + ${N(d/2)} + ${N(d/2)} = ${ans}.`,
+ explain:`Диагонали прямоугольника <b>равны</b> и делятся пополам: AO = BO = AC : 2 = ${N(d/2)}.<br>P(AOB) = ${c} + ${N(d/2)} + ${N(d/2)} = <b>${ans}</b>.`,
+ explain2:`Хитрость: AO + BO — это половина одной диагонали плюс половина другой. Но диагонали одинаковые, так что вместе это ровно одна целая диагональ = ${d}. Поэтому P = AB + AC = ${c} + ${d} = ${ans}.`};}});
+G(4,()=>{const x=R(20,70);if(x===45)return null;const askAOD=Math.random()<0.5;const AD=8,AB=AD*Math.tan(x*D2R);if(AB<3||AB>11)return null;const p=withO(para(AD,AB,90));
+ const ans=askAOD?180-2*x:2*x;
+ const pic=geo({P:p,poly:[Q4],seg:[['A','C'],['B','D']],rt:[['A','D','B']],ang:[['A','O','D',dg(x),{r:34}],askAOD?['O','D','A','?',{r:22}]:['O','A','B','?',{r:22}]],dots:['O'],dir:{O:askAOD?90:-90},maxH:200});
+ return {type:'num',q:`В прямоугольнике ABCD диагонали пересекаются в точке O, ∠CAD = ${x}°. Найди ∠${askAOD?'AOD':'AOB'}.`,pic,ans,
+ hint:'Треугольник AOD — какой он? Вспомни, что диагонали прямоугольника равны.',
+ short:askAOD?`△AOD равнобедренный: ∠AOD = 180° − 2 · ${x}° = ${ans}°.`:`∠AOD = ${180-2*x}°, ∠AOB = 180° − ${180-2*x}° = ${ans}°.`,
+ explain:`1) Диагонали прямоугольника равны и делятся пополам, поэтому AO = OD: △AOD <b>равнобедренный</b>.<br>2) Углы при основании равны: ∠ODA = ∠OAD = ${x}°.<br>3) ∠AOD = 180° − ${x}° − ${x}° = ${180-2*x}°.${askAOD?`<br>Ответ: <b>${ans}°</b>.`:`<br>4) ∠AOB и ∠AOD — смежные (вместе развёрнутый угол): ∠AOB = 180° − ${180-2*x}° = <b>${ans}°</b>.`}`,
+ explain2:askAOD?`Представь равнобедренный треугольник AOD как «крышу домика»: два одинаковых ската по ${x}° у основания, а на вершину остаётся 180 − ${x} − ${x} = ${ans}°.`:`Короткий путь: ∠AOB — внешний угол треугольника AOD при вершине O. Внешний угол равен сумме двух других углов треугольника: ${x}° + ${x}° = ${ans}°.`};});
+G(4,()=>{const al=pick([40,50,60,70,80,100,110,120,130,140]);const ask=pick(['BAC','ABD','AOB']);const p=withO(para(6,6,al));
+ const ans=ask==='BAC'?al/2:ask==='ABD'?(180-al)/2:90;
+ const angs=[['A','D','B',dg(al),{r:20}]];if(ask==='BAC')angs.push(['A','B','C','?',{r:46}]);if(ask==='ABD')angs.push(['B','A','D','?',{r:26}]);if(ask==='AOB')angs.push(['O','A','B','?',{r:16}]);
+ const pic=geo({P:p,poly:[Q4],seg:[['A','C'],['B','D']],tick:[['A','B',1],['B','C',1],['C','D',1],['D','A',1]],ang:angs,dots:['O'],dir:{O:-90},maxH:200});
+ const nm={BAC:'∠BAC',ABD:'∠ABD',AOB:'∠AOB'}[ask];
+ return {type:'num',q:`ABCD — ромб, ∠A = ${al}°. Диагонали пересекаются в точке O. Найди ${nm}.`,pic,ans,
+ short:ask==='BAC'?`Диагональ делит угол ромба пополам: ${al}° : 2 = ${N(ans)}°.`:ask==='ABD'?`∠B = ${180-al}°, диагональ BD делит его пополам: ${N(ans)}°.`:'Диагонали ромба перпендикулярны: 90°.',
+ explain:ask==='BAC'?`Диагонали ромба <b>делят его углы пополам</b>. Диагональ AC делит ∠A: ∠BAC = ${al}° : 2 = <b>${N(ans)}°</b>.`:ask==='ABD'?`1) ∠B — соседний с ∠A: ∠B = 180° − ${al}° = ${180-al}°.<br>2) Диагональ BD делит ∠B пополам: ∠ABD = ${180-al}° : 2 = <b>${N(ans)}°</b>.`:`Диагонали ромба <b>перпендикулярны</b> — всегда, при любом угле. Поэтому ∠AOB = <b>90°</b>. Угол ${al}° здесь не нужен.`,
+ explain2:ask==='AOB'?`Проверим углами: в треугольнике AOB ∠OAB = ${al/2}° (половина ∠A), ∠OBA = ${(180-al)/2}° (половина ∠B). Тогда ∠AOB = 180 − ${al/2} − ${(180-al)/2} = 90°. Половинки соседних углов всегда дают 90°.`:`Треугольник ABD — равнобедренный (AB = AD, это стороны ромба). ${ask==='ABD'?`Углы при основании BD равны: (180° − ${al}°) : 2 = ${N(ans)}°.`:`Диагональ AC в нём — ось симметрии, она делит ∠A на две одинаковые половинки по ${N(ans)}°.`}`};});
+G(4,()=>{const x=pick([15,20,25,30,35,40,50,55,60,65,70,75]);const big=Math.max(2*x,180-2*x);const p=withO(para(6,6,2*x));
+ const pic=geo({P:p,poly:[Q4],seg:[['A','C']],lab:Q4,tick:[['A','B',1],['B','C',1],['C','D',1],['D','A',1]],ang:[['A','B','C',dg(x),{r:x<35?40:28}]],maxH:200});
+ return {type:'num',q:`Диагональ AC ромба ABCD образует со стороной AB угол ${x}°. Найди <b>больший</b> угол ромба.`,pic,ans:big,
+ hint:'Диагональ ромба делит его угол пополам.',short:`∠A = 2 · ${x}° = ${2*x}°, другой угол ${180-2*x}°; больший ${big}°.`,
+ explain:`1) Диагональ ромба делит его угол пополам, значит ∠A = 2 · ${x}° = ${2*x}°.<br>2) Соседний угол: 180° − ${2*x}° = ${180-2*x}°.<br>Больший угол ромба: <b>${big}°</b>.${2*x<90?`<div class="box err"><b>Ловушка</b>${2*x}° — это меньший (острый) угол. Спрашивали больший.</div>`:''}`,
+ explain2:`Треугольник ABC равнобедренный (AB = BC — стороны ромба), поэтому ∠BCA = ∠BAC = ${x}°. Тогда ∠B = 180° − ${x}° − ${x}° = ${180-2*x}°. А ∠A = 180° − ∠B = ${2*x}°. Из двух углов ${2*x}° и ${180-2*x}° больший — ${big}°.`};});
+G(4,()=>{const props=[['диагонали равны',['Прямоугольник','Квадрат','Равнобедренная трапеция']],['диагонали перпендикулярны',['Ромб','Квадрат']],['диагонали точкой пересечения делятся пополам',['Параллелограмм','Прямоугольник','Ромб','Квадрат']],['диагонали делят углы пополам',['Ромб','Квадрат']],['все углы равны',['Прямоугольник','Квадрат']]];
+ const pr=pick(props);const figs=['Параллелограмм','Прямоугольник','Ромб','Квадрат','Равнобедренная трапеция'];const why={'Параллелограмм':'обычный «скошенный» параллелограмм','Прямоугольник':'прямоугольник','Ромб':'ромб','Квадрат':'квадрат','Равнобедренная трапеция':'равнобедренная трапеция'};
+ return {type:'multi',q:`У каких фигур <b>всегда</b> ${pr[0]}? Выбери все.`,opts:figs,ans:figs.map((f,i)=>pr[1].includes(f)?i:-1).filter(i=>i>=0),
+ short:`${pr[0][0].toUpperCase()+pr[0].slice(1)}: ${pr[1].join(', ').toLowerCase()}.`,
+ explain:figs.map(f=>`• ${f} — ${pr[1].includes(f)?'<b>да</b>':'нет'}`).join('<br>')+`<div class="box tip"><b>Помни</b>Квадрат — это и ромб, и прямоугольник, поэтому у него все свойства обоих.</div>`,
+ explain2:`Вспомни «характер» каждой фигуры: прямоугольник — про <b>равные</b> диагонали и прямые углы; ромб — про <b>перпендикулярные</b> диагонали, которые делят углы пополам; любой параллелограмм — диагонали делятся пополам; равнобедренная трапеция — диагонали равны, но пополам не делятся. Ищем «${pr[0]}» — подходят: ${pr[1].join(', ').toLowerCase()}.`};});
+
+/* ===== L5: classification ===== */
+G(5,()=>{const pool=[['Любой квадрат является ромбом',1,'у квадрата все стороны равны — значит, он ромб'],['Любой ромб является квадратом',0,'ромб с углом 60° — не квадрат: углы не прямые'],['Любой квадрат является прямоугольником',1,'у квадрата все углы прямые'],['Любой прямоугольник является квадратом',0,'прямоугольник 3 × 5 — не квадрат'],['Любой прямоугольник является параллелограммом',1,'противоположные стороны прямоугольника параллельны'],['Любой параллелограмм является прямоугольником',0,'у «скошенного» параллелограмма углы не прямые'],['Любой ромб является параллелограммом',1,'ромб — это параллелограмм с равными сторонами'],['Любая трапеция является параллелограммом',0,'у трапеции параллельна только одна пара сторон'],['Существует ромб, который является прямоугольником',1,'это квадрат'],['Существует параллелограмм, который является трапецией',0,'у трапеции две другие стороны не параллельны, а у параллелограмма — параллельны']];
+ const s=pick(pool);
+ return {type:'choice',q:`Верно ли утверждение: «${s[0]}»?`,opts:['Верно','Неверно'],ans:s[1]?0:1,short:`${s[1]?'Верно':'Неверно'}: ${s[2]}.`,
+ explain:`${s[1]?'<b>Верно</b>':'<b>Неверно</b>'}: ${s[2]}.<br><br>Цепочка: квадрат → (это и ромб, и прямоугольник) → параллелограмм → четырёхугольник. Вверх по цепочке «является» — всегда верно, вниз — не всегда. Трапеция стоит отдельно.`,
+ explain2:`Посмотри на диаграмму: если область одной фигуры целиком внутри области другой — «любой … является …» верно.${fig(classify('nonum'))}${s[1]?'Здесь так и есть.':'Здесь нет: есть фигуры, которые попадают в одну область, но не в другую.'}`};});
+G(5,()=>{const items=[['Параллелограмм, у которого все углы прямые','Прямоугольник','это определение прямоугольника; квадратом он может и не быть (3 × 5)'],['Параллелограмм, у которого диагонали равны','Прямоугольник','это признак прямоугольника; стороны при этом могут быть разными'],['Параллелограмм, у которого все стороны равны','Ромб','это определение ромба; углы при этом могут быть не прямыми'],['Параллелограмм, у которого диагонали перпендикулярны','Ромб','это признак ромба'],['Прямоугольник, у которого соседние стороны равны','Квадрат','все углы прямые и все стороны равны'],['Ромб, у которого есть прямой угол','Квадрат','соседние углы ромба дают 180°, значит все углы прямые'],['Ромб, у которого диагонали равны','Квадрат','ромб с равными диагоналями — ещё и прямоугольник'],['Четырёхугольник, у которого ровно две стороны параллельны','Трапеция','это определение трапеции']];
+ const it=pick(items);const opts=['Прямоугольник','Ромб','Квадрат','Трапеция'];
+ return {type:'choice',q:`Как <b>точнее всего</b> назвать фигуру: «${it[0]}»?`,opts,ans:opts.indexOf(it[1]),short:`${it[1]}: ${it[2]}.`,
+ explain:`Правильный ответ — <b>${it[1].toLowerCase()}</b>: ${it[2]}.${it[1]==='Квадрат'?'<br>Квадрат — тоже прямоугольник и тоже ромб, но «квадрат» — самое точное название.':it[1]==='Трапеция'?'':'<br>Квадрат подходит не всегда, поэтому «квадрат» — неверно: нельзя утверждать больше, чем дано.'}`,
+ explain2:`Иди по «лесенке»: начни с того, что дано (${it[0].split(',')[0].toLowerCase()}), и добавь условие. Прямые углы → прямоугольник. Равные стороны → ромб. И то и другое → квадрат. ${it[1]==='Трапеция'?'А если параллельна только одна пара сторон — это вообще не параллелограмм, а трапеция.':`Здесь получается: ${it[1].toLowerCase()}.`}`};});
+G(5,()=>{const items=[['квадрат со стороной 5',6,'он и ромб, и прямоугольник — лежит в общей части кругов'],['ромб с углом 60°',5,'он ромб, но не прямоугольник (углы не прямые)'],['прямоугольник со сторонами 3 и 7',4,'он прямоугольник, но не ромб (стороны разные)'],['параллелограмм со сторонами 4 и 6 и углом 50°',3,'он параллелограмм, но не ромб и не прямоугольник'],['трапеция с основаниями 3 и 8',2,'у неё только одна пара параллельных сторон'],['четырёхугольник, у которого нет параллельных сторон',1,'он не параллелограмм и не трапеция']];
+ const it=pick(items);const opts=['1','2','3','4','5','6'];
+ return {type:'choice',q:`В какую область диаграммы попадёт <b>${it[0]}</b>?`,pic:classify(),opts,ans:it[1]-1,ansText:'область '+it[1],short:`Область ${it[1]}: ${it[2]}.`,
+ explain:`Правильно — область <b>${it[1]}</b>: ${it[2]}.<br>Расшифровка областей: 1 — «просто» четырёхугольники; 2 — трапеции; 3 — параллелограммы, которые не ромбы и не прямоугольники; 4 — прямоугольники, но не квадраты; 5 — ромбы, но не квадраты; 6 — квадраты.`,
+ explain2:`Задавай вопросы по порядку: 1) Есть параллельные стороны? Одна пара — трапеция (2), ни одной — область 1. 2) Две пары — параллелограмм. Углы прямые? Стороны равны? Нет-нет → 3; только углы → 4; только стороны → 5; и то и другое → 6. Для «${it[0]}» получаем ${it[1]}.`};});
+G(5,()=>{const kinds=[['параллелограммами',['Квадрат','Ромб','Прямоугольник','Параллелограмм']],['прямоугольниками',['Квадрат','Прямоугольник']],['ромбами',['Квадрат','Ромб']]];
+ const k=pick(kinds);const opts=['Квадрат','Ромб','Прямоугольник','Трапеция','Параллелограмм'];
+ return {type:'multi',q:`Какие фигуры <b>обязательно</b> являются ${k[0]}? Выбери все.`,opts,ans:opts.map((o,i)=>k[1].includes(o)?i:-1).filter(i=>i>=0),
+ short:`Обязательно являются ${k[0]}: ${k[1].join(', ').toLowerCase()}.`,
+ explain:opts.map(o=>`• ${o} — ${k[1].includes(o)?'<b>да</b>':'нет'}`).join('<br>')+`<br>${k[0]==='параллелограммами'?'Трапеция — нет: у неё параллельна только одна пара сторон.':k[0]==='прямоугольниками'?'Ромб — не обязательно (углы могут быть не прямыми), обычный параллелограмм — тоже.':'Прямоугольник — не обязательно (стороны могут быть разными), обычный параллелограмм — тоже.'}`,
+ explain2:`На диаграмме Эйлера «обязательно является X» = «область целиком внутри X».${fig(classify('nonum'))}Внутри области «${({'параллелограммами':'параллелограммы','прямоугольниками':'прямоугольники','ромбами':'ромбы'})[k[0]]}» целиком лежат: ${k[1].join(', ').toLowerCase()}.`};});
+
+/* ===== L6: symmetry, Thales ===== */
+G(6,()=>{const k=pick(Object.keys(AX));const n=AX[k];
+ return {type:'num',q:`Сколько осей симметрии у фигуры: <b>${AXname[k]}</b>?`,pic:(()=>{const s=symFig(k,200);return s.replace(/<line[^>]*stroke="var\(--accent\)"[^>]*\/>/g,'').replace(/<circle[^>]*\/>/g,'').replace(/<text[^>]*>O<\/text>/g,'');})(),ans:n,
+ hint:'Ось симметрии — линия сгиба: сложи фигуру по ней, и половинки совпадут.',short:`${AXname[k][0].toUpperCase()+AXname[k].slice(1)}: ${n} ${plural(n,'ось','оси','осей')}.`,
+ explain:`Ось симметрии — прямая, по которой фигуру можно сложить так, чтобы половинки совпали.${fig(symFig(k,200))}У фигуры «${AXname[k]}» — <b>${n}</b> ${plural(n,'ось','оси','осей')}.${k==='rect'?' Диагонали — не оси: при сгибе по диагонали углы не совпадут.':k==='rh'?' Оси ромба — его диагонали. Линии через середины сторон — не оси.':k==='par'?' У обычного параллелограмма нет ни одной оси, но есть центр симметрии.':''}`,
+ explain2:`Вырежи такую фигуру из бумаги и попробуй сложить: ${k==='sq'?'пополам по вертикали, по горизонтали и по двум диагоналям — 4 способа.':k==='rect'?'пополам вдоль и поперёк — получается. А по диагонали — уголки торчат. 2 способа.':k==='rh'?'по каждой диагонали — получается (стороны-то равные). А пополам «поперёк» — нет. 2 способа.':k==='trap'?'только по вертикальной линии через середины оснований. 1 способ.':k==='par'?'как ни складывай, половинки «перекошены». 0 способов. Но если повернуть на 180°, фигура совпадёт сама с собой.':k==='hex'?'по трём диагоналям через противоположные вершины и по трём линиям через середины противоположных сторон — 6 способов.':'по каждой высоте — из вершины в середину противоположной стороны. 3 способа.'}`};});
+G(6,()=>{const opts=shuffle(['Параллелограмм','Ромб','Прямоугольник','Квадрат','Равнобедренная трапеция','Равносторонний треугольник']);const good=['Параллелограмм','Ромб','Прямоугольник','Квадрат'];
+ return {type:'multi',q:'У каких фигур есть <b>центр симметрии</b>? Выбери все.',opts,ans:opts.map((o,i)=>good.includes(o)?i:-1).filter(i=>i>=0),
+ short:'Центр симметрии есть у любого параллелограмма — это точка пересечения диагоналей.',
+ explain:`Центр симметрии — точка, при повороте вокруг которой на 180° фигура совпадает сама с собой.<br>У <b>любого параллелограмма</b> это точка пересечения диагоналей: диагонали делятся в ней пополам, поэтому каждая вершина переходит в противоположную. Ромб, прямоугольник и квадрат — тоже параллелограммы.<br>У равнобедренной трапеции и у треугольника центра симметрии <b>нет</b>.`,
+ explain2:`Проверка «вверх ногами»: переверни фигуру (поверни на 180°). Параллелограмм выглядит так же. Трапеция — нет: большее основание окажется сверху. Треугольник — тоже нет: вершина окажется внизу.${fig(symFig('par',200))}`};});
+G(6,()=>{const k=pick([3,4]);const b=R(2,6);const ask=pick(['far','mid']);const ans=ask==='far'?k*b:(k-1)*b;const lbl=ask==='far'?`OB${k}`:`B₁B${k}`;
+ const pic=thalesFig(k,[['O','B1',String(b),{flip:false}]]);
+ return {type:'num',q:`На одной стороне угла O отложены равные отрезки ${range(1,k).map(i=>(i===1?'OA₁':`A${'₀₁₂₃₄'[i-1]}A${'₀₁₂₃₄'[i]}`)).join(' = ')}. Через точки A₁…A${'₀₁₂₃₄'[k]} проведены параллельные прямые до пересечения с другой стороной в точках B₁…B${'₀₁₂₃₄'[k]}. OB₁ = ${b} см. Найди ${lbl.replace(/(\d)/g,m=>'₀₁₂₃₄'[+m])}.`,pic,ans,
+ short:`По теореме Фалеса все отрезки на второй стороне по ${b} см: ${ask==='far'?k:k-1} · ${b} = ${ans} см.`,
+ explain:`По <b>теореме Фалеса</b>: параллельные прямые, отсекающие равные отрезки на одной стороне угла, отсекают равные отрезки и на другой.<br>Значит, OB₁ = B₁B₂ = … = ${b} см.<br>${ask==='far'?`OB${'₀₁₂₃₄'[k]}`:`B₁B${'₀₁₂₃₄'[k]}`} состоит из ${ask==='far'?k:k-1} таких отрезков: ${ask==='far'?k:k-1} · ${b} = <b>${ans} см</b>.`,
+ explain2:`Представь лестницу, приставленную к стене наискосок, и ступеньки, параллельные друг другу. Если вдоль пола расстояния между ступеньками равны, то и вдоль самой лестницы они равны. Здесь «ступенька» по второй стороне — ${b} см, а нам нужно ${ask==='far'?k:k-1} ${plural(ask==='far'?k:k-1,'ступенька','ступеньки','ступенек')}: ${ans} см.`};});
+
+/* ===== L7: mixed ===== */
+G(7,()=>{for(;;){const r=[R(1,7),R(1,7),R(1,7),R(1,7)];const k=r.reduce((a,b)=>a+b,0);if(360%k)continue;const u=360/k;const ang=r.map(x=>x*u);if(Math.max(...ang)>=180||new Set(r).size<3)continue;
+ const big=Math.max(...ang);return {type:'num',q:`Углы выпуклого четырёхугольника относятся как ${r.join(' : ')}. Найди <b>больший</b> угол.`,ans:big,
+ hint:'Сумма углов четырёхугольника — 360°. Сколько всего «частей»?',short:`${k} частей = 360°, часть = ${u}°, больший = ${Math.max(...r)} · ${u}° = ${big}°.`,
+ explain:`Пусть одна часть — x. Углы: ${r.map(v=>v===1?'x':v+'x').join(', ')}.<br>Сумма углов четырёхугольника 360°: ${k}x = 360 → x = ${u}°.<br>Больший угол: ${Math.max(...r)} · ${u}° = <b>${big}°</b>.<br>Все углы: ${ang.join('°, ')}°. Проверка: ${ang.join(' + ')} = 360 ✅.`,
+ explain2:`Это как разделить 360 конфет между четырьмя ребятами «по частям»: первый берёт ${r[0]}, второй ${r[1]}, третий ${r[2]}, четвёртый ${r[3]} части. Всего частей ${k}, одна часть = 360 : ${k} = ${u}. Больше всех у того, у кого ${Math.max(...r)} части: ${big}.`};}});
+G(7,()=>{const c=R(3,12);const d=2*c;const p=withO(para(c*Math.sqrt(3),c,90));
+ const pic=geo({P:p,poly:[Q4],seg:[['A','C'],['B','D']],rt:[['A','D','B']],ang:[['O','A','B','60°',{r:20}]],side:[['A','C',String(d),{t:0.72,flip:true}],['A','B','?']],dots:['O'],dir:{O:-90},maxH:190});
+ const pic2=geo({P:p,poly:[Q4],seg:[['A','C'],['B','D']],fill:[{pts:['A','B','O']}],tick:[['A','O',1],['B','O',1],['A','B',1]],side:[['A','O',String(c),{flip:true}],['A','B',String(c)]],dots:['O'],dir:{O:-90},maxH:190});
+ return {type:'num',q:`Диагональ прямоугольника равна ${d}, а угол между диагоналями 60°. Найди <b>меньшую</b> сторону прямоугольника.`,pic,ans:c,
+ hint:'Рассмотри треугольник, в котором есть этот угол 60° и меньшая сторона.',short:`△AOB равносторонний: AB = AO = ${d} : 2 = ${c}.`,
+ explain:`1) Диагонали прямоугольника равны и делятся пополам: AO = BO = ${d} : 2 = ${c}.<br>2) В треугольнике AOB: AO = BO и ∠AOB = 60°. Углы при основании: (180° − 60°) : 2 = 60°.<br>3) Все углы по 60° — треугольник <b>равносторонний</b>: AB = AO = <b>${c}</b>.<br>Меньшая сторона лежит напротив меньшего угла между диагоналями (60°, а не 120°).`,
+ explain2:`${fig(pic2)}Закрашенный треугольник — «кусочек пиццы», где две стороны — половинки диагоналей (по ${c}), а угол между ними 60°. Такой треугольник всегда равносторонний, поэтому третья сторона тоже ${c}.`};});
+G(7,()=>{for(;;){const b=R(3,9),a=R(b+2,3*b-2);const hh=b*b-((a-b)/2)**2;if(hh<4)continue;const p=isoTrap(a,b,Math.sqrt(hh));const P2=a+3*b;
+ const pic=geo({P:p,poly:[Q4],seg:[['A','C']],ang:[['A','B','C','',{n:1,r:30}],['A','C','D','',{n:1,r:26}]],tick:[['A','B',1],['C','D',1]],side:[['B','C',String(b)],['A','D',String(a),{gap:6}]],maxH:190});
+ const pic2=geo({P:p,poly:[Q4],seg:[['A','C']],fill:[{pts:['A','B','C']}],ang:[['A','B','C','',{n:1,r:30}],['A','C','D','',{n:1,r:26}],['C','B','A','',{n:1,r:26}]],tick:[['A','B',1],['B','C',1],['C','D',1]],side:[['B','C',String(b)],['A','B',String(b),{col:'var(--accent-ink)'}]],maxH:190});
+ return {type:'num',q:`В равнобедренной трапеции ABCD (AD ∥ BC) диагональ AC — биссектриса угла A. BC = ${b}, AD = ${a}. Найди периметр трапеции.`,pic,ans:P2,
+ hint:'Сравни углы BAC и BCA. Что это значит для треугольника ABC?',short:`△ABC равнобедренный: AB = BC = ${b}; P = ${a} + 3 · ${b} = ${P2}.`,
+ explain:`1) ∠BAC = ∠CAD (AC — биссектриса).<br>2) ∠BCA = ∠CAD (накрест лежащие при BC ∥ AD).<br>3) Значит, ∠BAC = ∠BCA и △ABC равнобедренный: AB = BC = ${b}.<br>4) Трапеция равнобедренная: CD = AB = ${b}.<br>5) P = ${a} + ${b} + ${b} + ${b} = <b>${P2}</b>.`,
+ explain2:`Это та же идея, что с биссектрисой в параллелограмме: биссектриса + параллельные прямые = равнобедренный треугольник.${fig(pic2)}В закрашенном треугольнике два угла равны, поэтому боковая сторона равна меньшему основанию. Получается, три стороны по ${b} и одна ${a}.`};}});
+G(7,()=>{const d=R(3,12);const obt=Math.random()<0.5;const p=withO(para(d,d,60));
+ const pic=geo({P:p,poly:[Q4],seg:[['B','D']],lab:Q4,tick:[['A','B',1],['B','C',1],['C','D',1],['D','A',1]],ang:obt?[['B','A','C','120°']]:[['A','D','B','60°']],side:[['B','D',String(d),{t:0.38,flip:true}]],maxH:190});
+ const pic2=geo({P:p,poly:[Q4],seg:[['B','D']],fill:[{pts:['A','B','D']}],ang:[['A','D','B','60°'],['D','B','A','60°'],['B','A','D','60°',{r:22}]],side:[['B','D',String(d),{t:0.38,flip:true}]],lab:Q4,maxH:190});
+ return {type:'num',q:`${obt?'Тупой':'Острый'} угол ромба равен ${obt?120:60}°, меньшая диагональ равна ${d}. Найди периметр ромба.`,pic,ans:4*d,
+ hint:'Меньшая диагональ режет ромб на два треугольника. Какие у них углы?',short:`Меньшая диагональ режет ромб на два равносторонних треугольника: сторона ${d}, P = ${4*d}.`,
+ explain:`1) ${obt?'Острый угол ромба: 180° − 120° = 60°.':'∠A = 60°.'}<br>2) Меньшая диагональ BD соединяет вершины тупых углов. △ABD: AB = AD (стороны ромба), ∠A = 60°, углы при основании (180° − 60°) : 2 = 60°.<br>3) △ABD равносторонний: AB = BD = ${d}.<br>4) P = 4 · ${d} = <b>${4*d}</b>.`,
+ explain2:`${fig(pic2)}Ромб с углом 60° — это два равносторонних треугольника, сложенных вместе. У них все стороны одинаковые, и общая сторона — как раз меньшая диагональ ${d}. Значит, и сторона ромба ${d}, а периметр 4 · ${d} = ${4*d}.`};});
+
+/* ===== L8: ★ ===== */
+G(8,()=>{const n=pick([5,6,7,8,10,12]);
+ return {type:'num',q:`Какое <b>наибольшее</b> число острых углов может быть у выпуклого ${NGg[n]}?`,ans:3,
+ hint:'Посмотри на внешние углы. Чему равна их сумма? Каким будет внешний угол при остром внутреннем?',short:'Не больше 3: у острого угла внешний больше 90°, а сумма внешних — 360°.',
+ explain:`1) В каждой вершине внешний угол = 180° − внутренний. Если внутренний угол острый (< 90°), то внешний <b>больше 90°</b>.<br>2) Сумма внешних углов выпуклого многоугольника (по одному в каждой вершине) равна 360°.<br>3) Если бы острых углов было 4, то четыре внешних угла дали бы больше 4 · 90° = 360° — а все внешние вместе только 360°. Противоречие.<br>4) Три острых угла возможны: возьми остроугольный треугольник и замени одну его сторону ломаной, чуть-чуть выгнутой наружу (с ${n-3} новыми ${plural(n-3,'вершиной','вершинами','вершинами')}). Углы треугольника останутся острыми, а новые углы будут почти по 180°.<br>Ответ: <b>3</b>.`,
+ explain2:`Посчитаем через сумму углов. У ${NGg[n]} она (${n} − 2) · 180° = ${(n-2)*180}°. Пусть острых углов k, каждый < 90°, а остальные ${n} − k углов < 180°. Тогда сумма < 90k + 180(${n} − k) = ${180*n} − 90k. Должно быть ${(n-2)*180} < ${180*n} − 90k, то есть 90k < 360, k < 4. Значит, k ≤ 3.`};},true);
+G(8,()=>{const a=R(3,9),al=R(55,75);const p=para(2*a,a,al);p.K=add(p.B,[a,0]);
+ const pic=geo({P:p,poly:[Q4],seg:[['A','K'],['D','K']],side:[['A','B',String(a)]],ang:[['A','B','K','',{n:1,r:24}],['A','K','D','',{n:1,r:28}],['D','A','K','',{n:2,r:22}],['D','K','C','',{n:2,r:26}]],maxH:180});
+ const pic2=geo({P:p,poly:[Q4],seg:[['A','K'],['D','K']],fill:[{pts:['A','B','K']},{pts:['K','C','D'],op:0.2}],tick:[['A','B',1],['B','K',1],['K','C',1],['C','D',1]],maxH:180});
+ return {type:'num',q:`Биссектрисы углов A и D параллелограмма ABCD пересекаются в точке K, лежащей на стороне BC. AB = ${a}. Найди периметр параллелограмма.`,pic,ans:6*a,
+ hint:'Каждая биссектриса отсекает свой равнобедренный треугольник.',short:`BK = AB = ${a}, KC = CD = ${a}; BC = ${2*a}; P = 2 · (${a} + ${2*a}) = ${6*a}.`,
+ explain:`1) Биссектриса AK отсекает равнобедренный △ABK: BK = AB = ${a}.<br>2) Биссектриса DK отсекает равнобедренный △DCK (∠CDK = ∠KDA = ∠CKD): KC = CD = ${a}.<br>3) BC = BK + KC = ${a} + ${a} = ${2*a}.<br>4) P = 2 · (${a} + ${2*a}) = <b>${6*a}</b>.`,
+ explain2:`${fig(pic2)}Отметь равные отрезки: AB = BK и KC = CD, а AB = CD (стороны параллелограмма). Значит, все четыре отмеченных отрезка равны ${a}. Длинная сторона BC = два таких отрезка, короткая — один. Получается, стороны ${a} и ${2*a}, а периметр ${6*a}. Интересно: длинная сторона всегда ровно вдвое длиннее короткой!`};},true);
+G(8,()=>{const a=R(3,7),b=2*a+R(2,6),al=R(55,72);const p=para(b,a,al);p.K=add(p.B,[a,0]);p.M=sub(p.C,[a,0]);const ans=b-2*a;
+ const pic=geo({P:p,poly:[Q4],seg:[['A','K'],['D','M']],side:[['A','B',String(a)],['A','D',String(b)],['K','M','?',{flip:true,gap:3}]],ang:[['A','B','K','',{n:1,r:24}],['A','K','D','',{n:1,r:28}],['D','A','M','',{n:2,r:22}],['D','M','C','',{n:2,r:26}]],maxH:190});
+ const pic2=geo({P:p,poly:[Q4],seg:[['A','K'],['D','M']],fill:[{pts:['A','B','K']},{pts:['M','C','D']}],side:[['B','K',String(a),{col:'var(--accent-ink)'}],['M','C',String(a),{col:'var(--accent-ink)'}],['A','D',String(b)]],tick:[['A','B',1],['B','K',1],['M','C',1],['C','D',1]],maxH:190});
+ return {type:'num',q:`В параллелограмме ABCD AB = ${a}, AD = ${b}. Биссектрисы углов A и D пересекают сторону BC в точках K и M. Найди KM.`,pic,ans,
+ hint:'Найди BK и CM. Помни: BC = AD.',short:`BK = ${a}, CM = ${a}; KM = ${b} − ${a} − ${a} = ${ans}.`,
+ explain:`1) Биссектриса угла A отсекает равнобедренный △ABK: BK = AB = ${a}.<br>2) Биссектриса угла D отсекает равнобедренный △DCM: CM = CD = AB = ${a}.<br>3) BC = AD = ${b}. Отрезки BK и CM «заходят» с двух концов и не перекрываются (${a} + ${a} < ${b}).<br>4) KM = BC − BK − CM = ${b} − ${a} − ${a} = <b>${ans}</b>.`,
+ explain2:`${fig(pic2)}Представь отрезок BC = ${b} как полку. Слева ставим коробку длиной ${a} (BK), справа такую же (MC). Между ними остаётся промежуток ${b} − ${2*a} = ${ans}. Это и есть KM.`};},true);
+G(8,()=>{for(;;){const d1=R(6,16),d2=R(6,16);const t=0.35+Math.random()*0.3,u=0.35+Math.random()*0.3,phi=R(55,80);
+ const A=[0,0],C=[d1,0],Pp=[d1*t,0],B=polar(Pp,d2*u,-(180-phi)),Dd=polar(Pp,d2*(1-u),phi);
+ // make B below? we want convex ABCD: A, B, C, D around
+ const pts={A,B:Dd,C,D:B};const K=mid(pts.A,pts.B),L=mid(pts.B,pts.C),M=mid(pts.C,pts.D),Nn=mid(pts.D,pts.A);
+ const Pv=len(sub(K,L))+len(sub(L,M))+len(sub(M,Nn))+len(sub(Nn,K));if(Math.abs(Pv-(d1+d2))>1e-6)continue;
+ const P={...pts,K,L,M,N:Nn};const ans=d1+d2;
+ const pic=geo({P,poly:[Q4,['K','L','M','N']],fill:[{pts:['K','L','M','N'],op:0.3}],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],tick:[['A','K',1],['K','B',1],['B','L',2],['L','C',2],['C','M',3],['M','D',3]],maxH:210});
+ const pic2=geo({P,poly:[Q4,['K','L','M','N']],seg:[['A','C',{dash:true,col:'var(--accent)'}]],fill:[{pts:['A','B','C'],op:0.2}],side:[['K','L',N(d1/2),{flip:true,col:'var(--accent-ink)'}],['A','C',String(d1),{t:0.3}]],lab:['A','B','C','D','K','L'],maxH:210});
+ return {type:'num',q:`Диагонали выпуклого четырёхугольника ABCD равны ${d1} и ${d2}. Середины его сторон K, L, M, N последовательно соединили. Найди периметр четырёхугольника KLMN.`,pic,ans,
+ hint:'Отрезок KL соединяет середины двух сторон треугольника ABC. Чему он равен?',short:`Каждая сторона KLMN — половина диагонали: 2 · ${N(d1/2)} + 2 · ${N(d2/2)} = ${ans}.`,
+ explain:`1) KL соединяет середины сторон AB и BC треугольника ABC — это его <b>средняя линия</b>: KL ∥ AC и KL = AC : 2 = ${N(d1/2)}.<br>2) Так же MN — средняя линия △ACD: MN = ${N(d1/2)}.<br>3) LM и NK — средние линии △BCD и △ABD: по BD : 2 = ${N(d2/2)}.<br>4) P = ${N(d1/2)} + ${N(d2/2)} + ${N(d1/2)} + ${N(d2/2)} = ${d1} + ${d2} = <b>${ans}</b>.<br>(Заодно KLMN — параллелограмм: это теорема Вариньона.)`,
+ explain2:`${fig(pic2)}Посмотри только на закрашенный треугольник ABC: K и L — середины его сторон, а KL — «срезанная верхушка», ровно вдвое короче основания AC. Две стороны KLMN «смотрят» на диагональ AC и вместе равны ей (${d1}), две другие — на BD (${d2}). Форма четырёхугольника неважна — ответ всегда сумма диагоналей.`};}},true);
+G(8,()=>{const a=2*R(4,10);const c=a/2;const p=isoTrap(a,c,c*Math.sqrt(3)/2);const P2=a+3*c;
+ const pic=geo({P:p,poly:[Q4],seg:[['A','C']],rt:[['C','A','D']],tick:[['A','B',1],['B','C',1],['C','D',1]],side:[['A','D',String(a),{gap:6}]],maxH:190});
+ const pic2=geo({P:p,poly:[Q4],seg:[['A','C']],rt:[['C','A','D']],fill:[{pts:['A','C','D']}],ang:[['A','B','C','',{n:1,r:34}],['A','C','D','',{n:1,r:30}],['C','B','A','',{n:1,r:26}],['D','C','A','60°',{r:22}]],maxH:190});
+ return {type:'num',q:`В равнобедренной трапеции ABCD меньшее основание BC равно боковой стороне, а диагональ AC перпендикулярна боковой стороне CD. Большее основание AD = ${a}. Найди периметр трапеции.`,pic,ans:P2,
+ hint:'Обозначь ∠CAD = x и выпиши все углы через x. Сначала найди углы трапеции.',short:`∠A = 60°, CD = AD : 2 = ${c}; P = ${a} + 3 · ${c} = ${P2}.`,
+ explain:`1) Пусть ∠CAD = x. ∠BCA = ∠CAD = x (накрест лежащие). AB = BC → △ABC равнобедренный → ∠BAC = ∠BCA = x. Значит, ∠A = 2x.<br>2) Трапеция равнобедренная: ∠D = ∠A = 2x.<br>3) В прямоугольном △ACD (∠ACD = 90°): x + 2x = 90° → x = 30°, ∠D = 60°.<br>4) В △ACD катет CD лежит против угла 30° → CD = AD : 2 = ${c}.<br>5) BC = AB = CD = ${c}. P = ${a} + ${c} + ${c} + ${c} = <b>${P2}</b>.`,
+ explain2:`${fig(pic2)}Три стороны трапеции равны, углы при большем основании — 60°. Такая трапеция — это половинка правильного шестиугольника! Её можно разрезать на три одинаковых равносторонних треугольника со стороной ${c}, а большее основание — две их стороны: ${c} + ${c} = ${a} ✅. Периметр: ${a} + 3 · ${c} = ${P2}.`};},true);
+G(8,()=>{const al=pick([50,56,60,64,70,76,80,110,116,120,124,130]);const a=5;const p=para(2*a,a,al);p.K=add(p.B,[a,0]);
+ const pic=geo({P:p,poly:[Q4],seg:[['A','K'],['K','D']],tick:[['B','K',1],['K','C',1]],ang:[['A','D','B',dg(al),{r:20}],['K','A','D','?',{r:18}]],maxH:180});
+ return {type:'num',q:`В параллелограмме ABCD ∠A = ${al}°. Биссектриса угла A пересекает сторону BC в её середине K. Найди ∠AKD.`,pic,ans:90,
+ hint:'Сначала докажи, что KC = CD. Что тогда можно сказать про отрезок DK?',short:'∠AKD = 90° — при любом ∠A.',
+ explain:`1) △ABK равнобедренный (биссектриса): BK = AB.<br>2) K — середина BC: KC = BK = AB = CD. Значит, △KCD тоже равнобедренный.<br>3) ∠BKA = ${al/2}° (равен ∠BAK = ${al}° : 2).<br>4) ∠C = ∠A = ${al}°, в △KCD: ∠CKD = (180° − ${al}°) : 2 = ${(180-al)/2}°.<br>5) Углы при точке K на прямой BC: ∠AKD = 180° − ${al/2}° − ${(180-al)/2}° = <b>90°</b>.`,
+ explain2:`Короче: из шага 2 DK — тоже биссектриса (угла D). А биссектрисы <b>соседних</b> углов параллелограмма всегда перпендикулярны: ∠KAD + ∠KDA = ${al}° : 2 + ${180-al}° : 2 = 90°, значит, в △AKD на ∠AKD остаётся 180° − 90° = 90°. Угол ${al}° на ответ не влияет — это ловушка.`};},true);
+G(8,()=>{const ask=pick(['A','B','C','D']);const a=R(3,7),c=R(2,6);const p=para(a+c,a,120);p.K=add(p.B,[a,0]);const ans=(ask==='A'||ask==='C')?120:60;
+ const pic=geo({P:p,poly:[Q4],seg:[['A','K']],tick:[['A','B',1],['A','K',1]],ang:[['A','K','D','',{n:1,r:24}],['A','B','K','',{n:1,r:20}],[ask,nbr[ask][0],nbr[ask][1],'?',{r:16}]],maxH:180});
+ return {type:'num',q:`В параллелограмме ABCD биссектриса угла A пересекает сторону BC в точке K, причём AK = AB. Найди ∠${ask}.`,pic,ans,
+ hint:'Сколько равных сторон у треугольника ABK?',short:`△ABK равносторонний → ∠B = 60°, ∠A = 120°; ∠${ask} = ${ans}°.`,
+ explain:`1) Биссектриса отсекает равнобедренный △ABK: BK = AB.<br>2) По условию AK = AB. Значит, AB = BK = AK — △ABK <b>равносторонний</b>, все его углы по 60°.<br>3) ∠B = ∠ABK = 60°, ∠BAK = 60° → ∠A = 2 · 60° = 120°.<br>4) ∠C = ∠A = 120°, ∠D = ∠B = 60°. Ответ: ∠${ask} = <b>${ans}°</b>.`,
+ explain2:`Проверим другим путём: ∠BAK — половина ∠A. В равностороннем треугольнике он 60°, значит ∠A = 120°. Соседний ∠B = 180° − 120° = 60° — и это совпадает с углом равностороннего треугольника ✅. Противоположные углы равны: A и C по 120°, B и D по 60°.`};},true);
+G(8,()=>{let m=R(2,8),n=R(2,9);if(m===n)n=m+R(1,4);const lo=Math.min(m,n),hi=Math.max(m,n);const b=2*lo,a=2*hi;
+ const x=(a-b)*R(25,75)/100,hh=a*R(35,50)/100;const p={A:[0,0],B:[x,hh],C:[x+b,hh],D:[a,0]};p.M=mid(p.A,p.B);p.N=mid(p.C,p.D);p.P=inter(p.A,p.C,p.M,p.N);
+ const pic=geo({P:p,poly:[Q4],seg:[['A','C'],['M','N',{dash:true,col:'var(--accent)',sw:2}]],side:[['M','P',String(lo),{col:'var(--accent-ink)'}],['P','N',String(hi),{col:'var(--accent-ink)'}]],dots:['P'],dir:{P:-60},tick:[['A','M',1],['M','B',1],['C','N',2],['N','D',2]],maxH:200});
+ return {type:'num',q:`Диагональ AC трапеции ABCD делит её среднюю линию MN на отрезки MP = ${lo} и PN = ${hi}. Найди большее основание AD.`,pic,ans:a,
+ hint:'MP — средняя линия какого треугольника? А PN?',short:`PN — средняя линия △ACD: AD = 2 · ${hi} = ${a}.`,
+ explain:`1) MN ∥ AD, M — середина AB. По теореме Фалеса P — середина AC.<br>2) MP соединяет середины сторон AB и AC треугольника ABC → это его средняя линия: BC = 2 · ${lo} = ${b}.<br>3) PN соединяет середины сторон AC и CD треугольника ACD → средняя линия: AD = 2 · ${hi} = <b>${a}</b>.<br>Проверка: средняя линия трапеции ${lo} + ${hi} = ${lo+hi} = (${a} + ${b}) : 2 ✅.`,
+ explain2:`Диагональ AC режет трапецию на два треугольника: верхний ABC (с основанием BC) и нижний ACD (с основанием AD). Средняя линия трапеции тоже режется на два куска — и каждый кусок равен половине «своего» основания. Более длинный кусок ${hi} — от большого основания: AD = ${hi} · 2 = ${a}.`};},true);
+
+window.TOPIC={id:'chetyrehugolniki',title:'Четырёхугольники',subtitle:'Геометрия · 8 класс',
+intro:`<p>Здесь всё про многоугольники и четырёхугольники: сумма углов, параллелограмм, трапеция, прямоугольник, ромб и квадрат — их свойства, признаки и кто кем является. Каждый раздел короткий, с картинкой. Читай по порядку, потом переходи к задачам.</p>`,
+theory,symbols,figs:{},
+levels:['Многоугольники и сумма углов','Параллелограмм: углы и стороны','Диагонали, биссектриса, признаки','Трапеция','Прямоугольник, ромб, квадрат','Кто кем является','Симметрия и теорема Фалеса','Смешанные задачи','★ Уровня олимпиад / Сириус'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

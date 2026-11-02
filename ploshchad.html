@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Площадь — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY='trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div></div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':return Math.abs(H.parseNum(val)-t.ans)<1e-9;
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  const fb=$('#fb');
+  if(ok){
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}</h3>${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      <div class="ans">Правильный ответ: ${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%).</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,num:N}=H;
+
+/* =====================================================================
+   Geometry SVG helper (math coords, y up → auto-fit into ≤ 320 px)
+   ===================================================================== */
+const D2R=Math.PI/180;
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(a,k)=>[a[0]*k,a[1]*k];
+const len=a=>Math.hypot(a[0],a[1]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
+const unit=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l];};
+const polar=(p,L,d)=>[p[0]+L*Math.cos(d*D2R),p[1]+L*Math.sin(d*D2R)];
+const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+const foot=(p,a,b)=>{const d=sub(b,a);const t=dot(sub(p,a),d)/dot(d,d);return lerp(a,b,t);};
+const inter=(a,b,c,d)=>{const r=sub(b,a),s=sub(d,c);const den=r[0]*s[1]-r[1]*s[0];const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den;return add(a,mul(r,t));};
+const angAt=(v,a,b)=>{const u=unit(sub(a,v)),w=unit(sub(b,v));return Math.acos(Math.max(-1,Math.min(1,dot(u,w))))/D2R;};
+const r1=x=>Math.round(x*10)/10;
+const tw=(t,fs)=>{t=String(t).replace(/<[^>]+>/g,'');let w=0;for(const ch of t)w+=/[°·,.\s₁₂₃₄]/.test(ch)?fs*0.36:/[0-9]/.test(ch)?fs*0.56:fs*0.64;return w;};
+const SUB={A1:'A₁',A2:'A₂',A3:'A₃',A4:'A₄',B1:'B₁',B2:'B₂',B3:'B₃',B4:'B₄'};
+
+function geo(o){
+  const P={};for(const k in o.P)if(Array.isArray(o.P[k]))P[k]=o.P[k];const W=o.W||300,MH=o.maxH||220,pad=o.pad==null?30:o.pad;
+  const all=Object.values(P).concat(o.extra||[]);
+  const x0=Math.min(...all.map(p=>p[0])),x1=Math.max(...all.map(p=>p[0]));
+  const y0=Math.min(...all.map(p=>p[1])),y1=Math.max(...all.map(p=>p[1]));
+  const bw=Math.max(x1-x0,1e-6),bh=Math.max(y1-y0,1e-6);
+  const s=Math.min((W-2*pad)/bw,(MH-2*pad)/bh);
+  const w=Math.round(bw*s+2*pad),h=Math.round(bh*s+2*pad);
+  const X=p=>[pad+(p[0]-x0)*s,pad+(y1-p[1])*s];
+  const Q={};for(const k in P)Q[k]=X(P[k]);
+  const g=k=>Array.isArray(k)?X(k):Q[k];
+  const polys=o.poly||[];
+  const cen=pts=>[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];
+  const allC=cen(Object.values(Q));
+  const pstr=pts=>pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ');
+  const T=(x,y,t,fs,col,wt,anc)=>`<text x="${r1(x)}" y="${r1(y+fs*0.36)}" text-anchor="${anc||'middle'}" font-size="${fs}" font-weight="${wt||600}" fill="${col||'var(--ink)'}">${t}</text>`;
+  const place=(p,d,t,fs,gap)=>{const ww=tw(t,fs),hh=fs*0.78;const k=gap+0.5*(ww*Math.abs(d[0])+hh*Math.abs(d[1]));return [p[0]+d[0]*k,p[1]+d[1]*k];};
+  let out=`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${o.aria||'Чертёж'}" style="font-family:system-ui,sans-serif">`;
+  const LS=[];const ln=(A,B,attr)=>{LS.push([A,B]);return `<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" ${attr}/>`;};
+  if(o.grid){const G=o.grid;for(let x=G[0];x<=G[2]+1e-9;x++){const a=X([x,G[1]]),b=X([x,G[3]]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}
+    for(let y=G[1];y<=G[3]+1e-9;y++){const a=X([G[0],y]),b=X([G[2],y]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}}
+  (o.fill||[]).forEach(f=>{const pts=(f.pts||f).map(g);out+=`<polygon points="${pstr(pts)}" fill="${f.col||'var(--hl)'}" fill-opacity="${f.op||0.35}" stroke="none"/>`;});
+  polys.forEach(pl=>{out+=`<polygon points="${pstr(pl.map(g))}" fill="none" stroke="var(--fig)" stroke-width="2.2" stroke-linejoin="round"/>`;pl.forEach((k,i)=>LS.push([g(k),g(pl[(i+1)%pl.length])]));});
+  (o.seg||[]).forEach(sg=>{const op=sg[2]||{};let A=g(sg[0]),B=g(sg[1]);if(op.ext){const e=mul(sub(B,A),op.ext);A=sub(A,e);B=add(B,e);}
+    out+=ln(A,B,`stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||1.7}" ${op.dash?'stroke-dasharray="6 4"':''} stroke-linecap="round"`);});
+  (o.tick||[]).forEach(tk=>{const A=g(tk[0]),B=g(tk[1]),n=tk[2]||1;const e=unit(sub(B,A)),nn=[-e[1],e[0]],m=mid(A,B);
+    for(let i=0;i<n;i++){const c=add(m,mul(e,(i-(n-1)/2)*5));out+=ln(add(c,mul(nn,6)),sub(c,mul(nn,6)),'stroke="var(--fig)" stroke-width="1.7"');}});
+  (o.rt||[]).forEach(rt=>{const Vv=g(rt[0]),u=unit(sub(g(rt[1]),Vv)),ww=unit(sub(g(rt[2]),Vv)),k=10;const a=add(Vv,mul(u,k)),b=add(a,mul(ww,k)),c=add(Vv,mul(ww,k));LS.push([a,b],[b,c]);
+    out+=`<path d="M${r1(a[0])},${r1(a[1])} L${r1(b[0])},${r1(b[1])} L${r1(c[0])},${r1(c[1])}" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`;});
+  const angInfo=(o.ang||[]).map(an=>{const op=an[4]||{};const Vv=g(an[0]),A=g(an[1]),B=g(an[2]);
+    const a1=Math.atan2(A[1]-Vv[1],A[0]-Vv[0]);let dl=Math.atan2(B[1]-Vv[1],B[0]-Vv[0])-a1;while(dl>Math.PI)dl-=2*Math.PI;while(dl<=-Math.PI)dl+=2*Math.PI;
+    const th=Math.abs(dl);const rr=op.r||(th<0.75?26:19);const n=op.n||1;
+    for(let i=0;i<n;i++){const r=rr+i*4;const p=[Vv[0]+r*Math.cos(a1),Vv[1]+r*Math.sin(a1)],q=[Vv[0]+r*Math.cos(a1+dl),Vv[1]+r*Math.sin(a1+dl)];
+      out+=`<path d="M${r1(p[0])},${r1(p[1])} A${r},${r} 0 0 ${dl>0?1:0} ${r1(q[0])},${r1(q[1])}" fill="none" stroke="${op.col||'var(--accent)'}" stroke-width="1.6"/>`;
+      let prev=p;for(let j=1;j<=6;j++){const an2=a1+dl*j/6;const c=[Vv[0]+r*Math.cos(an2),Vv[1]+r*Math.sin(an2)];LS.push([prev,c]);prev=c;}}
+    return {an,op,Vv,a1,dl,th,rr,n};});
+  (o.dots||[]).forEach(k=>{const p=g(k);out+=`<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="2.8" fill="var(--fig)"/>`;});
+  /* ---- collision-aware label placement ---- */
+  const boxes=[];
+  const segRect=(a,b,c,hw,hh)=>{const xmin=c[0]-hw,xmax=c[0]+hw,ymin=c[1]-hh,ymax=c[1]+hh;let t0=0,t1=1,hit=true;const dx=b[0]-a[0],dy=b[1]-a[1];const pp=[-dx,dx,-dy,dy],qq=[a[0]-xmin,xmax-a[0],a[1]-ymin,ymax-a[1]];
+    for(let i=0;i<4;i++){if(Math.abs(pp[i])<1e-12){if(qq[i]<0){hit=false;break;}}else{const r=qq[i]/pp[i];if(pp[i]<0){if(r>t1){hit=false;break;}if(r>t0)t0=r;}else{if(r<t0){hit=false;break;}if(r<t1)t1=r;}}}
+    if(hit)return -1;const pr=p=>Math.hypot(Math.max(xmin-p[0],0,p[0]-xmax),Math.max(ymin-p[1],0,p[1]-ymax));
+    const ps=p=>{const d=sub(b,a);const t=Math.max(0,Math.min(1,dot(sub(p,a),d)/Math.max(dot(d,d),1e-9)));return len(sub(p,lerp(a,b,t)));};
+    return Math.min(pr(a),pr(b),ps([xmin,ymin]),ps([xmax,ymin]),ps([xmin,ymax]),ps([xmax,ymax]));};
+  const clr=(c,hw,hh)=>{let m=Math.min(c[0]-hw,w-c[0]-hw,c[1]-hh,h-c[1]-hh)+1;for(const L of LS)m=Math.min(m,segRect(L[0],L[1],c,hw,hh));for(const bx of boxes)m=Math.min(m,Math.max(Math.abs(c[0]-bx[0])-hw-bx[2],Math.abs(c[1]-bx[1])-hh-bx[3]));return m;};
+  const choose=(cands,t,fs,thr)=>{const hw=tw(t,fs)/2+1,hh=fs*0.4+1;let best=cands[0],bs=-1e9;for(const c of cands){const v=clr(c,hw,hh);if(v>=thr){best=c;break;}if(v>bs){bs=v;best=c;}}boxes.push([best[0],best[1],hw,hh]);return best;};
+  let labels='';
+  const vdir=k=>{
+    if(o.dir&&o.dir[k]!=null){const d=o.dir[k];return [Math.cos(d*D2R),-Math.sin(d*D2R)];}
+    const p=Q[k];
+    for(const pl of polys){const i=pl.indexOf(k);if(i<0)continue;const n=pl.length;const u1=unit(sub(g(pl[(i-1+n)%n]),p)),u2=unit(sub(g(pl[(i+1)%n]),p));let d=add(u1,u2);
+      if(len(d)>0.15)return mul(unit(d),-1);const c=cen(pl.map(g));d=[-u1[1],u1[0]];if(dot(d,sub(c,p))>0)d=mul(d,-1);return d;}
+    for(const pl of polys){for(let i=0;i<pl.length;i++){const A=g(pl[i]),B=g(pl[(i+1)%pl.length]);const f=foot(p,A,B);const t=dot(sub(p,A),sub(B,A))/dot(sub(B,A),sub(B,A));
+      if(len(sub(f,p))<1&&t>0.02&&t<0.98){const e=unit(sub(B,A));let d=[-e[1],e[0]];if(dot(d,sub(cen(pl.map(g)),p))>0)d=mul(d,-1);return d;}}}
+    let d=sub(p,allC);if(len(d)<4)d=[0.7,0.7];return unit(d);};
+  (o.txt||[]).forEach(tx=>{const arr=Array.isArray(tx[0]);const p=arr?X(tx[0]):X([tx[0],tx[1]]);const t=arr?tx[1]:tx[2];const op=(arr?tx[2]:tx[3])||{};const fs=op.fs||14;
+    boxes.push([p[0],p[1],tw(t,fs)/2+1,fs*0.4+1]);labels+=T(p[0],p[1],t,fs,op.col||'var(--ink)',op.wt||600,op.anc);});
+  const labs=o.lab||Object.keys(P);
+  labs.forEach(k=>{const t=(o.names&&o.names[k])||SUB[k]||k;const d0=vdir(k);const th0=Math.atan2(d0[1],d0[0]);const cands=[];
+    for(const gp of [5,9])for(let j=0;j<=12;j++)for(const sg of (j?[1,-1]:[1])){const th=th0+sg*j*15*D2R;cands.push(place(Q[k],[Math.cos(th),Math.sin(th)],t,15,gp));}
+    const p=choose(cands,t,15,2.5);labels+=T(p[0],p[1],t,15,'var(--accent-ink)',700);});
+  (o.side||[]).forEach(sd=>{const op=sd[3]||{};const A=g(sd[0]),B=g(sd[1]);const e=unit(sub(B,A));let n=[-e[1],e[0]];const t0=op.t==null?0.5:op.t;
+    let c=allC;for(const pl of polys){const i=pl.indexOf(sd[0]),j=pl.indexOf(sd[1]);if(i>=0&&j>=0&&(Math.abs(i-j)===1||Math.abs(i-j)===pl.length-1)){c=cen(pl.map(g));break;}}
+    if(dot(n,sub(c,lerp(A,B,t0)))>0)n=mul(n,-1);if(op.flip)n=mul(n,-1);const fs=op.fs||14;const gp=op.gap==null?4:op.gap;const cands=[];
+    for(const nn of [n,mul(n,-1)])for(const gg of [gp,gp+5])for(const dt of [0,0.1,-0.1,0.2,-0.2,0.3,-0.3])cands.push(place(lerp(A,B,Math.max(0.08,Math.min(0.92,t0+dt))),nn,sd[2],fs,gg));
+    const p=choose(cands,sd[2],fs,2);labels+=T(p[0],p[1],sd[2],fs,op.col||'var(--ink)',600);});
+  angInfo.forEach(({an,op,Vv,a1,dl,th,rr,n})=>{if(!an[3])return;const fs=op.fs||14;const rad=Math.max(tw(an[3],fs),fs)/2+2;const d=Math.max(rr+(n-1)*4+rad+3,(rad+3)/Math.sin(th/2));const cands=[];
+    for(const dd of [0,7,14,22,32])for(const f of [0,0.3,-0.3,0.6,-0.6]){const am=a1+dl/2+f*dl/2;cands.push([Vv[0]+(d+dd)*Math.cos(am),Vv[1]+(d+dd)*Math.sin(am)]);}
+    const p=choose(cands,an[3],fs,1.5);labels+=T(p[0],p[1],an[3],fs,'var(--accent-ink)',700);});
+  return out+labels+'</svg>';
+}
+
+/* ---------- shape builders ---------- */
+function para(a,b,al){const A=[0,0],D=[a,0],B=polar(A,b,al),C=add(B,D);return {A,B,C,D};}
+function paraH(a,h,sx){return {A:[0,0],B:[sx,h],C:[sx+a,h],D:[a,0]};}
+function isoTrap(a,b,h){return {A:[0,0],B:[(a-b)/2,h],C:[(a+b)/2,h],D:[a,0]};}
+const Q4=['A','B','C','D'];
+const fig=s=>`<div class="fig">${s}</div>`;
+const NN=x=>N(x).replace(/^(−?)(\d+)/,(m,sg,d)=>sg+(d.length>4?d.replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0'):d));
+const sq=x=>x*x;
+const cm2=x=>N(x)+' см²';
+/* rectangle */
+function rectFig(a,b,la,lb,o){o=o||{};return geo(Object.assign({P:{A:[0,0],B:[0,b],C:[a,b],D:[a,0]},poly:[Q4],fill:[{pts:Q4,op:0.22}],side:[['A','D',la],['A','B',lb]],lab:o.lab||[],maxH:o.maxH||170,W:o.W||300,pad:44},o.extra||{}));}
+/* grid with a filled polygon */
+function gridFig(pts,G,o){o=o||{};const P={};pts.forEach((p,i)=>P['p'+i]=p);const keys=Object.keys(P);
+  return geo(Object.assign({P,extra:[[G[0],G[1]],[G[2],G[3]]],grid:G,poly:[keys],fill:[{pts:keys,op:0.4}],lab:[],pad:o.pad||10,W:o.W||300,maxH:o.maxH||220},o.extra||{}));}
+/* L-shape (top-right corner cut) */
+function lShape(W,Hh,w2,h2){return {A:[0,0],B:[0,Hh],C:[W-w2,Hh],E:[W-w2,Hh-h2],F:[W,Hh-h2],D:[W,0]};}
+/* triangle: base AC on x-axis, apex B=(x,h) */
+function tri(a,x,h){return {A:[0,0],B:[x,h],C:[a,0],H:[x,0]};}
+
+/* ---------- theory figures ---------- */
+const figUnit=gridFig([[0,0],[0,3],[5,3],[5,0]],[0,0,5,3],{W:220,maxH:150,extra:{txt:[[[0.5,0.5],'1',{fs:12,col:'var(--accent-ink)'}]]}});
+const figDm=geo({P:{A:[0,0],B:[0,10],C:[10,10],D:[10,0]},extra:[[0,0],[10,10]],grid:[0,0,10,10],poly:[Q4],fill:[{pts:[[0,9],[0,10],[1,10],[1,9]],op:0.9}],side:[['A','D','1 дм = 10 см'],['A','B','10 см']],lab:[],W:270,maxH:250,pad:46});
+const figSplit=(()=>{const L=lShape(6,5,3,2);return geo({P:L,poly:[['A','B','C','E','F','D']],fill:[{pts:['A','B','C',[3,0]],op:0.35},{pts:[[3,0],'E','F','D'],op:0.15}],seg:[[[3,0],'E',{dash:true}]],side:[['A','D','6'],['A','B','5'],['C','E','2'],['E','F','3']],txt:[[[1.5,2.5],'5·3 = 15',{fs:13}],[[4.5,1.5],'3·3 = 9',{fs:13}]],lab:[],maxH:190,W:260});})();
+const figSplit2=(()=>{const L=lShape(6,5,3,2);return geo({P:L,extra:[[6,5]],poly:[['A','B','C','E','F','D']],fill:[{pts:['A','B','C','E','F','D'],op:0.3}],seg:[['C',[6,5],{dash:true}],[[6,5],'F',{dash:true}]],side:[['A','D','6'],['A','B','5'],['C','E','2'],['E','F','3',{flip:true}]],txt:[[[4.5,4.1],'вырез 3·2',{fs:11,col:'var(--muted)'}]],lab:[],maxH:190,W:260});})();
+const pcut=paraH(7,4,2.4);pcut.H=[2.4,0];pcut.K=[9.4,0];
+const figCut1=geo({P:pcut,poly:[Q4],seg:[['B','H',{dash:true}]],rt:[['H','D','B']],fill:[{pts:['A','B','H'],op:0.55}],side:[['A','D','a'],['B','H','h',{flip:true}]],lab:['A','B','C','D','H'],maxH:150,W:260});
+const figCut2=geo({P:{H:[2.4,0],B:[2.4,4],C:[9.4,4],K:[9.4,0],D:[7,0]},extra:[[0,0]],poly:[['H','B','C','K']],seg:[['C','D',{dash:true,col:'var(--muted)'}]],rt:[['H','K','B']],fill:[{pts:['D','C','K'],op:0.55}],side:[['H','K','a'],['H','B','h']],lab:['H','B','C','K'],maxH:150,W:260});
+const ptri=para(7,4.5,62);ptri.O=[0,0];
+const figHalf=geo({P:{A:ptri.A,B:ptri.B,C:ptri.C,D:ptri.D},poly:[Q4],seg:[['B','D']],fill:[{pts:['A','B','D'],op:0.45}],side:[['A','D','a']],lab:Q4,maxH:160,W:260});
+const tObt=tri(6,-2.2,3.5);
+const figObt=geo({P:tObt,poly:[['A','B','C']],seg:[['B','H',{dash:true}],['H','A',{dash:true,col:'var(--muted)'}]],rt:[['H','C','B']],side:[['A','C','a'],['B','H','h',{flip:true}]],maxH:160,W:260});
+const tAc=tri(7,2.6,4);
+const figAcute=geo({P:tAc,poly:[['A','B','C']],seg:[['B','H',{dash:true}]],rt:[['H','C','B']],fill:[{pts:['A','B','C'],op:0.25}],side:[['A','C','a'],['B','H','h',{flip:true}]],maxH:160,W:240});
+const rh={A:[0,3],B:[4,6],C:[8,3],D:[4,0],O:[4,3]};
+const figRh=geo({P:Object.assign({},rh,{E:[0,0],F:[0,6],G:[8,6],K:[8,0]}),poly:[['E','F','G','K'],['A','B','C','D']],fill:[{pts:['A','B','C','D'],op:0.45}],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],side:[['E','K','d₁',{t:0.25}],['E','F','d₂',{t:0.22}]],lab:['A','B','C','D'],dir:{A:180,C:0},maxH:210,W:280});
+const tz=isoTrap(9,4,4);tz.H=[2.5,0];
+const figTrap=geo({P:tz,poly:[Q4],seg:[['B','H',{dash:true}],['B','D',{dash:true,col:'var(--accent)'}]],rt:[['H','D','B']],fill:[{pts:['A','B','D'],op:0.35},{pts:['B','C','D'],op:0.15}],side:[['A','D','a'],['B','C','b'],['B','H','h',{flip:true}]],maxH:170,W:260});
+const figScale=(()=>{const P={A:[0,0],B:[0,1],C:[1,1],D:[1,0],E:[2.6,0],F:[2.6,2],G:[4.6,2],K:[4.6,0]};return geo({P,poly:[Q4,['E','F','G','K']],fill:[{pts:Q4,op:0.5},{pts:['E',[2.6,1],[3.6,1],[3.6,0]],op:0.5}],seg:[[[2.6,1],[4.6,1],{dash:true}],[[3.6,0],[3.6,2],{dash:true}]],side:[['A','D','1'],['E','K','2']],lab:[],maxH:130,W:240});})();
+const thMed={A:[1.5,4.5],B:[0,0],C:[8,0],M:[4,0]};
+const figMed=geo({P:thMed,poly:[['A','B','C']],seg:[['A','M']],fill:[{pts:['A','B','M'],op:0.45},{pts:['A','M','C'],op:0.15}],tick:[['B','M',1],['M','C',1]],maxH:160,W:260});
+const pyth=(()=>{const P={C:[0,0],A:[0,3],B:[4,0]};const sqs=[[[0,0],[0,3],[-3,3],[-3,0]],[[0,0],[4,0],[4,-4],[0,-4]],[[0,3],[4,0],[7,4],[3,7]]];
+  return geo({P,extra:[[-3,-4],[7,7]],poly:[['C','A','B'],...sqs.map((q,i)=>{const ks=q.map((_,j)=>'q'+i+j);q.forEach((p,j)=>P['q'+i+j]=p);return ks;})],fill:[{pts:sqs[0],op:0.3},{pts:sqs[1],op:0.3},{pts:sqs[2],op:0.5}],rt:[['C','A','B']],txt:[[[-1.5,1.5],'3² = 9',{fs:12}],[[2,-2],'4² = 16',{fs:13}],[[3.5,3.5],'5² = 25',{fs:14}]],lab:['A','B','C'],dir:{A:150,B:-30,C:-135},maxH:280,W:280,pad:22});})();
+
+/* =====================================================================
+   THEORY
+   ===================================================================== */
+const theory=[
+{title:'Что такое площадь',lvl:0,html:`
+<p><b>Площадь</b> — это «сколько места занимает фигура на плоскости». Её измеряют <b>единичными квадратами</b>: сколько квадратиков со стороной 1 поместится внутри фигуры.</p>
+<div class="fig">${figUnit}</div>
+<p class="small" style="text-align:center">Прямоугольник 5 × 3 вмещает 15 квадратиков со стороной 1 см — его площадь 15 см².</p>
+<div class="box rule"><b>Свойства площади</b>
+1) <b>Равные фигуры имеют равные площади.</b> Если одна фигура накладывается на другую и совпадает, площади одинаковые.<br>
+2) <b>Площадь составной фигуры равна сумме площадей частей.</b> Разрезали фигуру на куски — сложили площади кусков.<br>
+3) Площадь квадрата со стороной 1 равна 1.</div>
+<div class="box tip"><b>Как понимать</b>Площадь — это «краска»: сколько краски уйдёт, чтобы закрасить фигуру. Если фигуру разрезать и переложить куски по-другому, краски понадобится столько же — площадь не меняется.</div>
+<p>Обозначают площадь буквой <b>S</b>.</p>`},
+{title:'Единицы площади — главная ловушка',lvl:0,html:`
+<p>Единицы площади — «квадратные»: см², дм², м², км². Квадрат со стороной 1 см имеет площадь 1 см².</p>
+<div class="fig">${figDm}</div>
+<p class="small" style="text-align:center">1 дм² — квадрат 10 см × 10 см. В нём 10 рядов по 10 квадратиков = <b>100 см²</b>.</p>
+<div class="box err"><b>Ловушка</b>1 м = 100 см, но 1 м² — это <b>не</b> 100 см²! Квадрат 1 м × 1 м — это 100 рядов по 100 квадратиков: <span class="m">1 м² = 100 · 100 = 10 000 см²</span>.</div>
+<div class="box rule"><b>Таблица</b>
+1 см² = 100 мм² (10 · 10)<br>
+1 дм² = 100 см² (10 · 10)<br>
+1 м² = 100 дм² = <b>10 000 см²</b> (100 · 100)<br>
+1 а (сотка) = 100 м² (участок 10 м × 10 м)<br>
+1 га (гектар) = 10 000 м² (участок 100 м × 100 м)<br>
+1 км² = 100 га = 1 000 000 м²</div>
+<div class="box tip"><b>Как запомнить</b>Для длины множитель «в один шаг» (1 м = 100 см). Для площади его надо взять <b>два раза</b> — по длине и по ширине: 100 · 100.</div>
+<div class="box ex"><b>Пример</b>3,5 м² = 3,5 · 10 000 = 35 000 см². Обратно: 35 000 см² = 35 000 : 10 000 = 3,5 м².</div>`},
+{title:'Прямоугольник и квадрат',lvl:1,html:`
+<div class="box rule"><b>Формулы</b>Прямоугольник: <span class="m">S = a · b</span> (длина на ширину).<br>Квадрат: <span class="m">S = a · a = a²</span>.</div>
+<div class="fig">${rectFig(5,3,'a = 5','b = 3')}</div>
+<p>Почему так: в прямоугольнике 5 × 3 помещается 3 ряда по 5 квадратиков = 15.</p>
+<div class="box err"><b>Не путай площадь и периметр</b>Периметр — длина «забора» вокруг: <span class="m">P = 2(a + b)</span>, в сантиметрах. Площадь — «сколько места внутри», в квадратных сантиметрах. Для 5 × 3: P = 16 см, S = 15 см².</div>
+<div class="box ex"><b>Обратная задача</b>S = 24, одна сторона 6. Другая: 24 : 6 = 4.<br>Квадрат с периметром 20: сторона 20 : 4 = 5, площадь 5² = 25.</div>
+<div class="box err"><b>Единицы</b>Перед умножением переведи стороны в <b>одинаковые</b> единицы: 2 м и 30 см → 200 см и 30 см → 6000 см².</div>`},
+{title:'Составные фигуры',lvl:2,html:`
+<p>Сложную фигуру можно посчитать двумя способами.</p>
+<div class="figrow">
+<div class="fig">${figSplit}<div class="cap"><b>Разрезать</b> на прямоугольники и сложить: 15 + 9 = 24</div></div>
+<div class="fig">${figSplit2}<div class="cap"><b>Достроить</b> до большого и вычесть: 6 · 5 − 3 · 2 = 24</div></div></div>
+<div class="box tip"><b>Совет</b>Оба способа дают одно и то же. Выбирай тот, где меньше считать. Неизвестные стороны находи по разности: если вся сторона 6, а кусок 3, то другой кусок 3.</div>
+<div class="box ex"><b>Рамка</b>Рамка: снаружи 10 × 8, внутри дырка 6 × 4. Площадь рамки: 80 − 24 = 56.</div>`},
+{title:'Площадь параллелограмма',lvl:3,html:`
+<div class="box rule"><b>Формула</b><span class="m">S = a · h</span> — сторона на высоту, проведённую <b>к этой стороне</b>.</div>
+<p><b>Высота</b> — перпендикуляр из вершины к противоположной стороне (или её продолжению). Это «настоящая высота» фигуры, а не наклонная сторона.</p>
+<p><b>Почему так:</b> отрежем треугольник слева и перенесём его направо — получится прямоугольник со сторонами a и h. Площадь не изменилась.</p>
+<div class="figrow">
+<div class="fig">${figCut1}<div class="cap">отрезаем треугольник ABH…</div></div>
+<div class="fig">${figCut2}<div class="cap">…и переносим вправо: прямоугольник a × h</div></div></div>
+<div class="box err"><b>Частая ошибка</b>Умножать сторону на соседнюю <b>наклонную</b> сторону: S ≠ a · b. Наклонная сторона длиннее высоты, поэтому так получится слишком много.</div>
+<div class="box tip"><b>Две высоты</b>У параллелограмма две разные высоты — к каждой паре сторон. Площадь одна: <span class="m">a · h<sub>a</sub> = b · h<sub>b</sub></span>. Отсюда можно найти одну высоту через другую.</div>
+<div class="box ex"><b>Угол 30°</b>Если угол параллелограмма 30°, то высота — катет против угла 30° — равна половине боковой стороны. Стороны 8 и 6, угол 30°: h = 3, S = 8 · 3 = 24.</div>`},
+{title:'Площадь треугольника',lvl:4,html:`
+<div class="box rule"><b>Формула</b><span class="m">S = ½ · a · h</span> — половина произведения стороны на высоту, проведённую к ней.</div>
+<p><b>Почему половина:</b> диагональ делит параллелограмм на два <b>равных</b> треугольника. Значит, треугольник — это половина параллелограмма с той же стороной и высотой.</p>
+<div class="figrow">
+<div class="fig">${figHalf}<div class="cap">треугольник = половина параллелограмма</div></div>
+<div class="fig">${figAcute}<div class="cap">S = ½ · a · h</div></div></div>
+<div class="box rule"><b>Прямоугольный треугольник</b>Катеты — это сторона и высота к ней одновременно: <span class="m">S = ½ · a · b</span> (половина прямоугольника a × b).</div>
+<p>У <b>тупоугольного</b> треугольника высота может упасть <b>за</b> треугольник — на продолжение стороны. Формула та же.</p>
+<div class="fig">${figObt}</div>
+<div class="box err"><b>Частая ошибка</b>Забыть ½. Если получилось «как у прямоугольника» — проверь, не потерял ли половинку.</div>`},
+{title:'Ромб и трапеция',lvl:5,html:`
+<h3>Ромб</h3>
+<div class="box rule"><b>Формула</b><span class="m">S = ½ · d₁ · d₂</span> — половина произведения диагоналей.</div>
+<div class="fig">${figRh}</div>
+<p>Почему: ромб вписан в прямоугольник d₁ × d₂ и занимает ровно его половину (четыре «уголка» снаружи равны четырём треугольникам внутри). Для ромба подходит и формула параллелограмма S = a · h.</p>
+<p>Квадрат — тоже ромб, поэтому площадь квадрата через диагональ: <span class="m">S = d² : 2</span>.</p>
+<h3>Трапеция</h3>
+<div class="box rule"><b>Формула</b><span class="m">S = ½ · (a + b) · h</span> — полусумма оснований на высоту.</div>
+<div class="fig">${figTrap}</div>
+<p>Почему: диагональ BD делит трапецию на два треугольника с одной и той же высотой h: ½ · a · h + ½ · b · h = ½ · (a + b) · h.</p>
+<div class="box tip"><b>Через среднюю линию</b>(a + b) : 2 — это средняя линия m. Поэтому <span class="m">S = m · h</span>.</div>`},
+{title:'Как меняется площадь. Отношения площадей',lvl:6,html:`
+<h3>Увеличили стороны — площадь растёт быстрее</h3>
+<div class="fig">${figScale}</div>
+<p>Сторону квадрата увеличили в 2 раза — в большой квадрат помещается <b>4</b> маленьких. Площадь выросла в 2 · 2 = 4 раза.</p>
+<div class="box rule"><b>Правило</b>Если все размеры фигуры увеличить в k раз, площадь увеличится в <b>k²</b> раз. Если у прямоугольника одну сторону умножить на p, а другую на q, площадь умножится на p · q.</div>
+<h3>Треугольники с общей высотой</h3>
+<p>Если у двух треугольников <b>одна и та же высота</b>, их площади относятся как основания.</p>
+<div class="fig">${figMed}</div>
+<div class="box rule"><b>Медиана делит треугольник на два равновеликих</b>Медиана AM: BM = MC, высота из A общая → S(ABM) = S(AMC) = половина S(ABC).</div>
+<div class="box ex"><b>Пример</b>Точка D на стороне BC, BD = 2, DC = 6. Тогда S(ADC) в 3 раза больше S(ABD): основание в 3 раза длиннее, высота та же.</div>`},
+{title:'Теорема Пифагора',lvl:7,html:`
+<div class="box rule"><b>Теорема Пифагора</b>В прямоугольном треугольнике квадрат гипотенузы равен сумме квадратов катетов: <span class="m">c² = a² + b²</span>.</div>
+<p><b>Гипотенуза</b> c — самая длинная сторона, лежит напротив прямого угла. <b>Катеты</b> a, b — стороны прямого угла.</p>
+<div class="fig">${pyth}</div>
+<p class="small" style="text-align:center">Это и есть «про площади»: квадраты на катетах (9 + 16) вместе равны квадрату на гипотенузе (25).</p>
+<div class="box ex"><b>Как пользоваться</b>Найти гипотенузу: катеты 6 и 8 → c² = 36 + 64 = 100 → c = 10.<br>Найти катет: c = 13, a = 5 → b² = 169 − 25 = 144 → b = 12.</div>
+<div class="box tip"><b>Тройки, которые полезно помнить</b>3, 4, 5 (и 6, 8, 10; 9, 12, 15…); 5, 12, 13; 8, 15, 17; 7, 24, 25.</div>
+<div class="box err"><b>Ловушка</b>c = a + b — неверно! Складываются <b>квадраты</b>, а потом извлекается корень. 3 + 4 = 7, а гипотенуза 5.</div>
+<p><b>Для площадей:</b> Пифагор помогает найти недостающую высоту. Например, в равнобедренном треугольнике с основанием 10 и боковыми сторонами 13 высота к основанию делит его пополам: h² = 13² − 5² = 144, h = 12, S = ½ · 10 · 12 = 60.</p>`},
+{title:'Идеи для задач со звёздочкой',lvl:8,html:`
+<div class="box rule"><b>1. Три медианы делят треугольник на 6 равновеликих частей</b>Каждая медиана делит площадь пополам, а точка пересечения медиан делит каждую медиану в отношении 2 : 1. Поэтому все шесть маленьких треугольников имеют площадь S : 6, а треугольник AOB — S : 3.</div>
+<div class="box rule"><b>2. Треугольник на клетчатой бумаге</b>Дострой его до прямоугольника по линиям сетки и вычти «лишние» прямоугольные треугольники по углам. Проверка — <b>формула Пика</b>: S = В + Г : 2 − 1, где В — узлы сетки внутри фигуры, Г — узлы на границе.</div>
+<div class="box rule"><b>3. Диагонали трапеции</b>Треугольники при боковых сторонах (ABO и CDO) имеют <b>равные</b> площади: S(ABD) = S(ACD) (общее основание AD и одинаковая высота), а потом вычитаем общий кусок AOD.</div>
+<div class="box rule"><b>4. Точка на стороне параллелограмма</b>Треугольник с основанием AD и вершиной на противоположной стороне занимает ровно <b>половину</b> параллелограмма — та же сторона, та же высота, но ½.</div>
+<div class="box tip"><b>Главный приём</b>Ищи треугольники с общей высотой или общим основанием — тогда их площади легко сравнить.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>1 м² = 10 000 см², 1 дм² = 100 см², 1 га = 10 000 м².</li>
+<li>Прямоугольник a · b, квадрат a².</li>
+<li>Параллелограмм a · h. Треугольник ½ · a · h. Прямоугольный треугольник ½ · a · b.</li>
+<li>Ромб ½ · d₁ · d₂. Трапеция ½ · (a + b) · h.</li>
+<li>Стороны × k → площадь × k². Медиана делит площадь пополам.</li>
+<li>Пифагор: c² = a² + b².</li></ul>`}
+];
+
+/* ---------- symbols ---------- */
+const NW=t=>`<span style="white-space:nowrap;font-size:17px">${t}</span>`;
+const symbols={tab:'Формулы',title:'Формулы площадей',rows:[
+['S','Площадь','Сколько единичных квадратиков помещается в фигуре.','S = 12 см²'],
+[NW('см², м²'),'«Квадратный сантиметр», «квадратный метр»','Площадь квадрата со стороной 1 см (1 м). 1 м² = 10 000 см².','2 м² = 20 000 см²'],
+[NW('S = a·b'),'Прямоугольник','Длина на ширину.','5 · 3 = 15'],
+[NW('S = a²'),'Квадрат','Сторона на саму себя.','4² = 16'],
+[NW('S = a·h'),'Параллелограмм','Сторона на высоту, проведённую к этой стороне.','7 · 4 = 28'],
+[NW('S = ½·a·h'),'Треугольник','Половина произведения стороны на высоту к ней.','½ · 10 · 6 = 30'],
+[NW('S = ½·a·b'),'Прямоугольный треугольник','Половина произведения катетов.','½ · 6 · 8 = 24'],
+[NW('S = ½·d₁·d₂'),'Ромб','Половина произведения диагоналей.','½ · 6 · 8 = 24'],
+[NW('S = ½(a + b)·h'),'Трапеция','Полусумма оснований на высоту.','½ · (9 + 5) · 4 = 28'],
+['h','Высота','Перпендикуляр из вершины к стороне (или её продолжению). Отмечается значком прямого угла.','BH ⊥ AD'],
+[NW('c² = a² + b²'),'Теорема Пифагора','Квадрат гипотенузы равен сумме квадратов катетов.','3² + 4² = 5²']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Площадь треугольника — это ½ от «параллелограммной» формулы. Перед вычислением переведи все длины в одинаковые единицы.</div>`};
+
+/* =====================================================================
+   GENERATORS
+   ===================================================================== */
+const gens=[];const G=(lvl,make,star)=>gens.push({lvl,star,make:()=>{for(let i=0;i<300;i++){const t=make();if(t)return t;}return null;}});
+
+/* ===== L0: what is area, units ===== */
+G(0,()=>{const W=R(4,7),Hh=R(3,5),w2=R(1,W-2),h2=R(1,Hh-1);const L=lShape(W,Hh,w2,h2);const ans=W*Hh-w2*h2;
+ const pts=[L.A,L.B,L.C,L.E,L.F,L.D];const pic=gridFig(pts,[0,0,W,Hh],{W:Math.min(300,W*40+20),maxH:Hh*40+20});
+ const r1n=(W-w2)*Hh,r2n=w2*(Hh-h2);
+ return {type:'num',q:`Сторона клетки — 1 см. Найди площадь закрашенной фигуры (в см²).`,pic,ans,
+ hint:'Посчитай клетки. Удобно разбить фигуру на два прямоугольника.',short:`${r1n} + ${r2n} = ${ans} клеток = ${ans} см².`,
+ explain:`Площадь — это сколько клеток (квадратиков 1 см × 1 см) помещается в фигуре.<br>Разобьём фигуру вертикальной линией на два прямоугольника:<br>• левый: ${W-w2} × ${Hh} = ${r1n} клеток;<br>• правый: ${w2} × ${Hh-h2} = ${r2n} клеток.<br>Всего: ${r1n} + ${r2n} = <b>${ans} см²</b>.`,
+ explain2:`Другой способ — «достроить и вычесть». Весь прямоугольник ${W} × ${Hh} = ${W*Hh} клеток. Незакрашенный уголок справа сверху: ${w2} × ${h2} = ${w2*h2}. Значит, закрашено ${W*Hh} − ${w2*h2} = ${ans}.`};});
+const CONV=[['м²','дм²',100,'1 м = 10 дм'],['м²','см²',10000,'1 м = 100 см'],['дм²','см²',100,'1 дм = 10 см'],['см²','мм²',100,'1 см = 10 мм'],['га','м²',10000,'1 га — квадрат 100 м × 100 м'],['а (сотка)','м²',100,'1 сотка — квадрат 10 м × 10 м'],['км²','га',100,'1 км = 1000 м, 1 км² = 1 000 000 м² = 100 га']];
+G(0,()=>{const c=pick(CONV);const x=pick([2,3,4,5,6,7,8,9,12,15,25,1.5,2.5,3.5]);const ans=x*c[2];const side=Math.round(Math.sqrt(c[2]));
+ return {type:'num',q:`Вырази в <b>${c[1]}</b>: ${N(x)} ${c[0]}.`,ans,
+ hint:'Сколько маленьких квадратиков помещается в одном большом? Помни: множитель для площади берётся «два раза».',short:`1 ${c[0]} = ${NN(c[2])} ${c[1]}, поэтому ${N(x)} · ${NN(c[2])} = ${NN(ans)}.`,
+ explain:`${c[3]}. Квадрат со стороной «1 большая единица» — это ${side} рядов по ${side} маленьких квадратиков: 1 ${c[0]} = ${side} · ${side} = <b>${NN(c[2])} ${c[1]}</b>.<br>${N(x)} ${c[0]} = ${N(x)} · ${NN(c[2])} = <b>${NN(ans)} ${c[1]}</b>.<div class="box err"><b>Ловушка</b>${N(x)} · ${side} = ${N(x*side)} — так умножили только «по длине», а у площади есть ещё ширина.</div>`,
+ explain2:c[1]==='см²'&&c[0]==='дм²'?`Посмотри: 1 дм² — это квадрат 10 × 10 см.${fig(figDm)}В нём 100 клеточек по 1 см². А у нас ${N(x)} таких квадратов: ${N(x)} · 100 = ${NN(ans)}.`:`Представь квадратную площадку площадью 1 ${c[0]} и плитки площадью 1 ${c[1]}. Вдоль одной стороны площадки помещается ${side} плиток, вдоль другой — тоже ${side}. Всего плиток ${side} · ${side} = ${NN(c[2])}. Таких площадок у нас ${N(x)} → ${N(x)} · ${NN(c[2])} = ${NN(ans)}.`};});
+G(0,()=>{const c=pick(CONV.slice(0,4));const big=pick([2,3,4,5,7,1.5,2.5,0.5,0.25,0.8]);const small=big*c[2];const side=Math.round(Math.sqrt(c[2]));
+ return {type:'num',q:`Вырази в <b>${c[0]}</b>: ${NN(small)} ${c[1]}.`,ans:big,
+ short:`${NN(small)} : ${NN(c[2])} = ${N(big)}.`,
+ explain:`1 ${c[0]} = ${side} · ${side} = ${NN(c[2])} ${c[1]}. Переходим к <b>более крупной</b> единице — значит, делим:<br>${NN(small)} : ${NN(c[2])} = <b>${N(big)} ${c[0]}</b>.<div class="box err"><b>Ловушка</b>${NN(small)} : ${side} = ${N(small/side)} — неверно: делить надо на ${NN(c[2])}, а не на ${side}.</div>`,
+ explain2:`Спроси себя: «Сколько раз по ${NN(c[2])} ${c[1]} помещается в ${NN(small)} ${c[1]}?» Каждые ${NN(c[2])} ${c[1]} — это один ${c[0]}. ${NN(small)} : ${NN(c[2])} = ${N(big)}. Проверка обратно: ${N(big)} · ${NN(c[2])} = ${NN(small)} ✅.`};});
+G(0,()=>{const v=pick([['см²','м²',['100','1000','10 000','1 000 000'],2,'1 м = 100 см',100],['дм²','м²',['10','100','1000','10 000'],1,'1 м = 10 дм',10],['мм²','см²',['10','100','1000','10 000'],1,'1 см = 10 мм',10],['м²','га',['100','1000','10 000','100 000'],2,'1 га — квадрат 100 м × 100 м',100]]);const lin=v[5];
+ return {type:'choice',q:`Сколько ${v[0]} в 1 ${v[1]}?`,opts:v[2],ans:v[3],
+ short:`${v[4]}, поэтому 1 ${v[1]} = ${lin} · ${lin} = ${v[2][v[3]]} ${v[0]}.`,
+ explain:`${v[4]}. Значит, квадрат 1 ${v[1]} вмещает ${lin} рядов по ${lin} квадратиков 1 ${v[0]}: всего ${lin} · ${lin} = <b>${v[2][v[3]]}</b>.<div class="box err"><b>Почему не ${lin}</b>${lin} — это множитель только для длины. Для площади его берём два раза — по длине и по ширине.</div>`,
+ explain2:`Маленький пример: квадрат 3 × 3 клетки — это не 3, а 3 · 3 = 9 клеток. Так же и здесь: «${lin} по длине» превращается в «${lin} · ${lin} = ${v[2][v[3]]}» по площади.`};});
+G(0,()=>{const parts=[R(3,15),R(3,15),R(3,15)];const s=parts[0]+parts[1]+parts[2];
+ return {type:'num',q:`Квадрат разрезали на три части с площадями ${parts.join(' см², ')} см² и сложили из них треугольник (без наложений и дыр). Найди площадь треугольника.`,ans:s,
+ hint:'Меняется ли площадь, если куски переложить по-другому?',short:`Площадь не меняется: ${parts.join(' + ')} = ${s} см².`,
+ explain:`Площадь составной фигуры равна <b>сумме площадей её частей</b>. Треугольник состоит из тех же трёх кусков:<br>${parts.join(' + ')} = <b>${s} см²</b>.<br>Форма поменялась, а площадь — нет.`,
+ explain2:`Представь, что куски — из бумаги, и ты их красишь. Сколько краски нужно на все куски, столько же нужно и на треугольник, и на квадрат — бумага та же самая. ${s} см².`};});
+
+/* ===== L1: rectangle & square ===== */
+G(1,()=>{const a=R(3,15),b=R(2,12);if(a===b)return null;
+ return {type:'num',q:`Найди площадь прямоугольника со сторонами ${a} см и ${b} см.`,pic:rectFig(Math.max(a,b),Math.min(a,b),String(Math.max(a,b)),String(Math.min(a,b))),ans:a*b,
+ short:`${a} · ${b} = ${a*b} см².`,
+ explain:`Площадь прямоугольника — длина на ширину: <span class="m">S = a · b</span>.<br>S = ${a} · ${b} = <b>${a*b} см²</b>.<div class="box err"><b>Не путай с периметром</b>2 · (${a} + ${b}) = ${2*(a+b)} см — это периметр, длина «забора» вокруг.</div>`,
+ explain2:`В прямоугольник помещается ${Math.min(a,b)} ${plural(Math.min(a,b),'ряд','ряда','рядов')} по ${Math.max(a,b)} квадратиков 1 см × 1 см. Всего ${Math.min(a,b)} · ${Math.max(a,b)} = ${a*b} квадратиков, то есть ${a*b} см².`};});
+G(1,()=>{const a=R(3,14),b=R(2,13);if(a===b)return null;const S=a*b;
+ return {type:'num',q:`Площадь прямоугольника ${S} см², одна из сторон ${a} см. Найди другую сторону.`,pic:rectFig(Math.max(a,b),Math.min(a,b),a>b?String(a):'?',a>b?'?':String(a)),ans:b,
+ short:`${S} : ${a} = ${b} см.`,
+ explain:`S = a · b, значит b = S : a = ${S} : ${a} = <b>${b} см</b>.<br>Проверка: ${a} · ${b} = ${S} ✅.`,
+ explain2:`${S} квадратиков разложили в ряды по ${a}. Сколько получится рядов? ${S} : ${a} = ${b}. Это и есть вторая сторона.`};});
+G(1,()=>{const a=R(3,15);const P=4*a;
+ return {type:'num',q:`Периметр квадрата ${P} см. Найди его площадь.`,pic:rectFig(1,1,'?','?',{maxH:120}),ans:a*a,
+ hint:'Сначала найди сторону.',short:`Сторона ${P} : 4 = ${a}, площадь ${a}² = ${a*a} см².`,
+ explain:`1) У квадрата 4 равные стороны: a = ${P} : 4 = ${a} см.<br>2) S = a² = ${a} · ${a} = <b>${a*a} см²</b>.<div class="box err"><b>Ошибка</b>${P} : 4 = ${a} — это сторона, а не площадь. И ${P}² тоже не площадь.</div>`,
+ explain2:`Квадрат — как квадратная клумба с забором длиной ${P} м. На каждую сторону уходит ${a} м забора. Внутри помещается ${a} рядов по ${a} квадратных метров: ${a*a} м².`};});
+G(1,()=>{const v=pick([['м','дм',10],['дм','см',10],['м','см',100]]);let a,b;
+ if(v[2]===100){a=pick([1,2,3]);b=pick([20,25,40,50,60,75]);}else{a=R(2,6);b=R(3,9);}
+ const aS=a*v[2],ans=aS*b;
+ return {type:'num',q:`Длина прямоугольника ${a} ${v[0]}, ширина ${b} ${v[1]}. Найди площадь в <b>${v[1]}²</b>.`,ans,
+ hint:'Сначала переведи обе стороны в одинаковые единицы.',short:`${a} ${v[0]} = ${aS} ${v[1]}; ${aS} · ${b} = ${ans} ${v[1]}².`,
+ explain:`Перемножать можно только длины в <b>одинаковых</b> единицах.<br>1) ${a} ${v[0]} = ${a} · ${v[2]} = ${aS} ${v[1]}.<br>2) S = ${aS} · ${b} = <b>${ans} ${v[1]}²</b>.<div class="box err"><b>Ошибка</b>${a} · ${b} = ${a*b} — неверно: перемножили «${v[0]}» на «${v[1]}», получилась ни то ни сё.</div>`,
+ explain2:`Представь, что считаешь плитки ${v[1]} × ${v[1]}. Вдоль длины их помещается ${aS} (ведь ${a} ${v[0]} = ${aS} ${v[1]}), вдоль ширины — ${b}. Всего ${aS} · ${b} = ${ans} плиток.`};});
+
+/* ===== L2: composite ===== */
+G(2,()=>{const W=R(7,14),Hh=R(5,10),w2=R(2,W-3),h2=R(2,Hh-2);const L=lShape(W,Hh,w2,h2);const ans=W*Hh-w2*h2;
+ const pic=geo({P:L,poly:[['A','B','C','E','F','D']],fill:[{pts:['A','B','C','E','F','D'],op:0.3}],side:[['A','D',String(W)],['A','B',String(Hh)],['C','E',String(h2)],['E','F',String(w2)]],lab:[],maxH:200});
+ const pic2=geo({P:L,poly:[['A','B','C','E','F','D']],fill:[{pts:['A','B','C',[W-w2,0]],op:0.4},{pts:[[W-w2,0],'E','F','D'],op:0.15}],seg:[[[W-w2,0],'E',{dash:true}]],side:[['A','D',String(W)],['A','B',String(Hh)],['C','E',String(h2)],['E','F',String(w2)],['B','C',String(W-w2),{col:'var(--accent-ink)'}],['F','D',String(Hh-h2),{col:'var(--accent-ink)'}]],lab:[],maxH:200});
+ return {type:'num',q:`Найди площадь фигуры (все углы прямые, размеры в см).`,pic,ans,
+ hint:'Дострой фигуру до прямоугольника или разрежь на два.',short:`${W} · ${Hh} − ${w2} · ${h2} = ${W*Hh} − ${w2*h2} = ${ans} см².`,
+ explain:`Достроим фигуру до прямоугольника ${W} × ${Hh}: его площадь ${W*Hh}.<br>Не хватает уголка ${w2} × ${h2} = ${w2*h2}.<br>S = ${W*Hh} − ${w2*h2} = <b>${ans} см²</b>.`,
+ explain2:`Разрежем пунктиром на два прямоугольника:${fig(pic2)}Левый: ${W-w2} · ${Hh} = ${(W-w2)*Hh} (ширина ${W} − ${w2} = ${W-w2}). Правый: ${w2} · ${Hh-h2} = ${w2*(Hh-h2)} (высота ${Hh} − ${h2} = ${Hh-h2}). Вместе: ${(W-w2)*Hh} + ${w2*(Hh-h2)} = ${ans}.`};});
+G(2,()=>{const a=R(8,16),b=R(6,12),c=R(2,a-4),d=R(2,b-3);if(c>=a-2||d>=b-2)return null;const ans=a*b-c*d;const ox=(a-c)/2,oy=(b-d)/2;
+ const P={A:[0,0],B:[0,b],C:[a,b],D:[a,0],E:[ox,oy],F:[ox,oy+d],K:[ox+c,oy+d],L:[ox+c,oy]};
+ const pic=geo({P,poly:[Q4,['E','F','K','L']],fill:[{pts:Q4,op:0.35},{pts:['E','F','K','L'],col:'var(--card)',op:1}],side:[['A','D',String(a)],['A','B',String(b)],['F','K',String(c),{flip:true}],['E','F',String(d),{flip:true}]],lab:[],maxH:200});
+ return {type:'num',q:`Из прямоугольного листа ${a} × ${b} см вырезали прямоугольную дырку ${c} × ${d} см. Найди площадь оставшейся рамки.`,pic,ans,
+ short:`${a*b} − ${c*d} = ${ans} см².`,
+ explain:`Площадь рамки = площадь всего листа − площадь дырки.<br>Лист: ${a} · ${b} = ${a*b}. Дырка: ${c} · ${d} = ${c*d}.<br>S = ${a*b} − ${c*d} = <b>${ans} см²</b>.`,
+ explain2:`Представь пиццу без серединки: сколько осталось теста? Сколько было (${a*b}) минус сколько вырезали (${c*d}). Остаток ${ans}. Где дырка — посередине или сбоку — не важно.`};});
+G(2,()=>{const c=pick([20,25,50]);const k=100/c;const a=R(2,6),b=R(2,5);const na=a*k,nb=b*k,ans=na*nb;
+ return {type:'num',q:`Пол комнаты — прямоугольник ${a} м × ${b} м. Сколько квадратных плиток ${c} × ${c} см нужно, чтобы покрыть пол?`,ans,
+ hint:'Сколько плиток поместится вдоль длины комнаты? А вдоль ширины?',short:`${na} · ${nb} = ${ans} плиток.`,
+ explain:`1) Вдоль длины: ${a} м = ${a*100} см, плиток ${a*100} : ${c} = ${na}.<br>2) Вдоль ширины: ${b*100} : ${c} = ${nb}.<br>3) Всего: ${na} · ${nb} = <b>${ans}</b>.<div class="box err"><b>Ловушка</b>${a} · ${b} = ${a*b} м², плитка ${c} · ${c} = ${c*c} см². Делить ${a*b} на ${c*c} нельзя — единицы разные. Надо ${a*b} м² = ${NN(a*b*10000)} см², тогда ${NN(a*b*10000)} : ${c*c} = ${ans}.</div>`,
+ explain2:`Второй способ — через площади. Пол: ${a} · ${b} = ${a*b} м² = ${NN(a*b*10000)} см². Одна плитка: ${c*c} см². Сколько плиток: ${NN(a*b*10000)} : ${c*c} = ${ans}. Ответы совпали ✅.`};});
+G(2,()=>{const a=R(8,16),c=R(1,Math.floor(a/3));const ans=a*a-4*c*c;
+ const P={A:[0,0],B:[0,a],C:[a,a],D:[a,0]};const pts=[[c,0],[c,c],[0,c],[0,a-c],[c,a-c],[c,a],[a-c,a],[a-c,a-c],[a,a-c],[a,c],[a-c,c],[a-c,0]];pts.forEach((p,i)=>P['p'+i]=p);const ks=pts.map((_,i)=>'p'+i);
+ const pic=geo({P,poly:[ks],fill:[{pts:ks,op:0.35}],seg:[['A',[c,0],{dash:true,col:'var(--muted)'}],['A',[0,c],{dash:true,col:'var(--muted)'}]],side:[[[c,0],[a-c,0],`${a-2*c}`,{col:'var(--muted)',fs:12}],['p0','p1',String(c)]],txt:[[[a/2,a/2],`лист ${a} × ${a}`,{fs:13,col:'var(--muted)'}]],lab:[],maxH:200,W:220});
+ return {type:'num',q:`Из квадратного листа со стороной ${a} см по углам вырезали 4 квадрата со стороной ${c} см. Найди площадь оставшейся фигуры.`,pic,ans,
+ short:`${a}² − 4 · ${c}² = ${a*a} − ${4*c*c} = ${ans} см².`,
+ explain:`1) Площадь листа: ${a} · ${a} = ${a*a}.<br>2) Один вырезанный квадрат: ${c} · ${c} = ${c*c}, четыре: 4 · ${c*c} = ${4*c*c}.<br>3) Осталось: ${a*a} − ${4*c*c} = <b>${ans} см²</b>.`,
+ explain2:`Можно и «крестом» посчитать: середина-полоса ${a} × ${a-2*c} = ${a*(a-2*c)} плюс два «ушка» по ${c} × ${a-2*c} = ${c*(a-2*c)}: ${a*(a-2*c)} + 2 · ${c*(a-2*c)} = ${ans}. Тот же ответ.`};});
+
+/* ===== L3: parallelogram ===== */
+G(3,()=>{const a=R(5,14),h=R(Math.max(3,Math.ceil(a*0.4)),Math.max(5,Math.ceil(a*0.75)));const sx=a*R(25,60)/100;const p=paraH(a,h,sx);p.H=[sx,0];const b=Math.hypot(sx,h);
+ const pic=geo({P:p,poly:[Q4],seg:[['B','H',{dash:true}]],rt:[['H','D','B']],side:[['A','D',String(a)],['B','H',String(h),{flip:true}],['A','B',N(Math.round(b*10)/10),{col:'var(--muted)'}]],maxH:190});
+ const bb=Math.round(b*10)/10;
+ return {type:'num',q:`Найди площадь параллелограмма ABCD: AD = ${a}, высота BH = ${h}, боковая сторона AB ≈ ${N(bb)}.`,pic,ans:a*h,
+ hint:'Какая длина нужна: наклонная сторона или высота?',short:`S = AD · BH = ${a} · ${h} = ${a*h}.`,
+ explain:`Площадь параллелограмма = сторона · <b>высота к этой стороне</b>: S = AD · BH = ${a} · ${h} = <b>${a*h}</b>.<div class="box err"><b>Ловушка</b>AB ≈ ${N(bb)} — наклонная сторона, не высота. ${a} · ${N(bb)} — неверно.</div>`,
+ explain2:`Отрежь треугольник ABH и перенеси его к правому краю — получится прямоугольник ${a} × ${h}.${fig(figCut1)}Площадь прямоугольника ${a} · ${h} = ${a*h}. Наклонная сторона пропала — она в прямоугольнике не нужна.`};});
+G(3,()=>{const a=R(4,13),h=R(3,10);const S=a*h;const sx=a*0.4;const p=paraH(a,h,sx);p.H=[sx,0];
+ const pic=geo({P:p,poly:[Q4],seg:[['B','H',{dash:true}]],rt:[['H','D','B']],side:[['A','D',String(a)],['B','H','?',{flip:true}]],txt:[[[a/2+sx/2+a*0.12,h*0.45],'S = '+S,{fs:14,col:'var(--accent-ink)'}]],maxH:190});
+ return {type:'num',q:`Площадь параллелограмма ${S} см², сторона AD = ${a} см. Найди высоту, проведённую к стороне AD.`,pic,ans:h,
+ short:`h = S : a = ${S} : ${a} = ${h} см.`,
+ explain:`S = a · h, поэтому h = S : a = ${S} : ${a} = <b>${h} см</b>.<br>Проверка: ${a} · ${h} = ${S} ✅.`,
+ explain2:`Параллелограмм «перекраиваем» в прямоугольник с основанием ${a}. Его площадь та же — ${S}. Какой высоты должен быть прямоугольник, чтобы ${a} · ? = ${S}? Ответ ${h}.`};});
+G(3,()=>{const nm=sample(['H','K','M','E','P'],2);const a=10,h=R(45,65)/10,sx=R(15,45)/10;const p=paraH(a,h,sx);p[nm[0]]=[sx,0];let kx=sx+pick([-1,1])*R(25,40)/10;if(kx<0.6||kx>a-0.6)kx=sx+(sx<5?3:-3);p[nm[1]]=[kx,0];
+ const opts=shuffle(['B'+nm[0],'B'+nm[1],'BD','AB']);
+ const pic=geo({P:p,poly:[Q4],seg:[['B',nm[0],{dash:true}],['B',nm[1],{dash:true}],['B','D',{dash:true,col:'var(--muted)'}]],maxH:190});
+ const pic2=geo({P:p,poly:[Q4],seg:[['B',nm[0],{col:'var(--accent)',sw:2.4}],['B',nm[1],{dash:true,col:'var(--muted)'}]],rt:[[nm[0],'D','B']],lab:['A','B','C','D',nm[0],nm[1]],maxH:190});
+ return {type:'choice',q:`Какой отрезок — <b>высота</b> параллелограмма, проведённая к стороне AD?`,pic,opts,ans:opts.indexOf('B'+nm[0]),
+ short:`B${nm[0]} перпендикулярен AD — это высота.`,
+ explain:`Высота — это <b>перпендикуляр</b> из вершины к стороне: он образует с ней прямой угол 90°.${fig(pic2)}B${nm[0]} падает на AD «отвесно», под прямым углом — это высота.<br>B${nm[1]} — наклонный отрезок (угол не 90°), BD — диагональ, AB — сторона. Они длиннее высоты.`,
+ explain2:`Представь, что из точки B падает камешек вниз, на «пол» AD. Он летит по кратчайшему пути — строго вертикально. Куда он упадёт — там и основание высоты: точка ${nm[0]}. Любой другой отрезок из B до AD длиннее и наклонён.`};});
+G(3,()=>{for(;;){const a=R(6,16),b=R(4,14);if(a===b)continue;const ha=R(2,Math.min(b-1,10));if(ha<0.57*b)continue;const S=a*ha;if(S%b)continue;const hb=S/b;if(hb>=a)continue;
+ const al=Math.asin(ha/b)/D2R;const p=para(a,b,al);p.H=[p.B[0],0];p.K=foot(p.D,p.B,p.C);if(p.K[0]<p.B[0]||p.K[0]>p.C[0])continue;
+ const pic=geo({P:p,poly:[Q4],seg:[['B','H',{dash:true}],['D','K',{dash:true}]],rt:[['H','D','B'],['K','C','D']],side:[['A','D',String(a)],['A','B',String(b)],['B','H',String(ha),{flip:true}],['D','K','?',{flip:true}]],maxH:200});
+ return {type:'num',q:`Стороны параллелограмма ${a} и ${b}. Высота, проведённая к стороне ${a}, равна ${ha}. Найди высоту, проведённую к стороне ${b}.`,pic,ans:hb,
+ hint:'Посчитай площадь одним способом, а потом запиши её другим.',short:`S = ${a} · ${ha} = ${S}; h = ${S} : ${b} = ${hb}.`,
+ explain:`Площадь одна и та же, как её ни считай:<br>1) S = ${a} · ${ha} = ${S}.<br>2) S = ${b} · h → h = ${S} : ${b} = <b>${hb}</b>.<br>Обрати внимание: к <b>длинной</b> стороне высота <b>короче</b>, к короткой — длиннее.`,
+ explain2:`Это как два прямоугольника с одинаковой площадью ${S}: один ${a} × ${ha}, другой ${b} × ?. Если основание стало ${a>b?'короче':'длиннее'}, высота должна стать ${a>b?'больше':'меньше'}, чтобы площадь сохранилась: ${S} : ${b} = ${hb}.`};}});
+G(3,()=>{const b=2*R(2,7);const a=R(Math.ceil(0.87*b)+1,Math.ceil(0.87*b)+7);const h=b/2;const S=a*h;const p=para(a,b,30);p.H=[p.B[0],0];
+ const pic=geo({P:p,poly:[Q4],ang:[['A','D','B','30°',{r:32}]],side:[['A','D',String(a)],['A','B',String(b)]],lab:Q4,maxH:170});
+ const pic2=geo({P:p,poly:[Q4],seg:[['B','H',{dash:true}]],rt:[['H','D','B']],fill:[{pts:['A','B','H']}],ang:[['A','D','B','30°',{r:32}]],side:[['A','D',String(a)],['A','B',String(b)],['B','H',N(h),{flip:true,col:'var(--accent-ink)'}]],maxH:170});
+ return {type:'num',q:`Стороны параллелограмма ${a} и ${b}, угол между ними 30°. Найди площадь.`,pic,ans:S,
+ hint:'Проведи высоту из B. Что ты знаешь о катете против угла 30°?',short:`h = ${b} : 2 = ${N(h)}; S = ${a} · ${N(h)} = ${N(S)}.`,
+ explain:`1) Проведём высоту BH. В прямоугольном треугольнике ABH угол A = 30°.<br>2) Катет, лежащий против угла 30°, равен половине гипотенузы: BH = AB : 2 = ${b} : 2 = ${N(h)}.<br>3) S = AD · BH = ${a} · ${N(h)} = <b>${N(S)}</b>.<div class="box err"><b>Ошибка</b>${a} · ${b} = ${a*b} — так считают прямоугольник. У «скошенного» параллелограмма площадь меньше.</div>`,
+ explain2:`${fig(pic2)}Треугольник с углом 30° — это половинка равностороннего треугольника, поэтому короткий катет ровно вдвое короче гипотенузы. Высота ${N(h)}, площадь ${a} · ${N(h)} = ${N(S)} — ровно половина от «прямоугольных» ${a*b}.`};});
+
+/* ===== L4: triangle ===== */
+G(4,()=>{const a=R(5,14),h=R(3,10);const x=a*R(25,70)/100;const t=tri(a,x,h);const S=a*h/2;
+ const pic=geo({P:t,poly:[['A','B','C']],seg:[['B','H',{dash:true}]],rt:[['H','C','B']],side:[['A','C',String(a)],['B','H',String(h),{flip:true}]],maxH:190});
+ const P2=Object.assign({},t,{D:[a,h],E:[0,h]});
+ const pic2=geo({P:P2,poly:[['A','E','D','C'],['A','B','C']],fill:[{pts:['A','B','C'],op:0.45}],seg:[['B','H',{dash:true}]],side:[['A','C',String(a)],['A','E',String(h)]],lab:['A','B','C','H'],maxH:190});
+ return {type:'num',q:`Найди площадь треугольника ABC, если AC = ${a}, а высота BH = ${h}.`,pic,ans:S,
+ short:`½ · ${a} · ${h} = ${N(S)}.`,
+ explain:`S = ½ · a · h, где h — высота к стороне a.<br>S = ½ · ${a} · ${h} = ${a*h} : 2 = <b>${N(S)}</b>.<div class="box err"><b>Не забудь ½</b>${a} · ${h} = ${a*h} — это площадь прямоугольника, а треугольник — его половина.</div>`,
+ explain2:`Обведём треугольник прямоугольником ${a} × ${h}:${fig(pic2)}Высота BH делит прямоугольник на две части, и в каждой треугольник занимает ровно половину. Значит, треугольник — половина прямоугольника: ${a*h} : 2 = ${N(S)}.`};});
+G(4,()=>{const a=R(3,14),b=R(3,12);if(a===b||a*b%2&&Math.random()<0.6)return null;const S=a*b/2;const t={A:[0,b],B:[0,0],C:[a,0]};
+ const pic=geo({P:t,poly:[['A','B','C']],rt:[['B','C','A']],side:[['B','C',String(a)],['A','B',String(b)]],maxH:190});
+ const P2=Object.assign({},t,{D:[a,b]});const pic2=geo({P:P2,poly:[['A','B','C','D']],seg:[['A','C']],fill:[{pts:['A','B','C'],op:0.45}],side:[['B','C',String(a)],['A','B',String(b)]],lab:['A','B','C'],maxH:190});
+ return {type:'num',q:`Катеты прямоугольного треугольника равны ${a} и ${b}. Найди его площадь.`,pic,ans:S,
+ short:`½ · ${a} · ${b} = ${N(S)}.`,
+ explain:`В прямоугольном треугольнике один катет — это высота к другому. Поэтому S = ½ · a · b = ½ · ${a} · ${b} = <b>${N(S)}</b>.`,
+ explain2:`Дострой треугольник до прямоугольника ${a} × ${b}:${fig(pic2)}Диагональ режет прямоугольник на два одинаковых треугольника. Площадь прямоугольника ${a*b}, треугольника — половина: ${N(S)}.`};});
+G(4,()=>{const a=R(4,10),h=R(3,8),x=-R(15,40)/10;const t=tri(a,x,h);const S=a*h/2;
+ const pic=geo({P:t,poly:[['A','B','C']],seg:[['B','H',{dash:true}],['H','A',{dash:true,col:'var(--muted)'}]],rt:[['H','C','B']],side:[['A','C',String(a)],['B','H',String(h)]],maxH:190});
+ return {type:'num',q:`В тупоугольном треугольнике ABC сторона AC = ${a}, а высота BH, проведённая к прямой AC, равна ${h} (она падает на продолжение стороны). Найди площадь.`,pic,ans:S,
+ short:`½ · ${a} · ${h} = ${N(S)}.`,
+ explain:`Формула та же: S = ½ · AC · BH = ½ · ${a} · ${h} = <b>${N(S)}</b>.<br>То, что высота упала за пределы треугольника, ничего не меняет: важно только, что она перпендикулярна прямой AC.`,
+ explain2:`Посмотри на треугольник как на «большой минус маленький»: большой прямоугольный HBC с катетами ${N(a-x)} и ${h} минус маленький HBA с катетами ${N(-x)} и ${h}: ½ · ${N(a-x)} · ${h} − ½ · ${N(-x)} · ${h} = ½ · (${N(a-x)} − ${N(-x)}) · ${h} = ½ · ${a} · ${h} = ${N(S)}.`};});
+G(4,()=>{const t=tri(6,-R(15,30)/10,R(30,45)/10);
+ const opts=shuffle(['½ · AC · BH','½ · AB · BH','½ · BC · BH','AC · BH']);
+ const pic=geo({P:t,poly:[['A','B','C']],seg:[['B','H',{dash:true}],['H','A',{dash:true,col:'var(--muted)'}]],rt:[['H','C','B']],maxH:170});
+ return {type:'choice',q:`BH — высота треугольника ABC. По какой формуле можно найти его площадь?`,pic,opts,ans:opts.indexOf('½ · AC · BH'),
+ short:'BH проведена к прямой AC, поэтому S = ½ · AC · BH.',
+ explain:`Высота «работает» в паре только с той стороной, к которой она проведена. BH перпендикулярна прямой <b>AC</b> → S = ½ · AC · BH.<br>• ½ · AB · BH и ½ · BC · BH — неверно: BH не перпендикулярна AB и BC.<br>• AC · BH — забыли ½, это площадь параллелограмма.`,
+ explain2:`Ищи значок прямого угла: он стоит там, где высота встречает прямую AC (в точке H, на продолжении стороны). Значит, пара «сторона + высота» — это AC и BH. И не забудь половинку.`};});
+G(4,()=>{const a=R(4,16),h=R(2,12);const S=a*h/2;if(S!==Math.floor(S))return null;const x=a*0.35;const t=tri(a,x,h);
+ const pic=geo({P:t,poly:[['A','B','C']],seg:[['B','H',{dash:true}]],rt:[['H','C','B']],side:[['A','C',String(a)],['B','H','?',{flip:true}]],maxH:180});
+ return {type:'num',q:`Площадь треугольника ${S}, сторона AC = ${a}. Найди высоту, проведённую к AC.`,pic,ans:h,
+ short:`h = 2S : a = ${2*S} : ${a} = ${h}.`,
+ explain:`S = ½ · a · h → 2S = a · h → h = 2S : a.<br>h = 2 · ${S} : ${a} = ${2*S} : ${a} = <b>${h}</b>.<div class="box err"><b>Ошибка</b>${S} : ${a} = ${N(S/a)} — забыли, что в формуле есть ½. Сначала удвой площадь.</div>`,
+ explain2:`Удвоим треугольник до параллелограмма: его площадь ${2*S}, основание ${a}. Высота у них общая: ${2*S} : ${a} = ${h}.`};});
+
+/* ===== L5: rhombus & trapezoid ===== */
+G(5,()=>{const d1=2*R(3,9),d2=2*R(2,8);if(d1===d2)return null;const S=d1*d2/2;const P={A:[0,d2/2],B:[d1/2,d2],C:[d1,d2/2],D:[d1/2,0],O:[d1/2,d2/2]};
+ const pic=geo({P,poly:[Q4],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],rt:[['O','C','B']],side:[['A','C',String(d1),{t:0.28}],['B','D',String(d2),{t:0.25}]],lab:Q4,dir:{A:180,C:0},maxH:200});
+ const pic2=geo({P:Object.assign({},P,{E:[0,0],F:[0,d2],G:[d1,d2],K:[d1,0]}),poly:[['E','F','G','K'],Q4],fill:[{pts:Q4,op:0.45}],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],side:[['E','K',String(d1),{t:0.25}],['E','F',String(d2),{t:0.22}]],lab:Q4,dir:{A:180,C:0},maxH:200});
+ return {type:'num',q:`Диагонали ромба равны ${d1} и ${d2}. Найди площадь ромба.`,pic,ans:S,
+ short:`½ · ${d1} · ${d2} = ${S}.`,
+ explain:`Площадь ромба — половина произведения диагоналей: S = ½ · d₁ · d₂ = ½ · ${d1} · ${d2} = ${d1*d2} : 2 = <b>${S}</b>.`,
+ explain2:`Обведи ромб прямоугольником ${d1} × ${d2}:${fig(pic2)}Диагонали режут прямоугольник на 8 одинаковых треугольников, 4 из них — внутри ромба. Значит, ромб — ровно половина: ${d1*d2} : 2 = ${S}.`};});
+G(5,()=>{const d1=R(4,16),d2=R(4,16);if(d1===d2||d1*d2%2)return null;const S=d1*d2/2;
+ return {type:'num',q:`Площадь ромба ${S}, одна из диагоналей ${d1}. Найди другую диагональ.`,ans:d2,
+ short:`d₂ = 2S : d₁ = ${2*S} : ${d1} = ${d2}.`,
+ explain:`S = ½ · d₁ · d₂ → d₁ · d₂ = 2S = ${2*S}.<br>d₂ = ${2*S} : ${d1} = <b>${d2}</b>.<div class="box err"><b>Ошибка</b>${S} : ${d1} = ${N(Math.round(S/d1*100)/100)} — забыли про ½: сначала удвой площадь.</div>`,
+ explain2:`Прямоугольник, описанный вокруг ромба, имеет площадь вдвое больше: ${2*S}. Его стороны — это диагонали ромба. Одна сторона ${d1}, значит другая ${2*S} : ${d1} = ${d2}.`};});
+G(5,()=>{const a=R(7,16),b=R(3,a-2),h=R(3,9);if((a+b)*h%2)return null;const S=(a+b)*h/2;const sx=(a-b)*R(25,75)/100;const p={A:[0,0],B:[sx,h],C:[sx+b,h],D:[a,0],H:[sx,0]};
+ const pic=geo({P:p,poly:[Q4],seg:[['B','H',{dash:true}]],rt:[['H','D','B']],side:[['A','D',String(a)],['B','C',String(b)],['B','H',String(h),{flip:true}]],maxH:190});
+ const pic2=geo({P:p,poly:[Q4],seg:[['B','D',{col:'var(--accent)'}]],fill:[{pts:['A','B','D'],op:0.4},{pts:['B','C','D'],op:0.15}],side:[['A','D',String(a)],['B','C',String(b)]],lab:Q4,maxH:190});
+ return {type:'num',q:`Основания трапеции ${a} и ${b}, высота ${h}. Найди площадь трапеции.`,pic,ans:S,
+ short:`½ · (${a} + ${b}) · ${h} = ${N(S)}.`,
+ explain:`S = ½ · (a + b) · h = ½ · (${a} + ${b}) · ${h} = ½ · ${a+b} · ${h} = <b>${N(S)}</b>.<div class="box err"><b>Ошибка</b>${a} · ${h} или ${a+b} · ${h} = ${(a+b)*h} — забыли половину суммы оснований.</div>`,
+ explain2:`Разрежь трапецию диагональю BD на два треугольника с одинаковой высотой ${h}:${fig(pic2)}½ · ${a} · ${h} = ${N(a*h/2)} и ½ · ${b} · ${h} = ${N(b*h/2)}. Вместе ${N(S)}.`};});
+G(5,()=>{const a=R(7,18),b=R(2,a-2),h=R(2,10);if((a+b)*h%2)return null;const S=(a+b)*h/2;
+ return {type:'num',q:`Площадь трапеции ${N(S)}, основания ${a} и ${b}. Найди высоту.`,ans:h,
+ short:`h = 2S : (a + b) = ${N(2*S)} : ${a+b} = ${h}.`,
+ explain:`S = ½ · (a + b) · h → h = 2S : (a + b).<br>h = ${N(2*S)} : (${a} + ${b}) = ${N(2*S)} : ${a+b} = <b>${h}</b>.`,
+ explain2:`Средняя линия трапеции m = (${a} + ${b}) : 2 = ${N((a+b)/2)}. Площадь = m · h, значит h = ${N(S)} : ${N((a+b)/2)} = ${h}.`};});
+G(5,()=>{const d=R(2,14);const S=d*d/2;const s=d/Math.SQRT2;const P={A:[0,0],B:[0,s],C:[s,s],D:[s,0]};
+ const pic=geo({P,poly:[Q4],seg:[['A','C']],rt:[['A','D','B']],side:[['A','C',String(d),{flip:true,t:0.6}]],maxH:170,W:220});
+ const pic2=geo({P:Object.assign({},P,{O:[s/2,s/2]}),poly:[Q4],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],fill:[{pts:['A','B','C','D'],op:0.3}],rt:[['O','C','B']],lab:Q4,maxH:170,W:220});
+ return {type:'num',q:`Диагональ квадрата равна ${d}. Найди его площадь.`,pic,ans:S,
+ hint:'Квадрат — это тоже ромб. Какая формула площади ромба?',short:`Квадрат — ромб: S = ½ · ${d} · ${d} = ${N(S)}.`,
+ explain:`Квадрат — частный случай ромба, а у ромба S = ½ · d₁ · d₂. У квадрата диагонали равны: S = ½ · ${d} · ${d} = ${d*d} : 2 = <b>${N(S)}</b>.<div class="box err"><b>Ошибка</b>${d}² = ${d*d} — диагональ это не сторона. Сторона квадрата короче диагонали.</div>`,
+ explain2:`${fig(pic2)}Диагонали квадрата делят его на 4 одинаковых прямоугольных треугольника с катетами ${N(d/2)} и ${N(d/2)}. Площадь одного: ½ · ${N(d/2)} · ${N(d/2)} = ${N(d*d/8)}. Четырёх: ${N(S)}.`};});
+
+/* ===== L6: scaling, ratios ===== */
+G(6,()=>{const k=R(2,6);const fig0=pick(['квадрата','прямоугольника','треугольника']);
+ return {type:'num',q:`Все стороны ${fig0} увеличили в ${k} раза. Во сколько раз увеличилась его площадь?`,ans:k*k,
+ hint:'Попробуй на квадрате со стороной 1.',short:`В ${k}² = ${k*k} раз.`,
+ explain:`При увеличении всех размеров в ${k} раза и «длина», и «высота» становятся в ${k} раза больше. Площадь — произведение двух размеров, поэтому она растёт в ${k} · ${k} = <b>${k*k}</b> раз.<div class="box err"><b>Ловушка</b>Ответ ${k} — неверно. Это верно для периметра, но не для площади.</div>`,
+ explain2:`Проверь на клетках: квадрат 1 × 1 — одна клетка. Квадрат ${k} × ${k} — это ${k} рядов по ${k} клеток = ${k*k} клеток.${k===2?fig(figScale):''} Значит, площадь больше в ${k*k} раз.`};});
+G(6,()=>{const v=pick([[2,3,'увеличили в 2 раза','увеличили в 3 раза'],[3,2,'увеличили в 3 раза','увеличили в 2 раза'],[4,0.5,'увеличили в 4 раза','уменьшили в 2 раза'],[2,0.5,'увеличили в 2 раза','уменьшили в 2 раза'],[6,1/3,'увеличили в 6 раз','уменьшили в 3 раза'],[3,0.5,'увеличили в 3 раза','уменьшили в 2 раза']]);const r=v[0]*v[1];
+ return {type:'num',q:`У прямоугольника длину ${v[2]}, а ширину ${v[3]}. Во сколько раз изменилась площадь? (Если не изменилась — ответ 1.)`,ans:r,
+ short:`${N(v[0])} · ${v[1]<1?'1/'+N(1/v[1]):N(v[1])} = ${N(r)}.`,
+ explain:`Была площадь a · b. Стала (${N(v[0])}a) · (${v[1]<1?'b : '+N(1/v[1]):N(v[1])+'b'}) = ${v[1]<1?`${N(v[0])} : ${N(1/v[1])}`:`${N(v[0])} · ${N(v[1])}`} · ab = <b>${N(r)}</b> · ab.<br>${r===1?'Площадь не изменилась.':r>1?`Площадь увеличилась в ${N(r)} раза.`:''}`,
+ explain2:`Проверь на числах: прямоугольник ${v[1]<1?6:4} × ${v[1]<1?6:3}, площадь ${v[1]<1?36:12}. Новые стороны: ${N((v[1]<1?6:4)*v[0])} и ${N((v[1]<1?6:3)*v[1])}, площадь ${N((v[1]<1?6:4)*v[0]*(v[1]<1?6:3)*v[1])}. Отношение: ${N((v[1]<1?36:12)*r)} : ${v[1]<1?36:12} = ${N(r)}.`};});
+G(6,()=>{for(;;){const m=R(2,7),n=R(2,9);if(m===n)continue;const s=m*R(2,6);const ans=s*n/m;if(ans!==Math.round(ans))continue;
+ const P={A:[m*0.6,5.5],B:[0,0],C:[m+n,0],D:[m,0]};
+ const pic=geo({P,poly:[['A','B','C']],seg:[['A','D']],fill:[{pts:['A','B','D'],op:0.45}],side:[['B','D',String(m)],['D','C',String(n)]],txt:[[[(P.A[0]+P.B[0]+P.D[0])/3,(P.A[1])/3],String(s),{fs:14,col:'var(--accent-ink)',wt:700}],[[(P.A[0]+P.C[0]+P.D[0])/3,P.A[1]/3],'?',{fs:15,col:'var(--accent-ink)',wt:700}]],maxH:180});
+ return {type:'num',q:`Точка D лежит на стороне BC треугольника ABC, BD = ${m}, DC = ${n}. Площадь треугольника ABD равна ${s}. Найди площадь треугольника ADC.`,pic,ans,
+ hint:'У треугольников ABD и ADC общая высота — из вершины A.',short:`Высота общая, площади как основания: ${s} : ${m} · ${n} = ${N(ans)}.`,
+ explain:`Высота из A на прямую BC у треугольников ABD и ADC <b>одна и та же</b>. Значит, их площади относятся как основания BD : DC = ${m} : ${n}.<br>S(ADC) = ${s} · ${n} : ${m} = <b>${N(ans)}</b>.`,
+ explain2:`Найдём высоту явно: S(ABD) = ½ · ${m} · h = ${s} → h = ${2*s} : ${m} = ${N(2*s/m)}. Тогда S(ADC) = ½ · ${n} · ${N(2*s/m)} = ${N(ans)}. Тот же ответ, просто длиннее.`};}});
+G(6,()=>{const s=R(4,30);const askAll=Math.random()<0.6;const P={A:[2,5],B:[0,0],C:[8,0],M:[4,0]};
+ const pic=geo({P,poly:[['A','B','C']],seg:[['A','M']],fill:[{pts:['A','B','M'],op:0.45}],tick:[['B','M',1],['M','C',1]],txt:[[[2,1.6],String(s),{fs:14,col:'var(--accent-ink)',wt:700}]],maxH:170});
+ return {type:'num',q:`AM — медиана треугольника ABC, площадь треугольника ABM равна ${s}. Найди площадь ${askAll?'треугольника ABC':'треугольника AMC'}.`,pic,ans:askAll?2*s:s,
+ short:askAll?`Медиана делит площадь пополам: 2 · ${s} = ${2*s}.`:`Медиана делит площадь пополам: S(AMC) = S(ABM) = ${s}.`,
+ explain:`Медиана AM делит сторону BC пополам: BM = MC. Высота из A у треугольников ABM и AMC общая. Равные основания + общая высота → <b>равные площади</b>.<br>${askAll?`S(ABC) = ${s} + ${s} = <b>${2*s}</b>.`:`S(AMC) = <b>${s}</b>.`}`,
+ explain2:`Представь треугольник как кусок пирога. Если разрезать основание ровно пополам и провести нож из верхушки, обе части получатся одинакового размера, хотя и разной формы. ${askAll?`Весь пирог — две части: ${2*s}.`:`Вторая часть — тоже ${s}.`}`};});
+
+/* ===== L7: Pythagoras ===== */
+const TRIP=[[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[12,16,20],[7,24,25],[15,20,25],[20,21,29]];
+G(7,()=>{const t=pick(TRIP);const [a,b,c]=Math.random()<0.5?t:[t[1],t[0],t[2]];const P={C:[0,0],A:[0,b],B:[a,0]};
+ const pic=geo({P,poly:[['A','B','C']],rt:[['C','A','B']],side:[['C','B',String(a)],['C','A',String(b)],['A','B','?']],maxH:190});
+ return {type:'num',q:`Катеты прямоугольного треугольника равны ${a} и ${b}. Найди гипотенузу.`,pic,ans:c,
+ short:`c² = ${a*a} + ${b*b} = ${c*c}, c = ${c}.`,
+ explain:`По теореме Пифагора c² = a² + b² = ${a}² + ${b}² = ${a*a} + ${b*b} = ${c*c}.<br>c = √${c*c} = <b>${c}</b> (потому что ${c} · ${c} = ${c*c}).<div class="box err"><b>Ловушка</b>${a} + ${b} = ${a+b} — неверно: складываются квадраты, а потом извлекается корень.</div>`,
+ explain2:`Думай о площадях: построй на катетах квадраты — их площади ${a*a} и ${b*b}. Квадрат на гипотенузе имеет площадь ${a*a} + ${b*b} = ${c*c}. Какой сторона у квадрата площади ${c*c}? ${c}.${a===3&&b===4||a===4&&b===3?fig(pyth):''}`};});
+G(7,()=>{const t=pick(TRIP);const [a,b,c]=Math.random()<0.5?t:[t[1],t[0],t[2]];const P={C:[0,0],A:[0,b],B:[a,0]};
+ const pic=geo({P,poly:[['A','B','C']],rt:[['C','A','B']],side:[['C','B',String(a)],['C','A','?'],['A','B',String(c)]],maxH:190});
+ return {type:'num',q:`Гипотенуза прямоугольного треугольника ${c}, один катет ${a}. Найди другой катет.`,pic,ans:b,
+ short:`b² = ${c*c} − ${a*a} = ${b*b}, b = ${b}.`,
+ explain:`c² = a² + b² → b² = c² − a² = ${c}² − ${a}² = ${c*c} − ${a*a} = ${b*b}.<br>b = √${b*b} = <b>${b}</b>.<div class="box err"><b>Ошибка</b>${c*c} + ${a*a} — так находят гипотенузу. А здесь гипотенуза уже дана — значит, вычитаем.</div>`,
+ explain2:`Квадрат на гипотенузе (${c*c}) — это «сумма» двух квадратов на катетах. Один из них знаем (${a*a}), другой — остаток: ${c*c} − ${a*a} = ${b*b}. Сторона квадрата ${b*b} — это ${b}. Проверка: ${a} < ${c} и ${b} < ${c} ✅ — катеты короче гипотенузы.`};});
+G(7,()=>{const t=pick([[5,12,13],[3,4,5],[6,8,10],[8,15,17],[9,12,15],[12,16,20],[7,24,25]]);const half=t[0],h=t[1],l=t[2];const base=2*half;const S=half*h;
+ const P={A:[0,0],B:[half,h],C:[base,0],H:[half,0]};
+ const pic=geo({P,poly:[['A','B','C']],tick:[['A','B',1],['B','C',1]],side:[['A','C',String(base)],['A','B',String(l)],['B','C',String(l)]],lab:['A','B','C'],maxH:190});
+ const pic2=geo({P,poly:[['A','B','C']],seg:[['B','H',{dash:true}]],rt:[['H','C','B']],fill:[{pts:['A','B','H']}],side:[['A','H',String(half)],['A','B',String(l)],['B','H',String(h),{flip:true,col:'var(--accent-ink)'}]],maxH:190});
+ return {type:'num',q:`В равнобедренном треугольнике основание ${base}, а боковые стороны по ${l}. Найди площадь треугольника.`,pic,ans:S,
+ hint:'Проведи высоту к основанию. Она делит основание пополам.',short:`h² = ${l*l} − ${half*half} = ${h*h}, h = ${h}; S = ½ · ${base} · ${h} = ${S}.`,
+ explain:`1) Высота BH к основанию в равнобедренном треугольнике делит основание пополам: AH = ${base} : 2 = ${half}.<br>2) Из прямоугольного △ABH: BH² = AB² − AH² = ${l*l} − ${half*half} = ${h*h}, BH = ${h}.<br>3) S = ½ · ${base} · ${h} = <b>${S}</b>.`,
+ explain2:`${fig(pic2)}Высота режет треугольник на два одинаковых прямоугольных треугольника с гипотенузой ${l} и катетом ${half}. Второй катет (высота) — ${h}, это тройка ${half}, ${h}, ${l}. Площадь одного половинного треугольника ½ · ${half} · ${h} = ${S/2}, двух — ${S}.`};});
+G(7,()=>{const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[12,16,20],[7,24,25]]);const p=t[0],q=t[1],sd=t[2];const d1=2*p,d2=2*q,S=2*p*q;
+ const P={A:[0,q],B:[p,2*q],C:[2*p,q],D:[p,0],O:[p,q]};
+ const pic=geo({P,poly:[Q4],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],tick:[['A','B',1],['B','C',1],['C','D',1],['D','A',1]],side:[['B','C',String(sd)],['A','C',String(d1),{t:0.25}]],lab:Q4,dir:{A:180,C:0},maxH:200});
+ const pic2=geo({P,poly:[Q4],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],fill:[{pts:['O','B','C']}],rt:[['O','C','B']],side:[['B','C',String(sd)],['O','C',String(p),{flip:true}],['O','B','?',{flip:true}]],lab:['A','B','C','D','O'],dir:{A:180,C:0,O:-60},maxH:200});
+ return {type:'num',q:`Сторона ромба ${sd}, одна из диагоналей ${d1}. Найди площадь ромба.`,pic,ans:S,
+ hint:'Диагонали ромба перпендикулярны и делятся пополам. Рассмотри маленький прямоугольный треугольник.',short:`Половина второй диагонали √(${sd*sd} − ${p*p}) = ${q}; d₂ = ${d2}; S = ½ · ${d1} · ${d2} = ${S}.`,
+ explain:`1) Диагонали ромба перпендикулярны и делятся пополам: OC = ${d1} : 2 = ${p}.<br>2) △BOC прямоугольный: OB² = BC² − OC² = ${sd*sd} − ${p*p} = ${q*q}, OB = ${q}.<br>3) BD = 2 · ${q} = ${d2}.<br>4) S = ½ · ${d1} · ${d2} = <b>${S}</b>.`,
+ explain2:`${fig(pic2)}Ромб состоит из 4 одинаковых прямоугольных треугольников с гипотенузой ${sd} и катетом ${p}. Второй катет ${q} (тройка ${p}, ${q}, ${sd}). Площадь одного: ½ · ${p} · ${q} = ${p*q/2}. Четырёх: ${S}.`};});
+G(7,()=>{const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15]]);const x=t[0],h=t[1],l=t[2];const b=R(2,10),a=b+2*x;const S=(a+b)*h/2;
+ const P=isoTrap(a,b,h);P.H=[x,0];
+ const pic=geo({P,poly:[Q4],tick:[['A','B',1],['C','D',1]],side:[['A','D',String(a)],['B','C',String(b)],['A','B',String(l)]],lab:Q4,maxH:190});
+ const pic2=geo({P,poly:[Q4],seg:[['B','H',{dash:true}]],rt:[['H','D','B']],fill:[{pts:['A','B','H']}],side:[['A','H',String(x)],['B','C',String(b)],['A','B',String(l)],['B','H','h',{flip:true,col:'var(--accent-ink)'}]],maxH:190});
+ return {type:'num',q:`Основания равнобедренной трапеции ${a} и ${b}, боковая сторона ${l}. Найди площадь трапеции.`,pic,ans:S,
+ hint:'Опусти высоту из B. Найди AH, потом высоту по Пифагору.',short:`AH = ${x}, h = √(${l*l} − ${x*x}) = ${h}; S = ½ · ${a+b} · ${h} = ${N(S)}.`,
+ explain:`1) AH = (${a} − ${b}) : 2 = ${x}.<br>2) △ABH: BH² = ${l}² − ${x}² = ${l*l} − ${x*x} = ${h*h}, BH = ${h}.<br>3) S = ½ · (${a} + ${b}) · ${h} = ½ · ${a+b} · ${h} = <b>${N(S)}</b>.`,
+ explain2:`${fig(pic2)}В закрашенном прямоугольном треугольнике гипотенуза ${l} и катет ${x}. Это тройка ${x}, ${h}, ${l} → высота ${h}. Дальше обычная формула трапеции: средняя линия ${N((a+b)/2)} · высота ${h} = ${N(S)}.`};});
+
+/* ===== L8: ★ ===== */
+G(8,()=>{const S=6*R(3,20);const ask=pick(['AOB','BOM']);const P={A:[1.6,5.2],B:[0,0],C:[8,0]};P.M=mid(P.B,P.C);P.K=mid(P.A,P.C);P.L=mid(P.A,P.B);P.O=[(P.A[0]+P.B[0]+P.C[0])/3,(P.A[1]+P.B[1]+P.C[1])/3];
+ const ans=ask==='AOB'?S/3:S/6;
+ const pic=geo({P,poly:[['A','B','C']],seg:[['A','M'],['B','K'],['C','L']],fill:[ask==='AOB'?{pts:['A','O','B'],op:0.45}:{pts:['B','O','M'],op:0.45}],tick:[['B','M',1],['M','C',1],['A','K',2],['K','C',2],['A','L',3],['L','B',3]],dots:['O'],dir:{O:-20},maxH:200});
+ const six=[['A','L','O'],['L','B','O'],['B','M','O'],['M','C','O'],['C','K','O'],['K','A','O']];
+ const pic2=geo({P,poly:[['A','B','C']],seg:[['A','M'],['B','K'],['C','L']],fill:six.map((t,i)=>({pts:t,op:i%2?0.15:0.45})),txt:six.map(t=>[[(P[t[0]][0]+P[t[1]][0]+P[t[2]][0])/3,(P[t[0]][1]+P[t[1]][1]+P[t[2]][1])/3],N(S/6),{fs:11,col:'var(--accent-ink)'}]),lab:['A','B','C'],maxH:200});
+ return {type:'num',q:`Площадь треугольника ABC равна ${S}. Его медианы AM, BK и CL пересекаются в точке O. Найди площадь треугольника ${ask}.`,pic,ans,
+ hint:'Медианы делят треугольник на 6 маленьких треугольников. Сравни их площади.',short:`Шесть частей по ${S} : 6 = ${N(S/6)}; ${ask} = ${ask==='AOB'?'две части = '+N(S/3):'одна часть = '+N(S/6)}.`,
+ explain:`1) Медиана AM делит △ABC на две равные по площади половины, так же BK и CL.<br>2) В △OBC медиана OM: S(OBM) = S(OMC) = x. Аналогично S(OCK) = S(OKA) = y, S(OAL) = S(OLB) = z.<br>3) Медиана AM делит △ABC пополам: S(ABM) = z + z + x, S(AMC) = x + y + y, значит 2z + x = x + 2y → z = y. Медиана BK: S(ABK) = z + z + y, S(CBK) = x + x + y → z = x. Значит, x = y = z — <b>все шесть частей равны</b>, каждая ${S} : 6 = ${N(S/6)}.<br>4) ${ask==='AOB'?`△AOB состоит из двух частей (AOL и LOB): ${N(S/6)} · 2 = <b>${N(S/3)}</b>.`:`△BOM — ровно одна из шести частей: <b>${N(S/6)}</b>.`}`,
+ explain2:`${fig(pic2)}Шесть «долек» одинаковые по площади, хотя разные по форме: каждая ${N(S/6)}. ${ask==='AOB'?`Треугольник AOB — это две дольки: ${N(S/3)}.`:`Треугольник BOM — одна долька: ${N(S/6)}.`}`};},true);
+G(8,()=>{for(;;){const Wd=R(4,8),Hd=R(3,6);const y1=R(1,Hd-1),x2=R(1,Wd-1);const S2=2*Wd*Hd-Wd*y1-x2*Hd-(Wd-x2)*(Hd-y1);if(S2<6)continue;const S=S2/2;
+ const ox=R(0,9-Wd),oy=R(0,7-Hd);let A=[0,0],B=[Wd,y1],C=[x2,Hd];
+ const fl=R(0,3);const tf=p=>{let [x,y]=p;if(fl&1)x=Wd-x;if(fl&2)y=Hd-y;return [x+ox,y+oy];};A=tf(A);B=tf(B);C=tf(C);
+ const sh=Math.abs((B[0]-A[0])*(C[1]-A[1])-(C[0]-A[0])*(B[1]-A[1]))/2;if(Math.abs(sh-S)>1e-9)continue;
+ const g=(p,q)=>H.gcd(Math.abs(p[0]-q[0]),Math.abs(p[1]-q[1]));const Bn=g(A,B)+g(B,C)+g(C,A);const In=S-Bn/2+1;
+ const P={A,B,C};const pic=geo({P,extra:[[0,0],[9,7]],grid:[0,0,9,7],poly:[['A','B','C']],fill:[{pts:['A','B','C'],op:0.4}],dots:['A','B','C'],pad:16,W:300,maxH:240});
+ const bx=[Math.min(A[0],B[0],C[0]),Math.min(A[1],B[1],C[1]),Math.max(A[0],B[0],C[0]),Math.max(A[1],B[1],C[1])];
+ const P2=Object.assign({},P,{E:[bx[0],bx[1]],F:[bx[0],bx[3]],K:[bx[2],bx[3]],L:[bx[2],bx[1]]});
+ const t1=Wd*y1/2,t2=x2*Hd/2,t3=(Wd-x2)*(Hd-y1)/2;
+ const pic2=geo({P:P2,extra:[[0,0],[9,7]],grid:[0,0,9,7],poly:[['E','F','K','L'],['A','B','C']],fill:[{pts:['A','B','C'],op:0.45}],lab:['A','B','C'],pad:16,W:300,maxH:240});
+ return {type:'num',q:`Сторона клетки — 1 см. Найди площадь треугольника ABC (в см²).`,pic,ans:S,_pts:[A,B,C],
+ hint:'Обведи треугольник прямоугольником по линиям сетки и вычти лишние прямоугольные треугольники.',short:`${Wd*Hd} − ${N(t1)} − ${N(t2)} − ${N(t3)} = ${N(S)} см².`,
+ explain:`Достроим треугольник до прямоугольника по линиям сетки: ${Wd} × ${Hd} = ${Wd*Hd}.${fig(pic2)}Вокруг треугольника — три прямоугольных треугольника. Их площади (половина произведения катетов):<br>• ½ · ${Wd} · ${y1} = ${N(t1)};<br>• ½ · ${x2} · ${Hd} = ${N(t2)};<br>• ½ · ${Wd-x2} · ${Hd-y1} = ${N(t3)}.<br>S = ${Wd*Hd} − ${N(t1)} − ${N(t2)} − ${N(t3)} = <b>${N(S)} см²</b>.`,
+ explain2:`Проверка формулой Пика: S = В + Г : 2 − 1, где В — узлы сетки строго внутри треугольника, Г — узлы на его сторонах (вместе с вершинами). Здесь Г = ${Bn}, В = ${In}. S = ${In} + ${Bn} : 2 − 1 = ${N(S)} ✅. Сосчитай узлы на картинке сам — должно совпасть.`};}},true);
+G(8,()=>{const p=R(1,5),q=R(2,7);if(p>=q)return null;const BC=2*p,AD=2*q,h=p+q;const sx=(AD-BC)*R(20,80)/100;
+ const P={A:[0,0],B:[sx,h],C:[sx+BC,h],D:[AD,0]};P.O=inter(P.A,P.C,P.B,P.D);const cen3=(a,b,c)=>[(P[a][0]+P[b][0]+P[c][0])/3,(P[a][1]+P[b][1]+P[c][1])/3];const tot=(p+q)*(p+q);
+ const pic=geo({P,poly:[Q4],seg:[['A','C'],['B','D']],fill:[{pts:['B','O','C'],op:0.45},{pts:['A','O','D'],op:0.45}],txt:[[cen3('B','O','C'),String(p*p),{fs:13,col:'var(--accent-ink)',wt:700}],[cen3('A','O','D'),String(q*q),{fs:14,col:'var(--accent-ink)',wt:700}]],lab:Q4,maxH:210});
+ const pic2=geo({P,poly:[Q4],seg:[['A','C'],['B','D']],fill:[{pts:['A','B','O'],op:0.4},{pts:['C','D','O'],op:0.4}],txt:[[cen3('B','O','C'),String(p*p),{fs:12}],[cen3('A','O','D'),String(q*q),{fs:12}],[cen3('A','B','O'),String(p*q),{fs:13,col:'var(--accent-ink)',wt:700}],[cen3('C','D','O'),String(p*q),{fs:13,col:'var(--accent-ink)',wt:700}]],lab:Q4,maxH:210});
+ return {type:'num',q:`Диагонали трапеции ABCD (AD ∥ BC) пересекаются в точке O. Площади треугольников BOC и AOD равны ${p*p} и ${q*q}. Найди площадь трапеции.`,pic,ans:tot,
+ hint:'Сначала докажи, что S(AOB) = S(COD). Потом сравни треугольники с общей высотой.',short:`Боковые треугольники по √(${p*p} · ${q*q}) = ${p*q}; S = ${p*p} + ${q*q} + 2 · ${p*q} = ${tot}.`,
+ explain:`1) S(ABD) = S(ACD): общее основание AD и одинаковая высота (BC ∥ AD). Вычтем общий △AOD → S(AOB) = S(COD) = x.<br>2) △BOC и △COD имеют общую высоту из C на BD → S(BOC) : S(COD) = BO : OD.<br>3) △AOB и △AOD имеют общую высоту из A → S(AOB) : S(AOD) = BO : OD.<br>4) Значит, ${p*p} : x = x : ${q*q} → x² = ${p*p} · ${q*q} = ${p*p*q*q} → x = ${p*q}.<br>5) S = ${p*p} + ${q*q} + ${p*q} + ${p*q} = <b>${tot}</b>.`,
+ explain2:`${fig(pic2)}Красивое правило: площадь всей трапеции = (√${p*p} + √${q*q})² = (${p} + ${q})² = ${tot}. Проверим по формуле трапеции на нашем рисунке: основания ${BC} и ${AD}, высота ${h}: ½ · (${BC} + ${AD}) · ${h} = ${tot} ✅.`};},true);
+G(8,()=>{const S=2*R(10,60);const ask=pick(['AMD','sum']);const a=10,h=R(45,60)/10,sx=R(15,35)/10;const P=paraH(a,h,sx);const t=R(25,75)/100;P.M=lerp(P.B,P.C,t);
+ const pic=geo({P,poly:[Q4],seg:[['A','M'],['M','D']],fill:ask==='AMD'?[{pts:['A','M','D'],op:0.45}]:[{pts:['A','B','M'],op:0.45},{pts:['M','C','D'],op:0.45}],maxH:190});
+ P.H=[P.M[0],0];const pic2=geo({P,poly:[Q4],seg:[['A','M'],['M','D'],['M','H',{dash:true}]],rt:[['H','D','M']],fill:[{pts:['A','M','D'],op:0.45}],side:[['A','D','a'],['M','H','h',{flip:true}]],maxH:190});
+ return {type:'num',q:`Площадь параллелограмма ABCD равна ${S}. Точка M — произвольная точка стороны BC. Найди ${ask==='AMD'?'площадь треугольника AMD':'сумму площадей треугольников ABM и MCD'}.`,pic,ans:S/2,
+ hint:'У треугольника AMD и параллелограмма общее основание AD. А высота?',short:`S(AMD) = ½ · AD · h = ½ · ${S} = ${S/2}${ask==='sum'?'; остаток тоже '+(S/2):''}.`,
+ explain:`1) У △AMD основание AD, а высота из M на AD равна высоте параллелограмма h (M лежит на BC ∥ AD).<br>2) S(AMD) = ½ · AD · h = ½ · S(ABCD) = ½ · ${S} = ${S/2}.${ask==='sum'?`<br>3) Треугольники ABM и MCD заполняют остаток: ${S} − ${S/2} = <b>${S/2}</b>.`:`<br>Ответ: <b>${S/2}</b>.`}<br>Где именно стоит M — неважно!`,
+ explain2:`${fig(pic2)}Двигай точку M по стороне BC — основание AD и высота h не меняются, значит, площадь треугольника AMD тоже. Поставь M прямо в B: тогда AMD = ABD — половина параллелограмма (диагональ делит его пополам). Значит, всегда ${S/2}.`};},true);
+G(8,()=>{const rect=Math.random()<0.5;const a=R(4,16),b=rect?R(3,14):a;if(rect&&(a===b||a*b%2))return null;const ans=a*b/2;
+ const P={A:[0,0],B:[0,b],C:[a,b],D:[a,0],K:[0,b/2],L:[a/2,b],M:[a,b/2],N:[a/2,0]};
+ const pic=geo({P,poly:[Q4,['K','L','M','N']],fill:[{pts:['K','L','M','N'],op:0.45}],side:[['A','D',String(a)],['A','B',String(b)]],lab:Q4,maxH:190,W:rect?300:220});
+ const pic2=geo({P,poly:[Q4,['K','L','M','N']],seg:[['K','M',{dash:true}],['L','N',{dash:true}]],fill:[{pts:['K','L','M','N'],op:0.45}],lab:Q4,maxH:190,W:rect?300:220});
+ return {type:'num',q:`Середины сторон ${rect?`прямоугольника ${a} × ${b}`:`квадрата со стороной ${a}`} последовательно соединили. Найди площадь получившегося четырёхугольника.`,pic,ans,
+ hint:'Проведи две средние линии (через середины противоположных сторон).',short:`Ровно половина: ${a*b} : 2 = ${N(ans)}.`,
+ explain:`Способ «вычесть уголки»: от ${rect?'прямоугольника':'квадрата'} (${a*b}) отрезаны 4 одинаковых прямоугольных треугольника с катетами ${N(a/2)} и ${N(b/2)}. Площадь одного ½ · ${N(a/2)} · ${N(b/2)} = ${N(a*b/8)}, четырёх — ${N(a*b/2)}.<br>S = ${a*b} − ${N(a*b/2)} = <b>${N(ans)}</b>.<br>(${rect?'Получился ромб с диагоналями '+a+' и '+b+': ½ · '+a+' · '+b+' = '+N(ans)+'.':'Получился квадрат, повёрнутый на 45°.'})`,
+ explain2:`Разрежь пунктиром на 4 маленьких прямоугольника.${fig(pic2)}В каждом маленьком прямоугольнике диагональ делит его пополам: одна половина внутри новой фигуры, другая снаружи. Значит, внутри — ровно половина всего: ${N(ans)}.`};},true);
+G(8,()=>{const t=pick([[3,4,5],[6,8,10],[9,12,15],[12,16,20],[15,20,25],[12,9,15],[8,6,10]]);const [a,b,c]=t;const h=a*b/c;const P={C:[0,0],A:[0,b],B:[a,0]};P.H=foot(P.C,P.A,P.B);
+ const pic=geo({P,poly:[['A','B','C']],seg:[['C','H',{dash:true}]],rt:[['C','A','B'],['H','B','C']],side:[['C','B',String(a)],['C','A',String(b)],['C','H','?',{flip:true}]],maxH:200});
+ return {type:'num',q:`Катеты прямоугольного треугольника ${a} и ${b}. Найди высоту, проведённую к гипотенузе.`,pic,ans:h,
+ hint:'Найди гипотенузу, а потом посчитай площадь двумя способами.',short:`c = ${c}; S = ½ · ${a} · ${b} = ${a*b/2}; h = 2S : c = ${a*b} : ${c} = ${N(h)}.`,
+ explain:`1) Гипотенуза: c² = ${a*a} + ${b*b} = ${c*c}, c = ${c}.<br>2) Площадь через катеты: S = ½ · ${a} · ${b} = ${N(a*b/2)}.<br>3) Та же площадь через гипотенузу и высоту к ней: S = ½ · ${c} · h.<br>4) ½ · ${c} · h = ${N(a*b/2)} → h = ${a*b} : ${c} = <b>${N(h)}</b>.`,
+ explain2:`Главная идея — «площадь одна, формулы две». Как в задаче про две высоты параллелограмма: катеты ${a} · ${b} = ${a*b} — это удвоенная площадь. Её же можно записать как гипотенуза · высота: ${c} · h = ${a*b}. Делим: h = ${N(h)}. Проверка: высота короче обоих катетов (${N(h)} < ${Math.min(a,b)}) ✅.`};},true);
+G(8,()=>{const p=pick([10,20,30,50]);const both=Math.random()<0.5;
+ const ans=both?((100+p)*(100+p)-10000)/100:p*p/100;
+ return {type:'num',q:both?`Каждую сторону прямоугольника увеличили на ${p}%. На сколько процентов увеличилась его площадь?`:`Длину прямоугольника увеличили на ${p}%, а ширину уменьшили на ${p}%. На сколько процентов <b>уменьшилась</b> его площадь?`,ans,
+ hint:'Возьми прямоугольник 10 × 10 (площадь 100) и посчитай.',short:both?`1,${p===50?'5':String(p/10)} · 1,${p===50?'5':String(p/10)} = ${N((100+p)*(100+p)/10000)} → +${N(ans)}%.`:`${N(1+p/100)} · ${N(1-p/100)} = ${N((100+p)*(100-p)/10000)} → −${N(ans)}%.`,
+ explain:both?`Стороны умножились на ${N(1+p/100)}. Площадь умножилась на ${N(1+p/100)} · ${N(1+p/100)} = ${N((100+p)*(100+p)/10000)}, то есть выросла на <b>${N(ans)}%</b>.<div class="box err"><b>Ловушка</b>${p}% + ${p}% = ${2*p}% — неверно: проценты от уже увеличенной стороны тоже «набегают».</div>`:`Площадь умножилась на ${N(1+p/100)} · ${N(1-p/100)} = ${N((100+p)*(100-p)/10000)} = 1 − ${N(ans/100)}, то есть уменьшилась на <b>${N(ans)}%</b>.<div class="box err"><b>Ловушка</b>«+${p}% и −${p}% — ничего не изменится» — неверно! Уменьшение считается от уже увеличенной длины.</div>`,
+ explain2:both?`Возьми квадрат 10 × 10, площадь 100. Новые стороны ${N(10+p/10)} × ${N(10+p/10)}, площадь ${N((10+p/10)**2)}. Было 100 — стало ${N((10+p/10)**2)}: прибавилось ${N(ans)}, это ${N(ans)}% от 100. Картинка: к квадрату пристроили две полоски и маленький уголок — вот этот уголок и даёт «лишние» ${N(p*p/100)}%.`:`Возьми квадрат 10 × 10, площадь 100. Стало ${N(10+p/10)} × ${N(10-p/10)} = ${N((10+p/10)*(10-p/10))}. Было 100, стало ${N(100-ans)}: меньше на ${N(ans)}, то есть на ${N(ans)}%.`};},true);
+G(8,()=>{const x=R(2,7),X=R(2,8),y=R(2,6),Y=R(2,7);if(x===X&&y===Y)return null;const a=x*y,b=X*y,c=x*Y,d=X*Y;
+ const P={A:[0,0],B:[0,y+Y],C:[x+X,y+Y],D:[x+X,0],E:[x,0],F:[x,y+Y],K:[0,Y],L:[x+X,Y]};
+ const pic=geo({P,poly:[Q4],seg:[['E','F'],['K','L']],txt:[[[x/2,Y+y/2],String(a),{fs:15,col:'var(--accent-ink)',wt:700}],[[x+X/2,Y+y/2],String(b),{fs:15,col:'var(--accent-ink)',wt:700}],[[x/2,Y/2],String(c),{fs:15,col:'var(--accent-ink)',wt:700}],[[x+X/2,Y/2],'?',{fs:16,col:'var(--accent-ink)',wt:700}]],lab:[],maxH:200});
+ return {type:'num',q:`Прямоугольник разрезан двумя прямыми, параллельными его сторонам, на четыре прямоугольника. Площади трёх из них показаны на рисунке. Найди площадь четвёртого.`,pic,ans:d,
+ hint:'Обозначь стороны маленьких прямоугольников буквами. Что общего у прямоугольников в одной строке?',short:`${b} · ${c} : ${a} = ${d}.`,
+ explain:`Пусть ширины столбцов x и X, высоты строк y и Y. Тогда площади: x·y = ${a}, X·y = ${b}, x·Y = ${c}, а нужная X·Y.<br>Заметим: (X·y) · (x·Y) = (x·y) · (X·Y) — в обеих частях одни и те же четыре множителя.<br>Значит, ${b} · ${c} = ${a} · ?, и ? = ${b*c} : ${a} = <b>${d}</b>.`,
+ explain2:`Через отношения: у верхних прямоугольников высота общая, поэтому их площади относятся как ширины столбцов: ${b} : ${a}. Нижние прямоугольники стоят в тех же столбцах, значит и ? : ${c} = ${b} : ${a}. Отсюда ? = ${c} · ${b} : ${a} = ${c*b} : ${a} = ${d}.`};},true);
+
+window.TOPIC={id:'ploshchad',title:'Площадь',subtitle:'Геометрия · 8 класс',
+intro:`<p>Здесь всё про площадь: что это такое, в чём её измеряют (и почему 1 м² — это не 100 см²), формулы площади прямоугольника, параллелограмма, треугольника, ромба и трапеции, и теорема Пифагора. Каждая формула объяснена через «разрежь и переложи». Читай по порядку, потом переходи к задачам.</p>`,
+theory,symbols,figs:{},
+levels:['Что такое площадь. Единицы','Прямоугольник и квадрат','Составные фигуры','Параллелограмм','Треугольник','Ромб и трапеция','Как меняется площадь','Теорема Пифагора','★ Уровня олимпиад / Сириус'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
