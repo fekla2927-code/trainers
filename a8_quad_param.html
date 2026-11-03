@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Квадратные уравнения с параметром — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,gcd}=H;
+const M=s=>`<span class="m">${s}</span>`;
+const n=x=>H.num(x);
+const sq=x=>H.sqrt(x);
+const fr=(a,b)=>H.frac(a,b);
+const P=x=>x<0?`(${n(x)})`:n(x);
+function poly(ts){let s='';ts.forEach(([c,v])=>{if(!c)return;const neg=c<0,a=Math.abs(c);const body=v?(a===1?'':n(a))+v:n(a);s+=s?(neg?' − ':' + ')+body:(neg?'−':'')+body;});return s||'0';}
+const Q=(a,b,c,v)=>{v=v||'x';return poly([[a,v+'²'],[b,v],[c,'']]);};
+const tail=ts=>{const s=poly(ts);return s==='0'?'':(s[0]==='−'?' − '+s.slice(1):' + '+s);};
+function rat(p,q){if(q<0){p=-p;q=-q;}const g=gcd(p,q)||1;p/=g;q/=g;return q===1?n(p):(p<0?'−':'')+fr(Math.abs(p),q);}
+function mk(correct,traps){const o=[correct];traps.forEach(t=>{if(t&&!o.includes(t))o.push(t);});const s=shuffle(o);return {opts:s,ans:s.indexOf(correct)};}
+const nz=(a,b)=>{let v;do{v=R(a,b);}while(!v);return v;};
+const sgn=v=>v<0?'−':'+';
+const lin=(c,v)=>`(${v||'a'} ${sgn(-c)} ${Math.abs(c)})`; // (a − c)
+const setTxt=arr=>arr.length?'{'+arr.join(', ')+'}':'∅';
+const AKEYS=['∅','−','/'];const APH='значения a через запятую, нет таких — ∅';
+/* число действительных корней ax²+bx+c=0 (с учётом a=0); Infinity — любое x */
+function nroots(a,b,c){const e=1e-12;if(Math.abs(a)<e){if(Math.abs(b)<e)return Math.abs(c)<e?Infinity:0;return 1;}const D=b*b-4*a*c;return D>e?2:D<-e?0:1;}
+function rootsOf(a,b,c){if(!a){if(!b)return [];return [-c/b];}const D=b*b-4*a*c;if(D<-1e-12)return [];if(Math.abs(D)<1e-12)return [-b/(2*a)];const s=Math.sqrt(D);return [(-b-s)/(2*a),(-b+s)/(2*a)].sort((x,y)=>x-y);}
+const grid=(f)=>{for(let i=-160;i<=160;i++){const a=i/8;const r=f(a);if(r!==true)return `a=${a}: ${r}`;}return true;};
+
+/* ---------- парабола ---------- */
+function plot(a,b,c,o){o=o||{};const W=320,Hh=230,X0=160,Y0=o.y0||125,s=18;
+  let g=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="График" style="font-family:system-ui,sans-serif">`;
+  for(let i=-8;i<=8;i++){const x=X0+i*s;g+=`<line x1="${x}" y1="0" x2="${x}" y2="${Hh}" stroke="var(--line)" stroke-width="1"/>`;}
+  for(let j=-8;j<=8;j++){const y=Y0-j*s;if(y<0||y>Hh)continue;g+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="var(--line)" stroke-width="1"/>`;}
+  g+=`<line x1="0" y1="${Y0}" x2="${W}" y2="${Y0}" stroke="var(--fig)" stroke-width="1.4"/><line x1="${X0}" y1="0" x2="${X0}" y2="${Hh}" stroke="var(--fig)" stroke-width="1.4"/>`;
+  g+=`<text x="${W-8}" y="${Y0-6}" font-size="13" fill="var(--ink)" text-anchor="end">x</text><text x="${X0+7}" y="13" font-size="13" fill="var(--ink)">y</text>`;
+  [-6,-4,-2,2,4,6].forEach(t=>{g+=`<text x="${X0+t*s}" y="${Y0+14}" font-size="10" fill="var(--muted)" text-anchor="middle">${n(t)}</text>`;});
+  let d='';for(let x=-9.2;x<=9.2;x+=0.05){const xx=o.abs?Math.abs(x):x;let y=a*xx*xx+b*xx+c;let py=Y0-y*s;py=Math.max(-60,Math.min(Hh+60,py));d+=(d?'L':'M')+(X0+x*s).toFixed(1)+','+py.toFixed(1);}
+  g+=`<path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2.6"/>`;
+  if(o.hline!=null){const y=Y0-o.hline*s;g+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="var(--hl)" stroke-width="2" stroke-dasharray="6 4"/>`;}
+  (o.roots||[]).forEach(r=>{g+=`<circle cx="${X0+r*s}" cy="${Y0}" r="5" fill="var(--hl)" stroke="var(--card)" stroke-width="1.5"/>`;});
+  return g+'</svg>';}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Что такое параметр',lvl:0,html:`
+<p class="hook">🎮 В игре есть ползунок «сложность». Уровень один и тот же, но при разной сложности он проходится совсем по-разному. <b>Параметр</b> — это такой ползунок для уравнения. Вопрос «при каких a уравнение имеет два корня?» — это вопрос «на каких настройках уровень проходится двумя способами?».</p>
+<div class="box rule"><b>Определение</b><b>Параметр</b> — буква (обычно a), которая обозначает какое-то фиксированное, но <b>любое</b> число. Для каждого значения a получается своё уравнение. Решить уравнение с параметром — значит для <b>каждого</b> a сказать, какие у него корни.</div>
+<div class="box ex"><b>Пример</b>${M('x² − 4x + a = 0')} — это целое семейство:<br>a = 3: ${M('x² − 4x + 3 = 0')} → корни 1 и 3;<br>a = 4: ${M('x² − 4x + 4 = 0')} → один корень 2;<br>a = 5: ${M('x² − 4x + 5 = 0')} → корней нет.</div>
+<div class="box err"><b>Частая ошибка</b>Пытаться «найти a» из уравнения, как второе неизвестное. Неизвестное — x, а a — «настройка», которую мы перебираем.</div>
+<p><b>Поиграй:</b> двигай параметр a — смотри, как парабола поднимается и опускается и как меняется число корней.</p>
+<div class="widget" id="w-param"></div>
+<div class="fact">Задача с параметром — одна из самых «дорогих» в профильном ЕГЭ по математике: за неё дают 4 первичных балла. Всё, что там нужно, начинается с квадратного уравнения и дискриминанта.</div>`},
+{title:'Ловушка a = 0',lvl:1,html:`
+<div class="box rule"><b>Правило</b>Если параметр стоит <b>при x²</b>, сначала отдельно разбери значение, при котором старший коэффициент равен 0. Тогда уравнение <b>не квадратное, а линейное</b> — и дискриминант к нему не применяют.</div>
+<div class="box ex"><b>Пример</b>${M('ax² − 4x + 1 = 0')}.<br>• a = 0: ${M('−4x + 1 = 0')} → x = ${fr(1,4)} — один корень.<br>• a ≠ 0: квадратное, D/4 = 4 − a.</div>
+<div class="box ex"><b>Пример с подвохом</b>${M('(a − 2)x² + (a − 2)x + 3 = 0')} при a = 2: ${M('0·x² + 0·x + 3 = 0')} → 3 = 0 — корней нет совсем.</div>
+<div class="box err"><b>Самая частая ошибка в задачах с параметром</b>Сразу писать D = b² − 4ac, «забыв», что при a = 0 формула бессмысленна. Многие теряют баллы именно здесь.</div>`},
+{title:'Два корня или ни одного',lvl:2,html:`
+<div class="box rule"><b>Правило (для квадратного уравнения)</b>Два различных корня ⇔ <b>D > 0</b>. Нет корней ⇔ <b>D < 0</b>. Хотя бы один корень ⇔ <b>D ≥ 0</b>.</div>
+<ol class="steps"><li>Выпиши D через a.</li><li>Реши неравенство (D > 0 или D < 0) относительно a.</li><li>Если a стоит при x² — исключи (или отдельно рассмотри) a, обнуляющее старший коэффициент.</li></ol>
+<div class="box ex"><b>Пример 1</b>${M('x² − 6x + a = 0')}: D/4 = 9 − a. Два корня при 9 − a > 0, т. е. <b>a < 9</b>; нет корней при <b>a > 9</b>.</div>
+<div class="box ex"><b>Пример 2</b>${M('x² + ax + 4 = 0')}: D = a² − 16 > 0 ⇔ |a| > 4 ⇔ <b>a < −4 или a > 4</b>.</div>
+<div class="box ex"><b>Пример 3</b>${M('ax² + 2x + 1 = 0')}: два корня — нужно a ≠ 0 и D/4 = 1 − a > 0. Ответ: <b>a < 1, a ≠ 0</b>.</div>
+<div class="box err"><b>Ловушки</b>• Строгое или нестрогое: «два корня» — D > 0 (строго).<br>• ${M('a² > 16')} — это не «a > 4», а «a < −4 или a > 4».</div>`},
+{title:'Ровно один корень',lvl:3,html:`
+<div class="box rule"><b>Правило</b>Квадратное уравнение имеет ровно один корень ⇔ <b>D = 0</b>. Корень тогда x = −b/(2a).<br>Если a стоит при x², добавь значения a, при которых уравнение линейное и имеет один корень.</div>
+<div class="box ex"><b>Пример</b>${M('x² + ax + 9 = 0')}: D = a² − 36 = 0 → a = ±6.</div>
+<div class="box ex"><b>Пример с ловушкой</b>${M('ax² + 4x + 2 = 0')}: при a = 0 → 4x + 2 = 0, x = −½ — один корень! При a ≠ 0: D/4 = 4 − 2a = 0 → a = 2. Ответ: <b>a = 0 или a = 2</b>.</div>
+<div class="box err"><b>Ошибка</b>Ответить только «a = 2» — потерять a = 0.</div>`},
+{title:'Если известен корень',lvl:4,html:`
+<div class="box rule"><b>Правило</b>Число x₀ — корень уравнения ⇔ при подстановке x = x₀ получается верное равенство. Подставь x₀ — получишь уравнение для a.</div>
+<div class="box ex"><b>Пример</b>При каком a число 2 — корень ${M('x² + ax − 10 = 0')}? 4 + 2a − 10 = 0 → a = 3. Второй корень по Виета: 2·x₂ = −10 → x₂ = −5.</div>
+<div class="box tip"><b>Совет</b>После нахождения a второй корень удобно искать по теореме Виета — через произведение или сумму.</div>`},
+{title:'Знаки корней',lvl:5,html:`
+<div class="box rule"><b>Правила (ax² + bx + c = 0, a ≠ 0)</b>
+• Корни <b>разных знаков</b> ⇔ ${M('c/a < 0')}. D проверять не нужно: при ac < 0 он сам положителен.<br>
+• Два различных <b>положительных</b> ⇔ D > 0, ${M('−b/a > 0')}, ${M('c/a > 0')}.<br>
+• Два различных <b>отрицательных</b> ⇔ D > 0, ${M('−b/a < 0')}, ${M('c/a > 0')}.</div>
+<p><b>Почему?</b> Теорема Виета: произведение c/a и сумма −b/a «знают» знаки корней.</p>
+<div class="box ex"><b>Пример</b>При каких a оба корня ${M('x² − 6x + a = 0')} положительны и различны? D/4 = 9 − a > 0, сумма 6 > 0, произведение a > 0. Ответ: <b>0 < a < 9</b>.</div>
+<div class="box err"><b>Ловушка</b>Забыть про D: при a = 10 сумма и произведение «положительны», но корней нет.</div>`},
+{title:'Условия на корни',lvl:6,html:`
+<div class="box rule"><b>Метод</b>Условие на корни (отношение, разность, сумма квадратов…) записываем через Виета, решаем относительно a, а потом <b>обязательно проверяем D ≥ 0</b>.</div>
+<div class="box ex"><b>Пример</b>При каких a сумма корней ${M('x² + (a² − 4a)x − 1 = 0')} равна −5? Сумма = −(a² − 4a) = −5 → a² − 4a − 5 = 0 → a = 5 или a = −1. Проверка: свободный член −1 < 0 → D > 0 всегда. Оба подходят.</div>
+<div class="box ex"><b>Пример с минимумом</b>${M('x² − ax + a − 2 = 0')}: D = (a − 2)² + 4 > 0. x₁² + x₂² = a² − 2(a − 2) = (a − 1)² + 3 — наименьшее значение 3 при a = 1.</div>`},
+{title:'★ Олимпиадные приёмы',lvl:7,html:`
+<div class="box rule"><b>Общий корень двух уравнений</b>Вычти одно уравнение из другого — x² исчезнет, останется линейное. Найдёшь общий корень (или условие на a) — подставь обратно.</div>
+<div class="box rule"><b>Корни «видны» сразу</b>Если D — полный квадрат по a (например, ${M('(a − 1)²')}), корни выражаются через a без корней: найди их и работай с ними напрямую.</div>
+<div class="box rule"><b>Модуль и график</b>${M('x² − 4|x| + a = 0')} ⇔ ${M('x² − 4|x| = −a')}. Нарисуй «W»-график y = x² − 4|x| и двигай горизонтальную прямую y = −a: число пересечений = число корней.</div>
+<div class="fig">${plot(1,-4,0,{abs:true,hline:-2})}</div>
+<div class="box rule"><b>Целые корни</b>Из Виета получи соотношение только между корнями (без a), разложи на множители, перебери делители.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps"><li>a при x² → сначала случай, когда старший коэффициент = 0.</li>
+<li>2 корня: D > 0; 0 корней: D < 0; 1 корень: D = 0 (+ линейный случай).</li>
+<li>Знаки: c/a < 0 → разные; D > 0, c/a > 0 и знак −b/a → оба одного знака.</li>
+<li>Условия на корни → Виета → проверь D ≥ 0.</li></ul>`}
+];
+
+const symbols={tab:'Формулы',title:'Что проверять в задачах с параметром',rows:[
+['a = 0?','Старший коэффициент','Если он зависит от a — отдельно случай, когда он равен 0 (уравнение линейное).',M('ax² + 2x + 1: при a = 0 → x = −½')],
+['D > 0','Два различных корня','Решаем неравенство относительно a.',M('x² − 6x + a: a < 9')],
+['D = 0','Ровно один корень','Корень x = −b/(2a).',M('x² + ax + 9: a = ±6')],
+['D < 0','Нет корней','Парабола не касается оси x.',M('x² − 6x + a: a > 9')],
+['D ≥ 0','Хотя бы один корень','Нестрогое неравенство.',M('x² − 6x + a: a ≤ 9')],
+['c/a < 0','Корни разных знаков','D проверять не нужно.',M('x² + 3x + a − 2: a < 2')],
+['D > 0, −b/a > 0, c/a > 0','Два положительных корня','Все три условия сразу.',M('x² − 6x + a: 0 < a < 9')]
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Параметр при x² — первым делом проверь, что будет при обнулении этого коэффициента.</div>`};
+
+/* ---------- generators ---------- */
+const gens=[];
+const G=(lvl,make,f)=>gens.push({lvl,make,star:f==='s'||undefined,rule:f==='r'||undefined});
+
+/* L0 */
+G(0,()=>{const ok='буква, которая обозначает фиксированное, но любое число; при каждом её значении получается своё уравнение';
+const o=mk(ok,['вторая неизвестная, которую нужно найти вместе с x','другое название коэффициента b','число, которое всегда равно нулю']);
+return {type:'choice',q:'Что такое <b>параметр</b> в уравнении вроде x² − 4x + a = 0?',...o,short:'Параметр — «настройка»: для каждого a своё уравнение.',
+explain:`Параметр a — это <b>фиксированное число</b>, только мы не знаем заранее какое. Для каждого a получается своё уравнение относительно x: a = 3 → x² − 4x + 3 = 0, a = 5 → x² − 4x + 5 = 0.<br>Неизвестное здесь только x. Задача обычно звучит так: «при каких a у уравнения такие-то корни».`,
+explain2:`Сравни с игрой: уровень один, а ползунок «сложность» меняет, как он проходится. Параметр — ползунок, уравнение — уровень.`};},'r');
+G(0,()=>{let r1,r2;do{r1=nz(-7,7);r2=nz(-7,7);}while(r1===r2||r1+r2===0);const A=r1+r2,q=r1*r2;
+return {type:'set',q:`Реши уравнение ${M(`x² − ax ${sgn(q)} ${Math.abs(q)} = 0`)} при a = ${n(A)}.`,ans:[r1,r2],keys:AKEYS,ph:'корни через запятую',
+hint:'Подставь значение a — получится обычное квадратное уравнение.',short:`${M(Q(1,-A,q)+' = 0')} → ${n(r1)}, ${n(r2)}.`,
+explain:`Подставляем a = ${n(A)}: ${M(`x² − ${P(A)}·x ${sgn(q)} ${Math.abs(q)} = 0`)} → ${M(Q(1,-A,q)+' = 0')}.<br>D = ${A*A} ${sgn(-4*q)} ${Math.abs(4*q)} = ${(r1-r2)**2}, x = ${fr(`${n(A)} ± ${Math.abs(r1-r2)}`,2)} → <b>${n(Math.min(r1,r2))} и ${n(Math.max(r1,r2))}</b>.`,
+explain2:`По Виета: сумма корней ${n(A)}, произведение ${n(q)} — это ${n(r1)} и ${n(r2)}. Осторожно со знаком: «−ax» при a = ${n(A)} даёт ${poly([[-A,'x']])}.`};});
+G(0,()=>{const m=R(1,4);const a=pick([m*m-R(1,6),m*m,m*m+R(1,6)]);const cnt=nroots(1,-2*m,a);
+return {type:'num',q:`Сколько корней имеет уравнение ${M(`x² − ${2*m}x + a = 0`)} при a = ${n(a)}?`,ans:cnt,hint:'Подставь a и посчитай D (или D/4).',
+short:`D/4 = ${m*m} − ${P(a)} = ${m*m-a} → ${cnt}.`,
+explain:`При a = ${n(a)}: ${M(Q(1,-2*m,a)+' = 0')}. D/4 = ${m*m} − ${P(a)} = ${m*m-a}.<br>${m*m-a>0?'D > 0 → <b>2</b> корня.':m*m-a===0?'D = 0 → <b>1</b> корень.':'D < 0 → корней нет: <b>0</b>.'}`,
+explain2:`Посмотри на граничное значение: при a = ${m*m} будет полный квадрат (x − ${m})² — один корень. a меньше ${m*m} — два корня, больше — ни одного. У нас a = ${n(a)}.<div class="fig">${plot(1,-2*m,a,{roots:rootsOf(1,-2*m,a)})}</div>`};});
+
+/* L1 */
+G(1,()=>{const ok='отдельно рассмотреть значение a, при котором этот коэффициент равен 0: уравнение станет линейным';
+const o=mk(ok,['сразу посчитать дискриминант — он работает при любом a','считать, что коэффициент при x² никогда не равен нулю','подставить a = 1 и решить']);
+return {type:'choice',q:'Коэффициент при x² зависит от параметра (например, (a − 3)x² + 2x − 1 = 0). Что нужно сделать в первую очередь?',...o,short:'Разобрать случай «старший коэффициент = 0».',
+explain:`При a = 3 коэффициент при x² равен 0, и уравнение превращается в <b>линейное</b>: 2x − 1 = 0, x = ½. Дискриминант для него не имеет смысла.<br>Поэтому сначала случай a = 3, а потом a ≠ 3 — уже квадратное уравнение.`,
+explain2:`Это как проверить, не пустая ли коробка, прежде чем считать, сколько в ней вещей. Формула D = b² − 4ac — только для квадратных уравнений.`};},'r');
+G(1,()=>{const o=mk('нет: при a = 0 оно становится линейным',['да, при любом a','нет: при a = 0 у него точно нет корней','да, если b ≠ 0']);
+return {type:'choice',q:`Верно ли, что уравнение ${M('ax² + 3x − 2 = 0')} — квадратное при <b>любом</b> a?`,...o,short:'При a = 0 — линейное 3x − 2 = 0.',
+explain:`Квадратное уравнение требует, чтобы коэффициент при x² был ≠ 0. При a = 0 получаем ${M('3x − 2 = 0')} — линейное уравнение с корнем x = ${fr(2,3)}.<br>«При a = 0 корней нет» — неверно: тут корень есть, просто он один.`,
+explain2:`Подставь a = 0 сам: 0·x² + 3x − 2 = 3x − 2. Никакого x² не осталось.`};},'r');
+G(1,()=>{let k,b,x0;do{k=nz(-5,5);b=nz(-6,6);x0=nz(-6,6);}while(false);const c=-b*x0;const e=`(${poly([[1,'a'],[-k,'']])})x²${tail([[b,'x'],[c,'']])} = 0`;
+return {type:'num',q:`Реши уравнение ${M(e)} при a = ${n(k)}.`,ans:x0,hint:`Что станет с x² при a = ${n(k)}?`,
+short:`При a = ${n(k)} коэффициент при x² = 0: ${M(poly([[b,'x'],[c,'']])+' = 0')} → x = ${n(x0)}.`,
+explain:`При a = ${n(k)}: ${n(k)} ${sgn(-k)} ${Math.abs(k)} = 0, слагаемое с x² исчезает.<br>Остаётся линейное: ${M(poly([[b,'x'],[c,'']])+' = 0')} → ${M(`${poly([[b,'x']])} = ${n(-c)}`)} → x = <b>${n(x0)}</b>.<br>Ошибка — считать D = b² − 4ac с a = 0: формула для квадратных уравнений, здесь она даст бессмыслицу.`,
+explain2:`Проверка: ${n(b)}·${P(x0)} ${sgn(c)} ${Math.abs(c)} = ${n(b*x0)} ${sgn(c)} ${Math.abs(c)} = 0 ✅. Один корень — потому что уравнение линейное.`};});
+G(1,()=>{const k=nz(-6,6);const b=nz(-5,5),c=nz(-9,9);const ok=`a ≠ ${n(k)}`;
+const o=mk(ok,[`a = ${n(k)}`,`a > ${n(k)}`,'при любом a']);
+return {type:'choice',q:`При каких a уравнение ${M(`(${poly([[1,'a'],[-k,'']])})x²${tail([[b,'x'],[c,'']])} = 0`)} является квадратным?`,...o,short:`Нужно a ${sgn(-k)} ${Math.abs(k)} ≠ 0, т. е. a ≠ ${n(k)}.`,
+explain:`Квадратное — когда коэффициент при x² не равен нулю: ${M(`${poly([[1,'a'],[-k,'']])} ≠ 0`)} → <b>a ≠ ${n(k)}</b>.<br>При a = ${n(k)} уравнение линейное, а при всех остальных — квадратное (и неважно, больше a или меньше ${n(k)}).`,
+explain2:`Попробуй a = ${n(k-1)}: коэффициент ${n(-1)} ≠ 0 — квадратное, хотя a < ${n(k)}. Значит, «a > ${n(k)}» — неверно, подходят все a, кроме одного.`};});
+G(1,()=>{const k=nz(-5,5);const zero=Math.random()<0.5;const c=nz(-9,9);const b=nz(-6,6);
+const e=zero?`(${poly([[1,'a'],[-k,'']])})x² + (${poly([[1,'a'],[-k,'']])})x ${sgn(c)} ${Math.abs(c)} = 0`:`(${poly([[1,'a'],[-k,'']])})x²${tail([[b,'x'],[c,'']])} = 0`;const ans=zero?0:1;
+return {type:'num',q:`Сколько корней имеет уравнение ${M(e)} при a = ${n(k)}?`,ans,hint:'Подставь a и посмотри, что осталось от уравнения.',
+short:zero?`При a = ${n(k)}: 0 ${sgn(c)} ${Math.abs(c)} = 0 — неверно, корней нет.`:`При a = ${n(k)}: линейное ${M(poly([[b,'x'],[c,'']])+' = 0')} — один корень.`,
+explain:zero?`При a = ${n(k)} обе скобки равны 0: ${M(`0·x² + 0·x ${sgn(c)} ${Math.abs(c)} = 0`)}, то есть ${M(`${n(c)} = 0`)} — <b>неверное равенство</b> при любом x. Корней <b>0</b>.`:`При a = ${n(k)}: ${M(poly([[b,'x'],[c,'']])+' = 0')} — линейное, x = ${rat(-c,b)}. Корень <b>1</b>.`,
+explain2:zero?`Тут исчез не только x², но и x. Уравнение «${n(c)} = 0» не зависит от x и всегда ложно. Такое бывает только в «вырожденных» случаях — поэтому их и проверяют отдельно.`:`Дискриминант здесь не нужен: уравнение не квадратное. Линейное уравнение bx + c = 0 с b ≠ 0 всегда имеет ровно один корень.`};});
+
+/* L2 */
+G(2,()=>{const kind=pick(['two','none','atl']);const right={two:'D > 0',none:'D < 0',atl:'D ≥ 0'}[kind];const what={two:'имеет <b>два различных</b> корня',none:'<b>не имеет</b> корней',atl:'имеет <b>хотя бы один</b> корень'}[kind];
+const o=mk(M(right),[M('D > 0'),M('D ≥ 0'),M('D < 0'),M('D = 0')]);
+return {type:'choice',q:`Квадратное уравнение ${what} тогда и только тогда, когда…`,...o,short:`${what.replace(/<\/?b>/g,'')} ⇔ ${right}.`,
+explain:`Правила для квадратного уравнения:<br>• два различных корня ⇔ D > 0;<br>• ровно один ⇔ D = 0;<br>• нет корней ⇔ D < 0;<br>• хотя бы один ⇔ D ≥ 0 (один или два).<br>Ответ: <b>${right}</b>.`,
+explain2:`Хотя бы один — это «один ИЛИ два», т. е. «D = 0 или D > 0», коротко D ≥ 0. Два различных — только D > 0: при D = 0 корни совпадают.`};},'r');
+G(2,()=>{const k=nz(-5,5),K=k*k;const two=Math.random()<0.5;const opts=[`a < ${K}`,`a > ${K}`,`a ≤ ${K}`,`a ≥ ${K}`];const right=two?opts[0]:opts[1];const o=mk(right,opts);
+return {type:'choice',q:`При каких a уравнение ${M(`x² ${sgn(2*k)} ${Math.abs(2*k)}x + a = 0`)} ${two?'имеет <b>два различных</b> корня':'<b>не имеет</b> корней'}?`,...o,hint:'b чётное — удобно D/4 = k² − ac.',
+short:`D/4 = ${K} − a ${two?'> 0 → a < ':'< 0 → a > '}${K}.`,
+explain:`D/4 = ${P(k)}² − 1·a = ${K} − a.<br>${two?`Два корня: ${K} − a > 0 → <b>a < ${K}</b>.`:`Нет корней: ${K} − a < 0 → <b>a > ${K}</b>.`}<br>При a = ${K} — ровно один корень, поэтому неравенство строгое.`,
+explain2:`Парабола y = x² ${sgn(2*k)} ${Math.abs(2*k)}x + a — с вершиной в x = ${n(-k)}, её «высота» там a − ${K}. ${two?'Вершина ниже оси x (a < '+K+') — два пересечения.':'Вершина выше оси x (a > '+K+') — пересечений нет.'}`,
+_bf:()=>grid(a=>{const c=nroots(1,2*k,a);const inAns=two?a<K:a>K;return (two?(c===2):(c===0))===inAns||`cnt ${c}`;})};});
+G(2,()=>{const m=R(1,5),L=2*m;const two=Math.random()<0.5;const A=`a < −${L} или a > ${L}`,B=`−${L} < a < ${L}`;
+const o=mk(two?A:B,[A,B,`a > ${L}`,`−${L} ≤ a ≤ ${L}`]);
+return {type:'choice',q:`При каких a уравнение ${M(`x² + ax + ${m*m} = 0`)} ${two?'имеет два различных корня':'не имеет корней'}?`,...o,hint:`D = a² − ${4*m*m}. Неравенство с квадратом!`,
+short:`D = a² − ${4*m*m} ${two?'> 0 → |a| > ':'< 0 → |a| < '}${L}.`,
+explain:`D = a² − 4·${m*m} = a² − ${4*m*m}.<br>${two?`a² > ${4*m*m} ⇔ |a| > ${L} ⇔ <b>${A}</b>.`:`a² < ${4*m*m} ⇔ |a| < ${L} ⇔ <b>${B}</b>.`}<br>Частая ошибка: из a² ${two?'>':'<'} ${4*m*m} написать только «a ${two?'>':'<'} ${L}» и потерять отрицательные значения.`,
+explain2:`Проверь числом: a = −${L+1}: D = ${(L+1)**2} − ${4*m*m} = ${(L+1)**2-4*m*m} > 0 — два корня. Значит, отрицательные a с большим модулем тоже дают два корня.`,
+_bf:()=>grid(a=>{const c=nroots(1,a,m*m);const inAns=two?(a<-L||a>L):(a>-L&&a<L);return (two?c===2:c===0)===inAns||`cnt ${c}`;})};});
+G(2,()=>{const b=R(3,9)*pick([1,-1]);const two=Math.random()<0.5;const B2=b*b;const ans=two?Math.ceil(B2/4)-1:Math.floor(B2/4)+1;
+return {type:'num',q:`Найди ${two?'<b>наибольшее</b> целое a, при котором':'<b>наименьшее</b> целое a, при котором'} уравнение ${M(`x² ${sgn(b)} ${Math.abs(b)}x + a = 0`)} ${two?'имеет два различных корня':'не имеет корней'}.`,ans,hint:'Запиши D через a и реши неравенство.',
+short:`D = ${B2} − 4a ${two?'> 0 → a < ':'< 0 → a > '}${rat(B2,4)} → ${two?'наибольшее':'наименьшее'} целое ${ans}.`,
+explain:`D = ${P(b)}² − 4a = ${B2} − 4a.<br>${two?`Два корня: ${B2} − 4a > 0 → a < ${rat(B2,4)}${B2%4?` = ${n(B2/4)}`:''}.<br>Наибольшее целое, <b>строго</b> меньшее ${n(B2/4)}: <b>${ans}</b>.`:`Нет корней: ${B2} − 4a < 0 → a > ${rat(B2,4)}${B2%4?` = ${n(B2/4)}`:''}.<br>Наименьшее целое, <b>строго</b> большее ${n(B2/4)}: <b>${ans}</b>.`}`,
+explain2:`Проверим на соседях: a = ${ans}: D = ${B2-4*ans} ${B2-4*ans>0?'> 0':B2-4*ans<0?'< 0':'= 0'} ✅. a = ${two?ans+1:ans-1}: D = ${B2-4*(two?ans+1:ans-1)} — ${two?'уже не > 0':'уже не < 0'}. ${B2%4===0?`Граница a = ${B2/4} сама не подходит — там D = 0 (один корень).`:''}`,
+_bf:()=>{const ok=a=>two?nroots(1,b,a)===2:nroots(1,b,a)===0;if(!ok(ans))return 'ans fails';if(ok(two?ans+1:ans-1))return 'neighbour ok';return true;}};});
+G(2,()=>{let m,c,L;do{m=nz(-4,4);c=R(1,6);}while((m*m)%c!==0);L=m*m/c;const ok=`a < ${L}, a ≠ 0`;
+const o=mk(ok,[`a < ${L}`,`a > ${L}`,`a ≤ ${L}, a ≠ 0`]);
+return {type:'choice',q:`При каких a уравнение ${M(`ax² ${sgn(2*m)} ${Math.abs(2*m)}x + ${c} = 0`)} имеет <b>два различных</b> корня?`,...o,hint:'Не забудь случай a = 0!',
+short:`a ≠ 0 и D/4 = ${m*m} − ${c}a > 0 → a < ${L}, a ≠ 0.`,
+explain:`1) <b>a = 0</b>: ${M(`${poly([[2*m,'x']])} + ${c} = 0`)} — линейное, один корень ${rat(-c,2*m)}. Два корня нет → a = 0 не подходит.<br>2) <b>a ≠ 0</b>: D/4 = ${m*m} − ${c}a > 0 → a < ${L}.<br>Ответ: <b>${ok}</b>.<br>Вариант «a < ${L}» содержит a = 0 — а там корень один.`,
+explain2:`Самая частая потеря баллов: решить D > 0 и забыть, что при a = 0 уравнение перестаёт быть квадратным. Неравенство D > 0 «пропускает» a = 0, но там совсем другая картина.`,
+_bf:()=>grid(a=>{const cnt=nroots(a,2*m,c);const inAns=a<L&&a!==0;return (cnt===2)===inAns||`cnt ${cnt}`;})};});
+
+/* L3 */
+G(3,()=>{const o=mk(M('D = 0'),[M('D > 0'),M('D < 0'),M('D ≥ 0')]);
+return {type:'choice',q:'Квадратное уравнение имеет <b>ровно один</b> корень, когда…',...o,short:'D = 0: два корня сливаются в один.',
+explain:`При D = 0 формула даёт x = (−b ± 0)/(2a) = −b/(2a) — одно число. Парабола <b>касается</b> оси x в вершине.<br>D ≥ 0 — это «один или два», а нужно ровно один.`,
+explain2:`Пример: x² − 6x + 9 = (x − 3)² = 0 → D = 36 − 36 = 0, корень один: 3.`};},'r');
+G(3,()=>{const ok='значение a, при котором старший коэффициент равен 0: линейное уравнение тоже может иметь ровно один корень';
+const o=mk(ok,['ничего: достаточно решить D = 0','значения a, при которых D < 0','значение a = 1']);
+return {type:'choice',q:'В задаче «при каких a уравнение (a − 1)x² + … = 0 имеет ровно один корень» что ещё нужно проверить, кроме D = 0?',...o,short:'Случай, когда уравнение линейное.',
+explain:`При a = 1 уравнение линейное. Линейное bx + c = 0 с b ≠ 0 имеет <b>ровно один</b> корень — такое a тоже идёт в ответ!<br>Поэтому: 1) случай «старший коэффициент = 0»; 2) остальные a — условие D = 0.`,
+explain2:`Пример: ${M('ax² + 4x + 2 = 0')}. D/4 = 4 − 2a = 0 → a = 2. Но и при a = 0: 4x + 2 = 0 — один корень. Ответ {0; 2}, а не только 2.`};},'r');
+G(3,()=>{const m=R(1,7);
+return {type:'set',q:`При каких a уравнение ${M(`x² + ax + ${m*m} = 0`)} имеет ровно один корень?`,ans:[-2*m,2*m],keys:AKEYS,ph:APH,hint:'D = 0.',
+short:`a² − ${4*m*m} = 0 → a = ±${2*m}.`,
+explain:`Старший коэффициент 1 ≠ 0 — уравнение всегда квадратное. Ровно один корень ⇔ D = 0:<br>a² − 4·${m*m} = 0 → a² = ${4*m*m} → a = <b>±${2*m}</b>.<br>Не теряй отрицательное значение!`,
+explain2:`Проверь: при a = ${2*m}: x² + ${2*m}x + ${m*m} = (x + ${m})² — один корень −${m}. При a = −${2*m}: (x − ${m})² — корень ${m}. Оба подходят.`,
+_bf:()=>{const got=[];for(let a=-60;a<=60;a++)if(nroots(1,a,m*m)===1)got.push(a);return JSON.stringify(got)===JSON.stringify([-2*m,2*m])||`brute ${got}`;}};});
+G(3,()=>{const p=nz(-5,5),q=R(1,5);const ans=[p-q,p+q];
+return {type:'set',q:`При каких a уравнение ${M(`x² + 2(${poly([[1,'a'],[-p,'']])})x + ${q*q} = 0`)} имеет ровно один корень?`,ans,keys:AKEYS,ph:APH,hint:'b = 2k, где k = a − ('+n(p)+'). Используй D/4 = k² − ac.',
+short:`D/4 = (a ${sgn(-p)} ${Math.abs(p)})² − ${q*q} = 0 → a ${sgn(-p)} ${Math.abs(p)} = ±${q} → a = ${n(p-q)} или ${n(p+q)}.`,
+explain:`k = a ${sgn(-p)} ${Math.abs(p)}. D/4 = k² − ${q*q}.<br>D = 0 ⇔ ${M(`(${poly([[1,'a'],[-p,'']])})² = ${q*q}`)} ⇔ ${M(`${poly([[1,'a'],[-p,'']])} = ±${q}`)}.<br>a = ${n(p)} + ${q} = ${n(p+q)} или a = ${n(p)} − ${q} = ${n(p-q)}.<br>Ответ: <b>{${n(p-q)}, ${n(p+q)}}</b>.`,
+explain2:`Не раскрывай скобку! Уравнение (a ${sgn(-p)} ${Math.abs(p)})² = ${q*q} решается сразу: скобка равна ${q} или −${q}. Проверь a = ${n(p+q)}: уравнение x² + ${2*q}x + ${q*q} = (x + ${q})² — один корень.`,
+_bf:()=>{const got=[];for(let a=-30;a<=30;a++)if(nroots(1,2*(a-p),q*q)===1)got.push(a);return JSON.stringify(got)===JSON.stringify(ans)||`brute ${got}`;}};});
+G(3,()=>{let m,c;do{m=nz(-4,4);c=R(1,8);}while((m*m)%c!==0);const L=m*m/c;
+return {type:'set',q:`При каких a уравнение ${M(`ax² ${sgn(2*m)} ${Math.abs(2*m)}x + ${c} = 0`)} имеет ровно один корень?`,ans:[0,L],keys:AKEYS,ph:APH,hint:'Два случая: a = 0 и a ≠ 0.',
+short:`a = 0 — линейное (один корень); a ≠ 0: D/4 = ${m*m} − ${c}a = 0 → a = ${L}.`,
+explain:`1) <b>a = 0</b>: ${M(`${poly([[2*m,'x']])} + ${c} = 0`)} → x = ${rat(-c,2*m)} — ровно один корень. a = 0 <b>подходит</b>.<br>2) <b>a ≠ 0</b>: D/4 = ${m*m} − ${c}a = 0 → a = ${L}.<br>Ответ: <b>{0, ${L}}</b>.`,
+explain2:`Многие отвечают только «${L}» — и теряют a = 0. Запомни: если параметр стоит при x², первая мысль — «а что будет при нуле?».`,
+_bf:()=>{const got=[];for(let i=-160;i<=160;i++){const a=i/4;if(nroots(a,2*m,c)===1)got.push(a);}return JSON.stringify(got)===JSON.stringify([0,L])||`brute ${got}`;}};});
+G(3,()=>{const m=R(1,6);
+return {type:'num',q:`При некотором <b>положительном</b> a уравнение ${M(`x² + ax + ${m*m} = 0`)} имеет ровно один корень. Найди этот корень.`,ans:-m,hint:'Сначала найди a из D = 0, потом корень x = −b/(2a).',
+short:`a = ${2*m}, x = −${2*m}/2 = −${m}.`,
+explain:`D = a² − ${4*m*m} = 0, a > 0 → a = ${2*m}.<br>Корень: x = ${fr('−b','2a')} = ${fr(`−${2*m}`,2)} = <b>−${m}</b>.`,
+explain2:`При a = ${2*m}: x² + ${2*m}x + ${m*m} = (x + ${m})². Квадрат равен нулю при x = −${m}.`};});
+
+/* L4 */
+G(4,()=>{const o=mk('если подставить x₀ вместо x, получится верное числовое равенство',['если x₀ равно дискриминанту','если x₀ равно параметру a','если x₀ — целое число']);
+return {type:'choice',q:'Что значит «число x₀ — корень уравнения»?',...o,short:'Подстановка даёт верное равенство.',
+explain:`Корень — это значение x, при котором уравнение превращается в <b>верное равенство</b>. Поэтому, если сказано «2 — корень», смело подставляй x = 2 — получишь уравнение уже для параметра a.`,
+explain2:`Пример: 3 — корень x² − 9 = 0, потому что 9 − 9 = 0 верно. А 4 — не корень: 16 − 9 = 7 ≠ 0.`};},'r');
+G(4,()=>{let x0,r;do{x0=nz(-5,5);r=nz(-7,7);}while(x0===r||x0+r===0);const A=-(x0+r),q=x0*r;
+return {type:'num',q:`При каком a число ${n(x0)} является корнем уравнения ${M(`x² + ax ${sgn(q)} ${Math.abs(q)} = 0`)}?`,ans:A,hint:`Подставь x = ${n(x0)}.`,
+short:`${x0*x0} ${sgn(x0)} ${Math.abs(x0)===1?'':Math.abs(x0)}a ${sgn(q)} ${Math.abs(q)} = 0 → a = ${n(A)}.`,
+explain:`Подставляем x = ${n(x0)}: ${P(x0)}² + a·${P(x0)} ${sgn(q)} ${Math.abs(q)} = 0 → ${x0*x0+q} ${sgn(x0)} ${Math.abs(x0)===1?'':Math.abs(x0)}a = 0 → a = <b>${n(A)}</b>.`,
+explain2:`Через Виета: произведение корней ${n(q)} → второй корень ${n(q)} : ${P(x0)} = ${n(r)}. Сумма −a = ${n(x0)} + ${P(r)} = ${n(x0+r)} → a = ${n(A)}. Совпало.`};});
+G(4,()=>{let x0,r;do{x0=nz(-5,5);r=nz(-7,7);}while(x0===r||x0+r===0);const A=-(x0+r),q=x0*r;
+return {type:'num',q:`Число ${n(x0)} — корень уравнения ${M(`x² + ax ${sgn(q)} ${Math.abs(q)} = 0`)}. Найди <b>второй</b> корень.`,ans:r,hint:'Теорема Виета: произведение корней равно свободному члену.',
+short:`x₂ = ${n(q)} : ${P(x0)} = ${n(r)}.`,
+explain:`По Виета x₁x₂ = ${n(q)}. x₁ = ${n(x0)} → x₂ = ${n(q)} : ${P(x0)} = <b>${n(r)}</b>.<br>(Параметр при этом a = ${n(A)}, но для ответа его даже не нужно искать.)`,
+explain2:`Длинный путь: подставить x = ${n(x0)}, найти a = ${n(A)}, решить ${M(Q(1,A,q)+' = 0')} → корни ${n(x0)} и ${n(r)}. Через произведение — одна строчка.`};});
+G(4,()=>{const a0=nz(-4,4),x0=nz(-3,3),b=nz(-6,6);const c=-a0*x0*x0-b*x0;
+return {type:'num',q:`При каком a число ${n(x0)} — корень уравнения ${M(`ax²${tail([[b,'x'],[c,'']])} = 0`)}?`,ans:a0,hint:`Подставь x = ${n(x0)}.`,
+short:`${x0*x0}a ${sgn(b*x0+c)} ${Math.abs(b*x0+c)} = 0 → a = ${n(a0)}.`.replace(/^1a/,'a'),
+explain:`Подставляем x = ${n(x0)}: a·${P(x0)}² ${sgn(b)} ${Math.abs(b)}·${P(x0)} ${sgn(c)} ${Math.abs(c)} = 0 → ${x0*x0===1?'':x0*x0}a ${sgn(b*x0+c)} ${Math.abs(b*x0+c)} = 0 → a = <b>${n(a0)}</b>.`,
+explain2:`Проверка: ${n(a0)}·${x0*x0} ${sgn(b*x0)} ${Math.abs(b*x0)} ${sgn(c)} ${Math.abs(c)} = 0 ✅. При a = ${n(a0)} уравнение ${M(Q(a0,b,c)+' = 0')} — квадратное (a ≠ 0), всё честно.`};});
+
+/* L5 */
+G(5,()=>{const o=mk(`${M('c/a < 0')} (a и c разных знаков); D проверять не нужно`,[`${M('c/a > 0')} и D > 0`,`${M('−b/a < 0')}`,`${M('D < 0')}`]);
+return {type:'choice',q:`Корни квадратного уравнения ${M('ax² + bx + c = 0')} разных знаков тогда и только тогда, когда…`,...o,short:'Произведение корней c/a < 0.',
+explain:`По Виета x₁x₂ = c/a. Разные знаки ⇔ произведение отрицательно ⇔ c/a < 0.<br>А D автоматически > 0: если ac < 0, то D = b² − 4ac = b² + (положительное) > 0.`,
+explain2:`Пример: 2x² + 5x − 3 = 0: c/a = −3/2 < 0 → корни разных знаков (½ и −3). D считать не пришлось.`};},'r');
+G(5,()=>{const o=mk('D > 0, −b/a > 0 и c/a > 0',['c/a > 0','−b/a > 0 и c/a > 0','D > 0 и −b/a > 0']);
+return {type:'choice',q:`Уравнение ${M('ax² + bx + c = 0')} имеет два различных <b>положительных</b> корня тогда и только тогда, когда…`,...o,short:'Корни есть, сумма > 0, произведение > 0.',
+explain:`Нужны все три условия:<br>• D > 0 — два различных корня существуют;<br>• c/a > 0 — одного знака;<br>• −b/a > 0 — сумма положительна, значит оба положительны.<br>Без D: ${M('x² − 2x + 5')} — сумма 2 > 0, произведение 5 > 0, а корней нет.`,
+explain2:`Без суммы: ${M('x² + 5x + 6')} — D > 0, произведение > 0, но корни −2 и −3. Без произведения: ${M('x² − x − 6')} — корни 3 и −2.`};},'r');
+G(5,()=>{const b=nz(-7,7),k=nz(-6,6);const opts=[`a < ${n(k)}`,`a > ${n(k)}`,`a ≠ ${n(k)}`,`a ≤ ${n(k)}`];const o=mk(opts[0],opts);
+return {type:'choice',q:`При каких a корни уравнения ${M(`x² ${sgn(b)} ${Math.abs(b)===1?'':Math.abs(b)}x + a ${sgn(-k)} ${Math.abs(k)} = 0`)} разных знаков?`,...o,hint:'Произведение корней = свободный член.',
+short:`x₁x₂ = a ${sgn(-k)} ${Math.abs(k)} < 0 → a < ${n(k)}.`,
+explain:`Разные знаки ⇔ x₁x₂ < 0. По Виета x₁x₂ = a ${sgn(-k)} ${Math.abs(k)}.<br>a ${sgn(-k)} ${Math.abs(k)} < 0 → <b>a < ${n(k)}</b>. D при этом точно > 0.<br>При a = ${n(k)} один корень равен 0 — он ни положительный, ни отрицательный, поэтому неравенство строгое.`,
+explain2:`Проверь a = ${n(k-1)}: свободный член −1, уравнение x² ${sgn(b)} ${Math.abs(b)===1?'':Math.abs(b)}x − 1 = 0 — корни разных знаков ✅. a = ${n(k+1)}: свободный член +1, корни одного знака (или их нет).`,
+_bf:()=>grid(a=>{const rs=rootsOf(1,b,a-k);const diff=rs.length===2&&rs[0]<0&&rs[1]>0;return diff===(a<k)||'sign';})};});
+G(5,()=>{const k=R(1,5),K=k*k;const pos=Math.random()<0.5;const opts=[`0 < a < ${K}`,`a < ${K}`,'a > 0',`a > ${K}`];const o=mk(opts[0],opts);
+return {type:'choice',q:`При каких a уравнение ${M(`x² ${pos?'−':'+'} ${2*k}x + a = 0`)} имеет два различных <b>${pos?'положительных':'отрицательных'}</b> корня?`,...o,hint:'Три условия: D > 0, знак суммы, произведение > 0.',
+short:`D/4 = ${K} − a > 0, сумма ${pos?'':'−'}${2*k}, произведение a > 0 → 0 < a < ${K}.`,
+explain:`1) D/4 = ${K} − a > 0 → a < ${K}.<br>2) Сумма x₁ + x₂ = ${pos?'':'−'}${2*k} ${pos?'> 0':'< 0'} — выполнено при любом a.<br>3) Произведение x₁x₂ = a > 0.<br>Вместе: <b>0 < a < ${K}</b>.`,
+explain2:`«a < ${K}» пропускает a ≤ 0 — тогда один корень ${pos?'отрицательный':'положительный'} или ноль. «a > 0» пропускает a ≥ ${K} — там корней нет или он один.`,
+_bf:()=>grid(a=>{const rs=rootsOf(1,pos?-2*k:2*k,a);const ok=rs.length===2&&(pos?rs[0]>0:rs[1]<0);return ok===(a>0&&a<K)||'bf';})};});
+G(5,()=>{const k=R(2,5),K=k*k;const ans=K-1;
+return {type:'num',q:`Сколько существует <b>целых</b> a, при которых оба корня уравнения ${M(`x² − ${2*k}x + a = 0`)} положительны и различны?`,ans,hint:'Найди промежуток для a и посчитай целые числа в нём.',
+short:`0 < a < ${K} → a = 1, …, ${K-1}: всего ${ans}.`,
+explain:`Условия: D/4 = ${K} − a > 0, сумма ${2*k} > 0, произведение a > 0 → 0 < a < ${K}.<br>Целые: 1, 2, …, ${K-1} — всего <b>${ans}</b>.`,
+explain2:`Концы не входят: при a = 0 один корень равен 0 (не положительный), при a = ${K} корень один (x = ${k}). Поэтому от 1 до ${K-1}.`,
+_bf:()=>{let c=0;for(let a=-100;a<=100;a++){const rs=rootsOf(1,-2*k,a);if(rs.length===2&&rs[0]>0)c++;}return c===ans||`brute ${c}`;}};});
+
+/* L6 */
+G(6,()=>{const o=mk('проверить, что при найденных a корни существуют (D ≥ 0)',['ничего — Виета работает всегда','проверить, что a > 0','подставить a в ответ вместо x']);
+return {type:'choice',q:'Нашёл a из условия на корни через теорему Виета. Что обязательно сделать дальше?',...o,short:'Проверить D ≥ 0.',
+explain:`Теорема Виета говорит о корнях, <b>если они есть</b>. Решив уравнение для a, нужно проверить, что при этом a дискриминант ≥ 0. Иначе «корней с нужным свойством» просто не существует, и такое a выбрасываем.`,
+explain2:`Пример: x² + ax + 5 = 0, x₁² + x₂² = 6 → a² − 10 = 6 → a = ±4. Но D = 16 − 20 < 0 — корней нет! Ответ: таких a нет.`};},'r');
+G(6,()=>{const k=R(2,4),r=R(1,4);const q=k*r*r,A=(1+k)*r;
+return {type:'set',q:`При каких a один из корней уравнения ${M(`x² + ax + ${q} = 0`)} в ${k} раза больше другого?`,ans:[-A,A],keys:AKEYS,ph:APH,hint:`Корни t и ${k}t. Произведение по Виета = ${q}.`,
+short:`${k}t² = ${q} → t = ±${r}; a = −(t + ${k}t) = ∓${A}.`,
+explain:`Пусть корни t и ${k}t. По Виета:<br>• произведение ${k}t² = ${q} → t² = ${r*r} → t = ${r} или t = −${r};<br>• сумма t + ${k}t = ${k+1}t = −a → a = −${k+1}t.<br>t = ${r} → a = −${A} (корни ${r} и ${k*r}); t = −${r} → a = ${A} (корни −${r} и −${k*r}).<br>D = a² − ${4*q} = ${A*A-4*q} > 0 — корни есть. Ответ: <b>{−${A}, ${A}}</b>.`,
+explain2:`Проверь a = −${A}: x² − ${A}x + ${q} = (x − ${r})(x − ${k*r}) ✅. При a = ${A} — зеркально: (x + ${r})(x + ${k*r}).`,
+_bf:()=>{const got=[];for(let a=-60;a<=60;a++){const rs=rootsOf(1,a,q);if(rs.length===2&&(Math.abs(rs[0]-k*rs[1])<1e-9||Math.abs(rs[1]-k*rs[0])<1e-9))got.push(a);}return JSON.stringify(got)===JSON.stringify([-A,A])||`brute ${got}`;}};});
+G(6,()=>{const m=R(2,6);const ans=2*m-1;
+return {type:'num',q:`x₁, x₂ — корни уравнения ${M(`x² − ax + a − ${m} = 0`)}. Найди наименьшее значение ${M('x₁² + x₂²')}.`,ans,hint:'Выдели полный квадрат по a в выражении x₁² + x₂² = s² − 2t. Не забудь про D.',
+short:`x₁² + x₂² = a² − 2a + ${2*m} = (a − 1)² + ${ans} → min ${ans} при a = 1.`,
+explain:`D = a² − 4(a − ${m}) = a² − 4a + ${4*m} = (a − 2)² + ${4*m-4} > 0 — корни есть при любом a.<br>По Виета: x₁ + x₂ = a, x₁x₂ = a − ${m}.<br>x₁² + x₂² = a² − 2(a − ${m}) = a² − 2a + ${2*m} = (a − 1)² + ${ans}.<br>Квадрат ≥ 0, наименьшее значение — при a = 1: <b>${ans}</b>.`,
+explain2:`Проверим при a = 1: уравнение x² − x − ${m-1} = 0, s = 1, t = −${m-1}: x₁² + x₂² = 1 + ${2*(m-1)} = ${ans} ✅. Важно, что D > 0 при a = 1 — иначе минимум был бы «фальшивым».`,
+_bf:()=>{let best=Infinity;for(let i=-400;i<=400;i++){const a=i/40;const rs=rootsOf(1,-a,a-m);if(rs.length===2){const v=rs[0]**2+rs[1]**2;if(v<best)best=v;}}return Math.abs(best-ans)<1e-6||`brute ${best}`;}};});
+G(6,()=>{let a1,a2,mm;do{a1=nz(-5,5);a2=nz(-5,5);mm=R(1,9);}while(a1===a2||a1+a2===0);const s=a1+a2,K=a1*a2;
+const coef=`(a² ${sgn(-s)} ${Math.abs(s)===1?'':Math.abs(s)}a)`;
+return {type:'set',q:`При каких a сумма корней уравнения ${M(`x² + ${coef}x − ${mm} = 0`)} равна ${n(K)}?`,ans:[a1,a2],keys:AKEYS,ph:APH,hint:'Сумма корней = −(коэффициент при x). Проверь, есть ли корни.',
+short:`−(a² ${sgn(-s)} ${Math.abs(s)}a) = ${n(K)} → ${M(Q(1,-s,K,'a')+' = 0')} → a = ${n(a1)}, ${n(a2)}.`,
+explain:`Корни есть всегда: свободный член −${mm} < 0 → D > 0.<br>По Виета: x₁ + x₂ = −${coef}. Условие: −${coef} = ${n(K)} → ${M(Q(1,-s,K,'a')+' = 0')}.<br>По Виета для a: сумма ${n(s)}, произведение ${n(K)} → a = <b>${n(a1)} и ${n(a2)}</b>.`,
+explain2:`Почему важно было проверить D: если бы свободный член был положительным, при некоторых a корней могло бы не быть — и такие a пришлось бы выбросить. Здесь −${mm} < 0 спасает.`,
+_bf:()=>{const got=[];for(let a=-30;a<=30;a++){const b=a*a-s*a;const rs=rootsOf(1,b,-mm);if(rs.length===2&&Math.abs(rs[0]+rs[1]-K)<1e-9)got.push(a);}return JSON.stringify(got)===JSON.stringify([a1,a2].sort((x,y)=>x-y))||`brute ${got}`;}};});
+
+/* L7 — ★ */
+G(7,()=>{const ok='разобрать случай, когда старший коэффициент равен 0, а при остальных a потребовать D ≥ 0';
+const o=mk(ok,['потребовать D > 0','потребовать D ≥ 0 — и всё','потребовать D = 0']);
+return {type:'choice',q:'Как найти все a, при которых уравнение с параметром при x² имеет <b>хотя бы один</b> корень?',...o,short:'Линейный случай + D ≥ 0.',
+explain:`«Хотя бы один» = один или два → D ≥ 0 (нестрого). Но при обнулении старшего коэффициента уравнение линейное: его корень (если есть) тоже засчитывается, и D там не работает.`,
+explain2:`ax² + 2x + 1 = 0: при a = 0 корень −½ есть. При a ≠ 0: D/4 = 1 − a ≥ 0 → a ≤ 1. Ответ: a ≤ 1 (включая 0).`};},'r');
+G(7,()=>{const m=R(1,3);const A=-1-m;
+return {type:'set',q:`При каких a уравнения ${M(`x² + ax + ${m} = 0`)} и ${M(`x² + ${m===1?'':m}x + a = 0`)} имеют общий корень?`,ans:[A],keys:AKEYS,ph:APH,hint:'Пусть x₀ — общий корень. Вычти одно равенство из другого.',
+short:`(a − ${m})(x₀ − 1) = 0; a = ${m} — корней нет; x₀ = 1 → a = ${A}.`,
+explain:`Пусть x₀ — общий корень: ${M(`x₀² + ax₀ + ${m} = 0`)} и ${M(`x₀² + ${m===1?'':m}x₀ + a = 0`)}.<br>Вычтем: ${M(`(a − ${m})x₀ − (a − ${m}) = 0`)} → ${M(`(a − ${m})(x₀ − 1) = 0`)}.<br>• a = ${m}: оба уравнения ${M(Q(1,m,m)+' = 0')}, D = ${m*m-4*m} < 0 — корней нет вообще, общего тоже.<br>• x₀ = 1: 1 + a + ${m} = 0 → a = ${A}. Проверка: ${M(Q(1,A,m)+' = 0')} и ${M(Q(1,m,A)+' = 0')} — оба имеют корень 1 ✅.<br>Ответ: <b>a = ${A}</b>.`,
+explain2:`Вычитание — главный трюк: x² сокращается, остаётся линейное соотношение. Ловушка — случай a = ${m}: уравнения совпадают, и кажется, что «все корни общие». Но корней-то нет (D < 0)!`,
+_bf:()=>{const got=[];for(let i=-160;i<=160;i++){const a=i/8;const r1=rootsOf(1,a,m),r2=rootsOf(1,m,a);if(r1.some(x=>r2.some(y=>Math.abs(x-y)<1e-7)))got.push(a);}return JSON.stringify(got)===JSON.stringify([A])||`brute ${got}`;}};},'s');
+G(7,()=>{const r=R(1,3),t=nz(-5,5);const mm=r*t;
+const e=`ax² − (${r===1?'':r}a ${sgn(mm)} ${Math.abs(mm)})x ${sgn(mm*r)} ${Math.abs(mm*r)} = 0`;
+return {type:'set',q:`При каких a уравнение ${M(e)} имеет ровно один корень?`,ans:[0,t],keys:AKEYS,ph:APH,hint:'Посчитай D — он окажется полным квадратом. И не забудь a = 0.',
+short:`a = 0: линейное, x = ${r}. a ≠ 0: D = (${r===1?'':r}a ${sgn(-mm)} ${Math.abs(mm)})² = 0 → a = ${n(t)}.`,
+explain:`1) <b>a = 0</b>: ${M(`${poly([[-mm,'x']])} ${sgn(mm*r)} ${Math.abs(mm*r)} = 0`)} → x = ${r}. Один корень — подходит.<br>2) <b>a ≠ 0</b>: D = (${r===1?'':r}a ${sgn(mm)} ${Math.abs(mm)})² − 4·a·${P(mm*r)} = (${r===1?'':r}a ${sgn(-mm)} ${Math.abs(mm)})² — полный квадрат!<br>D = 0 ⇔ ${r===1?'':r}a = ${n(mm)} ⇔ a = ${n(t)}.<br>Ответ: <b>{0, ${n(t)}}</b>.`,
+explain2:`Можно разложить: ${M(e.replace(' = 0',''))} = ${M(`(ax ${sgn(-mm)} ${Math.abs(mm)})(x − ${r})`)}. Корни: x = ${r} и x = ${n(mm)}/a. Они совпадают при a = ${n(t)}; а при a = 0 первая скобка не даёт корня — остаётся только x = ${r}.`,
+_bf:()=>{const got=[];for(let i=-160;i<=160;i++){const a=i/8;if(nroots(a,-(r*a+mm),mm*r)===1)got.push(a);}return JSON.stringify(got)===JSON.stringify([0,t].sort((x,y)=>x-y))||`brute ${got}`;}};},'s');
+G(7,()=>{const k=R(1,3),K=k*k;const cnt=pick([0,2,3,4]);const opt={3:'a = 0',4:`0 < a < ${K}`,2:`a < 0 или a = ${K}`,0:`a > ${K}`};
+const o=mk(opt[cnt],Object.values(opt));
+return {type:'choice',q:`При каких a уравнение ${M(`x² − ${2*k}|x| + a = 0`)} имеет ровно ${cnt===0?'0 корней (ни одного)':cnt+' '+plural(cnt,'корень','корня','корней')}?`,...o,hint:`Перепиши как x² − ${2*k}|x| = −a и нарисуй график левой части.`,
+short:`График y = x² − ${2*k}|x| — «W» с дном −${K} и горбиком 0; прямая y = −a. ${cnt} ${plural(cnt,'пересечение','пересечения','пересечений')} ⇔ ${opt[cnt]}.`,
+explain:`Замена t = |x| ≥ 0: ${M(`t² − ${2*k}t + a = 0`)}. Каждый t > 0 даёт 2 корня (±t), t = 0 — один корень.<br>• a < 0: корни t разных знаков → один t > 0 → 2 корня.<br>• a = 0: t = 0 и t = ${2*k} → 1 + 2 = 3 корня.<br>• 0 < a < ${K}: два положительных t → 4 корня.<br>• a = ${K}: t = ${k} (один) → 2 корня.<br>• a > ${K}: D < 0 → 0 корней.<br>Ответ: <b>${opt[cnt]}</b>.`,
+explain2:`Графически: y = x² − ${2*k}|x| и горизонтальная прямая y = −a. Двигай прямую снизу вверх: ниже дна (−${K}) — 0 точек, на дне — 2, между дном и горбиком — 4, через горбик — 3, выше — 2.<div class="fig">${plot(1,-2*k,0,{abs:true,hline:-K/2})}</div>`,
+_bf:()=>grid(a=>{const ts=rootsOf(1,-2*k,a);const c=ts.reduce((s,t)=>s+(t>1e-9?2:Math.abs(t)<1e-9?1:0),0);const inAns=cnt===3?a===0:cnt===4?(a>0&&a<K):cnt===2?(a<0||a===K):a>K;return (c===cnt)===inAns||`cnt ${c}`;})};},'s');
+G(7,()=>{const m=R(2,5),s=nz(1-m,m-1);const minus=Math.random()<0.5;const ans=minus?[m]:[-m];
+const cterm=minus?`${n(s)} − a`:`a ${sgn(s)} ${Math.abs(s)}`;
+return {type:'set',q:`При каких a корни уравнения ${M(`x² + (a² − ${m*m})x ${minus&&s<0?'+ (':'+ '}${cterm}${minus&&s<0?')':''} = 0`)} — противоположные числа?`,ans,keys:AKEYS,ph:APH,hint:'Противоположные корни: сумма равна 0. И не забудь проверить, что корни есть!',
+short:`a² − ${m*m} = 0 → a = ±${m}; корни есть только при a = ${n(ans[0])}.`,
+explain:`Противоположные корни ⇒ x₁ + x₂ = 0 ⇒ −(a² − ${m*m}) = 0 ⇒ a = ±${m}.<br>Проверяем существование корней (уравнение станет x² + c = 0):<br>• a = ${m}: свободный член ${minus?`${s} − ${m} = ${s-m}`:`${m} ${sgn(s)} ${Math.abs(s)} = ${m+s}`} ${(minus?s-m:m+s)<0?'< 0 → корни есть ✅':'> 0 → корней нет ✗'};<br>• a = −${m}: свободный член ${minus?`${s} + ${m} = ${s+m}`:`−${m} ${sgn(s)} ${Math.abs(s)} = ${s-m}`} ${(minus?s+m:s-m)<0?'< 0 → корни есть ✅':'> 0 → корней нет ✗'}.<br>Ответ: <b>a = ${n(ans[0])}</b>.`,
+explain2:`Ловушка в том, что «сумма корней = 0» — это ещё не всё. Уравнение x² + ${minus?m+s:m-s} = 0 корней не имеет, и говорить о «противоположных корнях» нельзя. Виета — только после проверки D.`,
+_bf:()=>{const got=[];for(let i=-80;i<=80;i++){const a=i/4;const c=minus?s-a:a+s;const rs=rootsOf(1,a*a-m*m,c);if(rs.length===2&&Math.abs(rs[0]+rs[1])<1e-9)got.push(a);}return JSON.stringify(got)===JSON.stringify(ans)||`brute ${got}`;}};},'s');
+G(7,()=>{let k,c;do{k=nz(-4,4);c=R(1,6);}while((k*k)%c!==0);const L=k*k/c;const ok=`a ≤ ${L}`;
+const o=mk(ok,[`a ≤ ${L}, a ≠ 0`,`a < ${L}`,`a ≥ ${L}`]);
+return {type:'choice',q:`При каких a уравнение ${M(`ax² ${sgn(2*k)} ${Math.abs(2*k)}x + ${c} = 0`)} имеет <b>хотя бы один</b> корень?`,...o,hint:'Два случая: a = 0 и a ≠ 0.',
+short:`a = 0: x = ${rat(-c,2*k)} — подходит; a ≠ 0: D/4 = ${k*k} − ${c}a ≥ 0 → a ≤ ${L}. Вместе: a ≤ ${L}.`,
+explain:`1) a = 0: ${M(`${poly([[2*k,'x']])} + ${c} = 0`)} → x = ${rat(-c,2*k)}. Корень есть — a = 0 <b>подходит</b>.<br>2) a ≠ 0: D/4 = ${k*k} − ${c}a ≥ 0 → a ≤ ${L}.<br>Объединяем: a ≤ ${L} (a ≠ 0) и a = 0 → <b>a ≤ ${L}</b>.<br>Ловушка «a ≤ ${L}, a ≠ 0» — выбросили a = 0, хотя там корень есть.`,
+explain2:`Сравни с задачей «два различных корня» — там a = 0 исключали (корень один). А «хотя бы один» — одного достаточно, так что a = 0 подходит.`,
+_bf:()=>grid(a=>{const cnt=nroots(a,2*k,c);return (cnt>=1)===(a<=L)||`cnt ${cnt}`;})};},'s');
+G(7,()=>{let p,q;do{p=R(-6,5);q=R(p+1,7);}while(p===0||q===0);const S=p+q,Pp=p*q;
+const opts=[`a > ${n(-p)}`,`a > ${n(-q)}`,`${n(-q)} < a < ${n(-p)}`,`a < ${n(-p)}`];const o=mk(opts[0],opts);
+return {type:'choice',q:`При каких a оба корня уравнения ${M(`x² − (${poly([[2,'a'],[S,'']])})x + ${poly([[1,'a²'],[S,'a'],[Pp,'']])} = 0`)} положительны?`,...o,hint:'Посчитай D — он не зависит от a и является полным квадратом. Найди корни явно.',
+short:`D = ${(q-p)**2}, корни a ${sgn(p)} ${Math.abs(p)} и a ${sgn(q)} ${Math.abs(q)}; меньший > 0 ⇔ a > ${n(-p)}.`,
+explain:`D = (${poly([[2,'a'],[S,'']])})² − 4(${poly([[1,'a²'],[S,'a'],[Pp,'']])}) = ${S*S} − ${P(4*Pp)} = ${(q-p)**2} — не зависит от a!<br>Корни: x = ${fr(`${poly([[2,'a'],[S,'']])} ± ${q-p}`,2)} → x₁ = a ${sgn(p)} ${Math.abs(p)}, x₂ = a ${sgn(q)} ${Math.abs(q)}.<br>Оба положительны ⇔ меньший a ${sgn(p)} ${Math.abs(p)} > 0 ⇔ <b>a > ${n(-p)}</b>.`,
+explain2:`Через Виета пришлось бы решать систему из трёх неравенств. А заметив, что D — полный квадрат, мы просто нашли корни: (x − (a ${sgn(p)} ${Math.abs(p)}))(x − (a ${sgn(q)} ${Math.abs(q)})) = 0. Это частый олимпиадный трюк.`,
+_bf:()=>grid(a=>{const rs=rootsOf(1,-(2*a+S),a*a+S*a+Pp);const ok=rs.length===2&&rs[0]>0;return ok===(a>-p)||'bf';})};},'s');
+G(7,()=>{const m=R(1,3);const ans=[];for(let a=-100;a<=100;a++){const D=a*a-4*m*a;if(D<0)continue;const s=Math.round(Math.sqrt(D));if(s*s===D&&(s-a)%2===0)ans.push(a);}
+const pairs=[];for(let d=-m*m;d<=m*m;d++){if(!d||(m*m)%d)continue;const e=m*m/d;if(d<=e)pairs.push([d,e]);}
+const rows=pairs.map(([d,e])=>{const x1=d-m,x2=e-m;return `(${d}, ${e}) → x = ${n(x1)}, ${n(x2)} → a = ${n(-(x1+x2))}`;}).join('<br>');
+return {type:'set',q:`Найди все <b>целые</b> a, при которых оба корня уравнения ${M(`x² + ax + ${m===1?'':m}a = 0`)} — целые числа.`,ans,keys:AKEYS,ph:APH,hint:`Виета: x₁ + x₂ = −a, x₁x₂ = ${m===1?'':m}a. Исключи a и разложи на множители.`,
+short:`(x₁ + ${m})(x₂ + ${m}) = ${m*m} → a ∈ ${setTxt(ans.map(n))}.`,
+explain:`По Виета: x₁ + x₂ = −a, x₁x₂ = ${m===1?'':m}a. Значит, x₁x₂ = −${m===1?'':m}(x₁ + x₂), то есть x₁x₂ + ${m===1?'':m}x₁ + ${m===1?'':m}x₂ = 0.<br>Добавим ${m*m}: ${M(`(x₁ + ${m})(x₂ + ${m}) = ${m*m}`)}.<br>Перебираем пары целых множителей ${m*m}:<br>${rows}<br>Ответ: <b>${setTxt(ans.map(n))}</b>.`,
+explain2:`Главная идея — избавиться от параметра: из двух равенств Виета получить соотношение только между корнями. Дальше «разложение + делители» — стандартный олимпиадный ход. Проверь, например, a = ${n(ans[ans.length-1])}: x² + ${ans[ans.length-1]}x + ${m*ans[ans.length-1]} = 0 — корни целые.`,
+_bf:()=>{const got=[];for(let a=-300;a<=300;a++){const rs=rootsOf(1,a,m*a);if(rs.length&&rs.every(x=>Math.abs(x-Math.round(x))<1e-9))got.push(a);}return JSON.stringify(got)===JSON.stringify(ans)||`brute ${got}`;}};},'s');
+
+/* ---------- widget ---------- */
+function onTheory(root){const el=root.querySelector('#w-param');if(!el)return;
+  el.innerHTML=`<label>Уравнение: <select id="wf"><option value="0">x² − 4x + a = 0</option><option value="1">ax² + 2x + 1 = 0</option></select></label>
+<label>a = <output id="wa">2</output><input type="range" id="sa" min="-3" max="6" step="0.25" value="2"></label>
+<div class="fig" id="wpic"></div><div id="wtxt" style="text-align:center"></div>`;
+  const g=id=>el.querySelector(id);
+  const upd=()=>{const a=+g('#sa').value,f=g('#wf').value;g('#wa').textContent=n(a);
+    const [A,B,C]=f==='0'?[1,-4,a]:[a,2,1];const rs=rootsOf(A,B,C);g('#wpic').innerHTML=plot(A,B,C,{roots:rs});
+    const cnt=nroots(A,B,C);let t;
+    if(f==='0'){const D4=4-a;t=`D/4 = 4 − a = <b>${n(D4)}</b> → ${D4>0?'два корня':D4===0?'один корень (a = 4)':'корней нет'}`;}
+    else if(a===0)t='a = 0: уравнение <b>линейное</b> 2x + 1 = 0 → один корень x = −½. Дискриминант тут не работает!';
+    else{const D4=1-a;t=`D/4 = 1 − a = <b>${n(D4)}</b> → ${D4>0?'два корня':D4===0?'один корень':'корней нет'}`;}
+    g('#wtxt').innerHTML=`${M(Q(A,B,C)+' = 0')}<br>${t}${rs.length&&cnt!==Infinity?`<br>Корни: ${rs.map(r=>n(Math.round(r*100)/100)).join('; ')}`:''}`;};
+  g('#sa').addEventListener('input',upd);g('#wf').addEventListener('change',upd);upd();}
+
+window.TOPIC={id:'a8_quad_param',title:'Квадратные уравнения с параметром',subtitle:'Алгебра · 8 класс',
+intro:`<p>Параметр — это «ползунок» внутри уравнения. Здесь научишься отвечать на вопросы «при каких a два корня, один, ни одного», не попадаться в ловушку a = 0 и решать олимпиадные задачи с параметром. В первом разделе — живой график с ползунком.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Что такое параметр','Ловушка a = 0','Два корня или ни одного','Ровно один корень','Корень задан','Знаки корней и параметр','Условия на корни','★ Олимпиадные задачи с параметром'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
