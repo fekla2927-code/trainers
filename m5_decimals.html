@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Десятичные дроби — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const N=H.num, rd=x=>Math.round(x*1e9)/1e9, P10=k=>Math.pow(10,k);
+const M=s=>`<span class="m">${s}</span>`;
+const dec=(n,k)=>rd(n/P10(k));                     // целое n, k знаков после запятой
+const fx=(x,k)=>x.toFixed(k).replace('.',',');     // с ровно k знаками
+const places=x=>{const s=String(rd(x));return s.includes('.')?s.split('.')[1].length:0;};
+const PL=['единиц','десятых','сотых','тысячных'];
+const PLu=['единицы','десятые','сотые','тысячные'];
+
+/* ---------- pictures ---------- */
+// разрядная таблица
+function placeTable(x,k,hlCol){
+  const s=fx(x,k);const [ip,fp]=s.split(',');const ints=ip.padStart(3,' ').slice(-3).split('');const fr=(fp||'').padEnd(3,' ').split('');
+  const heads=['сотни','десятки','единицы',',','десятые','сотые','тысячные'];
+  const ws=[50,50,50,14,52,52,58];let x0=7,o='';
+  const cells=[...ints,',',...fr];
+  heads.forEach((h,i)=>{const w=ws[i];const isC=i===3;
+    if(!isC){const hl=hlCol===i;o+=`<rect x="${x0}" y="8" width="${w}" height="70" rx="6" fill="${hl?'var(--hl)':'var(--card)'}" fill-opacity="${hl?0.5:1}" stroke="var(--fig)" stroke-width="1"/>`;
+      o+=`<text x="${x0+w/2}" y="26" text-anchor="middle" font-size="10" fill="var(--muted)">${h}</text>`;}
+    o+=`<text x="${x0+w/2}" y="${isC?66:62}" text-anchor="middle" font-size="${isC?26:24}" font-weight="700" fill="${isC?'var(--accent-ink)':'var(--ink)'}">${cells[i].trim()}</text>`;
+    x0+=w+(i===2||i===3?0:2);});
+  return `<svg viewBox="0 0 340 86" width="340" role="img" aria-label="Разрядная таблица" style="font-family:system-ui,sans-serif">${o}</svg>`;
+}
+// числовой луч: from, step, n делений; pts [{v,l}]
+function numLine(from,step,n,pts,lab){
+  const W=330,x0=18,x1=312,y=52;const dx=(x1-x0)/n;const X=v=>x0+(v-from)/step*dx;
+  let o=`<line x1="8" y1="${y}" x2="324" y2="${y}" stroke="var(--fig)" stroke-width="1.6"/><path d="M324,${y} l-8,-4 v8 z" fill="var(--fig)"/>`;
+  const every=lab||1;
+  for(let i=0;i<=n;i++){const big=i%every===0;o+=`<line x1="${x0+i*dx}" y1="${y-(big?8:5)}" x2="${x0+i*dx}" y2="${y+(big?8:5)}" stroke="var(--fig)" stroke-width="${big?1.5:1}"/>`;
+    if(big)o+=`<text x="${x0+i*dx}" y="${y+24}" text-anchor="middle" font-size="12" fill="var(--ink)">${N(rd(from+i*step))}</text>`;}
+  (pts||[]).forEach((p,j)=>{o+=`<circle cx="${X(p.v)}" cy="${y}" r="5" fill="var(--accent)"/><text x="${X(p.v)}" y="${y-14-(j%2)*14}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--accent-ink)">${p.l}</text>`;});
+  return `<svg viewBox="0 0 ${W} 86" width="${W}" role="img" aria-label="Числовой луч" style="font-family:system-ui,sans-serif">${o}</svg>`;
+}
+// сетка 10×10, закрашено k клеток
+function grid100(k,size){const c=size||20;let o='';for(let i=0;i<100;i++){const r=Math.floor(i/10),q=i%10;o+=`<rect x="${4+q*c}" y="${4+r*c}" width="${c}" height="${c}" fill="${i<k?'var(--hl)':'var(--card)'}" fill-opacity="${i<k?0.75:1}" stroke="var(--fig)" stroke-width=".6"/>`;}
+  return `<svg viewBox="0 0 ${8+10*c} ${8+10*c}" width="${8+10*c}" role="img" aria-label="Сетка из 100 клеток">${o}</svg>`;}
+// прыжки запятой
+function jumpPic(digits,from,to){ // digits: строка цифр без запятой, from/to — позиция запятой (кол-во цифр слева)
+  const w=26,n=digits.length,x0=Math.max(8,(330-n*w)/2);let o='';
+  digits.split('').forEach((d,i)=>o+=`<text x="${x0+i*w+w/2}" y="60" text-anchor="middle" font-size="24" font-weight="700" fill="var(--ink)">${d}</text>`);
+  const cx=p=>x0+p*w;
+  o+=`<text x="${cx(from)}" y="66" text-anchor="middle" font-size="26" font-weight="700" fill="var(--muted)">,</text>`;
+  o+=`<text x="${cx(to)}" y="66" text-anchor="middle" font-size="26" font-weight="700" fill="var(--accent-ink)">,</text>`;
+  const st=from<to?1:-1;for(let p=from;p!==to;p+=st){const a=cx(p),b=cx(p+st);o+=`<path d="M${a},34 Q${(a+b)/2},10 ${b},34" fill="none" stroke="var(--accent)" stroke-width="2"/><path d="M${b},34 l${-st*7},-3 l${st*2},-6 z" fill="var(--accent)"/>`;}
+  return `<svg viewBox="0 0 340 76" width="340" role="img" aria-label="Перенос запятой" style="font-family:system-ui,sans-serif">${o}</svg>`;
+}
+// столбики для среднего
+function bars(vals,avg,labels){const W=330,Hh=170,b=Math.min(46,250/vals.length),mx=Math.max(...vals)*1.15,x0=40;let o='';
+  const Y=v=>Hh-26-(v/mx)*(Hh-50);
+  vals.forEach((v,i)=>{const x=x0+i*(b+12);o+=`<rect x="${x}" y="${Y(v)}" width="${b}" height="${Hh-26-Y(v)}" rx="4" fill="var(--hl)" fill-opacity=".6" stroke="var(--fig)"/><text x="${x+b/2}" y="${Y(v)-5}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">${N(v)}</text><text x="${x+b/2}" y="${Hh-10}" text-anchor="middle" font-size="11" fill="var(--muted)">${labels?labels[i]:i+1}</text>`;});
+  if(avg!=null)o+=`<line x1="34" y1="${Y(avg)}" x2="${x0+vals.length*(b+12)}" y2="${Y(avg)}" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/><text x="30" y="${Y(avg)+4}" text-anchor="end" font-size="11" font-weight="700" fill="var(--accent-ink)">${N(avg)}</text>`;
+  o+=`<line x1="34" y1="${Hh-26}" x2="${W-4}" y2="${Hh-26}" stroke="var(--fig)"/>`;
+  return `<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="Столбики" style="font-family:system-ui,sans-serif">${o}</svg>`;}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Зачем нужны десятичные дроби',lvl:0,html:`
+<p class="hook">На табло Формулы-1 пишут: «1:12,<b>345</b>». Гонщики проигрывают друг другу <b>тысячные доли секунды</b> — меньше, чем длится взмах крыла мухи. Без десятичных дробей такое просто не записать!</p>
+<p>Десятичные дроби — это те самые числа с запятой: цена <b>89,90 ₽</b>, рост <b>1,52 м</b>, температура <b>36,6°</b>. Слева от запятой — <b>целые</b>, справа — <b>доли</b> (кусочки).</p>
+<div class="box rule"><b>Правило</b>Десятичная дробь — это другая запись дроби со знаменателем 10, 100, 1000…<br>
+${M('0,7 = 7/10')}, ${M('0,07 = 7/100')}, ${M('2,345 = 2 целых 345/1000')}.<br>После запятой столько цифр, сколько нулей в знаменателе.</div>
+<div class="figrow"><div class="fig">${grid100(37,14)}<div class="cap">37 клеток из 100 = <b>0,37</b></div></div><div class="fig">${grid100(70,14)}<div class="cap">70 клеток из 100 = <b>0,70 = 0,7</b></div></div></div>
+<div class="widget" id="w-grid"></div>
+<div class="fact">Запятую в дробях придумали не сразу. В Англии и США до сих пор пишут <b>точку</b>: 3.14. А в Германии и России — запятую: 3,14. На калькуляторе телефона ты увидишь то, что выбрано в настройках языка.</div>`},
+{title:'Разряды: десятые, сотые, тысячные',lvl:0,html:`
+<p>Каждая цифра стоит в своём «домике» — <b>разряде</b>. Слева от запятой ты их знаешь: единицы, десятки, сотни. Справа идут <b>десятые, сотые, тысячные</b>.</p>
+<div class="fig">${placeTable(34.587,3,5)}</div>
+<p class="small" style="text-align:center">В числе 34,587: 5 — десятые, <b>8 — сотые</b>, 7 — тысячные.</p>
+<div class="box tip"><b>Как запомнить</b>Сразу за запятой — <b>десятЫЕ</b> (не десятки!). Запятая — как зеркало: «десятки ↔ десятые», «сотни ↔ сотые». Только единицы не отражаются — они стоят прямо перед запятой.</div>
+<div class="box ex"><b>Пример: как читать</b>${M('3,05')} — «три целых пять <b>сотых</b>» (последняя цифра в разряде сотых).<br>${M('0,048')} — «ноль целых сорок восемь <b>тысячных</b>».</div>
+<div class="box err"><b>Частая ошибка</b>«Три целых пять сотых» записать как 3,5. Нет! 3,5 — это пять <b>десятых</b>. Пять сотых — это 3,<b>0</b>5: нужен ноль, чтобы пятёрка встала в разряд сотых.</div>`},
+{title:'Сравнение: уравняй хвостики',lvl:1,html:`
+<div class="box rule"><b>Правило</b>1) Сравни целые части. Больше целая — больше и число.<br>2) Целые равны → <b>уравняй число знаков после запятой</b>, приписав нули справа, и сравни как обычные числа.</div>
+<p>Почему можно приписывать нули? 0,5 = 0,50 = 0,500 — это 5 десятых = 50 сотых = 500 тысячных. Полпиццы остаётся полпиццей, как ты её ни режь.</p>
+<div class="box ex"><b>Пример</b>Что больше: 0,5 или 0,45? Уравниваем: 0,<b>50</b> и 0,<b>45</b>. 50 > 45 → <b>0,5 > 0,45</b>.</div>
+<div class="fig">${numLine(0,0.1,10,[{v:0.45,l:'0,45'},{v:0.5,l:'0,5'}])}</div>
+<div class="box err"><b>Главная ловушка</b>«В 0,45 больше цифр — значит, оно больше». Нет! Длинный хвост не значит большое число. На луче 0,5 стоит правее.</div>
+<div class="fact">В лёгкой атлетике бег на 100 м засекают с точностью до тысячных, а в протокол пишут сотые. Рекорд Усэйна Болта — 9,58 с (2009 год), и он до сих пор не побит.</div>`},
+{title:'Сложение и вычитание: запятая под запятой',lvl:2,html:`
+<div class="box rule"><b>Правило</b>Пиши в столбик <b>запятая под запятой</b>. Пустые места справа заполни нулями. Складывай (вычитай) как обычные числа и поставь запятую под запятыми.</div>
+<p>Почему так? Складывать можно только одинаковое: десятые с десятыми, сотые с сотыми. Как монеты: рубли к рублям, копейки к копейкам.</p>
+<div class="box ex"><b>Пример</b><pre style="font-size:17px;line-height:1.3;margin:6px 0">   3,40
+ + 1,25
+ ──────
+   4,65</pre>А из целого числа вычитаем так: 5 − 1,37 → <b>5,00</b> − 1,37 = 3,63.</div>
+<div class="box err"><b>Частая ошибка</b>Выровнять по правому краю, как целые: 3,4 + 1,25 → «1,59». Получилось меньше, чем 3,4 — сразу видно, что ерунда!</div>
+<div class="box tip"><b>Проверка прикидкой</b>3,4 + 1,25 ≈ 3 + 1 = 4. Ответ должен быть около 4–5.</div>`},
+{title:'Умножение и деление на 10, 100, 1000…',lvl:3,html:`
+<div class="box rule"><b>Правило</b>Умножить на 10, 100, 1000… — перенести запятую <b>вправо</b> на столько знаков, сколько нулей.<br>Разделить на 10, 100, 1000… — перенести запятую <b>влево</b>. Не хватает цифр — допиши нули.</div>
+<div class="fig">${jumpPic('3456',1,3)}</div>
+<p class="small" style="text-align:center">3,456 · 100 = 345,6 — запятая прыгнула на 2 знака вправо.</p>
+<div class="widget" id="w-jump"></div>
+<div class="box rule"><b>А если умножить на 0,1 или 0,01?</b>Умножить на 0,1 — то же, что разделить на 10. Умножить на 0,01 — разделить на 100. Запятая идёт <b>влево</b>!</div>
+<div class="box ex"><b>Пример из жизни</b>3,5 кг = 3,5 · 1000 = <b>3500 г</b>. 245 см = 245 : 100 = <b>2,45 м</b>.</div>
+<div class="box err"><b>Ловушка</b>4,2 : 100 → нужно два прыжка влево, а цифра перед запятой одна. Дописываем ноль: 004,2 → <b>0,042</b>.</div>`},
+{title:'Умножение десятичных дробей',lvl:4,html:`
+<div class="box rule"><b>Правило</b>1) Перемножь, <b>не глядя на запятые</b>, как обычные числа.<br>2) Посчитай, сколько всего цифр после запятой у <b>обоих</b> множителей.<br>3) Столько же цифр отдели запятой справа в ответе.</div>
+<div class="box ex"><b>Пример</b>${M('1,2 · 0,03')}: 12 · 3 = 36. Знаков после запятой: 1 + 2 = 3. Отделяем три: <b>0,036</b>.</div>
+<p>Почему так? 1,2 = 12/10, 0,03 = 3/100. Перемножаем: 36/(10·100) = 36/1000 = 0,036. Нули знаменателей складываются!</p>
+<div class="box err"><b>Ловушка</b>0,3 · 0,2 = «0,6»? Нет! 3 · 2 = 6, знаков 1 + 1 = 2 → <b>0,06</b>. Умножать на число меньше 1 — это брать часть, ответ становится <b>меньше</b>.</div>
+<div class="box tip"><b>Прикидка спасает</b>Пицца стоит 4,9 сотни рублей, берёшь 3 штуки: 4,9 · 3 ≈ 5 · 3 = 15 сотен. Если вышло 147 или 1,47 — запятая убежала.</div>`},
+{title:'Деление десятичных дробей',lvl:5,html:`
+<div class="box rule"><b>Правило 1: делим на натуральное число</b>Дели как обычно, а запятую в частном ставь, <b>как только закончилась целая часть</b> делимого. ${M('12,6 : 3 = 4,2')}.</div>
+<div class="box rule"><b>Правило 2: делим на десятичную дробь</b>Перенеси запятую в делимом и делителе <b>вправо на одинаковое</b> число знаков, чтобы делитель стал натуральным. Дальше — по правилу 1.<br>${M('4,8 : 0,6 = 48 : 6 = 8')}.</div>
+<p>Почему так можно? Если и делимое, и делитель увеличить в 10 раз, частное не изменится. 10 конфет на 2 друзей — по 5; 100 конфет на 20 друзей — тоже по 5.</p>
+<div class="box ex"><b>Пример</b>${M('0,36 : 0,12')}: оба ×100 → 36 : 12 = <b>3</b>.<br>${M('7,2 : 0,9')}: оба ×10 → 72 : 9 = <b>8</b> — столько кусков по 0,9 м выйдет из ленты 7,2 м.</div>
+<div class="box err"><b>Ловушка</b>Перенести запятую только в делителе: 4,8 : 0,6 → 4,8 : 6 = 0,8. Ответ меньше в 10 раз! Переносить надо <b>в обоих</b> числах.</div>
+<div class="box tip"><b>Удивительно, но факт</b>При делении на число меньше 1 ответ становится <b>больше</b>: 2 : 0,5 = 4. Сколько половинок пиццы в двух пиццах? Четыре!</div>`},
+{title:'Округление',lvl:6,html:`
+<div class="box rule"><b>Правило</b>1) Найди разряд, до которого округляешь.<br>2) Посмотри на <b>следующую</b> цифру справа.<br>3) Если она 0, 1, 2, 3, 4 — оставь цифру как есть; если 5, 6, 7, 8, 9 — увеличь на 1.<br>4) Все цифры правее отбрось.</div>
+<div class="box ex"><b>Примеры</b>3,4<b>7</b>2 до десятых: смотрим на 7 → 3,5.<br>3,44<b>9</b> до десятых: смотрим только на <b>4</b> (вторая цифра) → 3,4.<br>2,9<b>6</b> до десятых: 9 + 1 = 10, перенос → <b>3,0</b>.</div>
+<div class="fig">${numLine(3.4,0.01,10,[{v:3.472,l:'3,472'}],5)}</div>
+<p class="small" style="text-align:center">3,472 ближе к 3,5, чем к 3,4.</p>
+<div class="box err"><b>Ловушка «цепочка»</b>3,449 → «3,45 → 3,5»? Так нельзя! Округляют <b>один раз</b>, глядя на одну цифру. Правильно: 3,4.</div>
+<div class="fact">Магазины любят цены вроде 99,90 ₽. Мозг округляет «по первой цифре» и думает «90 с чем-то», хотя это почти 100. Маркетологи называют это «ценой-приманкой».</div>`},
+{title:'Среднее арифметическое',lvl:7,html:`
+<div class="box rule"><b>Правило</b>Среднее арифметическое = <b>сумма всех чисел : их количество</b>.</div>
+<p>Смысл простой: это «если бы всё раздать поровну». Три друга принесли 2, 5 и 8 конфет. Сложили в кучу — 15. Поделили поровну — по 5 каждому. Среднее = 5.</p>
+<div class="fig">${bars([2,5,8],5,['Петя','Ваня','Саша'])}</div>
+<div class="box ex"><b>Пример</b>Карманные деньги за неделю: 150; 200; 120,5; 129,5 ₽. Сумма 600, чисел 4 → среднее <b>150 ₽</b>.</div>
+<div class="box err"><b>Ловушка про скорость</b>Ехал 2 часа со скоростью 12 км/ч и 1 час со скоростью 15 км/ч. Средняя скорость — <b>не</b> (12 + 15) : 2! Надо: весь путь : всё время = (24 + 15) : 3 = 13 км/ч.</div>
+<div class="box tip"><b>Обратная задача</b>Если знаешь среднее и количество, то <b>сумма = среднее · количество</b>. Это главный ключ ко всем хитрым задачам на среднее.</div>`},
+{title:'Хитрые приёмы (для ★)',lvl:8,html:`
+<div class="box rule"><b>Перенос запятой меняет число в 10, 100… раз</b>Перенесли запятую на 1 знак вправо — число стало в 10 раз больше, то есть <b>выросло на 9 своих копий</b>. Если оно выросло на 25,2, то 9x = 25,2 → x = 2,8.</div>
+<div class="box ex"><b>Считай группами</b>${M('1,25 · 3,7 · 8')} = (1,25 · 8) · 3,7 = 10 · 3,7 = 37. Пары «1,25 · 8 = 10», «0,25 · 4 = 1», «0,5 · 2 = 1» — твои лучшие друзья.</div>
+<div class="box ex"><b>Повторяющийся хвост</b>1 : 7 = 0,142857142857… — блок «142857» повторяется вечно. Чтобы найти 100-ю цифру, делим 100 на 6 (длина блока): остаток 4 → четвёртая цифра блока, 8.</div>
+<div class="fact">Число 142857 — «циклическое»: 142857 · 2 = 285714, · 3 = 428571, · 6 = 857142 — те же цифры, просто сдвинуты по кругу!</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>После запятой: десятые, сотые, тысячные. Цифр после запятой = нулей в знаменателе.</li>
+<li>Сравнение: уравняй хвосты нулями. Длинный хвост ≠ большое число.</li>
+<li>Сложение/вычитание: запятая под запятой.</li>
+<li>×10, 100… — запятая вправо; :10, 100… и ×0,1 — влево.</li>
+<li>Умножение: перемножь без запятых, отдели столько знаков, сколько у обоих множителей вместе.</li>
+<li>Деление на дробь: двигай запятую в обоих числах, пока делитель не станет целым.</li>
+<li>Округление: смотри на одну следующую цифру. 5–9 — вверх.</li>
+<li>Среднее = сумма : количество. Сумма = среднее · количество.</li></ul>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Правила',title:'Главные правила и слова',rows:[
+[',','Десятичная запятая','Отделяет целую часть от дробной.',M('12,5 = 12 целых 5 десятых')],
+['0,1','Одна десятая','1/10 — один кусок из 10 равных.','0,1 м = 10 см'],
+['0,01','Одна сотая','1/100. Копейка — сотая часть рубля.','0,01 ₽ = 1 коп.'],
+['0,001','Одна тысячная','1/1000. Грамм — тысячная часть килограмма.','0,001 кг = 1 г'],
+['0,5 = 0,50','Нули в конце','Нули справа в дробной части можно дописывать и стирать.',M('2,30 = 2,3')],
+['·10ⁿ','Умножение на 10, 100…','Запятая вправо на n знаков.',M('0,37 · 100 = 37')],
+[':10ⁿ','Деление на 10, 100…','Запятая влево на n знаков.',M('4,2 : 100 = 0,042')],
+['·','Умножение дробей','Знаки после запятой складываются.',M('0,3 · 0,2 = 0,06')],
+[':','Деление на дробь','Двигаем запятую в обоих числах.',M('4,8 : 0,6 = 48 : 6 = 8')],
+['≈','«Примерно равно»','Результат округления.',M('3,472 ≈ 3,5')],
+['ср.','Среднее арифметическое','Сумма : количество.',M('(2 + 5 + 8) : 3 = 5')]
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Перед ответом сделай прикидку: округли числа до целых и посчитай в уме. Если ответ отличается в 10 раз — запятая убежала.</div>`};
+
+/* ---------- widget ---------- */
+function onTheory(root){
+  const g=root.querySelector('#w-grid');
+  if(g){g.innerHTML=`<label>Закрась клеток: <output id="wg-o">25</output><input type="range" id="wg-r" min="0" max="100" value="25"></label><div style="display:flex;justify-content:center" id="wg-s"></div><div class="small" id="wg-t" style="text-align:center;margin-top:6px"></div>`;
+    const r=g.querySelector('#wg-r');const draw=()=>{const k=+r.value;g.querySelector('#wg-o').textContent=k;g.querySelector('#wg-s').innerHTML=grid100(k,18);
+      g.querySelector('#wg-t').innerHTML=`${k} из 100 = <span class="out">${k}/100 = ${N(k/100)}</span>${k%10===0&&k>0&&k<100?` = ${k/10}/10 (целые столбики!)`:''}`;};r.oninput=draw;draw();}
+  const j=root.querySelector('#w-jump');
+  if(j){j.innerHTML=`<label>Число: <output id="wj-n">3,456</output><input type="range" id="wj-a" min="0" max="5" value="0"></label><label>Действие: <output id="wj-o">· 100</output><input type="range" id="wj-b" min="0" max="5" value="4"></label><div id="wj-s" style="display:flex;justify-content:center"></div><div class="small" id="wj-t" style="text-align:center"></div>`;
+    const nums=[[3456,3],[725,1],[42,1],[18,2],[50607,3],[9,0]];const ops=[[':',3],[':',2],[':',1],['·',1],['·',2],['·',3]];
+    const A=j.querySelector('#wj-a'),B=j.querySelector('#wj-b');
+    const draw=()=>{const [n,k]=nums[+A.value],[op,z]=ops[+B.value];const x=dec(n,k);const y=op==='·'?rd(x*P10(z)):rd(x/P10(z));
+      j.querySelector('#wj-n').textContent=N(x);j.querySelector('#wj-o').textContent=op+' '+P10(z);
+      const sx=fx(x,k);const ip=sx.split(',')[0],fp=sx.split(',')[1]||'';let digs='000'+ip+fp+'000';const from=3+ip.length;const to=op==='·'?from+z:from-z;
+      let L=0,Rr=digs.length;while(L<Math.min(from,to)-1&&digs[L]==='0')L++;while(Rr>Math.max(from,to)&&Rr>from+fp.length&&digs[Rr-1]==='0')Rr--;
+      j.querySelector('#wj-s').innerHTML=jumpPic(digs.slice(L,Rr),from-L,to-L);
+      j.querySelector('#wj-t').innerHTML=`<span class="out">${N(x)} ${op} ${P10(z)} = ${N(y)}</span> — запятая прыгнула на ${z} ${plural(z,'знак','знака','знаков')} ${op==='·'?'вправо':'влево'}.`;};
+    A.oninput=B.oninput=draw;draw();}
+}
+
+/* ---------- generators ---------- */
+const gens=[];
+const G=(lvl,make,o)=>gens.push(Object.assign({lvl,make},o||{}));
+const RULE=(lvl,vars,o)=>G(lvl,()=>{const v=pick(vars);const opts=shuffle([v.ok,...v.bad]);return {type:'choice',q:v.q,opts,ans:opts.indexOf(v.ok),short:v.ex,explain:v.ex,explain2:v.ex2};},Object.assign({rule:true},o||{}));
+
+/* L0 — разряды и запись */
+RULE(0,[{q:'Как называется <b>первый</b> разряд сразу после запятой?',ok:'десятые',bad:['десятки','единицы','сотые'],
+ ex:'Сразу после запятой — <b>десятые</b>, потом сотые, потом тысячные. Десятки стоят слева от запятой — это целые.',ex2:'Запятая — как зеркало: слева «единицы, десятки, сотни», справа «десятые, сотые, тысячные». Первое место справа — десятые.'},
+{q:'Сколько цифр после запятой в десятичной записи дроби со знаменателем <b>1000</b>?',ok:'3 — сколько нулей в знаменателе',bad:['4 — на одну больше, чем нулей','1 — всегда одна цифра','1000 — сколько в знаменателе'],
+ ex:'После запятой столько цифр, сколько нулей в знаменателе: 1000 → <b>3</b> цифры. Например, 7/1000 = 0,007.',ex2:'Проверь на маленьком: 1/10 = 0,1 (один ноль — одна цифра), 1/100 = 0,01 (два нуля — две цифры). Значит, 1/1000 = 0,001 — три цифры.'}]);
+G(0,()=>{const n=R(10000,99999);const x=dec(n,3);const p=R(0,3);const s=fx(x,3);const [ip,fp]=s.split(',');const d=p===0?+ip[ip.length-1]:+fp[p-1];
+ const nm=['единиц','десятых','сотых','тысячных'][p];
+ return {type:'num',q:`Какая цифра стоит в разряде <b>${nm}</b> в числе ${M(s)}?`,ans:d,
+ hint:'Сразу после запятой — десятые, потом сотые, потом тысячные. Единицы — прямо перед запятой.',
+ short:`${s}: в разряде ${nm} стоит ${d}.`,
+ explain:`Разложим ${s} по разрядам:<br>единицы — ${ip[ip.length-1]}, десятые — ${fp[0]}, сотые — ${fp[1]}, тысячные — ${fp[2]}.<br>Разряд ${nm} → цифра <b>${d}</b>.`,
+ explain2:`Считай места после запятой пальцем: 1-е место — десятые, 2-е — сотые, 3-е — тысячные. ${p===0?`Но единицы — это не после запятой, а <b>прямо перед ней</b>: ${ip[ip.length-1]}.`:`Нам нужно ${p}-е место после запятой: ${fp[p-1]}.`} Посмотри на таблицу — разряды подписаны.<div class="fig">${placeTable(x,3,[2,4,5,6][p])}</div>`};});
+G(0,()=>{const k=R(1,3);const n=pick([R(1,9),R(11,99),R(101,999)].filter(v=>String(v).length<=k+1));const x=dec(n,k);const den=P10(k);
+ return {type:'num',q:`Запиши дробь ${H.frac(n,den)} десятичной дробью.`,ans:x,ph:'например 0,25',
+ hint:`В знаменателе ${den} — ${k} ${plural(k,'ноль','нуля','нулей')}. Значит, после запятой будет ${k} ${plural(k,'цифра','цифры','цифр')}.`,
+ short:`${n}/${den} = ${N(x)}.`,
+ explain:`В знаменателе <b>${den}</b> — ${k} ${plural(k,'ноль','нуля','нулей')}, значит после запятой должно быть <b>${k}</b> ${plural(k,'цифра','цифры','цифр')}.<br>Пишем ${n} и отделяем справа ${k} ${plural(k,'цифру','цифры','цифр')}${String(n).length<=k?' (не хватает — дописываем нули слева)':''}: <b>${fx(x,k)}</b>.`,
+ explain2:`Деление на ${den} — это перенос запятой влево на ${k}: ${n} = ${n},0 → ${N(x)}. ${k>=2&&n<10?`Типичная ошибка — написать 0,${n}: это ${n}/10, в 10${k===3?'0':''} раз больше!`:''}`};});
+G(0,()=>{const W=R(1,9);const kind=pick(['сот','тыс']);let fr,ans,txt,bad;
+ if(kind==='сот'){fr=R(1,9);ans=dec(W*100+fr,2);txt=`${W} целых ${fr} ${plural(fr,'сотая','сотых','сотых')}`;bad=`${W},${fr}`;}
+ else{fr=R(11,99);ans=dec(W*1000+fr,3);txt=`${W} целых ${fr} ${plural(fr,'тысячная','тысячных','тысячных')}`;bad=`${W},${fr}`;}
+ return {type:'num',q:`Запиши числом: «${txt}».`,ans,ph:'например 3,05',
+ hint:'Последняя цифра дробной части должна оказаться в названном разряде. Иногда нужен ноль.',
+ short:`${txt} = ${N(ans)}.`,
+ explain:`«${kind==='сот'?'Сотых':'Тысячных'}» — значит, после запятой <b>${kind==='сот'?2:3}</b> ${kind==='сот'?'цифры':'цифры'}. У нас дробная часть «${fr}» — ${String(fr).length} ${plural(String(fr).length,'цифра','цифры','цифр')}, поэтому дописываем ноль впереди: <b>${N(ans)}</b>.<br>Ошибка «${bad}» — это ${kind==='сот'?`${fr} десятых`:`${fr} сотых`}, совсем другое число.`,
+ explain2:`Представь, что это деньги: ${kind==='сот'?`${W} рублей ${fr} копеек — это ${W},0${fr} ₽ (копейка — сотая рубля, 5 копеек — это не 50!)`:`${W} кг ${fr} г — это ${N(ans)} кг (грамм — тысячная килограмма, ${fr} г = 0,0${fr} кг)`}.`};});
+G(0,()=>{const a=R(1,9);const pos=R(1,9);const v=rd(a/10+pos/100);
+ return {type:'num',q:`Какое число отмечено точкой A на луче? Посмотри на подписи под делениями.`,pic:numLine(rd(a/10),0.01,10,[{v,l:'A'}],5),ans:v,
+ hint:'Сколько маленьких делений от левой подписи? Каждое — 0,01.',
+ short:`${N(rd(a/10))} + ${pos} · 0,01 = ${N(v)}.`,
+ explain:`От ${N(rd(a/10))} до ${N(rd(a/10+0.1))} — 10 маленьких делений, значит одно деление = 0,1 : 10 = <b>0,01</b>.<br>Точка A на ${pos}-м делении: ${N(rd(a/10))} + ${pos} · 0,01 = <b>${N(v)}</b>.`,
+ explain2:`Это как линейка: между сантиметрами 10 миллиметров. Здесь «сантиметр» — 0,1, а «миллиметр» — 0,01. Начинаем от ${N(rd(a/10))} и шагаем ${pos} ${plural(pos,'миллиметр','миллиметра','миллиметров')}: ${range(1,pos).map(i=>N(rd(a/10+i/100))).join(' → ')}.`};});
+
+/* L1 — сравнение */
+RULE(1,[{q:'Как правильно сравнить 0,5 и 0,45?',ok:'Уравнять число знаков после запятой (0,50 и 0,45) и сравнить',bad:['Больше то число, у которого больше цифр','Сравнить последние цифры: 5 и 5 — значит равны','Отбросить запятые и сравнить 5 и 45'],
+ ex:'Правило: при равных целых частях <b>уравниваем хвосты нулями</b>: 0,50 и 0,45. 50 > 45, значит 0,5 > 0,45.',ex2:'0,5 — это полпиццы, 0,45 — чуть меньше половины. Длинный хвост ничего не значит: 0,5 = 0,50 = 0,500.'},
+{q:'Какое утверждение — правило?',ok:'Нули в конце дробной части можно дописывать и отбрасывать: 2,3 = 2,30',bad:['Нули в конце дробной части увеличивают число: 2,30 > 2,3','Нули можно дописывать в любом месте: 2,3 = 2,03','Нули после запятой делают число в 10 раз меньше'],
+ ex:'2,3 = 2,30 = 2,300: три десятых = тридцать сотых. Нули <b>в конце</b> дробной части ничего не меняют. А ноль сразу после запятой меняет: 2,03 ≠ 2,3.',ex2:'Монеты: 2,30 ₽ — это 2 рубля 30 копеек, а 2,3 ₽ — тоже 2 рубля 30 копеек (3 десятых рубля = 30 коп.). Одинаково!'}]);
+G(1,()=>{const t=pick(['trap','eq','int','plain']);let a,b,ka,kb;
+ if(t==='trap'){const w=R(0,9),d=R(2,8);a=dec(w*10+d,1);b=dec(w*100+(d-1)*10+R(1,9),2);}
+ else if(t==='eq'){const w=R(0,20),d=R(1,9);a=dec(w*10+d,1);b=a;}
+ else if(t==='int'){a=dec(R(100,999),2);b=dec(R(1000,9999),3);if(Math.floor(a)===Math.floor(b))b=rd(b+1);}
+ else{const w=R(1,9);a=dec(w*1000+R(0,999),3);b=dec(w*1000+R(0,999),3);if(a===b)b=rd(b+0.001);}
+ if(Math.random()<0.5)[a,b]=[b,a];
+ ka=t==='eq'?(Math.random()<.5?1:2):places(a);kb=places(b);if(t==='eq'){ka=1;kb=2;}
+ const sa=fx(a,ka),sb=fx(b,kb);const ans=a>b?0:a<b?1:2;const k=Math.max(ka,kb);
+ return {type:'choice',q:`Какой знак поставить: ${M(sa+' ? '+sb)}`,opts:['>','<','='],ans,
+ short:`${fx(a,k)} ${['>','<','='][ans]} ${fx(b,k)}.`,
+ explain:`${Math.floor(a)!==Math.floor(b)?`Сначала сравниваем целые части: ${Math.floor(a)} и ${Math.floor(b)}. ${Math.floor(a)>Math.floor(b)?'У первого больше':'У второго больше'} — дальше можно не смотреть.`:`Целые части равны (${Math.floor(a)}). Уравниваем хвосты нулями: <b>${fx(a,k)}</b> и <b>${fx(b,k)}</b>. Теперь сравниваем дробные части как числа: ${fx(a,k).split(',')[1]} и ${fx(b,k).split(',')[1]}.`}<br>Ответ: ${M(sa+' '+['>','<','='][ans]+' '+sb)}.${t==='trap'?'<br>Ловушка: у меньшего числа больше цифр после запятой. Количество цифр ничего не решает!':''}`,
+ explain2:`Представь, что это цены в рублях: ${fx(a,2)} ₽ и ${fx(b,2)} ₽${k>2?` (с точностью до копейки ${fx(a,3)} и ${fx(b,3)})`:''}. Какая цена больше, ту и выбирай. ${ans===2?'Тут цены одинаковые — нули в конце ничего не меняют.':''}`};});
+G(1,()=>{for(;;){const w=R(0,5);const base=[dec(w*10+R(1,9),1),dec(w*100+R(1,99),2),dec(w*1000+R(1,999),3),dec(w*100+R(1,99),2)];
+ if(new Set(base).size<4)continue;const mx=Math.max(...base);const strs=base.map(v=>N(v));if(new Set(strs).size<4)continue;
+ const opts=shuffle(strs);const ans=opts.indexOf(N(mx));
+ return {type:'choice',q:'Какое из чисел <b>самое большое</b>?',opts,ans,
+ short:`Уравниваем хвосты: ${base.map(v=>fx(v,3)).join('; ')}. Больше всех ${N(mx)}.`,
+ explain:`Целые части у всех одинаковые (${w}). Дописываем нули, чтобы у всех было по 3 знака после запятой:<br>${base.map(v=>`${N(v)} → <b>${fx(v,3)}</b>`).join('<br>')}<br>Теперь сравниваем как обычные числа: самое большое — <b>${N(mx)}</b>.`,
+ explain2:`Сравни по первой цифре после запятой (десятые): у кого она больше — тот и больше. Если равны — смотри на вторую цифру. Не обращай внимания на длину записи. Самое большое: ${N(mx)}.`};}});
+G(1,()=>{const names=sample(['Макс','Дима','Тимур','Лёша'],3);const base=R(11,13);let ts;do{ts=names.map(()=>dec(base*100+R(0,99),2));}while(new Set(ts).size<3||ts.some(v=>places(v)<2));
+ const mn=Math.min(...ts);const win=names[ts.indexOf(mn)];
+ const sh=[...ts];sh[R(0,2)]=sh[0];
+ return {type:'choice',q:`Забег на 100 м. Результаты: ${names.map((n,i)=>`${n} — ${fx(ts[i],2)} с`).join(', ')}. Кто <b>победил</b>?`,opts:names,ans:names.indexOf(win),
+ short:`Победил тот, у кого время меньше: ${fx(mn,2)} с — ${win}.`,
+ explain:`В беге побеждает тот, кто пробежал <b>быстрее</b>, — у кого время <b>меньше</b>.<br>Все результаты больше ${base} с, сравниваем сотые: ${ts.map((v,i)=>`${names[i]} — ${fx(v,2)}`).join(', ')}.<br>Меньше всех: <b>${fx(mn,2)} с</b> → ${win}.`,
+ explain2:`Отметь времена на луче: чем левее точка, тем быстрее бегун. Самая левая — ${fx(mn,2)}. Подвох задачи: тут нужно не самое большое число, а самое маленькое!`};});
+G(1,()=>{let a,b;do{a=dec(R(11,89),1);b=dec(R(11,89),1);}while(b-a<2.5||Number.isInteger(a)||Number.isInteger(b));
+ const lo=Math.floor(a)+1,hi=Math.ceil(b)-1;const ans=hi-lo+1;
+ return {type:'num',q:`Сколько <b>натуральных</b> чисел лежит между ${N(a)} и ${N(b)}?`,ans,pic:numLine(Math.floor(a),1,Math.ceil(b)-Math.floor(a),[{v:a,l:'↓'},{v:b,l:'↓'}].map((p,i)=>({v:p.v,l:N(p.v)}))),
+ short:`Это числа от ${lo} до ${hi}: ${ans} шт.`,
+ explain:`Натуральные числа — целые: 1, 2, 3…<br>Первое целое больше ${N(a)} — это <b>${lo}</b>. Последнее целое меньше ${N(b)} — <b>${hi}</b>.<br>От ${lo} до ${hi}: ${hi} − ${lo} + 1 = <b>${ans}</b>.`,
+ explain2:`Выпиши их: ${range(lo,hi).join(', ')}. Посчитай — ${ans}. Почему +1? От 3 до 5 — это 3, 4, 5, три числа, а 5 − 3 = 2.`};});
+
+/* L2 — сложение и вычитание */
+RULE(2,[{q:'Как записывать десятичные дроби в столбик для сложения?',ok:'Запятая под запятой',bad:['Последняя цифра под последней цифрой','Первая цифра под первой цифрой','Как угодно, лишь бы ровно'],
+ ex:'Складывать можно только одинаковые разряды: десятые с десятыми, сотые с сотыми. Поэтому <b>запятая под запятой</b>, а пустые места справа заполняем нулями.',ex2:'Как с деньгами: рубли складываешь с рублями, копейки с копейками. Запятая — граница между рублями и копейками, она должна стоять ровно.'}]);
+G(2,()=>{let a,b;do{a=dec(R(11,999),R(1,2));b=dec(R(11,9999),R(1,3));}while(places(a)===places(b));
+ const s=rd(a+b);const k=Math.max(places(a),places(b));
+ return {type:'num',q:`Вычисли: ${M(N(a)+' + '+N(b))}`,ans:s,
+ hint:'Запятая под запятой! Допиши нули справа, чтобы хвосты были одинаковые.',
+ short:`${fx(a,k)} + ${fx(b,k)} = ${N(s)}.`,
+ explain:`Уравниваем хвосты нулями и пишем запятая под запятой:<pre style="font-size:17px;line-height:1.3;margin:6px 0">${fx(a,k).padStart(10)}\n+${fx(b,k).padStart(9)}\n ─────────\n${fx(s,k).padStart(10)}</pre>Ответ: <b>${N(s)}</b>.`,
+ explain2:`Переведи в «копейки» (или тысячные): ${fx(a,k)} — это ${Math.round(a*P10(k))} ${k===1?'десятых':k===2?'сотых':'тысячных'}, ${fx(b,k)} — ${Math.round(b*P10(k))}. Сумма: ${Math.round(s*P10(k))} → обратно ставим запятую на ${k} ${plural(k,'знак','знака','знаков')}: ${N(s)}. Прикидка: ${Math.round(a)} + ${Math.round(b)} ≈ ${Math.round(a)+Math.round(b)}.`};});
+G(2,()=>{const W=R(3,20);const b=dec(R(101,W*100-1),2);const s=rd(W-b);
+ return {type:'num',q:`Вычисли: ${M(W+' − '+N(b))}`,ans:s,
+ hint:`Запиши ${W} как ${W},00 — тогда будет из чего вычитать сотые.`,
+ short:`${W},00 − ${fx(b,2)} = ${N(s)}.`,
+ explain:`У целого числа тоже есть запятая — она просто не пишется: ${W} = <b>${W},00</b>.<pre style="font-size:17px;line-height:1.3;margin:6px 0">${(W+',00').padStart(8)}\n−${fx(b,2).padStart(7)}\n ───────\n${fx(s,2).padStart(8)}</pre>Ответ: <b>${N(s)}</b>.`,
+ explain2:`Проверь сложением: ${N(s)} + ${N(b)} = ${W}. Или на деньгах: у тебя ${W} ₽, покупка стоит ${fx(b,2)} ₽. Сдача — ${fx(s,2)} ₽.`};});
+G(2,()=>{const money=pick([200,300,500]);let p1,p2;do{p1=dec(R(3000,15000),2);p2=dec(R(2000,12000),2);}while(p1+p2>money-10||places(p1)<1||places(p2)<1);
+ const it=sample(['чипсы','газировку','мороженое','наклейки для альбома','шоколадку','брелок с Крипером'],2);const ch=rd(money-p1-p2);
+ return {type:'num',q:`У Павла было ${money} ₽ карманных денег. Он купил ${it[0]} за ${fx(p1,2)} ₽ и ${it[1]} за ${fx(p2,2)} ₽. Сколько рублей у него осталось?`,ans:ch,
+ short:`${money} − (${fx(p1,2)} + ${fx(p2,2)}) = ${money} − ${fx(rd(p1+p2),2)} = ${fx(ch,2)}.`,
+ explain:`1) Сколько потратил: ${fx(p1,2)} + ${fx(p2,2)} = <b>${fx(rd(p1+p2),2)}</b> ₽.<br>2) Осталось: ${money},00 − ${fx(rd(p1+p2),2)} = <b>${fx(ch,2)}</b> ₽.`,
+ explain2:`Можно по очереди: ${money} − ${fx(p1,2)} = ${fx(rd(money-p1),2)}, потом ${fx(rd(money-p1),2)} − ${fx(p2,2)} = ${fx(ch,2)}. Прикидка: ${Math.round(p1)} + ${Math.round(p2)} ≈ ${Math.round(p1)+Math.round(p2)}, значит сдача около ${money-Math.round(p1)-Math.round(p2)} ₽.`};});
+G(2,()=>{let a,b;do{a=dec(R(11,99),1);b=dec(R(101,999),2);}while(places(a)<1||places(b)<2);const wrong=rd((Math.round(a*10)+Math.round(b*100))/100);const right=rd(a+b);
+ const opts=shuffle(['Записал числа «последняя цифра под последней», а надо запятая под запятой','Ошибся в таблице сложения','Забыл перенести единицу в старший разряд','Всё верно, ошибки нет']);
+ return {type:'choice',q:`Петя сложил ${M(N(a)+' + '+N(b))} и получил ${M(N(wrong))}. Какую ошибку он сделал?`,opts,ans:opts.indexOf('Записал числа «последняя цифра под последней», а надо запятая под запятой'),
+ short:`Правильно: ${fx(a,2)} + ${fx(b,2)} = ${N(right)}.`,
+ explain:`Петя выровнял числа по правому краю, как целые: ${String(Math.round(a*10))} + ${String(Math.round(b*100))} = ${Math.round(a*10)+Math.round(b*100)} и поставил запятую. Но так десятые сложились с сотыми!<br>Правильно — <b>запятая под запятой</b>: ${fx(a,2)} + ${fx(b,2)} = <b>${N(right)}</b>.`,
+ explain2:`Прикидка сразу ловит ошибку: ${N(a)} + ${N(b)} ≈ ${Math.round(a)} + ${Math.round(b)} = ${Math.round(a)+Math.round(b)}. А у Пети ${N(wrong)} — меньше, чем ${N(a)}! Сумма не может быть меньше слагаемого.`};});
+
+/* L3 — ×÷ 10, 100 */
+RULE(3,[{q:'Что происходит с запятой при умножении на 100?',ok:'Переносится на 2 знака вправо',bad:['Переносится на 2 знака влево','Справа дописываются два нуля','Переносится на 100 знаков вправо'],
+ ex:'Умножить на 10, 100, 1000 — перенести запятую <b>вправо</b> на столько знаков, сколько нулей. У 100 два нуля → на 2 знака вправо: 3,456 · 100 = 345,6.',ex2:'Дописывать нули можно только к целым: 7 · 100 = 700. А 2,5 · 100 ≠ 2,500 (это всё ещё 2,5)! Правильно: 250.'},
+{q:'Умножить число на 0,1 — это то же самое, что…',ok:'разделить его на 10',bad:['умножить его на 10','разделить его на 0,1','прибавить 0,1'],
+ ex:'0,1 = 1/10. Взять одну десятую от числа — значит разделить его на 10. Запятая идёт <b>влево</b>: 35 · 0,1 = 3,5.',ex2:'0,1 от 50 конфет — это одна из десяти равных кучек: 50 : 10 = 5 конфет. И правда: 50 · 0,1 = 5.'}]);
+G(3,()=>{const k=R(1,3);const x=dec(R(11,9999),R(1,3));const y=rd(x*P10(k));
+ return {type:'num',q:`Вычисли: ${M(N(x)+' · '+P10(k))}`,ans:y,
+ short:`Запятая на ${k} вправо: ${N(y)}.`,
+ explain:`В ${P10(k)} — ${k} ${plural(k,'ноль','нуля','нулей')}, значит запятая прыгает на <b>${k}</b> ${plural(k,'знак','знака','знаков')} <b>вправо</b>${places(x)<k?' (не хватает цифр — дописываем нули)':''}: ${N(x)} → <b>${N(y)}</b>.`,
+ explain2:`Умножаем на ${P10(k)} — число должно стать больше в ${P10(k)} раз. Прикинь: ${N(x)} ≈ ${Math.round(x)}, а ${Math.round(x)} · ${P10(k)} = ${Math.round(x)*P10(k)}. Наш ответ ${N(y)} — рядом. Значит, запятая сдвинута правильно.`,
+ pic:(()=>{const p=places(x);let d=fx(x,p).replace(',','');const from=fx(x,p).split(',')[0].length;if(p<k)d+='0'.repeat(k-p);return jumpPic(d,from,from+k);})()};});
+G(3,()=>{const k=R(1,3);const x=dec(R(2,999),R(0,1));const y=rd(x/P10(k));
+ return {type:'num',q:`Вычисли: ${M(N(x)+' : '+P10(k))}`,ans:y,
+ hint:'Делим на 10, 100, 1000 — запятая влево. Не хватает цифр — допиши нули слева.',
+ short:`Запятая на ${k} влево: ${N(y)}.`,
+ explain:`Делим на ${P10(k)} → запятая на <b>${k}</b> ${plural(k,'знак','знака','знаков')} <b>влево</b>. ${String(Math.floor(x)).length<=k?`Цифр перед запятой не хватает, дописываем нули: ${'0'.repeat(k-String(Math.floor(x)).length+1)}${N(x)} → `:''}<b>${N(y)}</b>.`,
+ explain2:`Проверка обратным действием: ${N(y)} · ${P10(k)} = ${N(x)} ✅. Число стало в ${P10(k)} раз меньше — так и должно быть при делении.`};});
+G(3,()=>{const k=pick([1,2]);const x=dec(R(11,9999),R(0,2));const y=rd(x/P10(k));const f=k===1?'0,1':'0,01';
+ return {type:'num',q:`Вычисли: ${M(N(x)+' · '+f)}`,ans:y,
+ hint:`Умножить на ${f} — то же, что разделить на ${P10(k)}.`,
+ short:`·${f} = :${P10(k)} → ${N(y)}.`,
+ explain:`${f} = 1/${P10(k)}. Умножить на ${f} — значит <b>разделить на ${P10(k)}</b>: запятая на ${k} ${plural(k,'знак','знака','знаков')} <b>влево</b>.<br>${N(x)} · ${f} = <b>${N(y)}</b>.`,
+ explain2:`Частая ошибка — сдвинуть запятую вправо, как при умножении на ${P10(k)}. Но ${f} меньше единицы, а умножать на число меньше 1 — это брать <b>часть</b>. Ответ должен стать меньше ${N(x)}. ${N(y)} < ${N(x)} ✅.`};});
+G(3,()=>{const t=pick([
+ ()=>{const v=dec(R(11,99),1);return {q:`Сколько граммов в ${N(v)} кг?`,ans:rd(v*1000),how:`1 кг = 1000 г → ${N(v)} · 1000`,u:'г'};},
+ ()=>{const v=R(101,999);return {q:`Сколько метров в ${v} см?`,ans:rd(v/100),how:`1 м = 100 см → ${v} : 100`,u:'м'};},
+ ()=>{const v=R(1001,9999);return {q:`Майнкрафт-блок — это куб 1 м. Стив прошёл ${v} блоков. Сколько это километров?`,ans:rd(v/1000),how:`1 км = 1000 м → ${v} : 1000`,u:'км'};},
+ ()=>{const v=dec(R(11,99),1);return {q:`Бутылка газировки — ${N(v)} л. Сколько это миллилитров?`,ans:rd(v*1000),how:`1 л = 1000 мл → ${N(v)} · 1000`,u:'мл'};}])();
+ return {type:'num',q:t.q,ans:t.ans,short:`${t.how} = ${N(t.ans)} ${t.u}.`,
+ explain:`${t.how} = <b>${N(t.ans)}</b> ${t.u}.<br>Переходим к ${t.how.includes('·')?'более мелким единицам — число становится больше (умножаем)':'более крупным единицам — число становится меньше (делим)'}.`,
+ explain2:`Подумай здраво: ${t.how.includes('·')?'мелких единиц нужно МНОГО, чтобы набрать одну крупную':'крупных единиц выходит МАЛО'}. Поэтому ${t.how.includes('·')?'умножаем':'делим'}, и запятая прыгает ${t.how.includes('·')?'вправо':'влево'}: ${N(t.ans)} ${t.u}.`};});
+
+/* L4 — умножение */
+RULE(4,[{q:'Как определить, где поставить запятую в произведении двух десятичных дробей?',ok:'Отделить справа столько цифр, сколько их после запятой у обоих множителей вместе',bad:['Поставить запятую там же, где у первого множителя','Отделить столько цифр, сколько у множителя с самым длинным хвостом','Запятая ставится после первой цифры'],
+ ex:'Перемножаем без запятых, потом <b>складываем</b> число знаков после запятой у обоих множителей и отделяем столько же справа. 1,2 · 0,03: 12 · 3 = 36, знаков 1 + 2 = 3 → 0,036.',ex2:'Почему складываем: 1,2 = 12/10, 0,03 = 3/100. Произведение = 36/(10 · 100) = 36/1000. Нули в знаменателях складываются: 1 + 2 = 3.'}]);
+G(4,()=>{const x=dec(R(11,999),R(1,2));const m=R(2,9);const y=rd(x*m);
+ return {type:'num',q:`Вычисли: ${M(N(x)+' · '+m)}`,ans:y,
+ short:`${Math.round(x*P10(places(x)))} · ${m} = ${Math.round(x*P10(places(x)))*m}, отделяем ${places(x)} → ${N(y)}.`,
+ explain:`1) Без запятой: ${Math.round(x*P10(places(x)))} · ${m} = ${Math.round(x*P10(places(x)))*m}.<br>2) У ${N(x)} после запятой ${places(x)} ${plural(places(x),'цифра','цифры','цифр')}, у ${m} — ни одной. Отделяем ${places(x)}: <b>${N(y)}</b>.`,
+ explain2:`Умножение на ${m} — это сложить ${m} раз: ${Array(m).fill(N(x)).join(' + ')} = ${N(y)}. Прикидка: ${Math.round(x)} · ${m} ≈ ${Math.round(x)*m}.`};});
+G(4,()=>{let a,b;do{a=dec(R(1,9),pick([1,2]));b=dec(R(2,9),pick([1,2]));}while(a>=1||b>=1);const y=rd(a*b);const k=places(a)+places(b);const ia=Math.round(a*P10(places(a))),ib=Math.round(b*P10(places(b)));
+ return {type:'num',q:`Вычисли: ${M(N(a)+' · '+N(b))}`,ans:y,
+ hint:'Считай знаки после запятой у обоих множителей и сложи их.',
+ short:`${ia} · ${ib} = ${ia*ib}, знаков ${places(a)} + ${places(b)} = ${k} → ${N(y)}.`,
+ explain:`1) Перемножаем без запятых: ${ia} · ${ib} = ${ia*ib}.<br>2) Знаков после запятой: ${places(a)} + ${places(b)} = <b>${k}</b>.<br>3) Отделяем ${k} справа${String(ia*ib).length<=k?', дописав нули слева':''}: <b>${N(y)}</b>.<br>Ловушка: ответ «${N(rd(ia*ib/P10(Math.max(places(a),places(b)))))}» — это если взять знаки только у одного множителя.`,
+ explain2:`Через обыкновенные дроби: ${N(a)} = ${ia}/${P10(places(a))}, ${N(b)} = ${ib}/${P10(places(b))}. Произведение = ${ia*ib}/${P10(k)} = ${N(y)}. Оба числа меньше 1, значит и произведение меньше каждого из них — ${N(y)} < ${N(Math.min(a,b))} ✅.`};});
+G(4,()=>{const kg=dec(R(12,48),1);const pr=R(60,190);const y=rd(kg*pr);const fr=pick(['яблок','мандаринов','бананов','черешни']);
+ return {type:'num',q:`1 кг ${fr} стоит ${pr} ₽. Сколько рублей стоят ${N(kg)} кг?`,ans:y,
+ short:`${pr} · ${N(kg)} = ${N(y)} ₽.`,
+ explain:`Стоимость = цена · количество = ${pr} · ${N(kg)}.<br>Без запятой: ${pr} · ${Math.round(kg*10)} = ${pr*Math.round(kg*10)}. Отделяем 1 знак: <b>${N(y)}</b> ₽.`,
+ explain2:`По частям: ${Math.floor(kg)} кг стоят ${pr} · ${Math.floor(kg)} = ${pr*Math.floor(kg)} ₽, ещё 0,${Math.round(kg*10)%10} кг — это ${Math.round(kg*10)%10} десятых от ${pr}: ${N(rd(pr*(Math.round(kg*10)%10)/10))} ₽. Вместе ${N(y)} ₽.`};});
+
+/* L5 — деление */
+RULE(5,[{q:'Как разделить на десятичную дробь, например 4,8 : 0,6?',ok:'Перенести запятую вправо и в делимом, и в делителе на одинаковое число знаков, чтобы делитель стал целым',bad:['Перенести запятую только в делителе','Отбросить все запятые и разделить','Разделить, а потом поставить запятую как в делителе'],
+ ex:'Если делимое и делитель увеличить в одно и то же число раз, частное не изменится. 4,8 : 0,6 → (оба ·10) → 48 : 6 = 8.',ex2:'10 конфет на 2 друзей — по 5. 100 конфет на 20 друзей — тоже по 5! Увеличили оба числа в 10 раз — ответ тот же.'},
+{q:'Деление на натуральное число: когда ставить запятую в частном?',ok:'Когда закончилось деление целой части делимого',bad:['В самом конце, отсчитав знаки','Никогда, частное всегда целое','Сразу после первой цифры частного'],
+ ex:'Делишь как обычно, и <b>как только снёс первую цифру после запятой</b> делимого — ставишь запятую в частном. 12,6 : 3: 12 : 3 = 4, ставим запятую, 6 : 3 = 2 → 4,2.',ex2:'Деньги: 12 рублей 60 копеек на троих. Сначала рубли: по 4 ₽. Потом копейки: по 20 коп. Итого 4,20 ₽.'}]);
+G(5,()=>{const m=R(2,9);const q=dec(R(11,999),R(1,2));const x=rd(q*m);
+ return {type:'num',q:`Вычисли: ${M(N(x)+' : '+m)}`,ans:q,
+ short:`${N(x)} : ${m} = ${N(q)} (проверка: ${N(q)} · ${m} = ${N(x)}).`,
+ explain:`Делим как обычные числа, а запятую в частном ставим, когда закончилась целая часть делимого.<br>${N(x)} : ${m} = <b>${N(q)}</b>.<br>Проверка: ${N(q)} · ${m} = ${N(x)} ✅.`,
+ explain2:`Переведи в мелкие единицы: ${N(x)} = ${Math.round(x*P10(places(q)))} ${places(q)===1?'десятых':'сотых'}. ${Math.round(x*P10(places(q)))} : ${m} = ${Math.round(q*P10(places(q)))} ${places(q)===1?'десятых':'сотых'} = ${N(q)}.`};});
+G(5,()=>{const d=dec(R(2,9),pick([1,2]));const q=R(2,30);const x=rd(d*q);const k=places(d);const s=P10(k);
+ return {type:'num',q:`Вычисли: ${M(N(x)+' : '+N(d))}`,ans:q,
+ hint:`Перенеси запятую в обоих числах на ${k} ${plural(k,'знак','знака','знаков')} вправо.`,
+ short:`${N(x)} : ${N(d)} = ${N(rd(x*s))} : ${Math.round(d*s)} = ${q}.`,
+ explain:`Делитель ${N(d)} — дробь. Умножаем <b>оба</b> числа на ${s} (запятая на ${k} вправо):<br>${N(x)} : ${N(d)} = ${N(rd(x*s))} : ${Math.round(d*s)} = <b>${q}</b>.<br>Ошибка «${N(rd(x/Math.round(d*s)))}» — если перенести запятую только в делителе.`,
+ explain2:`Вопрос «${N(x)} : ${N(d)}» значит «сколько раз ${N(d)} помещается в ${N(x)}?». Проверь: ${N(d)} · ${q} = ${N(x)} ✅. Делим на число меньше 1 — ответ больше делимого, это нормально!`};});
+G(5,()=>{let p,n,len;do{p=dec(R(2,9),1);n=R(3,15);len=rd(p*n);}while(len>12||Number.isInteger(len)&&Math.random()<0.7);
+ const what=pick(['ленту','верёвку','провод']);
+ return {type:'num',q:`Павел разрезал ${what} длиной ${N(len)} м на куски по ${N(p)} м. Сколько кусков получилось?`,ans:n,
+ short:`${N(len)} : ${N(p)} = ${Math.round(len*10)} : ${Math.round(p*10)} = ${n}.`,
+ explain:`Нужно узнать, сколько раз ${N(p)} м помещается в ${N(len)} м — это деление: ${N(len)} : ${N(p)}.<br>Оба числа ·10: ${Math.round(len*10)} : ${Math.round(p*10)} = <b>${n}</b>.`,
+ explain2:`Переведи в дециметры (1 м = 10 дм): ${Math.round(len*10)} дм и ${Math.round(p*10)} дм. ${Math.round(len*10)} : ${Math.round(p*10)} = ${n} кусков. Проверка: ${n} · ${N(p)} = ${N(len)} ✅.`};});
+G(5,()=>{for(;;){const d=dec(R(2,9),1),q=R(3,12);const x=rd(d*q);if(Number.isInteger(x))continue;
+ const ok=`${N(rd(x*10))} : ${Math.round(d*10)}`;const opts=[ok,`${N(x)} : ${Math.round(d*10)}`,`${N(rd(x*100))} : ${Math.round(d*10)}`,`${N(rd(x/10))} : ${Math.round(d*10)}`];if(new Set(opts).size<4)continue;const o=shuffle(opts);
+ return {type:'choice',q:`Каким выражением можно заменить ${M(N(x)+' : '+N(d))}, чтобы ответ не изменился?`,opts:o,ans:o.indexOf(ok),
+ short:`Оба числа увеличили в 10 раз: ${ok}.`,
+ explain:`Частное не меняется, если делимое и делитель умножить на <b>одно и то же</b> число. Делитель ${N(d)} ·10 = ${Math.round(d*10)}, значит и делимое ·10: ${N(x)} · 10 = ${N(rd(x*10))}.<br>Ответ: <b>${ok}</b> (= ${q}).`,
+ explain2:`Вариант «${N(x)} : ${Math.round(d*10)}» — запятую перенесли только в делителе, ответ станет в 10 раз меньше. А в «${N(rd(x*100))} : ${Math.round(d*10)}» делимое увеличили в 100 раз, а делитель только в 10 — тоже нечестно.`};}});
+
+/* L6 — округление */
+RULE(6,[{q:'При округлении на какую цифру нужно смотреть?',ok:'Только на первую отбрасываемую цифру (справа от нужного разряда)',bad:['На последнюю цифру числа','На все отбрасываемые цифры по цепочке, с конца','На цифру самого разряда, до которого округляем'],
+ ex:'Смотрим <b>только на одну</b> цифру — первую справа от нужного разряда. 0–4 → оставляем, 5–9 → +1. 3,449 до десятых: смотрим на 4 → 3,4.',ex2:'Цепочка «3,449 → 3,45 → 3,5» — ошибка. На луче 3,449 ближе к 3,4 (до него 0,049), чем к 3,5 (до него 0,051).'},
+{q:'Округли по правилу: следующая цифра — 5. Что делать?',ok:'Увеличить цифру разряда на 1',bad:['Оставить цифру как есть','Округлить до ближайшего чётного','Ничего, такие числа не округляют'],
+ ex:'Правило школьного округления: 0, 1, 2, 3, 4 — оставляем; <b>5</b>, 6, 7, 8, 9 — увеличиваем на 1. 2,35 до десятых → 2,4.',ex2:'Запомни: «пятёрка тянет вверх». 4,5 до целых → 5.'}]);
+const roundX=(v,p)=>{const f=P10(3-p);return rd(Math.floor((v+f/2)/f)*f/1000);};// v — целое, тысячные
+G(6,()=>{const p=R(0,2);let v;do{v=R(1000,99999);}while(v%10===0);const x=v/1000;const y=roundX(v,p);const nm=['целых','десятых','сотых'][p];
+ const s=fx(x,3);const nd=+s.replace(',','')[String(Math.floor(x)).length+p];
+ return {type:'num',q:`Округли ${M(s)} до <b>${nm}</b>.`,ans:y,
+ hint:`Найди разряд ${nm} и посмотри на одну цифру справа от него.`,
+ short:`Следующая цифра ${nd} → ${nd>=5?'вверх':'оставляем'}: ${N(y)}.`,
+ explain:`1) Разряд ${nm}: ${p===0?'последняя цифра целой части':p===1?'первая цифра после запятой':'вторая цифра после запятой'}.<br>2) Справа от него цифра <b>${nd}</b> — ${nd>=5?'это 5–9, увеличиваем на 1':'это 0–4, оставляем как есть'}.<br>3) Отбрасываем всё правее: <b>${p>0?fx(y,p):N(y)}</b>${p>0&&fx(y,p)!==N(y)?` (= ${N(y)})`:''}.`,
+ explain2:`Найди два «соседа» на луче: ${p>0?fx(roundX(v-(v%P10(3-p)),p),p):N(Math.floor(x))} и ${p>0?fx(rd(roundX(v-(v%P10(3-p)),p)+1/P10(p)),p):N(Math.floor(x)+1)}. К какому ${s} ближе? ${nd>=5?'Ко второму':'К первому'} — это и есть ответ.`};});
+G(6,()=>{const w=R(1,8);const p=pick([1,2]);const v=w*1000+(p===1?pick([951,960,970,985,990,996]):pick([995,996,997,998,999]));const x=v/1000;const y=roundX(v,p);const s3=fx(x,3);
+ return {type:'num',q:`Округли ${M(s3)} до <b>${p===1?'десятых':'сотых'}</b>.`,ans:y,ph:'например 3,0',
+ short:`Перенос через девятку: ${fx(y,p)}.`,
+ explain:`${p===1?`Разряд десятых — цифра <b>9</b>, справа от неё <b>${s3[3]}</b>`:`Разряд сотых — цифра <b>9</b>, справа от неё <b>${s3[4]}</b>`} — это 5–9, значит 9 увеличиваем на 1.<br>Но 9 + 1 = 10: пишем 0 и переносим единицу влево${p===2?' (там тоже 9 → снова 0 и перенос)':''}, как при сложении в столбик.<br>Ответ: <b>${fx(y,p)}</b>. Нули в конце округлённого числа оставляют — они показывают, до какого разряда округлили.`,
+ explain2:`Это как спидометр: после 9 идёт 0, а следующее колёсико поворачивается. ${s3} лежит между ${fx(rd(y-1/P10(p)),p)} и ${fx(y,p)} и ближе ко второму — проверь: до ${fx(y,p)} всего ${N(rd(y-x))}.`};});
+G(6,()=>{const base=R(11,98);const t=dec(base,1);const lo=rd(t-0.05),hi=rd(t+0.05);
+ const cand=shuffle([{v:rd(t-0.05),ok:true},{v:rd(t+0.04),ok:true},{v:rd(t+0.05),ok:false},{v:rd(t-0.06),ok:false},{v:rd(t+0.009),ok:true},{v:rd(t-0.1),ok:false}]);
+ return {type:'multi',q:`Какие числа при округлении до десятых дают ${M(N(t))}? Выбери все.`,opts:cand.map(c=>fx(c.v,c.v===rd(t+0.009)?3:2)),ans:cand.map((c,i)=>c.ok?i:-1).filter(i=>i>=0),
+ short:`Подходят числа от ${fx(lo,2)} (включительно) до ${fx(hi,2)} (не включая).`,
+ explain:`Округляются в ${N(t)} все числа от <b>${fx(lo,2)}</b> до <b>${fx(hi,2)}</b> (само ${fx(hi,2)} уже даёт ${N(rd(t+0.1))}).<br>${cand.map(c=>`${N(c.v)} → ${N(roundX(Math.round(c.v*1000),1))} ${c.ok?'✅':'❌'}`).join('<br>')}`,
+ explain2:`Для каждого числа смотри на вторую цифру после запятой (сотые): 5–9 — десятые растут на 1, 0–4 — остаются. Например, ${fx(lo,2)}: сотые 5 → вверх → ${N(t)} ✅; ${fx(hi,2)}: сотые 5 → вверх → ${N(rd(t+0.1))} ❌.`};});
+
+/* L7 — среднее */
+RULE(7,[{q:'Что такое среднее арифметическое нескольких чисел?',ok:'Сумма чисел, делённая на их количество',bad:['Число, стоящее посередине списка','Сумма самого большого и самого маленького, делённая на 2','Сумма чисел, умноженная на их количество'],
+ ex:'Среднее арифметическое = <b>сумма : количество</b>. Для 2, 5, 8: (2 + 5 + 8) : 3 = 5.',ex2:'Смысл: «если всё раздать поровну». Сложили всё в кучу и поделили на всех.'}]);
+G(7,()=>{const n=R(3,5);for(;;){const avg=dec(R(20,90),1);const vals=[];let s=0;for(let i=0;i<n-1;i++){const v=dec(R(Math.round(avg*10)-25,Math.round(avg*10)+25),1);vals.push(v);s=rd(s+v);}const last=rd(avg*n-s);if(last<=0||Math.abs(last-avg)>3||places(last)>1)continue;vals.push(last);
+ return {type:'num',q:`Найди среднее арифметическое чисел: ${vals.map(N).join('; ')}.`,ans:avg,pic:bars(vals,null),
+ short:`(${vals.map(N).join(' + ')}) : ${n} = ${N(rd(avg*n))} : ${n} = ${N(avg)}.`,
+ explain:`1) Сумма: ${vals.map(N).join(' + ')} = <b>${N(rd(avg*n))}</b>.<br>2) Количество чисел: <b>${n}</b>.<br>3) Среднее: ${N(rd(avg*n))} : ${n} = <b>${N(avg)}</b>.`,
+ explain2:`Проверка: среднее всегда между самым маленьким (${N(Math.min(...vals))}) и самым большим (${N(Math.max(...vals))}). ${N(avg)} — между ними ✅. Если «выровнять» все столбики до одной высоты, получится ${N(avg)}.<div class="fig">${bars(vals,avg)}</div>`};}});
+G(7,()=>{for(;;){const days=['пн','вт','ср','чт','пт'];const avg=R(40,80);const vals=days.map(()=>R(20,110));const s=vals.slice(0,4).reduce((a,b)=>a+b,0);vals[4]=avg*5-s;if(vals[4]<10||vals[4]>150)continue;
+ return {type:'num',q:`Павел играл в Minecraft на этой неделе: ${days.map((d,i)=>`${d} — ${vals[i]} мин`).join(', ')}. Сколько минут в среднем в день он играл (за эти 5 дней)?`,ans:avg,pic:bars(vals,null,days),
+ short:`${vals.join(' + ')} = ${avg*5}; ${avg*5} : 5 = ${avg}.`,
+ explain:`Сумма: ${vals.join(' + ')} = <b>${avg*5}</b> мин.<br>Дней: 5. Среднее: ${avg*5} : 5 = <b>${avg}</b> мин.`,
+ explain2:`Представь, что все минуты сложили в одну «копилку» (${avg*5} мин) и раздали поровну на 5 дней — по ${avg} мин.<div class="fig">${bars(vals,avg,days)}</div>`};}});
+G(7,()=>{let n,avg,vals,sum,x;do{n=R(3,5);avg=R(4,9);vals=[];for(let i=0;i<n-1;i++)vals.push(R(2,avg+3));sum=avg*n;x=sum-vals.reduce((a,b)=>a+b,0);}while(x<1);
+ return {type:'num',q:`Среднее арифметическое ${n} чисел равно ${avg}. Известны ${n-1} из них: ${vals.join(', ')}. Найди последнее число.`,ans:x,
+ short:`Сумма = ${avg} · ${n} = ${sum}; ${sum} − ${vals.reduce((a,b)=>a+b,0)} = ${x}.`,
+ explain:`Ключ: <b>сумма = среднее · количество</b> = ${avg} · ${n} = ${sum}.<br>Известные числа дают ${vals.join(' + ')} = ${vals.reduce((a,b)=>a+b,0)}.<br>Последнее: ${sum} − ${vals.reduce((a,b)=>a+b,0)} = <b>${x}</b>.`,
+ explain2:`Проверка: (${vals.join(' + ')} + ${x}) : ${n} = ${sum} : ${n} = ${avg} ✅.`};});
+G(7,()=>{for(;;){const t1=R(1,3),t2=R(1,3),v1=R(10,16),v2=R(10,18);if(v1===v2)continue;const S=t1*v1+t2*v2;const avg=rd(S/(t1+t2));if(places(avg)>1)continue;if(Math.abs(avg-(v1+v2)/2)<1e-9)continue;
+ return {type:'num',q:`Павел ехал на велосипеде ${t1} ч со скоростью ${v1} км/ч, потом ${t2} ч со скоростью ${v2} км/ч. Найди среднюю скорость (км/ч).`,ans:avg,
+ short:`(${t1*v1} + ${t2*v2}) : ${t1+t2} = ${N(avg)}.`,
+ explain:`Средняя скорость = <b>весь путь : всё время</b>.<br>Путь: ${v1} · ${t1} + ${v2} · ${t2} = ${t1*v1} + ${t2*v2} = ${S} км.<br>Время: ${t1} + ${t2} = ${t1+t2} ч.<br>${S} : ${t1+t2} = <b>${N(avg)}</b> км/ч.<br>Ловушка: (${v1} + ${v2}) : 2 = ${N((v1+v2)/2)} — неверно, ведь на разных скоростях он ехал разное время.`,
+ explain2:`Распиши по часам: ${[...Array(t1).fill(v1),...Array(t2).fill(v2)].join(', ')} км за каждый час. Это ${t1+t2} чисел, их среднее: ${S} : ${t1+t2} = ${N(avg)}.`};}});
+
+/* L8 — ★ */
+RULE(8,[{q:'Если в десятичной дроби перенести запятую на один знак вправо, число…',ok:'увеличится в 10 раз (то есть на 9 своих копий)',bad:['увеличится на 10','увеличится на 1','увеличится в 9 раз'],
+ ex:'Перенос на 1 знак вправо = умножение на 10. Было x, стало 10x — прибавилось <b>9x</b>.',ex2:'2,5 → 25. Стало в 10 раз больше; разница 25 − 2,5 = 22,5 = 9 · 2,5.'}],{star:true});
+G(8,()=>{const x=dec(R(11,99),1);const d=rd(9*x);
+ return {type:'num',q:`Если в десятичной дроби перенести запятую на один знак вправо, она увеличится на ${M(N(d))}. Найди эту дробь.`,ans:x,
+ hint:'Число стало в 10 раз больше. На сколько своих копий оно выросло?',
+ short:`10x − x = 9x = ${N(d)} → x = ${N(x)}.`,
+ explain:`Пусть дробь — x. После переноса запятой она стала 10x. Выросла на 10x − x = <b>9x</b>.<br>9x = ${N(d)} → x = ${N(d)} : 9 = <b>${N(x)}</b>.<br>Проверка: ${N(rd(x*10))} − ${N(x)} = ${N(d)} ✅.`,
+ explain2:`Нарисуй отрезок «x». После переноса запятой — 10 таких отрезков. Новых добавилось 9 отрезков, и они вместе — ${N(d)}. Один отрезок: ${N(d)} : 9 = ${N(x)}.`};},{star:true});
+G(8,()=>{const x=R(2,9)*10+pick([0,5]);const d=rd(x*0.99);
+ return {type:'num',q:`Если в числе перенести запятую на два знака влево, оно уменьшится на ${M(N(d))}. Найди число.`,ans:x,
+ short:`x − 0,01x = 0,99x = ${N(d)} → x = ${x}.`,
+ explain:`Перенос на 2 знака влево — деление на 100: было x, стало 0,01x.<br>Уменьшилось на x − 0,01x = <b>0,99x</b> = ${N(d)}.<br>x = ${N(d)} : 0,99 = ${N(rd(d*100))} : 99 = <b>${x}</b>.<br>Проверка: ${x} − ${N(rd(x/100))} = ${N(d)} ✅.`,
+ explain2:`Разделим число на 100 одинаковых «кусочков». После переноса остался 1 кусочек, исчезли 99. Значит, 99 кусочков = ${N(d)}, 1 кусочек = ${N(rd(x/100))}, а всё число = ${x}.`};},{star:true});
+G(8,()=>{const k=pick([[1.25,8],[0.25,4],[0.5,2],[2.5,4],[0.125,8]]);const m=dec(R(11,99),1);const y=rd(k[0]*k[1]*m);const ord=shuffle([N(k[0]),N(m),N(k[1])]);
+ return {type:'num',q:`Вычисли удобным способом: ${M(ord.join(' · '))}`,ans:y,
+ hint:`Поищи пару, которая даёт «круглое» число.`,
+ short:`${N(k[0])} · ${k[1]} = ${N(k[0]*k[1])}, потом · ${N(m)} = ${N(y)}.`,
+ explain:`От перестановки множителей произведение не меняется. Группируем «удобную пару»: <b>${N(k[0])} · ${k[1]} = ${N(k[0]*k[1])}</b>.<br>Дальше ${N(k[0]*k[1])} · ${N(m)} = <b>${N(y)}</b> — просто сдвиг запятой.`,
+ explain2:`Запомни пары: 0,5 · 2 = 1; 0,25 · 4 = 1; 0,125 · 8 = 1; 1,25 · 8 = 10; 2,5 · 4 = 10. Увидел такую — сразу объединяй.`};},{star:true});
+G(8,()=>{const n=R(20,120);const blk='142857';const dig=+blk[(n-1)%6];
+ // проверка длинным делением
+ let r=1,dd=0;for(let i=0;i<n;i++){r*=10;dd=Math.floor(r/7);r%=7;}
+ if(dd!==dig)throw new Error('1/7 check');
+ return {type:'num',q:`1 : 7 = 0,142857142857… (блок «142857» повторяется бесконечно). Какая цифра стоит на <b>${n}-м</b> месте после запятой?`,ans:dig,
+ hint:'Длина блока — 6 цифр. Найди остаток от деления номера на 6.',
+ short:`${n} = 6 · ${Math.floor(n/6)} + ${n%6} → ${n%6===0?'6-я (последняя)':(n%6)+'-я'} цифра блока: ${dig}.`,
+ explain:`Блок из 6 цифр повторяется. Полных блоков до ${n}-го места: ${n} : 6 = ${Math.floor(n/6)} (остаток <b>${n%6}</b>).<br>${n%6===0?`Остаток 0 — значит ${n}-е место — это <b>конец</b> блока, 6-я цифра: <b>7</b>.`:`Остаток ${n%6} → ${n%6}-я цифра блока «142857»: <b>${dig}</b>.`}`,
+ explain2:`Так работают «повторялки», как дни недели: какой день будет через ${n} дней? Делим на 7 и смотрим на остаток. Здесь «неделя» из 6 цифр: 1, 4, 2, 8, 5, 7. Место ${n} — это ${n%6===0?6:n%6}-я «цифра недели» → ${dig}.`};},{star:true});
+G(8,()=>{let n,a,out,S,newAvg;do{n=R(6,12);a=R(5,9);out=dec(R(a*10+5,a*10+50),1);S=n*a;newAvg=rd((S-out)/(n-1));}while(places(newAvg)>2);
+ return {type:'num',q:`Среднее арифметическое ${n} чисел равно ${a}. Одно число вычеркнули, и среднее оставшихся стало ${N(newAvg)}. Какое число вычеркнули?`,ans:out,
+ hint:'Найди сумму «до» и сумму «после».',
+ short:`${n} · ${a} − ${n-1} · ${N(newAvg)} = ${S} − ${N(rd(S-out))} = ${N(out)}.`,
+ explain:`Сумма = среднее · количество.<br>До: ${a} · ${n} = <b>${S}</b>.<br>После: ${N(newAvg)} · ${n-1} = <b>${N(rd(S-out))}</b>.<br>Вычеркнули разницу: ${S} − ${N(rd(S-out))} = <b>${N(out)}</b>.`,
+ explain2:`Про среднее не думай — думай про «копилку». В ней было ${S}, осталось ${N(rd(S-out))}. Сколько забрали? ${N(out)}. Среднее упало, потому что убрали число больше среднего.`};},{star:true});
+G(8,()=>{const n=R(3,9);const ans=n;// 0,2^n = 2^n/10^n, 2^n не кончается на 0
+ const v=(2n**BigInt(n)).toString();const s='0,'+v.padStart(n,'0');
+ if(s.length-2!==n)throw new Error('pow');
+ return {type:'num',q:`Сколько цифр после запятой будет в числе ${M('0,2'+'<sup>'+n+'</sup>')} (0,2 умножили само на себя ${n} ${plural(n,'раз','раза','раз')})?`,ans,
+ short:`0,2<sup>${n}</sup> = ${s}: ${n} ${plural(n,'цифра','цифры','цифр')}.`,
+ explain:`По правилу умножения знаки после запятой складываются: 1 + 1 + … (${n} раз) = ${n}. Перемножаем без запятых: 2<sup>${n}</sup> = ${v}. Это число не кончается нулём (степени двойки оканчиваются на 2, 4, 8, 6), так что стирать нечего.<br>0,2<sup>${n}</sup> = <b>${s}</b> — ровно <b>${n}</b> ${plural(n,'цифра','цифры','цифр')}.`,
+ explain2:`Посмотри по шагам: 0,2 → 0,04 → 0,008 → 0,0016 → … На каждом шаге хвост удлиняется ровно на 1. Значит, после ${n} множителей — ${n} ${plural(n,'цифра','цифры','цифр')}.`};},{star:true});
+
+window.TOPIC={id:'m5_decimals',title:'Десятичные дроби',subtitle:'Математика · 5 класс (повторение)',
+intro:'<p>Числа с запятой — везде: цены, рост, время на табло, рекорды. Повторим разряды, научимся сравнивать, складывать, умножать и делить такие числа, округлять и искать среднее. В конце — хитрые задачи со звёздочкой ★.</p>',
+theory,symbols,figs:{},onTheory,
+levels:['Разряды и запись','Сравнение','Сложение и вычитание','Умножение и деление на 10, 100…','Умножение дробей','Деление дробей','Округление','Среднее арифметическое','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

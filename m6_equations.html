@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Уравнения и выражения — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,num:N,frac,gcd,lcm}=H;
+const M=s=>`<span class="m">${s}</span>`;
+/* линейное выражение из слагаемых [[коэф,'x'],[число,'']] → «3x − 5» */
+const L=(arr)=>{let s='';arr.forEach(([c,v])=>{if(!c)return;const a=Math.abs(c);const body=v?(a===1?v:N(a)+v):N(a);s+=s===''?(c<0?'−':'')+body:(c<0?' − ':' + ')+body;});return s||'0';};
+const par=v=>v<0?`(${N(v)})`:N(v);
+const sg=(v)=>v<0?` − ${N(-v)}`:` + ${N(v)}`;          // « + 5» / « − 5»
+const sgx=(v)=>{const a=Math.abs(v);return (v<0?' − ':' + ')+(a===1?'':N(a))+'x';};
+const nz=(a,b)=>{let v=0;while(v===0)v=R(a,b);return v;};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+
+/* ---------- решение ax + b = cx + d по шагам ---------- */
+function steps(a,b,c,d,orig){
+  const x=(d-b)/(a-c);let s=orig?`${M(orig)}<br>`:'';
+  s+=`${M(`${L([[a,'x'],[b,'']])} = ${L([[c,'x'],[d,'']])}`)}<br>`;
+  const moved=[];if(c)moved.push(`${M(L([[c,'x']]))} — влево, станет ${M(L([[-c,'x']]))}`);if(b)moved.push(`${M(N(b))} — вправо, станет ${M(N(-b))}`);
+  if(moved.length)s+=`Переносим: ${moved.join('; ')}.<br>`;
+  const lhs=c?`${L([[a,'x']])}${sgx(-c)}`:L([[a,'x']]);const rhs=b?`${N(d)}${sg(-b)}`:N(d);
+  s+=`${M(`${lhs} = ${rhs}`)}<br>${M(`${L([[a-c,'x']])} = ${N(d-b)}`)}<br>`;
+  s+=(a-c!==1)?`Делим обе части на ${par(a-c)}: ${M(`x = ${N(d-b)} : ${par(a-c)} = ${N(x)}`)}`:M(`x = ${N(x)}`);
+  return s;
+}
+
+/* ---------- SVG ---------- */
+function scale(left,right,tilt){ // items: 'x' (коробка) или число (гиря)
+  const W=320,Hh=168,cx=160,py=30;tilt=Math.max(-10,Math.min(10,tilt||0));
+  const rad=tilt*Math.PI/180,arm=108,ca=arm*Math.cos(rad);
+  const Ly=py+arm*Math.sin(rad),Ry=py-arm*Math.sin(rad);  // tilt>0: левая чаша ниже
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="Весы" style="font-family:system-ui,sans-serif">`;
+  s+=`<polygon points="${cx},${py} ${cx-24},${Hh-8} ${cx+24},${Hh-8}" fill="var(--accent-soft)" stroke="var(--fig)" stroke-width="1.5"/><line x1="100" y1="${Hh-7}" x2="220" y2="${Hh-7}" stroke="var(--fig)" stroke-width="2"/>`;
+  s+=`<line x1="${(cx-ca).toFixed(1)}" y1="${Ly.toFixed(1)}" x2="${(cx+ca).toFixed(1)}" y2="${Ry.toFixed(1)}" stroke="var(--fig)" stroke-width="3" stroke-linecap="round"/><circle cx="${cx}" cy="${py}" r="4" fill="var(--fig)"/>`;
+  const pan=(x,y,items)=>{const pyy=y+70;let o=`<line x1="${x}" y1="${y}" x2="${x-50}" y2="${pyy}" stroke="var(--fig)" stroke-width="1"/><line x1="${x}" y1="${y}" x2="${x+50}" y2="${pyy}" stroke="var(--fig)" stroke-width="1"/><path d="M${x-54},${pyy} Q${x},${pyy+16} ${x+54},${pyy}" fill="var(--card)" stroke="var(--fig)" stroke-width="1.8"/>`;
+    const n=items.length,iw=n>4?19:24,gap=2,tot=n*iw+(n-1)*gap;let x0=x-tot/2;
+    items.forEach(it=>{const isX=String(it)[0]==='x';const h=isX?26:22,w=isX?iw:Math.max(iw,String(it).length*9+6);o+=`<rect x="${x0.toFixed(1)}" y="${(pyy-h+4).toFixed(1)}" width="${w}" height="${h}" rx="${isX?3:9}" fill="${isX?'var(--hl)':'var(--accent-soft)'}" fill-opacity="${isX?0.6:1}" stroke="var(--fig)" stroke-width="1"/><text x="${(x0+w/2).toFixed(1)}" y="${(pyy-h/2+9).toFixed(1)}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">${it}</text>`;x0+=w+gap;});
+    return o;};
+  s+=pan(cx-ca,Ly,left)+pan(cx+ca,Ry,right);
+  return s+'</svg>';
+}
+const items=(a,b)=>{const r=[];for(let i=0;i<a;i++)r.push('x');if(b>0)r.push(b);return r;};
+function rectPic(a,b,c){const u=Math.min(38,220/(b+c)),W=320,x0=(W-(b+c)*u)/2,y0=24,hh=Math.min(a*u,100);
+  let s=`<svg viewBox="0 0 ${W} ${hh+58}" width="${W}" style="font-family:system-ui,sans-serif">`;
+  s+=`<rect x="${x0}" y="${y0}" width="${b*u}" height="${hh}" fill="var(--hl)" fill-opacity=".35" stroke="var(--fig)" stroke-width="1.6"/><rect x="${x0+b*u}" y="${y0}" width="${c*u}" height="${hh}" fill="var(--accent-soft)" stroke="var(--fig)" stroke-width="1.6"/>`;
+  s+=`<text x="${x0+b*u/2}" y="${y0-7}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-ink)">b = ${b}</text><text x="${x0+b*u+c*u/2}" y="${y0-7}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-ink)">c = ${c}</text>`;
+  s+=`<text x="${x0-6}" y="${y0+hh/2+5}" text-anchor="end" font-size="13" font-weight="700" fill="var(--accent-ink)">a = ${a}</text>`;
+  s+=`<text x="${x0+b*u/2}" y="${y0+hh/2+5}" text-anchor="middle" font-size="13" fill="var(--ink)">a·b = ${a*b}</text><text x="${x0+b*u+c*u/2}" y="${y0+hh/2+5}" text-anchor="middle" font-size="13" fill="var(--ink)">a·c = ${a*c}</text>`;
+  s+=`<text x="${W/2}" y="${y0+hh+24}" text-anchor="middle" font-size="13" fill="var(--ink)">вся площадь: ${a}·(${b} + ${c}) = ${a*b} + ${a*c} = ${a*(b+c)}</text>`;
+  return s+'</svg>';}
+function motionPic(lab1,lab2,dist,meet){const W=320;let s=`<svg viewBox="0 0 ${W} 96" width="${W}" style="font-family:system-ui,sans-serif">`;
+  s+=`<line x1="20" y1="56" x2="300" y2="56" stroke="var(--fig)" stroke-width="2"/><circle cx="20" cy="56" r="4" fill="var(--fig)"/><circle cx="300" cy="56" r="4" fill="var(--fig)"/>`;
+  s+=`<text x="20" y="80" text-anchor="middle" font-size="13" fill="var(--ink)">A</text><text x="300" y="80" text-anchor="middle" font-size="13" fill="var(--ink)">B</text>`;
+  s+=`<text x="160" y="80" text-anchor="middle" font-size="13" fill="var(--accent-ink)" font-weight="700">${dist}</text>`;
+  s+=`<line x1="28" y1="40" x2="96" y2="40" stroke="var(--hl)" stroke-width="3"/><polygon points="106,40 95,34 95,46" fill="var(--hl)"/><line x1="292" y1="40" x2="224" y2="40" stroke="var(--accent)" stroke-width="3"/><polygon points="214,40 225,34 225,46" fill="var(--accent)"/>`;
+  s+=`<text x="28" y="26" font-size="13" fill="var(--ink)">${lab1}</text><text x="292" y="26" text-anchor="end" font-size="13" fill="var(--ink)">${lab2}</text>`;
+  if(meet)s+=`<text x="160" y="46" text-anchor="middle" font-size="18">🤝</text>`;
+  return s+'</svg>';}
+function coinsPic(a,b){let s=`<svg viewBox="0 0 320 70" width="320" style="font-family:system-ui,sans-serif">`;
+  [[a,70],[b,230]].forEach(([v,x])=>{s+=`<circle cx="${x-14}" cy="35" r="24" fill="var(--accent-soft)" stroke="var(--fig)" stroke-width="1.6"/><circle cx="${x+14}" cy="35" r="24" fill="var(--accent-soft)" stroke="var(--fig)" stroke-width="1.6"/><text x="${x+14}" y="41" text-anchor="middle" font-size="17" font-weight="700" fill="var(--accent-ink)">${v} ₽</text>`;});
+  return s+'</svg>';}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Буква вместо числа',lvl:0,html:`
+<p class="hook">Фокус! Загадай любое число. Умножь его на 2. Прибавь 10. Раздели на 2. А теперь вычти задуманное число. У тебя получилось… <b>5</b>! Угадал? Я не умею читать мысли — я умею решать <b>выражения с буквой</b>. В конце раздела раскрою секрет.</p>
+<div class="box rule"><b>Правило</b><b>Выражение с переменной</b> — запись из чисел, букв и знаков действий, например ${M('3x + 5')}. Буква (переменная) — это «коробка», в которую можно положить любое число.</div>
+<p>Почему так удобно? Потому что одной записью мы описываем <b>сразу все случаи</b>. Пицца стоит x рублей — значит, 3 пиццы стоят ${M('3x')}, а 3 пиццы и сок за 90 ₽ — ${M('3x + 90')}. Неважно, сколько стоит пицца, формула работает всегда.</p>
+<div class="box rule"><b>Как читать</b>${M('3x')} — это <b>3 · x</b>. Знак умножения между числом и буквой не пишут: ленятся математики 😄. А вот ${M('3 + x')} — совсем другое.</div>
+<div class="box ex"><b>Пример: подставляем число</b>Найдём ${M('4x − 7')} при ${M('x = 5')}: ${M('4 · 5 − 7 = 20 − 7 = 13')}.<br>При ${M('x = −2')}: ${M('4 · (−2) − 7 = −8 − 7 = −15')}. Отрицательное число подставляем <b>в скобках</b>!</div>
+<div class="box err"><b>Частая ошибка</b>Подставить x = 5 в ${M('4x')} и получить 45. Нет! ${M('4x')} — это 4 умножить на x, а не «число из цифр 4 и 5».</div>
+<div class="box tip"><b>Секрет фокуса</b>Пусть задумано x. Умножили на 2: ${M('2x')}. Прибавили 10: ${M('2x + 10')}. Разделили на 2: ${M('x + 5')}. Вычли x: остаётся <b>5</b> — при любом x! Попробуй этот фокус на друзьях.</div>`},
+{title:'Раскрытие скобок',lvl:1,html:`
+<div class="box rule"><b>Правило (распределительный закон)</b>${M('a(b + c) = ab + ac')} и ${M('a(b − c) = ab − ac')}.<br>Множитель перед скобкой «раздаётся» <b>каждому</b> слагаемому в скобках.</div>
+<p><b>Почему это верно?</b> Посмотри на прямоугольник. Его площадь можно найти целиком — ${M('a·(b + c)')}, а можно по кусочкам — ${M('ab + ac')}. Площадь одна и та же!</p>
+<div class="fig">${rectPic(3,4,2)}</div>
+<p>Представь, что ты раздаёшь конфеты: «каждому по 3». Нельзя дать 3 конфеты только первому в очереди, а второго обделить. Так и множитель — <b>всем</b> в скобках.</p>
+<div class="box ex"><b>Примеры</b>${M('5(x + 3) = 5x + 15')}<br>${M('−2(x − 4) = −2x + 8')} (минус на минус — плюс!)<br>${M('3(2a − b + 1) = 6a − 3b + 3')}</div>
+<h3>Минус перед скобкой — злой волшебник</h3>
+<div class="box rule"><b>Правило</b>Если перед скобкой стоит <b>минус</b>, убираем скобки и минус, а знаки <b>всех</b> слагаемых в скобках меняем на противоположные: ${M('−(a − b + c) = −a + b − c')}.</div>
+<p>Минус перед скобкой — это как будто там стоит ${M('−1')}: ${M('−(x − 5) = −1·x + (−1)·(−5) = −x + 5')}. А плюс перед скобкой ничего не меняет: ${M('+(x − 5) = x − 5')}.</p>
+<div class="box err"><b>Главная ловушка</b>${M('10 − (x − 3)')} — поменять знак только у x: ${M('10 − x − 3')} ❌. Правильно: ${M('10 − x + 3 = 13 − x')} ✅. Волшебник переворачивает <b>все</b> знаки, а не один.</div>
+<div class="box tip"><b>Удобный счёт в уме</b>${M('37 · 99 = 37 · (100 − 1) = 3700 − 37 = 3663')}. Скобки помогают считать быстрее калькулятора!</div>`},
+{title:'Подобные слагаемые',lvl:2,html:`
+<div class="box rule"><b>Правило</b><b>Подобные слагаемые</b> — слагаемые с <b>одинаковой буквенной частью</b> (например, ${M('3x')} и ${M('−7x')}). Чтобы их привести, <b>складываем коэффициенты</b> (числа перед буквой), а буквенную часть оставляем.</div>
+<p>3 яблока + 5 яблок = 8 яблок. А 3 яблока + 5 груш — это не 8 «яблогруш», а так и остаётся 3 яблока + 5 груш. С буквами то же самое: ${M('3x + 5x = 8x')}, а ${M('3x + 5y')} не упрощается.</p>
+<div class="box ex"><b>Пример</b>${M('7x + 4 − 2x + 9')}<br>Слагаемые с x: ${M('7x − 2x = 5x')}. Числа: ${M('4 + 9 = 13')}.<br>Ответ: ${M('5x + 13')}.</div>
+<div class="box ex"><b>Пример со скобками</b>${M('3(x + 2) − (x − 5) = 3x + 6 − x + 5 = 2x + 11')}.</div>
+<div class="box err"><b>Ошибки</b>• ${M('5x + 3 = 8x')} ❌ — число 3 без x не подобно 5x!<br>• ${M('x + x = x²')} ❌ — это ${M('2x')}. (x² — это x · x.)<br>• Знак «прилипает» к слагаемому, которое стоит после него: в ${M('4 − 3x')} коэффициент при x равен <b>−3</b>.</div>
+<div class="box tip"><b>Лайфхак</b>Подчеркни слагаемые с x одной чертой, числа — двумя. Потом собери «по корзинкам».</div>`},
+{title:'Уравнение и его корень',lvl:3,html:`
+<div class="box rule"><b>Правило</b><b>Уравнение</b> — равенство с неизвестным числом. <b>Корень</b> уравнения — число, при подстановке которого получается верное равенство. <b>Решить</b> уравнение — найти все корни (или доказать, что их нет).</div>
+<p>Уравнение — это <b>весы в равновесии</b>. Слева 3 одинаковые коробки и гиря 4 кг, справа — 19 кг. Сколько весит коробка?</p>
+<div class="fig">${scale(['x','x','x',4],[19],0)}</div>
+<p>Снимем гирю 4 кг с <b>обеих</b> чаш — равновесие не нарушится: ${M('3x = 15')}. Теперь оставим на каждой чаше треть: ${M('x = 5')}.</p>
+<div class="box rule"><b>Что можно делать с уравнением</b>• прибавлять или вычитать одно и то же число <b>из обеих частей</b>;<br>• умножать или делить <b>обе части</b> на одно и то же число, <b>не равное нулю</b>.<br>Корни от этого не меняются.</div>
+<div class="widget" id="w-scale"></div>
+<div class="box tip"><b>Проверка</b>Нашёл корень — подставь его в уравнение: ${M('3 · 5 + 4 = 19')} ✅. Две секунды — и ты уверен в ответе.</div>
+<div class="fact">Слово «алгебра» происходит от арабского «аль-джабр» — так учёный аль-Хорезми около 820 года назвал перенос слагаемых из одной части уравнения в другую. А от его имени произошло слово «алгоритм».</div>`},
+{title:'Перенос: «перешёл на другой берег — сменил знак»',lvl:4,html:`
+<div class="box rule"><b>Правило</b>Любое слагаемое можно перенести из одной части уравнения в другую, <b>поменяв его знак</b> на противоположный.</div>
+<p>Знак «=» — это река 🌊. Слагаемое, которое переплывает на другой берег, «переодевается»: плюс становится минусом, минус — плюсом. Сами корни при этом не меняются.</p>
+<p><b>Почему так?</b> Перенос — это сокращённая запись того, что мы <b>прибавили одно и то же к обеим частям</b>: ${M('5x − 7 = 2x + 8')} → прибавим 7 к обеим частям: ${M('5x = 2x + 15')} → вычтем ${M('2x')}: ${M('3x = 15')}. Получилось, будто −7 перешло вправо как +7, а 2x — влево как −2x.</p>
+<ol class="steps"><li>Все слагаемые с x — влево, числа — вправо (каждый «переплывший» меняет знак).</li><li>Приводим подобные: ${M('5x − 2x = 8 + 7')}, то есть ${M('3x = 15')}.</li><li>Делим на коэффициент: ${M('x = 5')}.</li><li>Проверяем: ${M('5·5 − 7 = 18')}, ${M('2·5 + 8 = 18')} ✅.</li></ol>
+<div class="box err"><b>Частая ошибка</b>Перенести и забыть сменить знак: ${M('5x − 7 = 2x + 8')} → ${M('5x − 2x = 8 − 7')} ❌. Число −7 переплыло реку, значит стало <b>+7</b>.</div>
+<div class="box rule"><b>Особые случаи</b>• ${M('0 · x = 5')} — <b>корней нет</b> (ноль, умноженный на что угодно, не даст 5).<br>• ${M('0 · x = 0')} — <b>корень — любое число</b>.<br>Например, ${M('2x + 3 = 2x + 5')} → ${M('0x = 2')} → корней нет.</div>`},
+{title:'Уравнения со скобками',lvl:5,html:`
+<div class="box rule"><b>План</b>1) Раскрой скобки (помни о минусе перед скобкой!). 2) Перенеси x влево, числа вправо. 3) Приведи подобные. 4) Раздели на коэффициент. 5) Проверь.</div>
+<div class="box ex"><b>Пример</b>${M('3(x − 2) = 2(x + 1) − 4')}<br>Раскрываем: ${M('3x − 6 = 2x + 2 − 4')}<br>Переносим: ${M('3x − 2x = 2 − 4 + 6')}<br>Приводим: ${M('x = 4')}<br>Проверка: ${M('3·2 = 6')}, ${M('2·5 − 4 = 6')} ✅</div>
+<div class="box ex"><b>Пример с минусом</b>${M('20 − (x + 4) = 3x')}<br>${M('20 − x − 4 = 3x')} → ${M('−x − 3x = 4 − 20')} → ${M('−4x = −16')} → ${M('x = 4')}.</div>
+<div class="box tip"><b>Сократить можно сразу</b>Если обе части делятся на одно число — дели: ${M('4(x − 3) = 20')} → ${M('x − 3 = 5')} → ${M('x = 8')}. Меньше счёта — меньше ошибок.</div>
+<div class="box err"><b>Ошибка</b>${M('5 − 2(x − 1)')} → ${M('5 − 2x − 2')} ❌. Минус двойка умножается и на −1: ${M('−2 · (−1) = +2')}. Правильно: ${M('5 − 2x + 2')}.</div>`},
+{title:'Уравнения с дробями и пропорции',lvl:6,html:`
+<div class="box rule"><b>Правило</b>Если в уравнении есть дроби, <b>умножь обе части на общий знаменатель</b> (обычно НОК знаменателей). Дроби исчезнут!</div>
+<div class="box ex"><b>Пример</b>${M(`${frac('x','3')} + ${frac('x','4')} = 7`)}. Общий знаменатель 12. Умножаем <b>каждое</b> слагаемое на 12:<br>${M('4x + 3x = 84')} → ${M('7x = 84')} → ${M('x = 12')}.<br>Проверка: ${M('12 : 3 + 12 : 4 = 4 + 3 = 7')} ✅</div>
+<div class="box err"><b>Ошибка</b>Сложить знаменатели: ${M(`${frac('x','3')} + ${frac('x','4')} = ${frac('2x','7')}`)} ❌. Дроби так не складывают!<br>И ещё: умножать на 12 нужно <b>всё</b> — и правую часть тоже.</div>
+<h3>Пропорция</h3>
+<div class="box rule"><b>Основное свойство пропорции</b>Если ${M(`${frac('a','b')} = ${frac('c','d')}`)}, то ${M('a · d = b · c')} — произведение крайних равно произведению средних («умножаем крест-накрест»).</div>
+<div class="box ex"><b>Пример</b>${M(`${frac('x','6')} = ${frac('10','4')}`)} → ${M('4x = 60')} → ${M('x = 15')}.</div>
+<div class="box ex"><b>Дробный коэффициент</b>${M(`${frac('2','3')}x = 10`)} → умножаем на ${frac('3','2')}: ${M('x = 15')}. Проверка: две трети от 15 — это 10 ✅.</div>`},
+{title:'Задачи: переводим историю на язык x',lvl:7,html:`
+<div class="box rule"><b>План</b>1) Обозначь буквой x то, что неизвестно (обычно — то, о чём меньше всего сказано). 2) Вырази через x всё остальное. 3) Найди в условии «равно» и составь уравнение. 4) Реши. 5) Ответь <b>на вопрос задачи</b>.</div>
+<div class="box ex"><b>Возраст</b>Папе 38 лет, сыну 10. Через сколько лет папа будет старше сына в 3 раза?<br>Через x лет: папе ${M('38 + x')}, сыну ${M('10 + x')}. Уравнение: ${M('38 + x = 3(10 + x)')} → ${M('38 + x = 30 + 3x')} → ${M('8 = 2x')} → ${M('x = 4')}.<br>Проверка: через 4 года 42 и 14, и 42 = 3 · 14 ✅. Заметь: <b>разница возрастов никогда не меняется</b> (28 лет).</div>
+<div class="fig">${coinsPic(2,5)}</div>
+<div class="box ex"><b>Монеты</b>В копилке 20 монет по 2 ₽ и по 5 ₽, всего 70 ₽. Пятирублёвых — x, двухрублёвых ${M('20 − x')}.<br>${M('5x + 2(20 − x) = 70')} → ${M('3x + 40 = 70')} → ${M('x = 10')}.</div>
+<div class="box rule"><b>Движение</b>${M('s = v · t')}: путь = скорость · время. Навстречу друг другу — скорости <b>складываются</b> (скорость сближения).</div>
+<div class="fig">${motionPic('12 км/ч','x км/ч','60 км',true)}</div>
+<div class="box ex"><b>Пример</b>Два велосипедиста выехали навстречу из сёл в 60 км друг от друга и встретились через 2 ч. Первый ехал 12 км/ч. Скорость второго?<br>${M('(12 + x) · 2 = 60')} → ${M('12 + x = 30')} → ${M('x = 18')} км/ч.</div>
+<div class="box err"><b>Ошибка</b>Нашёл x — и сразу записал его в ответ. А спрашивали, может быть, не x, а «сколько двухрублёвых» (это ${M('20 − x')})! Перечитай вопрос.</div>`},
+{title:'★ Старинные и олимпиадные задачи',lvl:8,html:`
+<p>Уравнения решали ещё в Древнем Египте и Греции. Вот задача из старого русского учебника Магницкого (1703 год):</p>
+<div class="box ex"><b>Гуси</b>Летит стая гусей, навстречу им гусь: «Здравствуйте, сто гусей!» — «Нас не сто. Если бы нас было столько, да ещё столько, да полстолько, да четверть столько, да ты, гусь, — тогда было бы сто».<br>${M(`x + x + ${frac('x','2')} + ${frac('x','4')} + 1 = 100`)}. Умножим на 4: ${M('11x + 4 = 400')} → ${M('x = 36')} гусей.</div>
+<div class="box tip"><b>Хитрость олимпиадника</b>Не торопись! Ручка с колпачком стоят 110 ₽, ручка на 100 ₽ дороже колпачка. Колпачок стоит 10 ₽? Проверь: тогда ручка 110 ₽, вместе 120 ❌. Пусть колпачок x: ${M('x + (x + 100) = 110')} → ${M('x = 5')} ₽.</div>
+<div class="fact">На надгробии древнегреческого математика Диофанта, по легенде, была написана задача-уравнение. Решив её, узнаёшь, что Диофант прожил 84 года. Ты сможешь решить её на последнем уровне!</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>${M('3x')} — это 3 · x. Отрицательные числа подставляем в скобках.</li>
+<li>${M('a(b + c) = ab + ac')} — множитель всем в скобках.</li>
+<li>Минус перед скобкой меняет <b>все</b> знаки внутри.</li>
+<li>Подобные — с одинаковой буквенной частью; складываем коэффициенты.</li>
+<li>Перенос через «=» — смена знака («перешёл на другой берег»).</li>
+<li>Дроби — умножаем всё на общий знаменатель. Пропорция — крест-накрест.</li>
+<li>В задаче: x → выразить всё → уравнение → решить → ответить на вопрос.</li></ul>`}
+];
+
+const symbols={tab:'Правила',title:'Главные правила и формулы',rows:[
+['3x','«Три икс»','3 умножить на x. Знак «·» между числом и буквой не пишут.',M('при x = 4: 3x = 12')],
+['a(b + c) = ab + ac','Распределительный закон','Число перед скобкой умножаем на каждое слагаемое.',M('2(x + 5) = 2x + 10')],
+['−(a − b) = −a + b','Минус перед скобкой','Убираем скобки, все знаки внутри меняем.',M('7 − (x − 2) = 9 − x')],
+['3x + 5x = 8x','Подобные слагаемые','Складываем коэффициенты, буквенную часть оставляем.',M('6a − a = 5a')],
+['a + x = b → x = b − a','Перенос','Слагаемое переходит через «=» со сменой знака.',M('x + 7 = 3 → x = −4')],
+['ax = b → x = b : a','Неизвестный множитель','Делим на коэффициент (a ≠ 0).',M('−3x = 12 → x = −4')],
+['0 · x = 5','Нет корней','Ноль, умноженный на любое число, равен нулю, а не 5.',M('2x + 1 = 2x + 6')],
+['a/b = c/d → ad = bc','Свойство пропорции','Крест-накрест.',M('x/3 = 8/6 → 6x = 24')],
+['s = v · t','Путь, скорость, время','Навстречу: v сближения = v₁ + v₂.',M('(12 + 18) · 2 = 60')]
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Решил уравнение — подставь корень и проверь. Это ловит 90% ошибок.</div>`};
+
+/* ================= GENERATORS ================= */
+/* ===== L0 выражения ===== */
+G(0,()=>CH('Что такое <b>корень уравнения</b>?','Число, при подстановке которого вместо x уравнение превращается в верное равенство',
+ ['Число, которое стоит справа от знака «=»','Сама буква x','Число, на которое делят обе части уравнения'],
+ {short:'Корень — это «правильное» значение x: подставил — получил верное равенство.',
+ explain:`<b>Корень уравнения</b> — число, при подстановке которого получается <b>верное равенство</b>. Например, для ${M("x + 3 = 10")} корень 7: ${M("7 + 3 = 10")} ✅. Число справа (10) — не корень, а буква x — это только «окошко», куда подставляют числа.`,
+ explain2:`Представь замок с кодом. Уравнение — замок, корень — код, который его открывает. Подставил число — если равенство верное, замок открылся, это корень. Для ${M("2x = 8")} подходит только 4: 2 · 4 = 8.`}),{rule:true});
+G(0,()=>{const k=R(2,9);return CH(`Что означает запись ${M(k+'a')}?`,`${k} · a`,[`${k} + a`,`a · a${k>2?' · a':''}`,`${k} − a`],
+ {short:`${k}a — это ${k} умножить на a.`,explain:`Между числом и буквой <b>не пишут знак умножения</b>, но он там есть: ${M(k+'a = '+k+' · a')}. Например, при a = 10: ${M(k+'a = '+k*10)}, а не «${k}10».`,
+ explain2:`${k}a — это «${k} штуки по a». Как «${k} пиццы»: если одна пицца стоит a рублей, то ${k} пиццы стоят ${k} · a. Сложение (${k} + a) и умножение a на себя — это другие выражения.`});},{rule:true});
+G(0,()=>{const a=nz(-6,7),b=nz(-9,9),x=nz(-5,8);const form=R(0,2);let e,val,sub;
+ if(form===0){e=L([[a,'x'],[b,'']]);val=a*x+b;sub=`${N(a)} · ${par(x)}${sg(b)}`;}
+ else if(form===1){e=`${N(Math.abs(a)+1)}(x${sg(b)})`;val=(Math.abs(a)+1)*(x+b);sub=`${N(Math.abs(a)+1)} · (${N(x)}${sg(b)})`;}
+ else{e=`${N(b)} − ${Math.abs(a)===1?'':N(Math.abs(a))}x`;val=b-Math.abs(a)*x;sub=`${N(b)} − ${N(Math.abs(a))} · ${par(x)}`;}
+ return {type:'num',q:`Найди значение выражения ${M(e)} при ${M('x = '+N(x))}.`,ans:val,keys:['−'],
+ hint:'Вместо x подставь число. Если оно отрицательное — в скобках. Сначала умножение, потом сложение.',
+ short:`${M(sub+' = '+N(val))}`,
+ explain:`Вместо x подставляем ${N(x)}${x<0?' — <b>в скобках</b>, потому что оно отрицательное':''}:<br>${M(sub)}<br>Сначала умножение (или действие в скобках), потом остальное: ${M('= '+N(val))}.`,
+ explain2:`Буква x — это коробка, в которой сейчас лежит число ${N(x)}. Открой коробку: везде, где написано x, напиши ${par(x)}. Получится обычный пример: ${M(sub)}. Считаем по порядку действий — ${N(val)}.${x<0?` Помни: минус на плюс — минус, минус на минус — плюс.`:''}`};});
+G(0,()=>{const v=R(0,2);
+ if(v===0){const k=R(2,5),m=R(2,9);return CH(`У Пети x наклеек, у Димы — в ${k} раза больше, а у Оли — на ${m} меньше, чем у Димы. Какое выражение показывает, сколько наклеек у Оли?`,
+  `${k}x − ${m}`,[`x − ${m}`,`${k}(x − ${m})`,`${k}x + ${m}`],{short:`У Димы ${k}x, у Оли на ${m} меньше: ${k}x − ${m}.`,
+  explain:`Идём по цепочке. У Пети x. У Димы в ${k} раза больше: ${M(k+'x')}. У Оли на ${m} меньше, чем <b>у Димы</b>: ${M(k+'x − '+m)}.<br>${M(k+'(x − '+m+')')} — неверно: так вышло бы, будто сначала отняли ${m} у Пети, а потом умножили.`,
+  explain2:`Проверь на числах. Пусть у Пети 10 наклеек. У Димы ${k*10}, у Оли ${k*10-m}. Подставим x = 10: ${k}·10 − ${m} = ${k*10-m} ✅, а ${k}(10 − ${m}) = ${k*(10-m)} ❌.`});}
+ if(v===1){const k=R(2,4),m=pick([50,70,80,120,150]);return CH(`Билет в кино стоит x ₽, а попкорн — на ${m} ₽ дешевле билета. Сколько рублей стоят ${k} билета и один попкорн?`,
+  `${k+1}x − ${m}`,[`${k}x − ${m}`,`${k+1}x + ${m}`,`${k}(x − ${m})`],{short:`${k}x + (x − ${m}) = ${k+1}x − ${m}.`,
+  explain:`${k} билета: ${M(k+'x')}. Попкорн: ${M('x − '+m)}. Вместе: ${M(`${k}x + (x − ${m}) = ${k+1}x − ${m}`)} (подобные: ${k}x + x = ${k+1}x).`,
+  explain2:`Пусть билет стоит 300 ₽. Тогда попкорн ${300-m} ₽, а всего ${k}·300 + ${300-m} = ${k*300+300-m} ₽. Подставляем x = 300 в ответ: ${k+1}·300 − ${m} = ${(k+1)*300-m} ✅.`});}
+ const n=R(2,9),k=R(2,6);return CH(`В ящике x кг яблок. Продали ${n} кг, а остальные разложили поровну в ${k} пакетов. Сколько килограммов в одном пакете?`,
+  `(x − ${n}) : ${k}`,[`x − ${n} : ${k}`,`x : ${k} − ${n}`,`(x + ${n}) : ${k}`],{short:`Сначала осталось x − ${n}, потом делим на ${k} — нужны скобки.`,
+  explain:`Осталось ${M('x − '+n)} кг. Это количество делим на ${k}: ${M(`(x − ${n}) : ${k}`)}. <b>Скобки обязательны</b>: в записи ${M(`x − ${n} : ${k}`)} сначала выполнится деление ${n} : ${k}.`,
+  explain2:`Пусть было 50 кг. Осталось ${50-n}, в пакете ${N((50-n)/k)}. А «x − ${n} : ${k}» дало бы 50 − ${N(n/k)} = ${N(50-n/k)} — не то.`});});
+
+/* ===== L1 скобки ===== */
+G(1,()=>CH('Как раскрыть скобки, если перед ними стоит <b>минус</b>?','Убрать скобки и минус перед ними, а знаки всех слагаемых в скобках поменять на противоположные',
+ ['Убрать скобки и поменять знак только у первого слагаемого','Просто убрать скобки, знаки не менять','Поменять знак только у последнего слагаемого'],
+ {short:'−(a − b + c) = −a + b − c: меняются все знаки.',explain:`Минус перед скобкой — это умножение на −1. А умножение раздаётся <b>каждому</b> слагаемому: ${M('−(a − b + c) = −a + b − c')}. Поменять знак только у одного — самая частая ошибка.`,
+ explain2:`Проверь на числах: ${M('10 − (5 − 2) = 10 − 3 = 7')}. Если поменять все знаки: ${M('10 − 5 + 2 = 7')} ✅. Если только первый: ${M('10 − 5 − 2 = 3')} ❌.`}),{rule:true});
+G(1,()=>CH(`Допиши распределительный закон: ${M('a(b + c) = …')}`,'ab + ac',['ab + c','a + b + c','ab · ac'],
+ {short:'Множитель a умножается на каждое слагаемое.',explain:`${M('a(b + c) = ab + ac')}: a «раздаётся» <b>и b, и c</b>. Вариант ${M('ab + c')} — забыли умножить c.`,
+ explain2:`Площадь прямоугольника a × (b + c) равна сумме площадей двух кусков: a × b и a × c.<div class="fig">${rectPic(3,4,2)}</div>`}),{rule:true});
+G(1,()=>{const a=nz(-9,9),b=nz(-9,9);if(Math.abs(a)===1)return null;
+ const q=`${N(a)}(x${sg(b)})`;const ok=L([[a,'x'],[a*b,'']]);
+ return CH(`Раскрой скобки: ${M(q)}`,ok,[L([[a,'x'],[b,'']]),L([[a,'x'],[-a*b,'']]),L([[a,'x'],[a+b,'']])],
+ {short:`${M(`${N(a)} · x = ${L([[a,'x']])}`)}, ${M(`${N(a)} · ${par(b)} = ${N(a*b)}`)}.`,
+ explain:`Умножаем ${par(a)} на <b>каждое</b> слагаемое в скобках:<br>${M(`${par(a)} · x = ${L([[a,'x']])}`)}<br>${M(`${par(a)} · ${par(b)} = ${N(a*b)}`)}${(a<0)?' (знаки: '+(b<0?'минус на минус — плюс':'минус на плюс — минус')+')':''}<br>Итог: ${M(ok)}.<br>Ошибка «${L([[a,'x'],[b,'']])}» — забыли умножить второе слагаемое.`,
+ explain2:`Проверь подстановкой x = 1: ${M(`${N(a)}(1${sg(b)}) = ${N(a*(1+b))}`)}. В правильном ответе: ${M(`${N(a)}${sg(a*b)} = ${N(a+a*b)}`)} — совпало ✅. Так можно проверять любое раскрытие скобок.`});});
+G(1,()=>{const p=R(2,9),q=R(2,9),r=R(1,9);
+ const ok=`−${p}x + ${q}y − ${r}`;
+ return CH(`Раскрой скобки: ${M(`−(${p}x − ${q}y + ${r})`)}`,ok,[`−${p}x − ${q}y + ${r}`,`${p}x − ${q}y + ${r}`,`−${p}x + ${q}y + ${r}`],
+ {short:'Минус перед скобкой меняет все три знака.',explain:`Меняем знак <b>каждого</b> слагаемого: ${M(p+'x → −'+p+'x')}, ${M('−'+q+'y → +'+q+'y')}, ${M('+'+r+' → −'+r)}.<br>Итог: ${M(ok)}.`,
+ explain2:`Представь, что перед скобкой стоит −1, и умножь на него каждое слагаемое: ${M(`(−1)·${p}x = −${p}x`)}, ${M(`(−1)·(−${q}y) = +${q}y`)}, ${M(`(−1)·${r} = −${r}`)}.`});});
+G(1,()=>{const a=R(12,89),k=pick([99,101,98,102,999]);const d=k-(k>500?1000:100);const B=k>500?1000:100;
+ return {type:'num',q:`Вычисли удобно, раскрыв скобки: ${M(`${a} · ${k}`)}`,ans:a*k,hint:`${k} = ${B}${sg(d)}. Умножь ${a} на каждое слагаемое.`,
+ short:M(`${a} · (${B}${sg(d)}) = ${a*B}${sg(a*d)} = ${a*k}`),
+ explain:`Запишем ${k} как ${M(`${B}${sg(d)}`)} — с круглым числом считать легко:<br>${M(`${a} · ${k} = ${a} · (${B}${sg(d)}) = ${a} · ${B}${sg(a*d)} = ${a*B}${sg(a*d)} = ${a*k}`)}.`,
+ explain2:`Как в магазине: ${k} предметов по ${a} ₽ — это ${B} предметов (${a*B} ₽), ${d<0?'минус':'плюс'} ещё ${Math.abs(d)} (${Math.abs(a*d)} ₽). Итого ${a*k} ₽.`};});
+
+/* ===== L2 подобные ===== */
+G(2,()=>CH('Какие слагаемые называют <b>подобными</b>?','Слагаемые с одинаковой буквенной частью',['Слагаемые с одинаковыми коэффициентами','Слагаемые, которые стоят рядом','Слагаемые с одинаковым знаком'],
+ {short:'3x и −5x подобны: буквенная часть одна — x.',explain:`Подобные — у которых <b>одинаковая буквенная часть</b>: ${M('3x')} и ${M('−7x')}, ${M('2ab')} и ${M('ab')}. А ${M('3x')} и ${M('3y')} не подобны, хотя коэффициенты одинаковые.`,
+ explain2:'Яблоки складываются с яблоками, груши — с грушами. «x» и «y» — разные фрукты, даже если их по 3 штуки.'}),{rule:true});
+G(2,()=>CH(`Как привести подобные слагаемые ${M('7x − 3x')}?`,'Сложить коэффициенты (7 + (−3) = 4), буквенную часть оставить: 4x',['Сложить коэффициенты и буквы перемножить: 4x²','Из 7 вычесть 3 и букву убрать: 4','Перемножить коэффициенты: −21x'],
+ {short:'7x − 3x = 4x.',explain:`Складываем только коэффициенты: ${M('7 − 3 = 4')}, буква x остаётся: ${M('7x − 3x = 4x')}. x² появляется только при умножении x · x, а здесь вычитание.`,
+ explain2:'7 коробок с конфетами минус 3 коробки = 4 коробки. Коробки не превращаются в «коробки в квадрате» и не исчезают.'}),{rule:true});
+G(2,()=>{const pool=[['−7a',1],['a',1],['0,5a',1],['12a',1],['4b',0],['4',0],['ab',0],['a²',0]];
+ for(;;){const opts=sample(pool,5);const n=opts.filter(o=>o[1]).length;if(n<2||n>3)continue;
+  return {type:'multi',q:`Какие слагаемые <b>подобны</b> слагаемому ${M('4a')}? Выбери все.`,opts:opts.map(o=>o[0]),ans:opts.map((o,i)=>o[1]?i:-1).filter(i=>i>=0),
+  short:'Подобны те, у которых буквенная часть ровно a.',
+  explain:`Буквенная часть у ${M('4a')} — просто <b>a</b>. Проверяем:<br>${opts.map(o=>`• ${M(o[0])} — ${o[1]?'буквенная часть a ✅':o[0]==='4'?'нет буквы вовсе ❌':o[0]==='4b'?'буква b, а не a ❌':o[0]==='ab'?'буквенная часть ab ❌':'a² = a·a, это другая буквенная часть ❌'}`).join('<br>')}`,
+  explain2:'Закрой ладонью числа и посмотри только на буквы. Если осталось ровно «a» — подобное. Коэффициент (число впереди) может быть любым, даже дробным или отрицательным.'};}});
+G(2,()=>{const a=nz(-9,9),b=nz(-9,9),c=nz(-9,9),d=nz(-9,9);if(a+c===0||b+d===0)return null;
+ const q=`${L([[a,'x'],[b,'']])}${sgx(c)}${sg(d)}`;const ok=L([[a+c,'x'],[b+d,'']]);
+ return CH(`Приведи подобные слагаемые: ${M(q)}`,ok,[L([[a+c+b+d,'x']]),L([[a-c,'x'],[b+d,'']]),L([[a+c,'x'],[b-d,'']])],
+ {short:`x: ${N(a)}${sg(c)} = ${N(a+c)}; числа: ${N(b)}${sg(d)} = ${N(b+d)}.`,
+ explain:`Собираем «по корзинкам» (знак берём вместе со слагаемым!):<br>• с x: ${M(`${N(a)}${sg(c)} = ${N(a+c)}`)} → ${M(L([[a+c,'x']]))}<br>• числа: ${M(`${N(b)}${sg(d)} = ${N(b+d)}`)}<br>Итог: ${M(ok)}.<br>Вариант «${L([[a+c+b+d,'x']])}» — ошибка: числа без x нельзя складывать с иксами.`,
+ explain2:`Проверь подстановкой x = 2: в исходном ${N(a)}·2${sg(b)}${sg(c)}·2${sg(d)} = ${N(2*a+b+2*c+d)}; в ответе ${N(a+c)}·2${sg(b+d)} = ${N(2*(a+c)+b+d)} ✅.`});});
+G(2,()=>{const a=R(2,7),b=nz(-6,6),c=R(1,6),d=nz(-6,6);if(a===c)return null;
+ const q=`${a}(x${sg(b)}) − ${c===1?'':c}(x${sg(d)})`;const ok=L([[a-c,'x'],[a*b-c*d,'']]);
+ return CH(`Раскрой скобки и приведи подобные: ${M(q)}`,ok,[L([[a-c,'x'],[a*b+c*d,'']]),L([[a+c,'x'],[a*b-c*d,'']]),L([[a-c,'x'],[a*b-d,'']])],
+ {short:`${M(`${L([[a,'x'],[a*b,'']])} ${L([[-c,'x'],[-c*d,'']])} = ${ok}`)}`,
+ explain:`1) ${M(`${a}(x${sg(b)}) = ${L([[a,'x'],[a*b,'']])}`)}<br>2) ${M(`−${c===1?'':c}(x${sg(d)}) = ${L([[-c,'x'],[-c*d,'']])}`)} — минус перед скобкой меняет оба знака!<br>3) Подобные: ${M(`${a}x − ${c}x = ${L([[a-c,'x']])}`)}, ${M(`${N(a*b)}${sg(-c*d)} = ${N(a*b-c*d)}`)}.<br>Итог: ${M(ok)}.`,
+ explain2:`Самая частая ошибка здесь — не поменять знак у второго слагаемого во вторых скобках. Подставь x = 0: исходное = ${N(a*b)} − ${c}·${par(d)} = ${N(a*b-c*d)}. В ответе при x = 0 остаётся только число ${N(a*b-c*d)} ✅.`});});
+
+/* ===== L3 простые уравнения ===== */
+G(3,()=>CH('Что можно делать с <b>обеими частями</b> уравнения, чтобы его корни не изменились?','Умножать или делить обе части на одно и то же число, не равное нулю',
+ ['Умножать обе части на ноль','Прибавлять число только к левой части','Делить левую часть на одно число, а правую — на другое'],
+ {short:'Одинаковое действие с обеими частями; на ноль умножать и делить нельзя.',explain:`Уравнение — весы. Если с <b>обеими</b> чашами сделать одно и то же, равновесие сохранится. Но умножить на 0 нельзя: ${M('0 = 0')} — получится верно при любом x, и корень «потеряется».`,
+ explain2:`Пример: ${M('2x = 6')}. Разделим обе части на 2: ${M('x = 3')} ✅. А если умножить на 0: ${M('0 = 0')} — уравнение «сломалось», про x ничего не узнать.`}),{rule:true});
+G(3,()=>CH(`Как найти неизвестное вычитаемое в уравнении ${M('20 − x = 8')}?`,'Из уменьшаемого вычесть разность: x = 20 − 8',['К разности прибавить уменьшаемое: x = 8 + 20','Разность вычесть из уменьшаемого и поменять знак: x = −12','Разность разделить на уменьшаемое'],
+ {short:'x = 20 − 8 = 12. Проверка: 20 − 12 = 8 ✅.',explain:`Неизвестное вычитаемое = уменьшаемое − разность: ${M('x = 20 − 8 = 12')}. Проверка: ${M('20 − 12 = 8')} ✅. Вариант 8 + 20 = 28 — так ищут неизвестное <b>уменьшаемое</b>.`,
+ explain2:'Было 20 конфет, сколько-то съели, осталось 8. Сколько съели? 20 − 8 = 12. Логично же!'}),{rule:true});
+G(3,()=>{const a=nz(-12,12),x=nz(-12,12);if(Math.abs(a)<2)return null;const b=a*x;
+ return {type:'num',q:`Реши уравнение: ${M(`${N(a)}x = ${N(b)}`)}`,ans:x,keys:['−'],hint:'Неизвестный множитель = произведение : известный множитель.',
+ short:M(`x = ${N(b)} : ${par(a)} = ${N(x)}`),
+ explain:`x умножили на ${par(a)} и получили ${N(b)}. Чтобы найти x, делим обе части на ${par(a)}:<br>${M(`x = ${N(b)} : ${par(a)} = ${N(x)}`)}${(a<0)!==(b<0)?' (знаки разные — результат отрицательный)':a<0?' (минус на минус — плюс)':''}.<br>Проверка: ${M(`${N(a)} · ${par(x)} = ${N(b)}`)} ✅`,
+ explain2:`Подумай: какое число нужно умножить на ${par(a)}, чтобы получилось ${N(b)}? Сначала без знаков: ${Math.abs(a)} · ? = ${Math.abs(b)} → ${Math.abs(x)}. Теперь знак: ${a<0?'минус':'плюс'} · ? = ${b<0?'минус':'плюс'}, значит ? — ${x<0?'отрицательное':'положительное'}. Ответ ${N(x)}.`};});
+G(3,()=>{const a=R(2,5),x=R(1,9),b=R(1,9),c=a*x+b;
+ return {type:'num',q:`Реши уравнение: ${M(`${a}x + ${b} = ${c}`)}`,pic:scale(items(a,b),[c],0),ans:x,
+ hint:'Сначала убери «гирю» '+b+' с обеих чаш, потом подели на '+a+'.',short:M(`${a}x = ${c-b}, x = ${x}`),
+ explain:`1) Убираем ${b} из обеих частей (переносим вправо со сменой знака): ${M(`${a}x = ${c} − ${b} = ${c-b}`)}.<br>2) Делим на ${a}: ${M(`x = ${c-b} : ${a} = ${x}`)}.<br>Проверка: ${M(`${a}·${x} + ${b} = ${c}`)} ✅`,
+ explain2:`Посмотри на весы: ${a} ${plural(a,'коробка','одинаковые коробки','одинаковых коробок')} и гиря ${b} уравновешивают ${c}. Снимем гирю ${b} с обеих сторон — на правой станет ${c-b}. Теперь ${a} ${plural(a,'коробка весит','коробки весят','коробок весят')} ${c-b}, одна — ${c-b} : ${a} = ${x}.`};});
+
+/* ===== L4 перенос ===== */
+G(4,()=>CH('Что происходит со слагаемым, когда его переносят из одной части уравнения в другую?','Оно меняет знак на противоположный',['Его знак не меняется','Оно становится множителем','Знак меняется, только если в слагаемом есть x'],
+ {short:'«Перешёл на другой берег — сменил знак».',explain:`Перенос — это прибавление одного и того же к обеим частям. ${M('x + 5 = 12')}: вычтем 5 из обеих частей → ${M('x = 12 − 5')}. Будто +5 перешло вправо и стало −5. Это верно для <b>любых</b> слагаемых — и с x, и без.`,
+ explain2:`Знак «=» — река. Кто переплыл — «переодевается»: плюс ↔ минус. ${M('3x = 2x + 7')} → ${M('3x − 2x = 7')}: 2x переплыло влево и стало −2x.`}),{rule:true});
+G(4,()=>{const a=R(3,9),c=R(1,a-1),x=nz(-6,9),b=-R(1,9),d=(a-c)*x+b;
+ const correct=`Число ${N(b)} перенесли вправо без смены знака: должно быть ${N(d)} + ${-b}`;
+ return CH(`Ученик решал уравнение ${M(`${L([[a,'x'],[b,'']])} = ${L([[c,'x'],[d,'']])}`)} и написал:<br>${M(`${a}x − ${c===1?'':c}x = ${N(d)} − ${-b}`)}.<br>Где ошибка?`,correct,
+ [`${c===1?'':c}x перенесли влево неправильно: должно быть + ${c===1?'':c}x`,'Ошибки нет, всё верно','Нельзя переносить слагаемые с x'],
+ {short:`${N(b)} переплыло вправо и стало +${-b}: ${M(`${a-c===1?'':a-c}x = ${d-b}`)}, x = ${N(x)}.`,
+ explain:`${M(L([[c,'x']]))} перенесли влево верно — со сменой знака (${M('−'+(c===1?'':c)+'x')}). А вот ${N(b)} перешло вправо и <b>не сменило знак</b>. Правильно:<br>${steps(a,b,c,d)}`,
+ explain2:`Перенос — это прибавление одного и того же числа к обеим частям. Чтобы убрать ${N(b)} слева, прибавляем ${-b} к обеим частям — справа появляется <b>+${-b}</b>, а не −${-b}. Проверка правильного корня x = ${N(x)}: слева ${N(a*x+b)}, справа ${N(c*x+d)} ✅`});});
+G(4,()=>{const x=nz(-8,10),a=R(2,9),c=R(1,9);if(a===c)return null;const b=nz(-15,15),d=(a-c)*x+b;
+ return {type:'num',q:`Реши уравнение: ${M(`${L([[a,'x'],[b,'']])} = ${L([[c,'x'],[d,'']])}`)}`,ans:x,keys:['−'],hint:'Иксы — влево, числа — вправо. Каждый, кто перешёл через «=», меняет знак.',
+ short:`${M(`${L([[a-c,'x']])} = ${N(d-b)}`)}, x = ${N(x)}.`,explain:steps(a,b,c,d)+`<br>Проверка: ${M(`${N(a*x+b)} = ${N(c*x+d)}`)} ✅`,
+ explain2:`Можно и наоборот — собрать иксы справа, где их ${a<c?'больше':'меньше'}. Главное — каждый «переплывший» меняет знак. Проверка — лучший друг: подставь ${N(x)}: слева ${a}·${par(x)}${sg(b)} = ${N(a*x+b)}, справа ${c}·${par(x)}${sg(d)} = ${N(c*x+d)}.`};});
+G(4,()=>{const a=R(2,7),b=R(-9,9),t=R(0,2);let c,d,ans,why;
+ if(t===0){d=b+nz(-6,6);ans=1;why=`${a}x − ${a}x = 0, а ${N(d)}${sg(-b)} = ${N(d-b)} ≠ 0. Получили ${M('0 · x = '+N(d-b))} — ни одно число не подходит.`;c=a;}
+ else if(t===1){d=b;c=a;ans=2;why=`Получаем ${M('0 · x = 0')} — это верно при <b>любом</b> x. Левая и правая части вообще одинаковые!`;}
+ else{c=a+nz(-1,1)*R(1,2);if(c<=0)return null;d=b+(a-c)*R(-4,4);ans=0;why=`Коэффициенты при x разные (${a} и ${c}), поэтому ${M(`${L([[a-c,'x']])} = ${N(d-b)}`)} — ровно один корень x = ${N((d-b)/(a-c))}.`;}
+ const opts=['Ровно один корень','Корней нет','Корень — любое число'];
+ return {type:'choice',q:`Сколько корней у уравнения ${M(`${L([[a,'x'],[b,'']])} = ${L([[c,'x'],[d,'']])}`)}?`,opts,ans,short:why,
+ explain:`Переносим иксы влево, числа вправо: ${M(`${a}x − ${c}x = ${N(d)}${sg(-b)}`)}.<br>${why}<div class="box rule"><b>Правило</b>${M('0·x = число ≠ 0')} → корней нет; ${M('0·x = 0')} → любое число; ${M('kx = m')} при k ≠ 0 → один корень.</div>`,
+ explain2:t===0?`Подумай: слева «${a}x${sg(b)}», справа «${a}x${sg(d)}». Как бы ни было велико ${a}x, к нему прибавляют разные числа — равенства не будет никогда.`:t===1?'Слева и справа написано одно и то же. Какое число ни подставь — получится верно.':'Иксы с разными коэффициентами не сокращаются полностью, значит, после переноса останется kx = m с k ≠ 0, а такое уравнение имеет один корень.'};});
+
+/* ===== L5 скобки ===== */
+G(5,()=>CH(`Чему равно ${M('−(a − b)')}?`,'−a + b',['−a − b','a − b','−a · b'],
+ {short:'Минус меняет оба знака: −(a − b) = −a + b = b − a.',explain:`Минус перед скобкой меняет знак <b>каждого</b> слагаемого: a → −a, −b → +b. Итог ${M('−a + b')}, то же самое, что ${M('b − a')}.`,
+ explain2:`Проверь на числах a = 5, b = 2: ${M('−(5 − 2) = −3')}. ${M('−5 + 2 = −3')} ✅, а ${M('−5 − 2 = −7')} ❌.`}),{rule:true});
+G(5,()=>CH(`С чего удобнее всего начать решение уравнения ${M('4(x − 3) = 2(x + 5)')}?`,'Раскрыть скобки, затем перенести иксы влево, а числа вправо',
+ ['Перенести 4 вправо: x − 3 = 2(x + 5) − 4','Убрать скобки, не умножая: 4x − 3 = 2x + 5','Сразу разделить всё на x'],
+ {short:'4x − 12 = 2x + 10 → 2x = 22 → x = 11.',explain:`Множитель 4 нельзя «перенести» как слагаемое — он <b>умножается</b> на скобку. Сначала раскрываем: ${M('4x − 12 = 2x + 10')}, потом переносим: ${M('2x = 22')}, ${M('x = 11')}. Убирать скобки, не умножая на 4, — ошибка.`,
+ explain2:'Можно ещё разделить обе части на 2 (это тоже верно): 2(x − 3) = x + 5. Но «перенести 4» нельзя: 4 здесь не слагаемое, а множитель.'}),{rule:true});
+G(5,()=>{const a=nz(-6,7),x=nz(-9,9),b=nz(-9,9);if(Math.abs(a)<2)return null;const c=a*(x+b);
+ return {type:'num',q:`Реши уравнение: ${M(`${N(a)}(x${sg(b)}) = ${N(c)}`)}`,ans:x,keys:['−'],
+ short:`${M(`x${sg(b)} = ${N(c)} : ${par(a)} = ${N(x+b)}`)}, x = ${N(x)}.`,
+ explain:`Способ 1 (раскрыть скобки): ${M(`${L([[a,'x'],[a*b,'']])} = ${N(c)}`)} → ${M(`${L([[a,'x']])} = ${N(c-a*b)}`)} → ${M(`x = ${N(x)}`)}.<br>Способ 2 (быстрее): делим обе части на ${par(a)}: ${M(`x${sg(b)} = ${N(x+b)}`)} → ${M(`x = ${N(x)}`)}.`,
+ explain2:`Скобка — это одно число (назовём его ★). ${N(a)} · ★ = ${N(c)}, значит ★ = ${N(x+b)}. А ★ — это x${sg(b)}. Тогда x = ${N(x+b)}${sg(-b)} = ${N(x)}.`};});
+G(5,()=>{const a=R(2,7),c=R(1,6),x=nz(-8,9),b=nz(-6,6);if(a===c)return null;const dd=a*(x+b)-c*x;if(dd%c)return null;const d=dd/c;if(!d)return null;
+ const q=`${a}(x${sg(b)}) = ${c===1?'':c}(x${sg(d)})`;
+ return {type:'num',q:`Реши уравнение: ${M(q)}`,ans:x,keys:['−'],short:`${M(`${L([[a,'x'],[a*b,'']])} = ${L([[c,'x'],[c*d,'']])}`)} → x = ${N(x)}.`,
+ explain:`Раскрываем скобки: ${M(`${L([[a,'x'],[a*b,'']])} = ${L([[c,'x'],[c*d,'']])}`)}.<br>`+steps(a,a*b,c,c*d)+`<br>Проверка: слева ${a}·(${N(x+b)}) = ${N(a*(x+b))}, справа ${c}·(${N(x+d)}) = ${N(c*(x+d))} ✅`,
+ explain2:`План всегда один: скобки → перенос → подобные → деление → проверка. Самое опасное место — раскрытие скобок с отрицательными числами: ${a}·${par(b)} = ${N(a*b)}, ${c}·${par(d)} = ${N(c*d)}.`};});
+G(5,()=>{const a=R(2,6),c=R(1,5),x=nz(-8,9),b=nz(-6,6),d=nz(-6,6);if(a===c)return null;const e=a*(x-b)-c*(x+d);
+ const q=`${a}(x${sg(-b)}) − ${c===1?'':c}(x${sg(d)}) = ${N(e)}`;
+ return {type:'num',q:`Реши уравнение: ${M(q)}`,ans:x,keys:['−'],hint:'Перед второй скобкой минус — знаки внутри поменяются.',
+ short:`${M(`${L([[a-c,'x'],[-a*b-c*d,'']])} = ${N(e)}`)} → x = ${N(x)}.`,
+ explain:`1) ${M(`${a}(x${sg(-b)}) = ${L([[a,'x'],[-a*b,'']])}`)}<br>2) ${M(`−${c===1?'':c}(x${sg(d)}) = ${L([[-c,'x'],[-c*d,'']])}`)} (минус меняет оба знака)<br>3) Подобные: ${M(`${L([[a-c,'x'],[-a*b-c*d,'']])} = ${N(e)}`)}<br>4) ${M(`${L([[a-c,'x']])} = ${N(e+a*b+c*d)}`)} → ${M(`x = ${N(x)}`)}`,
+ explain2:`Типичная ловушка — во второй скобке поменять знак только у x. Тогда получилось бы ${M(`${L([[a-c,'x'],[-a*b+c*d,'']])} = ${N(e)}`)} и неверный ответ. Проверь подстановкой x = ${N(x)}: ${a}·(${N(x-b)}) − ${c}·(${N(x+d)}) = ${N(a*(x-b))}${sg(-c*(x+d))} = ${N(e)} ✅`};});
+
+/* ===== L6 дроби ===== */
+G(6,()=>CH(`Как удобнее всего избавиться от дробей в уравнении ${M(`${frac('x','3')} + ${frac('x','4')} = 7`)}?`,'Умножить обе части (каждое слагаемое) на общий знаменатель 12',
+ [`Сложить знаменатели: ${frac('2x','7')} = 7`,'Умножить на 12 только левую часть','Умножить на 3 первую дробь, а на 4 вторую — и больше ничего'],
+ {short:'×12: 4x + 3x = 84, x = 12.',explain:`Общий знаменатель 3 и 4 — это 12. Умножаем <b>всё</b> на 12: ${M('4x + 3x = 84')}, ${M('x = 12')}. Знаменатели складывать нельзя, а если умножить только левую часть — нарушится равновесие весов.`,
+ explain2:'Проверка: 12 : 3 + 12 : 4 = 4 + 3 = 7 ✅. А «2x/7 = 7» дало бы x = 24,5: 24,5 : 3 + 24,5 : 4 ≈ 14,3 ❌.'}),{rule:true});
+G(6,()=>CH(`Основное свойство пропорции: если ${M(`${frac('a','b')} = ${frac('c','d')}`)}, то…`,'a · d = b · c',['a · c = b · d','a + d = b + c','a · b = c · d'],
+ {short:'Произведение крайних равно произведению средних (крест-накрест).',explain:`В пропорции ${M('a : b = c : d')} крайние — a и d, средние — b и c. ${M('a · d = b · c')}. Пример: ${M(`${frac('2','3')} = ${frac('4','6')}`)} → ${M('2 · 6 = 3 · 4 = 12')} ✅.`,
+ explain2:`Нарисуй крест через знак «=»: числитель левой дроби × знаменатель правой = знаменатель левой × числитель правой. ${frac('1','2')} = ${frac('5','10')}: 1·10 = 2·5 ✅, а 1·5 ≠ 2·10.`}),{rule:true});
+G(6,()=>{const q=pick([2,3,4,5]),p=pick(range(1,q-1).filter(v=>gcd(v,q)===1)),k=R(2,8),x=q*k,r=p*k;
+ if(Math.random()<0.5)return {type:'num',q:`Реши уравнение: ${M(`${frac('x',q)} = ${k}`)}`,ans:x,short:M(`x = ${k} · ${q} = ${x}`),
+  explain:`x разделили на ${q} и получили ${k}. Делимое = частное · делитель: ${M(`x = ${k} · ${q} = ${x}`)}. (Или: умножаем обе части на ${q}.)`,explain2:`Какое число нужно разделить на ${q}, чтобы получить ${k}? Половина/треть/… от числа — это ${k}, значит само число в ${q} раза больше: ${x}.`};
+ return {type:'num',q:`Реши уравнение: ${M(`${frac(p,q)}x = ${r}`)}`,ans:x,short:M(`x = ${r} · ${frac(q,p)} = ${x}`),
+ explain:`Делим обе части на ${frac(p,q)} — это то же, что умножить на перевёрнутую дробь ${frac(q,p)}:<br>${M(`x = ${r} · ${frac(q,p)} = ${r*q} : ${p} = ${x}`)}.<br>Проверка: ${frac(p,q)} от ${x} — это ${x} : ${q} · ${p} = ${r} ✅`,
+ explain2:`${frac(p,q)} числа — это ${r}. Значит, ${frac(1,q)} числа — это ${r} : ${p} = ${k}. А всё число — ${k} · ${q} = ${x}.`};});
+G(6,()=>{const [a,b]=pick([[2,3],[3,4],[2,5],[3,5],[4,6],[2,6],[6,4],[3,6],[4,5]]);const l=lcm(a,b),k=R(1,6),x=l*k*(Math.random()<0.2?-1:1),c=x/a+x/b;
+ return {type:'num',q:`Реши уравнение: ${M(`${frac('x',a)} + ${frac('x',b)} = ${N(c)}`)}`,ans:x,keys:['−'],hint:`Умножь обе части на ${l} — общий знаменатель.`,
+ short:`×${l}: ${M(`${l/a===1?'':l/a}x + ${l/b===1?'':l/b}x = ${N(c*l)}`)}, x = ${N(x)}.`,
+ explain:`Общий знаменатель ${a} и ${b} — это ${l}. Умножаем каждое слагаемое на ${l}:<br>${M(`${l} · ${frac('x',a)} = ${l/a===1?'':l/a}x`)}, ${M(`${l} · ${frac('x',b)} = ${l/b===1?'':l/b}x`)}, ${M(`${l} · ${N(c)} = ${N(c*l)}`)}.<br>${M(`${l/a+l/b}x = ${N(c*l)}`)} → ${M(`x = ${N(x)}`)}.<br>Проверка: ${N(x)} : ${a} + ${N(x)} : ${b} = ${N(x/a)} + ${N(x/b)} = ${N(c)} ✅`,
+ explain2:`Другой взгляд: ${frac('1',a)} + ${frac('1',b)} = ${frac(l/a+l/b,l)} — столько «частей от x» вместе. ${frac(l/a+l/b,l)} от x = ${N(c)}, значит ${frac('1',l)} от x = ${N(c/(l/a+l/b))}, и x = ${N(x)}.`};});
+G(6,()=>{const b=pick([2,3,4,5,6]),d=pick([2,3,4,5,6]);if(b===d)return null;const x=nz(-12,15),e=nz(-5,6),a=b*e-x,c=d*e-x;if(!a||!c||a===c)return null;
+ const e1=e,e2=e;
+ return {type:'num',q:`Реши уравнение: ${M(`${frac('x'+sg(a),b)} = ${frac('x'+sg(c),d)}`)}`,ans:x,keys:['−'],hint:'Это пропорция — умножай крест-накрест.',
+ short:`${M(`${d}(x${sg(a)}) = ${b}(x${sg(c)})`)} → x = ${N(x)}.`,
+ explain:`Пропорция → крест-накрест: ${M(`${d}(x${sg(a)}) = ${b}(x${sg(c)})`)}.<br>Раскрываем: ${M(`${L([[d,'x'],[d*a,'']])} = ${L([[b,'x'],[b*c,'']])}`)}.<br>`+steps(d,d*a,b,b*c)+`<br>Проверка: (${N(x+a)}) : ${b} = ${N(e1)}, (${N(x+c)}) : ${d} = ${N(e2)} ✅`,
+ explain2:`Можно и по-другому: умножить обе части на НОК(${b}, ${d}) = ${lcm(b,d)}. Получится то же: ${lcm(b,d)/b}(x${sg(a)}) = ${lcm(b,d)/d}(x${sg(c)}). Главное — не забыть скобки: числитель умножается целиком.`};});
+
+/* ===== L7 задачи ===== */
+G(7,()=>CH('С чего начинается решение задачи «с помощью уравнения»?','Обозначить неизвестную величину буквой x и выразить через x остальные величины',
+ ['Сложить все числа из условия','Сразу записать ответ, а потом проверить','Обозначить буквой x ответ, а про остальное не думать'],
+ {short:'x → выразить всё через x → найти «равно» → уравнение.',explain:'План: 1) x — одна из неизвестных величин; 2) остальные выразить через x; 3) найти в условии, что чему <b>равно</b>, и составить уравнение; 4) решить; 5) ответить на вопрос задачи.',
+ explain2:'Это как перевод с русского на «математический». Сначала словарь: «x — это …». Потом переводим каждое предложение. А уравнение — это перевод фразы «… равно …».'}),{rule:true});
+G(7,()=>CH('Как связаны путь s, скорость v и время t?','s = v · t',['s = v : t','s = v + t','v = s · t'],
+ {short:'Путь = скорость · время. Отсюда v = s : t и t = s : v.',explain:`Едешь 60 км/ч 2 часа — проедешь ${M('60 · 2 = 120')} км. Значит ${M('s = v · t')}, ${M('v = s : t')}, ${M('t = s : v')}.`,
+ explain2:'Посмотри на единицы: км/ч · ч = км ✅. А «км/ч + ч» складывать бессмысленно — как яблоки с километрами.'}),{rule:true});
+G(7,()=>{const s=R(5,14),k=R(2,4),x=R(1,9),f=k*(s+x)-x;if(f>50||f<24)return null;
+ return {type:'num',q:`Папе ${f} лет, а сыну ${s}. Через сколько лет папа будет старше сына в ${k} раза?`,ans:x,
+ hint:'Через x лет обоим прибавится по x лет.',short:M(`${f} + x = ${k}(${s} + x)`)+` → x = ${x}.`,
+ explain:`Через x лет папе будет ${M(`${f} + x`)}, сыну ${M(`${s} + x`)}. Папа в ${k} раза старше:<br>${M(`${f} + x = ${k}(${s} + x)`)}<br>${M(`${f} + x = ${k*s} + ${k}x`)}<br>${M(`${f} − ${k*s} = ${k}x − x`)}<br>${M(`${f-k*s} = ${k-1===1?'':k-1}x`)} → ${M(`x = ${x}`)}.<br>Проверка: через ${x} ${plural(x,'год','года','лет')} папе ${f+x}, сыну ${s+x}, и ${f+x} = ${k} · ${s+x} ✅`,
+ explain2:`Хитрость: разница возрастов всегда одна — ${f-s} ${plural(f-s,'год','года','лет')}. Если папа в ${k} раза старше, то разница — это ${k-1} «возраста сына». Значит, сыну тогда ${f-s} : ${k-1} = ${s+x}, а сейчас ${s}. Ждать ${s+x} − ${s} = ${x}.`};});
+G(7,()=>{const [p,q]=pick([[2,5],[5,10],[1,2],[2,10],[1,5]]);const n=R(12,30),x=R(2,n-2),S=q*x+p*(n-x);
+ return {type:'num',q:`В копилке ${n} монет — по ${p} ₽ и по ${q} ₽, всего ${S} ₽. Сколько монет по ${q} ₽?`,pic:coinsPic(p,q),ans:x,
+ hint:`Пусть монет по ${q} ₽ — x. Тогда монет по ${p} ₽ — ${n} − x.`,short:M(`${q}x + ${p}(${n} − x) = ${S}`)+` → x = ${x}.`,
+ explain:`Пусть монет по ${q} ₽ — x, тогда по ${p} ₽ — ${M(`${n} − x`)}.<br>${M(`${q}x + ${p===1?'':p}(${n} − x) = ${S}`)}<br>${M(`${q}x + ${p*n} − ${p===1?'':p}x = ${S}`)}<br>${M(`${q-p}x = ${S-p*n}`)} → ${M(`x = ${x}`)}.<br>Проверка: ${x}·${q} + ${n-x}·${p} = ${q*x} + ${p*(n-x)} = ${S} ✅`,
+ explain2:`Без уравнения: если бы все ${n} монет были по ${p} ₽, было бы ${p*n} ₽. Не хватает ${S} − ${p*n} = ${S-p*n} ₽. Каждая замена монеты ${p} ₽ на ${q} ₽ даёт +${q-p} ₽. Замен: ${S-p*n} : ${q-p} = ${x}.`};});
+G(7,()=>{const v1=R(8,20),x=R(10,25),t=R(2,4),S=(v1+x)*t;
+ return {type:'num',q:`Два велосипедиста выехали одновременно навстречу друг другу из двух посёлков, расстояние между которыми ${S} км, и встретились через ${t} ч. Первый ехал со скоростью ${v1} км/ч. С какой скоростью ехал второй? Ответ — в км/ч.`,
+ pic:motionPic(v1+' км/ч','x км/ч',S+' км',true),ans:x,hint:'Навстречу — скорости складываются: за 1 час они сближаются на (v₁ + x) км.',
+ short:M(`(${v1} + x) · ${t} = ${S}`)+` → x = ${x}.`,
+ explain:`Скорость сближения: ${M(`${v1} + x`)} км/ч. За ${t} ч они вместе проехали всё расстояние:<br>${M(`(${v1} + x) · ${t} = ${S}`)} → ${M(`${v1} + x = ${S/t}`)} → ${M(`x = ${x}`)} км/ч.<br>Проверка: ${v1}·${t} + ${x}·${t} = ${v1*t} + ${x*t} = ${S} ✅`,
+ explain2:`Иначе: первый за ${t} ч проехал ${v1} · ${t} = ${v1*t} км. Остальные ${S} − ${v1*t} = ${S-v1*t} км проехал второй за те же ${t} ч: ${S-v1*t} : ${t} = ${x} км/ч.`};});
+G(7,()=>{const d1=R(2,6),d2=R(2,8),x=R(20,30),T=x+(x+d1)+(x+d1-d2);
+ const ok=`x + (x + ${d1}) + (x + ${d1} − ${d2}) = ${T}`;
+ return CH(`В трёх классах ${T} учеников. Во втором на ${d1} больше, чем в первом, а в третьем на ${d2} меньше, чем во втором. Пусть в первом классе x учеников. Какое уравнение подходит?`,ok,
+ [`x + (x + ${d1}) + (x − ${d2}) = ${T}`,`x + (x − ${d1}) + (x − ${d1} + ${d2}) = ${T}`,`x + ${d1} + ${d2} = ${T}`],
+ {short:`Второй: x + ${d1}; третий — на ${d2} меньше <b>второго</b>: x + ${d1} − ${d2}.`,
+ explain:`Первый: ${M('x')}. Второй — на ${d1} больше: ${M(`x + ${d1}`)}. Третий — на ${d2} меньше, чем <b>второй</b> (а не первый!): ${M(`x + ${d1} − ${d2}`)}.<br>Сумма: ${M(ok)} → ${M(`3x + ${2*d1-d2} = ${T}`)} → x = ${x}. Классы: ${x}, ${x+d1}, ${x+d1-d2}.`,
+ explain2:`Ловушка — «на ${d2} меньше» относится ко второму классу. Проверь числами: ${x} + ${x+d1} + ${x+d1-d2} = ${T} ✅. А вариант с (x − ${d2}) дал бы ${x} + ${x+d1} + ${x-d2} = ${3*x+d1-d2} ≠ ${T}.`});});
+
+/* ===== L8 ★ ===== */
+G(8,()=>CH('Как надёжнее всего проверить, правильно ли решено уравнение (и задача)?','Подставить найденное число в исходное уравнение (в условие задачи) и убедиться, что всё сходится',
+ ['Решить уравнение ещё раз тем же способом','Посмотреть, целое ли получилось число','Сравнить ответ с ответом соседа'],
+ {short:'Подстановка в исходное условие — самая надёжная проверка.',explain:'Подставь корень в <b>исходное</b> уравнение (а не в промежуточное — там уже может быть ошибка). Если обе части равны — всё верно. В задаче проверяй по условию: подходят ли все числа к каждой фразе.',
+ explain2:'Решить ещё раз «тем же способом» — легко повторить ту же ошибку. А целое число не гарантирует правильность: ответ может быть и дробным.'}),{rule:true});
+G(8,()=>{const D=pick([100,200,50,1000,500]),c=pick([5,10,15,20,25,30]),T=2*c+D;
+ return {type:'num',q:`Ручка с колпачком стоят вместе ${T} ₽. Ручка дороже колпачка на ${D} ₽. Сколько рублей стоит колпачок?`,ans:c,
+ hint:'Очевидный ответ «'+(T-D)+'» — ловушка. Проверь его!',short:M(`x + (x + ${D}) = ${T}`)+` → x = ${c}.`,
+ explain:`Хочется сказать ${T-D} ₽. Проверим: тогда ручка ${T-D+D} ₽, вместе ${T-D+T} ₽ — а надо ${T} ❌.<br>Пусть колпачок x ₽, ручка ${M(`x + ${D}`)}. ${M(`x + x + ${D} = ${T}`)} → ${M(`2x = ${T-D}`)} → ${M(`x = ${c}`)}.<br>Проверка: ${c} + ${c+D} = ${T} ✅, ${c+D} − ${c} = ${D} ✅`,
+ explain2:`Убери «лишние» ${D} ₽, на которые ручка дороже: ${T} − ${D} = ${T-D}. Остались две одинаковые части — ручка и колпачок «поровну». Колпачок — половина: ${(T-D)/2}.`};},{star:true});
+G(8,()=>{const ages=[R(10,14),R(6,9),R(2,5)].sort((a,b)=>b-a);if(ages[0]===ages[1]||ages[1]===ages[2])return null;const sum=ages.reduce((a,b)=>a+b,0),x=R(3,12),f=sum+2*x;if(f<30||f>48)return null;
+ return {type:'num',q:`Папе ${f} лет, а его сыновьям ${ages.join(', ')} лет. Через сколько лет возраст папы будет равен сумме возрастов сыновей?`,ans:x,
+ hint:'Через x лет папе прибавится x, а сумме возрастов троих сыновей — сколько?',short:M(`${f} + x = ${sum} + 3x`)+` → x = ${x}.`,
+ explain:`Через x лет папе ${M(`${f} + x`)}. Каждому сыну прибавится x, а сумме трёх сыновей — ${M('3x')}: ${M(`${sum} + 3x`)}.<br>${M(`${f} + x = ${sum} + 3x`)} → ${M(`${f-sum} = 2x`)} → ${M(`x = ${x}`)}.<br>Проверка: папе ${f+x}, сыновьям ${ages.map(a=>a+x).join(' + ')} = ${sum+3*x} ✅`,
+ explain2:`Сейчас папа «обгоняет» сумму сыновей на ${f} − ${sum} = ${f-sum} лет. Каждый год папа стареет на 1, а сумма сыновей — на 3. Разрыв сокращается на 2 в год: ${f-sum} : 2 = ${x} лет.`};},{star:true});
+G(8,()=>({type:'num',q:`Старинная задача (Магницкий, 1703). Летит стая гусей, навстречу им гусь: «Здравствуйте, сто гусей!» Вожак отвечает: «Нас не сто! Вот если бы нас было столько, сколько сейчас, да ещё столько, да полстолько, да четверть столько, да ты, гусь, с нами — тогда было бы сто». Сколько гусей в стае?`,ans:36,
+ hint:'x + x + x/2 + x/4 + 1 = 100. Умножь всё на 4.',short:M('x + x + x/2 + x/4 + 1 = 100')+' → x = 36.',
+ explain:`Пусть гусей x. ${M(`x + x + ${frac('x','2')} + ${frac('x','4')} + 1 = 100`)}.<br>Умножаем всё на 4: ${M('4x + 4x + 2x + x + 4 = 400')} → ${M('11x = 396')} → ${M('x = 36')}.<br>Проверка: 36 + 36 + 18 + 9 + 1 = 100 ✅`,
+ explain2:`Без «гуся» сумма 99. «Столько, ещё столько, полстолько и четверть» — это 1 + 1 + ½ + ¼ = 2¾ = ${frac('11','4')} стаи. ${frac('11','4')} стаи = 99, значит ${frac('1','4')} стаи = 9, а вся стая = 36.`}),{star:true});
+G(8,()=>({type:'num',q:`Задача-легенда о Диофанте: «Детство Диофанта длилось ${frac('1','6')} его жизни, юность — ещё ${frac('1','12')}, после ${frac('1','7')} жизни он женился. Через 5 лет у него родился сын, который прожил половину жизни отца. Отец умер через 4 года после сына». Сколько лет прожил Диофант?`,ans:84,
+ hint:'x/6 + x/12 + x/7 + 5 + x/2 + 4 = x. Общий знаменатель 84.',short:'x/6 + x/12 + x/7 + 5 + x/2 + 4 = x → x = 84.',
+ explain:`Пусть Диофант прожил x лет. Все части жизни в сумме дают x:<br>${M(`${frac('x','6')} + ${frac('x','12')} + ${frac('x','7')} + 5 + ${frac('x','2')} + 4 = x`)}<br>Умножаем на 84: ${M('14x + 7x + 12x + 420 + 42x + 336 = 84x')} → ${M('75x + 756 = 84x')} → ${M('9x = 756')} → ${M('x = 84')}.<br>Проверка: 14 + 7 + 12 + 5 + 42 + 4 = 84 ✅`,
+ explain2:'Хитрость: x должен делиться на 6, 12, 7 и 2 (года — целые). Наименьшее такое число — НОК = 84. Следующее, 168, для человека слишком много. Проверка: 14 + 7 + 12 + 5 + 42 + 4 = 84 ✅'}),{star:true});
+G(8,()=>{const v=pick([10,12,15,20,25]),t1=R(4,12),dt=R(5,20),Lb=v*dt,len=v*t1;
+ return {type:'num',q:`Поезд проезжает мимо столба за ${t1} с, а мост длиной ${Lb} м — за ${t1+dt} с (от момента, когда голова въехала на мост, до момента, когда хвост с него съехал). Какова длина поезда в метрах?`,ans:len,
+ hint:'Мимо столба поезд проходит свою длину. Через мост — свою длину плюс длину моста.',short:`Скорость ${Lb} : ${dt} = ${v} м/с, длина ${v} · ${t1} = ${len} м.`,
+ explain:`Пусть длина поезда x м. Мимо столба поезд проходит путь x за ${t1} с, мост — путь ${M(`x + ${Lb}`)} за ${t1+dt} с. Скорость одна:<br>${M(`${frac('x',t1)} = ${frac('x + '+Lb,t1+dt)}`)} → ${M(`${t1+dt}x = ${t1}x + ${t1*Lb}`)} → ${M(`${dt}x = ${t1*Lb}`)} → ${M(`x = ${len}`)}.`,
+ explain2:`Короче: мост «добавил» ${dt} с — за это время поезд прошёл как раз длину моста ${Lb} м. Скорость: ${Lb} : ${dt} = ${v} м/с. А мимо столба за ${t1} с поезд прошёл свою длину: ${v} · ${t1} = ${len} м.`};},{star:true});
+G(8,()=>{const p=pick([8,16,24,32,40]),x=7*p/8;
+ return {type:'num',q:`Бездельник встретил чёрта. «Каждый раз, как перейдёшь этот мост, твои деньги удвоятся, — сказал чёрт, — но за каждый переход отдавай мне ${p} ₽». Бездельник перешёл мост три раза — и остался без копейки. Сколько рублей у него было сначала?`,ans:x,
+ hint:'Иди с конца: после третьего перехода 0. Значит, перед отдачей было '+p+' ₽…',short:`С конца: 0 → ${p/2} → ${(p/2+p)/2} → ${x}.`,
+ explain:`Пусть было x ₽. После 1-го перехода: ${M(`2x − ${p}`)}. После 2-го: ${M(`2(2x − ${p}) − ${p} = 4x − ${3*p}`)}. После 3-го: ${M(`8x − ${7*p}`)}.<br>${M(`8x − ${7*p} = 0`)} → ${M(`x = ${N(x)}`)}.<br>Проверка: ${x} → ${2*x-p} → ${2*(2*x-p)-p} → ${2*(2*(2*x-p)-p)-p} ✅`,
+ explain2:`Решаем с конца, делая всё наоборот (прибавить ${p}, разделить на 2):<br>в конце 0 → (0 + ${p}) : 2 = ${p/2} → (${p/2} + ${p}) : 2 = ${(p/2+p)/2} → (${(p/2+p)/2} + ${p}) : 2 = ${x}.`};},{star:true});
+
+/* ---------- interactive theory: весы ---------- */
+function onTheory(root){const w=root.querySelector('#w-scale');if(!w)return;
+  let a,b,c;const gen=()=>{a=R(2,4);const x=R(2,8);b=R(1,9);c=a*x+b;};gen();
+  w.innerHTML=`<div style="font-weight:700;margin-bottom:4px">Подбери x, чтобы весы уравновесились</div><div id="wsEq" class="m" style="font-size:18px"></div>
+<label>x = <output id="wsx">0</output><input type="range" id="wsX" min="0" max="10" step="1" value="0"></label>
+<div id="wsS" style="display:flex;justify-content:center"></div><div id="wsO" style="text-align:center;margin-top:4px"></div>
+<div class="row" style="margin-top:6px"><button class="btn ghost" id="wsN">Другое уравнение</button></div>`;
+  const X=w.querySelector('#wsX');
+  const draw=()=>{const x=+X.value,lv=a*x+b;w.querySelector('#wsx').textContent=x;w.querySelector('#wsEq').textContent=`${a}x + ${b} = ${c}`;
+    const lab=[];for(let i=0;i<a;i++)lab.push('x');lab.push(b);
+    w.querySelector('#wsS').innerHTML=scale(lab,[c],Math.sign(lv-c)*Math.min(10,Math.abs(lv-c)*1.5));
+    w.querySelector('#wsO').innerHTML=`Слева: ${a} · ${x} + ${b} = <span class="out">${lv}</span>, справа <span class="out">${c}</span> — ${lv===c?'<b>равновесие! x = '+x+' — корень</b> 🎉':lv<c?'левая чаша легче, x надо увеличить':'левая чаша тяжелее, x надо уменьшить'}`;};
+  X.oninput=draw;w.querySelector('#wsN').onclick=()=>{gen();X.value=0;draw();};draw();}
+
+window.TOPIC={id:'m6_equations',title:'Уравнения и выражения',subtitle:'Математика · 6 класс',
+intro:`<p>Здесь ты научишься обращаться с буквами как с числами: раскрывать скобки (и не попадаться на минус перед ними!), собирать подобные слагаемые и решать уравнения — от ${M('3x = 12')} до старинных задач про гусей и Диофанта. Уравнение — это весы, а перенос через «=» — переправа на другой берег со сменой знака.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Выражения с буквой','Раскрытие скобок','Подобные слагаемые','Простые уравнения','Перенос через «=»','Уравнения со скобками','Дроби и пропорции','Задачи на составление уравнений','★ Олимпиадные и старинные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

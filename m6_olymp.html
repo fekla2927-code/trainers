@@ -1,0 +1,1175 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Олимпиадная математика 6 класса — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,gcd}=H;
+const N_=H.num;
+
+/* ================= helpers ================= */
+const gens=[];
+const G=(lvl,make,f)=>gens.push({lvl,make,star:f==='s'||undefined,rule:f==='r'||undefined});
+function CH(q,ok,bad,o){const opts=shuffle([ok,...bad]);return Object.assign({type:'choice',q,opts,ans:opts.indexOf(ok)},o||{});}
+function YN(q,yes,o,labels){const opts=labels||['Да, можно','Нет, нельзя'];return Object.assign({type:'choice',q,opts,ans:yes?0:1},o||{});}
+const TXT='font-family:system-ui,sans-serif';
+const DAYS=['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье'];
+const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const MNOM=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+const MLEN=[31,28,31,30,31,30,31,31,30,31,30,31];
+
+/* ---------- SVG: square grid n×m ---------- */
+function gridSVG(w,h,o){o=o||{};const c=Math.min(o.cell||40,280/Math.max(w,h)),W=w*c+20,Hh=h*c+20;
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${Math.min(320,W)}" role="img" aria-label="Клетчатая фигура" style="${TXT}">`;
+  if(o.hl)o.hl.forEach(([x,y,ww,hh])=>s+=`<rect x="${10+x*c}" y="${10+y*c}" width="${ww*c}" height="${hh*c}" fill="var(--hl)" fill-opacity=".45"/>`);
+  for(let i=0;i<=w;i++)s+=`<line x1="${10+i*c}" y1="10" x2="${10+i*c}" y2="${10+h*c}" stroke="var(--fig)" stroke-width="${i===0||i===w?2:1.2}"/>`;
+  for(let j=0;j<=h;j++)s+=`<line x1="10" y1="${10+j*c}" x2="${10+w*c}" y2="${10+j*c}" stroke="var(--fig)" stroke-width="${j===0||j===h?2:1.2}"/>`;
+  return s+'</svg>';}
+
+/* ---------- SVG: polyomino ---------- */
+function polySVG(cells,o){o=o||{};const xs=cells.map(c=>c[0]),ys=cells.map(c=>c[1]);const W0=Math.max(...xs)+1,H0=Math.max(...ys)+1;const c=Math.min(38,280/Math.max(W0,H0));const W=W0*c+40,Hh=H0*c+40,ox=20,oy=20;
+  const has=(x,y)=>cells.some(q=>q[0]===x&&q[1]===y);
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${Math.min(320,W)}" role="img" aria-label="Фигура из клеток" style="${TXT}">`;
+  for(let x=0;x<=W0;x++)s+=`<line x1="${ox+x*c}" y1="${oy}" x2="${ox+x*c}" y2="${oy+H0*c}" stroke="var(--line)" stroke-width=".8"/>`;
+  for(let y=0;y<=H0;y++)s+=`<line x1="${ox}" y1="${oy+y*c}" x2="${ox+W0*c}" y2="${oy+y*c}" stroke="var(--line)" stroke-width=".8"/>`;
+  cells.forEach(([x,y])=>{const dark=o.chess&&(x+y)%2===0;s+=`<rect x="${ox+x*c}" y="${oy+y*c}" width="${c}" height="${c}" fill="${dark?'var(--fig)':'var(--hl)'}" fill-opacity="${dark?0.55:0.35}" stroke="var(--fig)" stroke-width=".6"/>`;});
+  if(o.tiles)o.tiles.forEach(([a,b])=>{const x=Math.min(a[0],b[0]),y=Math.min(a[1],b[1]),w=Math.abs(a[0]-b[0])+1,h=Math.abs(a[1]-b[1])+1;s+=`<rect x="${ox+x*c+4}" y="${oy+y*c+4}" width="${w*c-8}" height="${h*c-8}" rx="6" fill="none" stroke="var(--accent)" stroke-width="2.6"/>`;});
+  cells.forEach(([x,y])=>{const X=ox+x*c,Y=oy+y*c;if(!has(x-1,y))s+=`<line x1="${X}" y1="${Y}" x2="${X}" y2="${Y+c}" stroke="var(--fig)" stroke-width="2.4"/>`;if(!has(x+1,y))s+=`<line x1="${X+c}" y1="${Y}" x2="${X+c}" y2="${Y+c}" stroke="var(--fig)" stroke-width="2.4"/>`;if(!has(x,y-1))s+=`<line x1="${X}" y1="${Y}" x2="${X+c}" y2="${Y}" stroke="var(--fig)" stroke-width="2.4"/>`;if(!has(x,y+1))s+=`<line x1="${X}" y1="${Y+c}" x2="${X+c}" y2="${Y+c}" stroke="var(--fig)" stroke-width="2.4"/>`;});
+  return s+'</svg>';}
+function randPoly(k,W,Hh){for(;;){const cells=[[R(0,W-1),R(0,Hh-1)]];const key=c=>c[0]+','+c[1];const set=new Set([key(cells[0])]);
+  let guard=0;while(cells.length<k&&guard++<500){const b=pick(cells);const d=pick([[1,0],[-1,0],[0,1],[0,-1]]);const n=[b[0]+d[0],b[1]+d[1]];if(n[0]<0||n[1]<0||n[0]>=W||n[1]>=Hh||set.has(key(n)))continue;set.add(key(n));cells.push(n);}
+  if(cells.length<k)continue;const mx=Math.min(...cells.map(c=>c[0])),my=Math.min(...cells.map(c=>c[1]));return cells.map(c=>[c[0]-mx,c[1]-my]);}}
+function perim(cells){const has=(x,y)=>cells.some(q=>q[0]===x&&q[1]===y);let p=0;cells.forEach(([x,y])=>{[[1,0],[-1,0],[0,1],[0,-1]].forEach(([a,b])=>{if(!has(x+a,y+b))p++;});});return p;}
+function dominoTile(cells){const key=c=>c[0]+','+c[1];const free=new Set(cells.map(key));const tiles=[];
+  const order=cells.slice().sort((a,b)=>a[1]-b[1]||a[0]-b[0]);
+  function rec(){const f=order.find(c=>free.has(key(c)));if(!f)return true;for(const d of [[1,0],[0,1]]){const n=[f[0]+d[0],f[1]+d[1]];if(free.has(key(n))){free.delete(key(f));free.delete(key(n));tiles.push([f,n]);if(rec())return true;tiles.pop();free.add(key(f));free.add(key(n));}}return false;}
+  return rec()?tiles:null;}
+
+/* ---------- SVG: 2×n strip ---------- */
+function stripSVG(n,tiles){const c=Math.min(40,290/n),W=n*c+20,Hh=2*c+20;let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${Math.min(320,W)}" role="img" aria-label="Полоска 2×${n}" style="${TXT}">`;
+  for(let i=0;i<=n;i++)s+=`<line x1="${10+i*c}" y1="10" x2="${10+i*c}" y2="${10+2*c}" stroke="var(--fig)" stroke-width="${i===0||i===n?2:1}"/>`;
+  for(let j=0;j<=2;j++)s+=`<line x1="10" y1="${10+j*c}" x2="${10+n*c}" y2="${10+j*c}" stroke="var(--fig)" stroke-width="${j===1?1:2}"/>`;
+  if(tiles)tiles.forEach(t=>{s+=`<rect x="${10+t.x*c+3}" y="${10+t.y*c+3}" width="${t.w*c-6}" height="${t.h*c-6}" rx="5" fill="var(--hl)" fill-opacity=".45" stroke="var(--accent)" stroke-width="2"/>`;});
+  return s+'</svg>';}
+
+/* ---------- SVG: cube n×n×n ---------- */
+function cubeSVG(n){const L=150,dx=70,dy=-50,x0=40,y0=100;const P=(x,y)=>`${x},${y}`;
+  let s=`<svg viewBox="0 0 290 270" width="260" role="img" aria-label="Куб ${n}×${n}×${n}" style="${TXT}">`;
+  s+=`<polygon points="${P(x0,y0)} ${P(x0+L,y0)} ${P(x0+L,y0+L)} ${P(x0,y0+L)}" fill="var(--hl)" fill-opacity=".45" stroke="var(--fig)" stroke-width="2"/>`;
+  s+=`<polygon points="${P(x0,y0)} ${P(x0+dx,y0+dy)} ${P(x0+L+dx,y0+dy)} ${P(x0+L,y0)}" fill="var(--hl)" fill-opacity=".25" stroke="var(--fig)" stroke-width="2"/>`;
+  s+=`<polygon points="${P(x0+L,y0)} ${P(x0+L+dx,y0+dy)} ${P(x0+L+dx,y0+L+dy)} ${P(x0+L,y0+L)}" fill="var(--hl)" fill-opacity=".6" stroke="var(--fig)" stroke-width="2"/>`;
+  for(let i=1;i<n;i++){const t=i/n;
+    s+=`<line x1="${x0+t*L}" y1="${y0}" x2="${x0+t*L}" y2="${y0+L}" stroke="var(--fig)"/><line x1="${x0}" y1="${y0+t*L}" x2="${x0+L}" y2="${y0+t*L}" stroke="var(--fig)"/>`;
+    s+=`<line x1="${x0+t*L}" y1="${y0}" x2="${x0+t*L+dx}" y2="${y0+dy}" stroke="var(--fig)"/><line x1="${x0+t*dx}" y1="${y0+t*dy}" x2="${x0+L+t*dx}" y2="${y0+t*dy}" stroke="var(--fig)"/>`;
+    s+=`<line x1="${x0+L+t*dx}" y1="${y0+t*dy}" x2="${x0+L+t*dx}" y2="${y0+L+t*dy}" stroke="var(--fig)"/><line x1="${x0+L}" y1="${y0+t*L}" x2="${x0+L+dx}" y2="${y0+t*L+dy}" stroke="var(--fig)"/>`;}
+  return s+'</svg>';}
+
+/* ---------- SVG: graph ---------- */
+const VN='ABCDEFGH';
+function graphSVG(n,edges){const cx=160,cy=125,r=88;const pt=i=>[cx+r*Math.sin(2*Math.PI*i/n),cy-r*Math.cos(2*Math.PI*i/n)];
+  let s=`<svg viewBox="0 0 320 250" width="300" role="img" aria-label="Граф" style="${TXT}">`;
+  edges.forEach(([a,b])=>{const p=pt(a),q=pt(b);s+=`<line x1="${p[0].toFixed(1)}" y1="${p[1].toFixed(1)}" x2="${q[0].toFixed(1)}" y2="${q[1].toFixed(1)}" stroke="var(--fig)" stroke-width="2"/>`;});
+  range(0,n-1).forEach(i=>{const p=pt(i);const lx=cx+(r+20)*Math.sin(2*Math.PI*i/n),ly=cy-(r+20)*Math.cos(2*Math.PI*i/n);
+    s+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="7" fill="var(--accent)"/><text x="${lx.toFixed(1)}" y="${(ly+5).toFixed(1)}" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent-ink)">${VN[i]}</text>`;});
+  return s+'</svg>';}
+
+/* ---------- SVG: clock ---------- */
+function clockSVG(h,m,o){o=o||{};const cx=110,cy=110,r=90;let s=`<svg viewBox="0 0 220 220" width="${o.w||200}" role="img" aria-label="Часы" style="${TXT}">`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--card)" stroke="var(--fig)" stroke-width="2.5"/>`;
+  for(let i=0;i<60;i++){const a=i*6*Math.PI/180,big=i%5===0;const r1=big?r-10:r-5;s+=`<line x1="${(cx+r1*Math.sin(a)).toFixed(1)}" y1="${(cy-r1*Math.cos(a)).toFixed(1)}" x2="${(cx+r*Math.sin(a)).toFixed(1)}" y2="${(cy-r*Math.cos(a)).toFixed(1)}" stroke="var(--fig)" stroke-width="${big?2:0.8}"/>`;}
+  for(let i=1;i<=12;i++){const a=i*30*Math.PI/180;s+=`<text x="${(cx+(r-22)*Math.sin(a)).toFixed(1)}" y="${(cy-(r-22)*Math.cos(a)+5).toFixed(1)}" text-anchor="middle" font-size="14" fill="var(--ink)">${i}</text>`;}
+  const ha=((h%12)*30+m*0.5)*Math.PI/180,ma=m*6*Math.PI/180;
+  s+=`<line x1="${cx}" y1="${cy}" x2="${(cx+50*Math.sin(ha)).toFixed(1)}" y2="${(cy-50*Math.cos(ha)).toFixed(1)}" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>`;
+  s+=`<line x1="${cx}" y1="${cy}" x2="${(cx+74*Math.sin(ma)).toFixed(1)}" y2="${(cy-74*Math.cos(ma)).toFixed(1)}" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--ink)"/>`;
+  return s+'</svg>';}
+const clockAngle=(h,m)=>{let d=Math.abs((h%12)*30+m*0.5-m*6);return Math.min(d,360-d);};
+
+/* ---------- SVG: kings example ---------- */
+function kingsSVG(n){const c=Math.min(34,280/n),W=n*c+20;let s=`<svg viewBox="0 0 ${W} ${W}" width="${Math.min(300,W)}" role="img" aria-label="Расстановка королей" style="${TXT}">`;
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){const dark=(i+j)%2===0;s+=`<rect x="${10+i*c}" y="${10+j*c}" width="${c}" height="${c}" fill="${dark?'var(--fig)':'var(--card)'}" fill-opacity="${dark?0.25:1}" stroke="var(--line)" stroke-width=".5"/>`;}
+  for(let i=0;i<n;i+=2)for(let j=0;j<n;j+=2)s+=`<circle cx="${10+i*c+c/2}" cy="${10+j*c+c/2}" r="${c*0.32}" fill="var(--accent)"/><text x="${10+i*c+c/2}" y="${10+j*c+c/2+5}" text-anchor="middle" font-size="${Math.round(c*0.4)}" font-weight="700" fill="var(--card)">К</text>`;
+  for(let i=2;i<n;i+=2){s+=`<line x1="${10+i*c}" y1="10" x2="${10+i*c}" y2="${10+n*c}" stroke="var(--accent-ink)" stroke-width="1.6" stroke-dasharray="4 3"/><line x1="10" y1="${10+i*c}" x2="${10+n*c}" y2="${10+i*c}" stroke="var(--accent-ink)" stroke-width="1.6" stroke-dasharray="4 3"/>`;}
+  s+=`<rect x="10" y="10" width="${n*c}" height="${n*c}" fill="none" stroke="var(--fig)" stroke-width="1.6"/>`;
+  return s+'</svg>';}
+
+/* ================= theory ================= */
+const theory=[
+{title:'Как думать над олимпиадной задачей',lvl:0,html:`
+<p class="hook">Учитель велел классу сложить все числа от 1 до 100 — думал, это займёт урок. Через минуту маленький Карл Гаусс принёс ответ: 5050. Он заметил, что 1 + 100 = 2 + 99 = 3 + 98 = … = 101, а таких пар 50. Олимпиадная задача — это не «считать долго», а <b>заметить хитрость</b>.</p>
+<div class="box rule"><b>Пять главных приёмов</b>
+1) <b>Угадай на маленьком примере</b>: реши для 2, 3, 4 — увидишь закономерность.<br>
+2) <b>Подумай с конца</b>: иди от ответа к началу.<br>
+3) <b>Раскрась</b> доску или фигуру — и посчитай цвета.<br>
+4) <b>Оценка + пример</b>: докажи, что больше нельзя, и покажи, что столько можно.<br>
+5) <b>Аккуратный перебор</b>: по порядку, ничего не пропуская.</div>
+<div class="box tip"><b>Как читать условие</b>Каждое слово важно. «Наверняка», «наименьшее», «хотя бы» — это подсказки. Нарисуй картинку, даже если её нет.</div>
+<div class="box err"><b>Частая ошибка</b>Ответить «на глазок». В «Кенгуру» ловушки специально сделаны так, чтобы быстрый ответ был неверным (например, «на 6 частей — 6 распилов»).</div>
+<div class="fact">История про Гаусса — школьная легенда, но сам Гаусс действительно стал одним из величайших математиков. Его называли «королём математиков».</div>`},
+{title:'Хитрый счёт',lvl:0,html:`
+<div class="box rule"><b>Сумма Гаусса</b><span class="m">1 + 2 + … + n = n·(n + 1) : 2</span>. Работает и для любых чисел с равным шагом: (первое + последнее) · количество : 2.</div>
+<p><b>Почему:</b> запишем сумму дважды — прямо и задом наперёд. Под каждым числом стоит пара с суммой n + 1, пар n. Значит, удвоенная сумма = n·(n + 1).</p>
+<div class="box ex"><b>Пример</b>2 + 4 + 6 + … + 40: чисел 20, первое + последнее = 42. Сумма 42·20 : 2 = 420.</div>
+<div class="box ex"><b>Группируй</b>1 − 2 + 3 − 4 + … + 99 − 100 = (1 − 2) + (3 − 4) + … = −1 · 50 = −50.</div>
+<div class="box err"><b>Ловушка «распилов»</b>Чтобы распилить бревно на 6 частей, нужно 5 распилов, а не 6. Столбов в заборе на 1 больше, чем пролётов. Всегда проверяй на маленьком примере: 2 части — 1 распил.</div>
+<div class="box tip"><b>Считаем цифры</b>Страницы 1–9 — по 1 цифре (9 цифр), 10–99 — по 2 (180 цифр), 100–999 — по 3. Так находят, сколько цифр ушло на нумерацию книги.</div>`},
+{title:'Клетчатые фигуры и разрезания',lvl:1,html:`
+<p class="hook">Сколько квадратов на доске 8×8? Не 64, а <b>204</b>! Ведь бывают квадраты 2×2, 3×3, … и даже вся доска целиком.</p>
+<div class="figrow"><div class="fig">${gridSVG(3,3,{hl:[[0,0,2,2]]})}</div><div class="fig">${gridSVG(3,3,{hl:[[1,1,2,2]]})}</div></div>
+<p class="small" style="text-align:center">в квадрате 3×3 квадратов 2×2 — четыре: 2·2</p>
+<div class="box rule"><b>Счёт квадратов</b>В квадрате n×n квадратов k×k ровно (n − k + 1)², всего 1² + 2² + … + n².</div>
+<div class="box rule"><b>Разрезание на равные части</b>Сначала посчитай <b>площадь в клетках</b> и раздели на число частей — узнаешь, сколько клеток в каждой части.</div>
+<div class="box rule"><b>Раскраска</b>Раскрась фигуру в шахматном порядке: доминошка 1×2 всегда накрывает <b>1 тёмную + 1 светлую</b>. Если в фигуре их не поровну — на доминошки её не разрезать.</div>
+<div class="box ex"><b>Пример</b>Куб 3×3×3 покрасили снаружи и распилили на 27 кубиков. Три окрашенные грани — у угловых (8), две — у средних на рёбрах (12 рёбер · 1 = 12), одна — у центральных на гранях (6), ни одной — центральный кубик (1). Проверка: 8 + 12 + 6 + 1 = 27 ✅.</div>
+<div class="box err"><b>Периметр</b>Периметр фигуры из клеток — это число <b>отрезков границы</b>, а не число клеток. Две фигуры с одинаковой площадью могут иметь разный периметр.</div>`},
+{title:'Движение и время',lvl:2,html:`
+<p class="hook">В 3:15 стрелки часов совпадают? Нет! Пока минутная прошла четверть круга, часовая уползла от тройки на 7,5°. Часы — любимая ловушка олимпиад.</p>
+<div class="box rule"><b>Скорость сближения</b>Навстречу: <b>v₁ + v₂</b>. Вдогонку: <b>v₁ − v₂</b>. Время встречи = расстояние : скорость сближения.</div>
+<div class="box rule"><b>Часы</b>Минутная стрелка: 360° за час = <b>6° в минуту</b>. Часовая: 30° за час = <b>0,5° в минуту</b>. Угол в h ч m мин: |30·h + 0,5·m − 6·m| (если больше 180°, вычти из 360°).</div>
+<div class="widget" id="w-clock"></div>
+<div class="box ex"><b>Пример</b>Велосипедисты в 60 км друг от друга едут навстречу со скоростями 12 и 18 км/ч. Скорость сближения 30 км/ч, встретятся через 60 : 30 = 2 ч.</div>
+<div class="box err"><b>Ловушка этажей</b>С 1-го на 3-й этаж — это <b>2</b> пролёта лестницы, а не 3. С 1-го на 9-й — 8 пролётов.</div>
+<div class="box tip"><b>Календарь</b>Через 7 дней — тот же день недели. Чтобы найти день недели через N дней, нужен остаток N при делении на 7.</div>`},
+{title:'Делимость и цифры',lvl:3,html:`
+<p class="hook">Почему число 123456789 делится на 9, а 123456788 — нет, даже не деля? Потому что 1 + 2 + … + 9 = 45. Признаки делимости — суперсила для олимпиад.</p>
+<div class="box rule"><b>Признаки делимости</b>На 2 — последняя цифра чётная. На 5 — последняя 0 или 5. На 10 — последняя 0.<br>На 3 / на 9 — <b>сумма цифр</b> делится на 3 / на 9.<br>На 4 — число из <b>двух последних цифр</b> делится на 4. На 25 — две последние цифры 00, 25, 50, 75.</div>
+<p><b>Почему работает признак на 9:</b> 10 = 9 + 1, 100 = 99 + 1, 1000 = 999 + 1. Значит, число 352 = 3·99 + 5·9 + (3 + 5 + 2) — первые слагаемые делятся на 9, решает только сумма цифр.</p>
+<div class="box ex"><b>Пример</b>Какую цифру поставить вместо * в 47*5, чтобы делилось на 9? 4 + 7 + 5 = 16, до 18 не хватает 2. Ответ: 4725.</div>
+<div class="box tip"><b>Последняя цифра степени</b>Последние цифры степеней повторяются циклом: 2, 4, 8, 6, 2, 4, … Найди длину цикла и остаток показателя.</div>
+<div class="box err"><b>Ошибка</b>«Делится на 6 — значит, делится на 2 и на 3» — верно. А «делится на 2 и на 4 — значит, делится на 8» — неверно (12)! Складывать признаки можно только для взаимно простых делителей.</div>`},
+{title:'Графы и турниры',lvl:4,html:`
+<p class="hook">В 1736 году Леонард Эйлер решил загадку жителей Кёнигсберга: можно ли пройти по всем семи мостам города, побывав на каждом ровно один раз? Ответ «нельзя» — и с этой задачи началась целая наука, <b>теория графов</b>.</p>
+<p><b>Граф</b> — точки (вершины) и линии между ними (рёбра). Города и дороги, люди и дружба, команды и матчи. <b>Степень вершины</b> — сколько рёбер из неё выходит.</p>
+<div class="fig">${graphSVG(5,[[0,1],[1,2],[2,3],[3,4],[4,0],[0,2]])}</div>
+<div class="box rule"><b>Лемма о рукопожатиях</b>Сумма степеней всех вершин = <b>2 · число рёбер</b> (у каждого ребра два конца). Поэтому вершин нечётной степени всегда <b>чётное</b> количество.</div>
+<div class="box rule"><b>Турнир «каждый с каждым»</b>Если n команд и каждая сыграла с каждой по разу, матчей <b>n·(n − 1) : 2</b>.</div>
+<div class="box rule"><b>Нарисовать, не отрывая карандаша</b>Связную фигуру можно обвести одним росчерком (каждую линию ровно один раз), только если нечётных вершин <b>0 или 2</b>. Если их 2 — начинать надо в одной из них.</div>
+<div class="box ex"><b>Пример</b>В футболе за победу 3 очка, за ничью — 1 каждой команде. В матче с победителем разыгрывается 3 очка, в ничьей — 2. Поэтому каждая ничья уменьшает общую сумму очков на 1 по сравнению с «3 очка за матч».</div>
+<div class="box err"><b>Ошибка</b>Считать матчи как n·(n − 1): так каждый матч посчитан дважды — «A против B» и «B против A».</div>`},
+{title:'Оценка + пример',lvl:5,html:`
+<p class="hook">«Какое наибольшее число королей можно расставить на доске 8×8, чтобы они не били друг друга?» Ответ 16 — но чтобы получить полный балл на олимпиаде, нужно сделать <b>две вещи</b>.</p>
+<div class="box rule"><b>Оценка + пример</b><b>Оценка</b> — доказать, что больше (меньше) нельзя. <b>Пример</b> — показать, что столько можно. Одно без другого — только половина решения.</div>
+<div class="fig">${kingsSVG(8)}</div>
+<p class="small" style="text-align:center">Пример: 16 королей. Оценка: в каждом квадрате 2×2 (их 16) не больше одного короля.</p>
+<div class="box ex"><b>Пример: гири</b>Какое наименьшее число гирь нужно, чтобы взвесить любой груз от 1 до 7 г (гири на одной чаше)? <b>Пример</b>: 1, 2, 4. <b>Оценка</b>: у двух гирь всего 3 непустых набора (a, b, a + b) — 7 весов не набрать. Ответ 3.</div>
+<div class="box err"><b>Ошибка</b>Показать пример и сказать «больше не получилось». Не получилось у тебя — а вдруг получится у кого-то другого? Нужно <b>доказать</b>.</div>
+<div class="box tip"><b>Откуда брать оценку</b>Разбей доску на кусочки (как 2×2 для королей), посчитай «ресурс» (сумму, количество матчей) или воспользуйся принципом Дирихле.</div>`},
+{title:'★ Приёмы финала',lvl:6,html:`
+<p class="hook">На сколько кусков можно разрезать пиццу 10 прямыми разрезами? Если резать «звёздочкой» через центр — 20. А если хитро — <b>56</b>!</p>
+<div class="box rule"><b>Угадай на маленьком примере</b>0 разрезов — 1 кусок, 1 — 2, 2 — 4, 3 — 7, 4 — 11. Разности: 1, 2, 3, 4… k-й разрез пересекает не больше k − 1 старых и добавляет не больше k кусков. Значит, кусков не больше 1 + (1 + 2 + … + k).</div>
+<div class="box rule"><b>Раскраска в 4 цвета</b>Чтобы доказать, что доску нельзя разрезать на полоски 1×4, раскрась клетку (строка + столбец) в цвет по остатку от деления на 4. Полоска 1×4 накрывает по одной клетке каждого цвета, значит, цветов должно быть поровну.</div>
+<div class="box tip"><b>Остатки</b>«При делении на 2, 3, 4, 5, 6 остаток 1» = «число минус 1 делится на 60». Перебирай 61, 121, 181, …</div>
+<div class="fact">Задачи «Математического праздника» придумывают в Москве для 6–7 классов с 1990 года, а олимпиада имени Эйлера проводится для восьмиклассников с 2008 года. Многие задачи этого тренажёра — в их стиле.</div>`},
+{title:'Шпаргалка',html:`<ul class="steps">
+<li>1 + 2 + … + n = n(n + 1) : 2. Распилов на 1 меньше, чем частей.</li>
+<li>Квадратов в n×n: 1² + 2² + … + n². Доминошка = тёмная + светлая.</li>
+<li>Навстречу: v₁ + v₂, вдогонку: v₁ − v₂. Минутная 6°/мин, часовая 0,5°/мин.</li>
+<li>На 3 и 9 — сумма цифр, на 4 — две последние цифры.</li>
+<li>Матчей n(n − 1) : 2. Сумма степеней = 2 · рёбер. Одним росчерком — 0 или 2 нечётные вершины.</li>
+<li>Наибольшее/наименьшее: оценка + пример.</li>
+<li>Не знаешь, как начать, — реши маленький случай.</li></ul>`}
+];
+
+const symbols={tab:'Приёмы',title:'Формулы и приёмы олимпиадника',rows:[
+['n(n+1)/2','Сумма Гаусса','1 + 2 + … + n. Пары с одинаковой суммой.','1 + … + 100 = 5050'],
+['k − 1','Распилы, промежутки','Частей на 1 больше, чем распилов (на отрезке).','6 частей — 5 распилов'],
+['Σk²','Квадраты в n×n','1² + 2² + … + n².','3×3: 9 + 4 + 1 = 14'],
+['♟','Раскраска','Доминошка — 1 тёмная + 1 светлая клетка.','доска без 2 углов'],
+['v₁ ± v₂','Скорость сближения','Навстречу — сумма, вдогонку — разность.','12 и 18 км/ч → 30 км/ч'],
+['6° / 0,5°','Стрелки часов','Минутная — 6° в минуту, часовая — 0,5° в минуту.','3:00 → 90°'],
+['Σ цифр','Признаки на 3 и 9','Сумма цифр делится на 3 (9).','4725: 18 ⋮ 9'],
+['n(n−1)/2','Турнир','Число матчей «каждый с каждым».','6 команд — 15 матчей'],
+['2·E','Рукопожатия','Сумма степеней = 2 · число рёбер.','нечётных вершин — чётное число'],
+['≤ + ✓','Оценка + пример','Доказать, что больше нельзя, и показать пример.','16 королей на 8×8'],
+['1, 2, 3…','Маленький пример','Реши для маленьких чисел, найди закономерность.','разрезы пиццы']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Олимпиадная задача почти никогда не решается «в лоб». Ищи хитрость: пару, раскраску, конец, маленький случай.</div>`};
+
+/* ================= generators ================= */
+
+/* L0 — warm-up */
+G(0,()=>CH('Чему равна сумма 1 + 2 + 3 + … + n?','n·(n + 1) : 2',['n·(n − 1) : 2','n · n','n·(n + 1)'],
+ {short:'Пары с суммой n + 1, пар n : 2.',
+ explain:'Сумма Гаусса: <span class="m">1 + 2 + … + n = n·(n + 1) : 2</span>. Пишем сумму прямо и задом наперёд — в каждом столбике n + 1, столбиков n, значит, удвоенная сумма n·(n + 1). Делим на 2. Проверка: n = 4 → 4·5 : 2 = 10 = 1 + 2 + 3 + 4 ✅. (n·(n − 1) : 2 даёт 6 — неверно.)',
+ explain2:'Маленький пример: 1 + 2 + 3 = 6. Подставь n = 3 во все варианты: 3·4 : 2 = 6 ✅, 3·2 : 2 = 3, 3·3 = 9, 3·4 = 12. Подходит только n·(n + 1) : 2.'}),'r');
+G(0,()=>{const v=pick(['all','even','odd']);let n,first,last,cnt,S,qtxt;
+ if(v==='all'){n=R(20,100);first=1;last=n;cnt=n;qtxt=`1 + 2 + 3 + … + ${n}`;}
+ else if(v==='even'){n=R(10,50);first=2;last=2*n;cnt=n;qtxt=`2 + 4 + 6 + … + ${2*n}`;}
+ else {n=R(10,50);first=1;last=2*n-1;cnt=n;qtxt=`1 + 3 + 5 + … + ${2*n-1}`;}
+ S=(first+last)*cnt/2;
+ return {type:'num',q:`Вычисли: <span class="m">${qtxt}</span>.`,ans:S,
+ hint:'Сложи первое и последнее число. Сколько таких пар?',
+ short:`(${first} + ${last})·${cnt} : 2 = ${S}.`,
+ explain:`Приём Гаусса: первое + последнее = ${first} + ${last} = ${first+last}; второе + предпоследнее — тоже ${first+last}, и так далее.<br>Чисел в сумме ${cnt}${v!=='all'?` (${v==='even'?`это 2·1, 2·2, …, 2·${n}`:`каждое второе от 1 до ${2*n-1}`})`:''}, значит, пар ${cnt} : 2.<br>Сумма = ${first+last} · ${cnt} : 2 = <b>${S}</b>.`,
+ explain2:`Запиши сумму дважды — прямо и задом наперёд — и сложи столбиками: каждый столбик даёт ${first+last}, столбиков ${cnt}. Получилось ${first+last}·${cnt} = ${(first+last)*cnt} — это <b>удвоенная</b> сумма. Делим на 2: ${S}.${v==='odd'?` (Красивый факт: сумма первых n нечётных = n² = ${n}² = ${n*n}.)`:''}`};});
+G(0,()=>{const n=R(10,60);const odd=Math.random()<0.5;const ans=odd?n+1:-n;const last=odd?2*n+1:2*n;
+ const txt=odd?`1 − 2 + 3 − 4 + … − ${2*n} + ${2*n+1}`:`1 − 2 + 3 − 4 + … + ${2*n-1} − ${2*n}`;
+ return {type:'num',q:`Вычисли: <span class="m">${txt}</span>.`,ans,
+ hint:'Сгруппируй по два: (1 − 2) + (3 − 4) + …',
+ short:odd?`${n} пар по −1 дают −${n}, плюс ${2*n+1}: ${n+1}.`:`${n} пар по −1: −${n}.`,
+ explain:odd?`Сгруппируем: (1 − 2) + (3 − 4) + … + (${2*n-1} − ${2*n}) + ${2*n+1}. Каждая скобка равна −1, скобок ${n}: −${n}. Добавляем последнее ${2*n+1}: −${n} + ${2*n+1} = <b>${n+1}</b>.`
+  :`Сгруппируем по два: (1 − 2) + (3 − 4) + … + (${2*n-1} − ${2*n}). Каждая скобка равна −1, а скобок ${2*n} : 2 = ${n}. Итого <b>−${n}</b>.`,
+ explain2:odd?`Можно иначе: 1 + (−2 + 3) + (−4 + 5) + … + (−${2*n} + ${2*n+1}) = 1 + 1·${n} = ${n+1}. Две группировки — один ответ.`:`Маленький пример: 1 − 2 + 3 − 4 = −2 (две пары), 1 − 2 + 3 − 4 + 5 − 6 = −3 (три пары). Ответ всегда «минус число пар».`};});
+G(0,()=>{const t=R(2,6);const cut0=R(2,5);const t0=cut0*t;const ask=R(cut0+3,15);
+ return {type:'num',q:`Чтобы распилить бревно на ${cut0+1} ${plural(cut0+1,'часть','части','частей')}, понадобилось ${t0} минут. Сколько минут нужно, чтобы распилить такое же бревно на ${ask} ${plural(ask,'часть','части','частей')}? (Все распилы одинаково долгие.)`,ans:(ask-1)*t,
+ hint:'Сколько распилов нужно, чтобы получить 2 части? А 3?',
+ short:`${cut0+1} ${plural(cut0+1,'часть','части','частей')} — ${cut0} ${plural(cut0,'распил','распила','распилов')}, по ${t} мин. ${ask} частей — ${ask-1} распилов: ${(ask-1)*t} мин.`,
+ explain:`Распилов всегда на 1 меньше, чем частей. ${cut0+1} ${plural(cut0+1,'часть','части','частей')} → ${cut0} ${plural(cut0,'распил','распила','распилов')}, значит, один распил — ${t0} : ${cut0} = ${t} мин.<br>${ask} ${plural(ask,'часть','части','частей')} → ${ask-1} ${plural(ask-1,'распил','распила','распилов')} → ${ask-1}·${t} = <b>${(ask-1)*t}</b> мин.<div class="box err"><b>Ловушка</b>Ответ «${t0} : ${cut0+1} · ${ask}» — так считают те, кто думает, что распилов столько же, сколько частей.</div>`,
+ explain2:`Нарисуй бревно и разрежь на 2 части — сколько линий? Одна. На 3 части — две линии. Частей всегда на 1 больше, чем разрезов.`};});
+G(0,()=>{const N=R(30,130);const d=R(1,9);let cnt=0;for(let x=1;x<=N;x++)cnt+=String(x).split('').filter(c=>c===String(d)).length;
+ const units=range(1,N).filter(x=>x%10===d).length,tens=range(1,N).filter(x=>Math.floor(x/10)%10===d).length,hund=range(1,N).filter(x=>Math.floor(x/100)===d).length;
+ return {type:'num',q:`Сколько раз цифра ${d} встречается в записи всех чисел от 1 до ${N}?`,ans:cnt,
+ hint:'Посчитай отдельно: сколько раз она стоит в разряде единиц, и сколько — в разряде десятков.',
+ short:`В единицах — ${units}, в десятках — ${tens}${hund?`, в сотнях — ${hund}`:''}: всего ${cnt}.`,
+ explain:`Считаем по разрядам — так не запутаешься:<br>• <b>единицы</b>: ${range(1,N).filter(x=>x%10===d).slice(0,4).join(', ')}${units>4?', …':''} — ${units} ${plural(units,'раз','раза','раз')};<br>• <b>десятки</b>: ${tens?range(1,N).filter(x=>Math.floor(x/10)%10===d).slice(0,3).join(', ')+(tens>3?', …':''):'нет'} — ${tens} ${plural(tens,'раз','раза','раз')}${hund?`;<br>• <b>сотни</b>: ${hund}`:''}.<br>Всего: <b>${cnt}</b>.${d*11<=N?` Число ${d*11} содержит цифру ${d} дважды — и посчитано дважды, как и нужно.`:''}`,
+ explain2:`Ловушка: число ${d}${d} нужно считать два раза — в нём две цифры ${d}. Поэтому считать «числа, в которых есть ${d}» неверно — надо считать сами цифры. Проще всего — отдельно по разрядам: сначала единицы (каждое десятое число), потом десятки.`};});
+G(0,()=>{const P=R(15,320);let D=0;for(let x=1;x<=P;x++)D+=String(x).length;const a=Math.min(P,9),b=Math.max(0,Math.min(P,99)-9),c=Math.max(0,P-99);
+ return {type:'num',q:`Чтобы пронумеровать страницы книги (с 1-й по последнюю), напечатали ${D} ${plural(D,'цифру','цифры','цифр')}. Сколько страниц в книге?`,ans:P,
+ hint:'Страницы 1–9 — однозначные, 10–99 — двузначные, дальше — трёхзначные.',
+ short:`9 + 180 = 189 цифр на страницы 1–99${c?`; ещё ${D-189} цифр — это ${c} трёхзначных`:''}.`,
+ explain:`• Страницы 1–${Math.min(P,9)}: ${a} ${plural(a,'цифра','цифры','цифр')}.${P>9?`<br>• Страницы 10–${Math.min(P,99)}: ${b} ${plural(b,'страница','страницы','страниц')} по 2 цифры = ${2*b}.`:''}${c?`<br>• Осталось ${D} − ${a+2*b} = ${D-a-2*b} ${plural(D-a-2*b,'цифра','цифры','цифр')} на трёхзначные страницы: ${D-a-2*b} : 3 = ${c} ${plural(c,'страница','страницы','страниц')} (100–${P}).`:P>9?`<br>Проверка: ${a} + ${2*b} = ${D} ✅`:''}<br>Всего страниц: <b>${P}</b>.`,
+ explain2:`Иди «слоями»: сначала потрать цифры на однозначные страницы (9 цифр), потом на двузначные (90 страниц · 2 = 180 цифр), остаток — на трёхзначные. Последняя страница — ${P}.`};});
+
+/* L1 — grids */
+G(1,()=>CH('Фигуру нужно разрезать на несколько равных частей. С чего лучше начать?','Посчитать площадь фигуры в клетках и разделить на число частей — узнать площадь одной части',['Сразу провести разрез по середине фигуры','Посчитать периметр и разделить его на число частей','Разрезать на квадратики 1×1 и потом собрать'],
+ {short:'Площадь : число частей = площадь одной части.',
+ explain:'Равные части — значит, одинаковой формы и <b>одинаковой площади</b>. Сначала считаем клетки и делим: 12 клеток на 4 части → каждая по 3 клетки. Сразу понятно, какие кусочки искать. Периметр так не делится: при разрезании появляются новые границы.',
+ explain2:'Пример: фигура из 15 клеток, нужно 3 равные части. 15 : 3 = 5 — ищем части по 5 клеток (пентамино). Если бы клеток было 16, разрезать на 3 равные части было бы нельзя — 16 на 3 не делится.'}),'r');
+G(1,()=>{const n=R(3,7);const ans=range(1,n).reduce((a,k)=>a+k*k,0);
+ return {type:'num',q:`Сколько всего квадратов (любого размера) можно увидеть на картинке — в квадрате ${n}×${n} клеток?`,pic:gridSVG(n,n),ans,
+ hint:'Посчитай отдельно квадраты 1×1, 2×2, 3×3…',
+ short:`${range(1,n).map(k=>`${n-k+1}²`).join(' + ')} = ${ans}.`,
+ explain:`Считаем по размерам — квадрат k×k можно поставить (${n} − k + 1) способами по горизонтали и столько же по вертикали:<br>${range(1,n).map(k=>`• ${k}×${k}: ${n-k+1}·${n-k+1} = ${(n-k+1)**2}`).join('<br>')}<br>Всего: <b>${ans}</b>.`,
+ explain2:`Маленький пример: квадрат 2×2. Маленьких квадратиков 4, и ещё один большой — весь квадрат. Итого 5 = 1² + 2². Для ${n}×${n} так же, только слагаемых больше: ${range(1,n).map(k=>k+'²').join(' + ')} = ${ans}.`};});
+G(1,()=>{for(;;){const k=R(5,9);const cells=randPoly(k,5,4);const P=perim(cells);const rect=2*(Math.max(...cells.map(c=>c[0]))+1+Math.max(...cells.map(c=>c[1]))+1);
+ const has=(x,y)=>cells.some(q=>q[0]===x&&q[1]===y);const inner=cells.reduce((a,[x,y])=>a+(has(x+1,y)?1:0)+(has(x,y+1)?1:0),0);
+ return {type:'num',q:`Фигура составлена из ${k} клеток со стороной 1 см. Найди её периметр (в сантиметрах).`,pic:polySVG(cells),ans:P,
+ hint:'У каждой клетки 4 стороны. Какие из них оказываются внутри фигуры?',
+ short:`4·${k} − 2·${inner} = ${P} см.`,
+ explain:`Способ без ошибок: у ${k} клеток всего 4·${k} = ${4*k} сторон. Но там, где две клетки соприкасаются, сторона уходит внутрь фигуры, и пропадает сразу <b>2</b> стороны (по одной у каждой клетки).<br>Внутренних стыков на картинке: ${inner}. Периметр: ${4*k} − 2·${inner} = <b>${P}</b> см.`,
+ explain2:`Можно просто обойти фигуру по контуру пальцем и считать отрезки длиной 1 см. Начни с левого верхнего угла и иди по часовой стрелке — получится ${P}. Заметь: периметр зависит от формы, а не только от числа клеток.`};}});
+G(1,()=>{for(;;){const k=pick([6,8,10]);const cells=randPoly(k,5,4);const dark=cells.filter(([x,y])=>(x+y)%2===0).length,light=k-dark;const tiles=dominoTile(cells);
+ if(dark===light&&!tiles)continue;const yes=!!tiles;if(yes&&Math.random()<0.3)continue;
+ return YN(`Можно ли разрезать эту фигуру по линиям сетки на доминошки 1×2?`,yes,{pic:polySVG(cells),
+ hint:'Раскрась фигуру в шахматном порядке и посчитай тёмные и светлые клетки.',
+ short:yes?'Можно — разрезание показано в объяснении.':`Нельзя: тёмных ${dark}, светлых ${light} — не поровну.`,
+ explain:yes?`Можно! Вот разрезание на ${k/2} ${plural(k/2,'доминошку','доминошки','доминошек')}:<div class="fig">${polySVG(cells,{tiles})}</div>Раскраска тоже не мешает: тёмных и светлых клеток поровну — по ${dark}.`
+  :`Раскрасим фигуру в шахматном порядке:<div class="fig">${polySVG(cells,{chess:true})}</div>Тёмных клеток <b>${dark}</b>, светлых <b>${light}</b>. Каждая доминошка накрывает одну тёмную и одну светлую, поэтому у разрезаемой фигуры их должно быть поровну. ${dark} ≠ ${light} → <b>нельзя</b>.`,
+ explain2:yes?`Хитрость: начинай с «тупиков» — клеток, у которых только один сосед в фигуре. Такую клетку можно накрыть доминошкой только одним способом. Так шаг за шагом и находится разрезание.`:`Клеток ${k} — чётное число, и кажется, что можно. Но чётности мало: раскраска показывает, что одна «тёмная» клетка останется без пары. Попробуй — всегда останутся две клетки одного цвета.`},['Да, можно','Нет, нельзя']);}});
+G(1,()=>{const n=R(3,9);const f=[1,1];for(let i=2;i<=n;i++)f[i]=f[i-1]+f[i-2];
+ const ex=[];let x=0;while(x<n){if(x+2<=n&&Math.random()<0.5){ex.push({x,y:0,w:2,h:1},{x,y:1,w:2,h:1});x+=2;}else{ex.push({x,y:0,w:1,h:2});x+=1;}}
+ return {type:'num',q:`Сколькими способами можно разрезать полоску 2×${n} на доминошки 1×2? (Например, один из способов показан на картинке.)`,pic:stripSVG(n,ex),ans:f[n],
+ hint:'Сначала угадай на маленьком примере: 2×1, 2×2, 2×3, 2×4. Посмотри на левый край полоски.',
+ short:`Числа Фибоначчи: ${range(1,n).map(i=>f[i]).join(', ')} → ${f[n]}.`,
+ explain:`Посмотрим на левый край. Либо там стоит <b>вертикальная</b> доминошка — остаётся полоска 2×${n-1}; либо <b>две горизонтальные</b> одна над другой — остаётся 2×${n-2}. Значит, способов для n = способов для (n − 1) + способов для (n − 2).<br>2×1: 1, 2×2: 2, дальше складываем два предыдущих: ${range(1,n).map(i=>`2×${i}: ${f[i]}`).join(', ')}.<br>Ответ: <b>${f[n]}</b>.`,
+ explain2:`Проверь маленькие случаи руками: 2×2 — две вертикальные или две горизонтальные (2 способа). 2×3 — «| | |», «= |», «| =» (3 способа). Каждое число — сумма двух предыдущих: это знаменитые числа Фибоначчи.`};});
+G(1,()=>{const n=R(3,6);const kind=R(0,3);let cnt=0;for(let x=0;x<n;x++)for(let y=0;y<n;y++)for(let z=0;z<n;z++){const b=[x,y,z].filter(v=>v===0||v===n-1).length;if(b===3-kind)cnt++;}
+ const names=['три окрашенные грани','ровно две окрашенные грани','ровно одну окрашенную грань','ни одной окрашенной грани'];const why=[`Три грани окрашены только у <b>угловых</b> кубиков. Углов у куба 8 → <b>8</b>.`,`Две грани — у кубиков на <b>рёбрах</b>, но не в углах. На каждом ребре ${n} − 2 = ${n-2} таких, рёбер 12 → 12·${n-2} = <b>${cnt}</b>.`,`Одна грань — у кубиков в <b>середине граней</b>: на каждой грани квадрат (${n} − 2)×(${n} − 2) = ${(n-2)**2}, граней 6 → 6·${(n-2)**2} = <b>${cnt}</b>.`,`Не окрашены <b>внутренние</b> кубики: куб (${n} − 2)×(${n} − 2)×(${n} − 2) = ${n-2}³ = <b>${cnt}</b>.`];
+ return {type:'num',q:`Деревянный куб ${n}×${n}×${n} покрасили снаружи, а потом распилили на ${n**3} одинаковых кубиков. Сколько кубиков имеют ${names[kind]}?`,pic:cubeSVG(n),ans:cnt,
+ hint:'Где находятся такие кубики: в углах, на рёбрах, в середине граней или внутри?',
+ short:why[kind].replace(/<[^>]+>/g,''),
+ explain:why[kind]+`<br>Проверка: 8 + 12·${n-2} + 6·${(n-2)**2} + ${(n-2)**3} = ${8+12*(n-2)+6*(n-2)**2+(n-2)**3} = ${n}³ ✅`,
+ explain2:`Представь, что ты снимаешь с куба «кожуру» толщиной в один кубик. Внутри останется куб ${n-2}×${n-2}×${n-2} — неокрашенные. А в «кожуре»: углы (3 грани), рёбра без углов (2 грани) и середины граней (1 грань).`};});
+
+/* L2 — movement & time */
+G(2,()=>CH('Два пешехода идут навстречу друг другу со скоростями v₁ и v₂. С какой скоростью уменьшается расстояние между ними?','v₁ + v₂',['v₁ − v₂','v₁ · v₂','(v₁ + v₂) : 2'],
+ {short:'Навстречу — скорости складываются.',
+ explain:'Каждый час первый проходит v₁, второй — v₂, и оба «съедают» расстояние между ними. Поэтому навстречу скорость сближения <b>v₁ + v₂</b>. Если один догоняет другого (идут в одну сторону) — <b>v₁ − v₂</b>.',
+ explain2:'Пример: 4 км/ч и 5 км/ч навстречу. За час один прошёл 4 км, другой 5 км — вместе 9 км. Расстояние уменьшилось на 9 км = 4 + 5.'}),'r');
+G(2,()=>CH('На сколько градусов поворачиваются стрелки часов за 1 минуту?','Минутная — на 6°, часовая — на 0,5°',['Минутная — на 6°, часовая — на 1°','Минутная — на 1°, часовая — на 0,5°','Минутная — на 30°, часовая — на 6°'],
+ {short:'360° : 60 = 6°; 30° : 60 = 0,5°.',
+ explain:'Минутная стрелка делает полный круг (360°) за 60 минут: 360 : 60 = <b>6° в минуту</b>. Часовая проходит от одной цифры до следующей (360 : 12 = 30°) за 60 минут: 30 : 60 = <b>0,5° в минуту</b>.',
+ explain2:'Проверка: в 3:00 угол 90°. Через 10 минут минутная повернётся на 60°, часовая — на 5°. Угол станет 90 + 5 − 60 = 35°. Посмотри на настоящие часы — так и есть.'}),'r');
+G(2,()=>{for(;;){const v1=R(3,20),v2=R(2,18);if(v1===v2)continue;const t=R(2,6);const opp=Math.random()<0.55;const sp=opp?v1+v2:Math.abs(v1-v2);const d=sp*t;const fast=Math.max(v1,v2),slow=Math.min(v1,v2);
+ return {type:'num',q:opp?`Из двух городов, расстояние между которыми ${d} км, одновременно навстречу друг другу выехали два велосипедиста со скоростями ${v1} км/ч и ${v2} км/ч. Через сколько часов они встретятся?`:`Самокатчик едет со скоростью ${slow} км/ч. Следом за ним из точки, которая на ${d} км позади, выехал велосипедист со скоростью ${fast} км/ч. Через сколько часов велосипедист догонит самокатчика?`,ans:t,
+ short:`${d} : (${opp?`${v1} + ${v2}`:`${fast} − ${slow}`}) = ${t} ч.`,
+ explain:`${opp?`Едут <b>навстречу</b> — скорость сближения ${v1} + ${v2} = ${sp} км/ч.`:`Едут <b>в одну сторону</b> — скорость сближения ${fast} − ${slow} = ${sp} км/ч: каждый час велосипедист отыгрывает ${sp} км.`}<br>Время: ${d} : ${sp} = <b>${t}</b> ч.`,
+ explain2:`Проверка по часам: ${range(1,t).map(i=>`через ${i} ч расстояние ${d-sp*i} км`).join(', ')}. ${opp?'Встретились!':'Догнал!'}`};}});
+G(2,()=>{const h=R(1,11),m=pick(range(0,55,5));const a=clockAngle(h,m);if(m===0&&Math.random()<0.6)return G2clock();
+ return clockTask(h,m);});
+function G2clock(){return clockTask(R(1,11),pick([10,15,20,25,30,35,40,45,50]));}
+function clockTask(h,m){const a=clockAngle(h,m);const hh=(h%12)*30+m*0.5,mm=m*6;const raw=Math.abs(hh-mm);
+ return {type:'num',q:`Какой угол (в градусах, меньший из двух) образуют часовая и минутная стрелки в ${h}:${String(m).padStart(2,'0')}?`,pic:clockSVG(h,m),ans:a,
+ hint:'Минутная стрелка: 6° в минуту от «12». Часовая: 30° за каждый час и ещё 0,5° за каждую минуту.',
+ short:`Часовая ${N_(hh)}°, минутная ${mm}° → ${N_(a)}°.`,
+ explain:`Отсчитываем углы от цифры 12 по часовой стрелке:<br>• минутная: ${m}·6 = <b>${mm}°</b>;<br>• часовая: ${h}·30 + ${m}·0,5 = ${h*30} + ${N_(m*0.5)} = <b>${N_(hh)}°</b> (она тоже двигается!).<br>Разница: |${N_(hh)} − ${mm}| = ${N_(raw)}°${raw>180?`, это больше 180°, поэтому меньший угол 360 − ${N_(raw)} = ${N_(a)}°`:''}.<br>Ответ: <b>${N_(a)}°</b>.`,
+ explain2:`Частая ошибка — считать, что часовая стрелка стоит точно на «${h}». Но за ${m} минут она сдвинулась на ${N_(m*0.5)}° к следующей цифре. Без этой поправки получилось бы ${Math.min(Math.abs(h*30-mm),360-Math.abs(h*30-mm))}° — неверно.`};}
+G(2,()=>{for(;;){const a=R(2,5),t1=R(2,6)*10;const per=t1/(a-1);if(per!==Math.round(per))continue;const b=R(a+2,12);
+ return {type:'num',q:`Пешком с 1-го этажа на ${a}-й Ваня поднимается за ${t1} секунд. За сколько секунд он поднимется с 1-го этажа на ${b}-й (с той же скоростью)?`,ans:per*(b-1),
+ hint:'Сколько лестничных пролётов между 1-м и 3-м этажом?',
+ short:`${a-1} ${plural(a-1,'пролёт','пролёта','пролётов')} — ${t1} с, один — ${per} с; ${b-1} пролётов — ${per*(b-1)} с.`,
+ explain:`С 1-го на ${a}-й этаж — это <b>${a-1}</b> ${plural(a-1,'пролёт','пролёта','пролётов')} (между этажами), а не ${a}. Один пролёт: ${t1} : ${a-1} = ${per} с.<br>С 1-го на ${b}-й — ${b-1} пролётов: ${b-1}·${per} = <b>${per*(b-1)}</b> с.<div class="box err"><b>Ловушка</b>«${t1} : ${a} · ${b}» — так получится, если считать этажи, а не промежутки между ними.</div>`,
+ explain2:`Как с распилами бревна: считаем промежутки. На 2-й этаж — 1 пролёт, на 3-й — 2. На ${b}-й — ${b-1}.`};}});
+G(2,()=>{const start=R(0,6);const mo=R(1,11);const day=R(1,MLEN[mo]);const doy=MLEN.slice(0,mo).reduce((a,b)=>a+b,0)+day-1;const wd=(start+doy)%7;const opts=DAYS.slice();
+ return {type:'choice',q:`1 января — ${DAYS[start]}. Год не високосный. Каким днём недели будет ${day} ${MONTHS[mo]}?`,opts,ans:wd,
+ hint:'Сколько дней прошло с 1 января? Найди остаток от деления на 7.',
+ short:`Прошло ${doy} ${plural(doy,'день','дня','дней')}; ${doy} = 7·${Math.floor(doy/7)} + ${doy%7} → ${DAYS[wd]}.`,
+ explain:`Считаем, сколько дней прошло с 1 января: ${MLEN.slice(0,mo).map((d,i)=>`${MNOM[i]} ${d}`).join(' + ')} + ${day-1} = <b>${doy}</b>.<br>Через каждые 7 дней — тот же день недели. ${doy} = 7·${Math.floor(doy/7)} + <b>${doy%7}</b>.<br>От «${DAYS[start]}» сдвигаемся на ${doy%7}: <b>${DAYS[wd]}</b>.`,
+ explain2:`Хитрость: важны только <b>остатки</b> месяцев при делении на 7. 31 день = 4 недели + 3 дня, 30 = 4 недели + 2, 28 = ровно 4 недели. Каждый 31-дневный месяц сдвигает день недели на 3, 30-дневный — на 2, февраль — на 0.`};});
+G(2,()=>{for(;;){const v1=R(8,20),v2=R(8,20),t=R(1,4),f=R(25,60);const d=(v1+v2)*t;
+ return {type:'num',q:`Два велосипедиста выехали одновременно навстречу друг другу из пунктов, расстояние между которыми ${d} км. Их скорости — ${v1} км/ч и ${v2} км/ч. В момент старта с руля первого велосипеда взлетела муха и полетела со скоростью ${f} км/ч ко второму; долетев, развернулась и полетела к первому, и так летала, пока велосипедисты не встретились. Сколько километров пролетела муха?`,ans:f*t,
+ hint:'Не надо считать каждый отрезок полёта. Сколько времени летала муха?',
+ short:`Муха летала ${t} ч: ${f}·${t} = ${f*t} км.`,
+ explain:`Знаменитая хитрость: не надо складывать бесконечно много кусочков полёта! Муха летала ровно столько, сколько ехали велосипедисты до встречи: ${d} : (${v1} + ${v2}) = ${t} ч.<br>За это время она пролетела ${f}·${t} = <b>${f*t}</b> км.`,
+ explain2:`Говорят, эту задачу дали великому математику Джону фон Нейману, и он мгновенно ответил. «Вы знаете хитрость?» — «Какую хитрость? Я просто сложил ряд». Нам проще: время × скорость.`};}});
+
+/* L3 — divisibility */
+G(3,()=>CH('Как звучит признак делимости на 9?','Число делится на 9, если сумма его цифр делится на 9',['Число делится на 9, если его последняя цифра 9','Число делится на 9, если оно делится на 3','Число делится на 9, если две последние цифры образуют число, делящееся на 9'],
+ {short:'На 9 (и на 3) — по сумме цифр.',
+ explain:'Признак: число делится на 9 ⇔ <b>сумма цифр</b> делится на 9. Почему: 10 = 9 + 1, 100 = 99 + 1, …, поэтому число отличается от суммы своих цифр на число, кратное 9. «Последняя цифра 9» — неверно (19 не делится), «делится на 3» — мало (12 не делится на 9). По двум последним цифрам проверяют делимость на 4 и 25.',
+ explain2:'Проверь: 738 → 7 + 3 + 8 = 18 → делится на 9 (738 = 9·82). 739 → 19 → не делится. А 29 оканчивается на 9, но 2 + 9 = 11 — не делится.'}),'r');
+G(3,()=>{for(;;){const v=Math.random()<0.5?9:36;let digs=[R(1,9),R(0,9),R(0,9),R(0,9)];const pos=v===36?R(0,1):R(0,3);
+ if(v===36&&(digs[2]*10+digs[3])%4!==0)continue;
+ const ok=range(pos===0?1:0,9).filter(d=>{const t=digs.slice();t[pos]=d;const x=+t.join('');return x%v===0;});if(ok.length!==1)continue;
+ const shown=digs.map((d,i)=>i===pos?'*':d).join('');const s0=digs.reduce((a,d,i)=>i===pos?a:a+d,0);const ans=ok[0];
+ return {type:'num',q:`Какую цифру нужно поставить вместо звёздочки, чтобы число <span class="m">${shown}</span> делилось на ${v}?`,ans,
+ hint:v===36?'36 = 4·9. Проверь признак на 4 (две последние цифры) и на 9 (сумма цифр).':'Признак делимости на 9 — сумма цифр.',
+ short:`Сумма цифр ${s0} + ${ans} = ${s0+ans} делится на 9.`,
+ explain:`${v===36?`36 = 4·9, а 4 и 9 взаимно просты, значит, нужно делиться и на 4, и на 9. Две последние цифры ${digs[2]}${digs[3]} делятся на 4 ✅. Теперь на 9.<br>`:''}Сумма известных цифр: ${digs.filter((_,i)=>i!==pos).join(' + ')} = ${s0}. Ближайшее число, кратное 9 (не меньше ${s0}): ${s0+ans}. Не хватает ${ans}.<br>Цифра: <b>${ans}</b> → ${digs.map((d,i)=>i===pos?ans:d).join('')} = ${v}·${(+digs.map((d,i)=>i===pos?ans:d).join(''))/v}.`,
+ explain2:`Перебери все цифры 0–9: сумма цифр будет ${s0}, ${s0+1}, …, ${s0+9}. Ровно одна из этих сумм делится на 9 — это ${s0+ans}. ${(s0%9===0)?'':'Значит, цифра единственная.'}`};}});
+G(3,()=>{const sets=[{d:[2,3,4,5,6],r:1},{d:[2,3,4,5],r:1},{d:[3,4,5],r:2},{d:[2,3,4,5,6],r:'m1'},{d:[2,3,4,5,6,7],r:1},{d:[4,5,6],r:'m1'}];const S=pick(sets);
+ const L=S.d.reduce((a,b)=>H.lcm(a,b),1);let x=(S.r==='m1'?1:S.r+1);for(;;x++){if(S.d.every(d=>x%d===(S.r==='m1'?d-1:S.r)))break;}
+ const qs=S.r==='m1'?`при делении на ${S.d.join(', ')} даёт остатки ${S.d.map(d=>d-1).join(', ')} соответственно`:`при делении на каждое из чисел ${S.d.join(', ')} даёт остаток ${S.r}`;
+ return {type:'num',q:`Найди наименьшее натуральное число${S.r==='m1'?'':`, большее ${S.r},`} которое ${qs}.`,ans:x,
+ hint:S.r==='m1'?'Что будет, если к такому числу прибавить 1?':`Что можно сказать о числе, на ${S.r} меньшем?`,
+ short:S.r==='m1'?`x + 1 делится на НОК = ${L} → x = ${L-1}.`:`x − ${S.r} делится на НОК = ${L} → x = ${L+S.r}.`,
+ explain:S.r==='m1'?`Остаток «на 1 меньше делителя» значит: если прибавить 1, разделится нацело. Так что x + 1 делится на ${S.d.join(', ')}, то есть на их НОК = <b>${L}</b>. Наименьшее: x + 1 = ${L}, x = <b>${L-1}</b>.`
+  :`Если при делении на ${S.d.join(', ')} остаток ${S.r}, то x − ${S.r} делится на все эти числа, а значит, на их НОК = <b>${L}</b>. x − ${S.r} = 0 не подходит (тогда x = ${S.r}, а нужно больше), поэтому x − ${S.r} = ${L}, x = <b>${L+S.r}</b>.`,
+ explain2:`Проверка: ${S.d.map(d=>`${x} = ${d}·${Math.floor(x/d)} + ${x%d}`).join('; ')} ✅.<br>Как найти НОК(${S.d.join(', ')}) = ${L}: берём каждый простой множитель в наибольшей степени, которая встречается: ${S.d.includes(4)?'2² (из 4)':''}${S.d.some(d=>d%3===0)?', 3':''}${S.d.includes(5)?', 5':''}${S.d.includes(7)?', 7':''} → ${L}.`};});
+G(3,()=>{const a=pick([2,3,4,7,8,9]);const n=R(15,2026);const cyc=[];let v=a%10;while(!cyc.includes(v)){cyc.push(v);v=(v*a)%10;}const L=cyc.length;let r=1;for(let i=0;i<n;i++)r=(r*a)%10;const idx=(n-1)%L;
+ return {type:'num',q:`Какой цифрой оканчивается число <span class="m">${a}<sup>${n}</sup></span>?`,ans:r,
+ hint:`Выпиши последние цифры чисел ${a}¹, ${a}², ${a}³, ${a}⁴, … Увидишь цикл.`,
+ short:`Цикл ${cyc.join(', ')} длины ${L}; ${n} при делении на ${L} даёт остаток ${n%L} → ${r}.`,
+ explain:`Сначала угадаем на маленьких степенях — смотрим только на последнюю цифру:<br>${cyc.map((c,i)=>`${a}<sup>${i+1}</sup> → ${c}`).join(', ')}, ${a}<sup>${L+1}</sup> → ${cyc[0]} — и всё повторяется. Цикл длины <b>${L}</b>.<br>${n} = ${L}·${Math.floor(n/L)} + ${n%L}. ${n%L===0?`Остаток 0 — значит, последняя в цикле: ${cyc[L-1]}.`:`Остаток ${n%L} → ${n%L}-я цифра цикла.`}<br>Ответ: <b>${r}</b>.`,
+ explain2:`Почему цикл: последняя цифра произведения зависит только от последних цифр множителей. Умножаем последнюю цифру на ${a} снова и снова — цифр всего 10, поэтому рано или поздно начнутся повторы.`};});
+G(3,()=>{const n=R(10,130);let z=0,p=5;while(p<=n){z+=Math.floor(n/p);p*=5;}
+ return {type:'num',q:`Сколькими нулями оканчивается произведение <span class="m">1·2·3·…·${n}</span>?`,ans:z,
+ hint:'Ноль на конце — это множитель 10 = 2·5. Каких множителей меньше — двоек или пятёрок?',
+ short:`Пятёрок: ${Math.floor(n/5)}${n>=25?` + ${Math.floor(n/25)}`:''}${n>=125?` + ${Math.floor(n/125)}`:''} = ${z}.`,
+ explain:`Каждый ноль на конце — это множитель 10 = 2·5. Двоек в произведении очень много (каждое чётное число), а пятёрок мало — поэтому нулей столько, сколько <b>пятёрок</b>.<br>• Чисел, кратных 5, до ${n}: ${Math.floor(n/5)} (каждое даёт одну пятёрку).${n>=25?`<br>• Кратных 25 (дают ещё по одной пятёрке, ведь 25 = 5·5): ${Math.floor(n/25)}.`:''}${n>=125?`<br>• Кратных 125: ${Math.floor(n/125)}.`:''}<br>Итого: <b>${z}</b>.`,
+ explain2:`Маленький пример: 1·2·…·10 = 3 628 800 — два нуля. Пятёрки дают 5 и 10 — две штуки ✅. ${n>=25?'А число 25 = 5·5 даёт сразу две пятёрки — его легко забыть!':''}`};});
+G(3,()=>{const S=R(10,40);const ans=Number((S%9?String(S%9):'')+'9'.repeat(Math.floor(S/9)));const k=String(ans).length;
+ return {type:'num',q:`Найди наименьшее натуральное число, сумма цифр которого равна ${S}.`,ans,
+ hint:'Чем меньше цифр, тем меньше число. Какая самая большая цифра?',
+ short:`Как можно меньше цифр — побольше девяток: ${ans}.`,
+ explain:`1) Меньше цифр → меньше число. Каждая цифра не больше 9, значит, цифр не меньше ${S} : 9 → <b>${k}</b>.<br>2) Среди ${k}-значных чисел наименьшее то, у которого <b>первая цифра поменьше</b>. Ставим девятки в конец, а первой цифрой — остаток: ${S} = ${S%9?`${S%9} + `:''}${'9 + '.repeat(Math.floor(S/9)).slice(0,-3)}.<br>Ответ: <b>${ans}</b>.`,
+ explain2:`Это «оценка + пример»: оценка — меньше ${k} цифр быть не может (${k-1} цифр дают сумму не больше ${9*(k-1)} < ${S}); пример — ${ans}. Любое другое ${k}-значное число с такой суммой имеет первую цифру больше ${String(ans)[0]} или такую же и дальше не девятки — оно больше.`};});
+
+/* L4 — graphs & tournaments */
+G(4,()=>CH('В турнире n команд, каждая сыграла с каждой ровно один раз. Сколько всего было матчей?','n·(n − 1) : 2',['n·(n − 1)','n · n','2·n'],
+ {short:'Каждая из n играет n − 1 матч, каждый матч посчитан дважды.',
+ explain:'Каждая из n команд сыграла n − 1 матч — всего n·(n − 1), но так каждый матч посчитан <b>дважды</b> (у обеих команд). Значит, матчей <b>n·(n − 1) : 2</b>.',
+ explain2:'Проверь на 3 командах: A–B, A–C, B–C — 3 матча. По формуле 3·2 : 2 = 3 ✅. А n·(n − 1) = 6 — вдвое больше.'}),'r');
+G(4,()=>CH('Что утверждает лемма о рукопожатиях?','Сумма степеней всех вершин графа равна удвоенному числу рёбер, поэтому вершин нечётной степени — чётное число',['Сумма степеней всех вершин равна числу рёбер','В любом графе число вершин чётно','У каждой вершины степень чётная'],
+ {short:'Каждое ребро добавляет 2 к сумме степеней.',
+ explain:'У каждого ребра <b>два конца</b>, и каждый конец добавляет 1 к степени какой-то вершины. Поэтому сумма степеней = 2·(число рёбер) — всегда чётна. А раз сумма чётна, нечётных слагаемых (вершин нечётной степени) — чётное количество.',
+ explain2:'Пример: треугольник. 3 ребра, у каждой вершины степень 2: сумма 6 = 2·3 ✅. Нарисуй «звёздочку» из центра с 3 лучами: степени 3, 1, 1, 1 — нечётных 4 штуки, чётное число ✅.'}),'r');
+G(4,()=>{const n=R(5,16);const g=n*(n-1)/2;const rev=Math.random()<0.45;
+ if(rev)return {type:'num',q:`В шахматном турнире каждый участник сыграл с каждым ровно одну партию. Всего сыграно ${g} ${plural(g,'партия','партии','партий')}. Сколько было участников?`,ans:n,
+  hint:'n·(n − 1) : 2 = число партий. Подбирай n.',
+  short:`${n}·${n-1} : 2 = ${g}.`,
+  explain:`Партий n·(n − 1) : 2 = ${g}, значит, n·(n − 1) = ${2*g}. Ищем два соседних числа с произведением ${2*g}: ${n}·${n-1} = ${2*g}. Участников <b>${n}</b>.`,
+  explain2:`Можно перебирать: 5 участников — 10 партий, 6 — 15, 7 — 21, 8 — 28… Каждый новый участник добавляет столько партий, сколько было людей до него. Доходим до ${g} — это ${n}.`};
+ return {type:'num',q:`В футбольном турнире ${n} команд, каждая сыграла с каждой по одному разу. Сколько всего было матчей?`,ans:g,
+ short:`${n}·${n-1} : 2 = ${g}.`,
+ explain:`Каждая команда сыграла ${n-1} ${plural(n-1,'матч','матча','матчей')}: ${n}·${n-1} = ${n*(n-1)}. Но каждый матч посчитан дважды (у обеих команд), делим на 2: <b>${g}</b>.`,
+ explain2:`Считаем по-другому: первая команда сыграла с ${n-1} другими, вторая — ещё с ${n-2} новыми, …, предпоследняя — с 1. ${range(1,n-1).reverse().join(' + ')} = ${g}.`};});
+G(4,()=>{const n=R(4,8);const m=n*(n-1)/2;const D=R(0,m);const P=3*m-D;
+ return {type:'num',q:`В футбольном турнире ${n} команд сыграли каждая с каждой по одному разу. За победу дают 3 очка, за ничью — 1, за поражение — 0. Все команды вместе набрали ${P} ${plural(P,'очко','очка','очков')}. Сколько матчей закончилось вничью?`,ans:D,
+ hint:'Сколько очков разыгрывается в матче, где кто-то победил? А в ничьей?',
+ short:`Матчей ${m}; если бы ничьих не было, очков было бы ${3*m}. Не хватает ${D} — столько ничьих.`,
+ explain:`Матчей: ${n}·${n-1} : 2 = ${m}.<br>В матче с победителем команды получают 3 + 0 = <b>3</b> очка, в ничьей — 1 + 1 = <b>2</b>. Каждая ничья «теряет» 1 очко.<br>Если бы все матчи были с победителем: 3·${m} = ${3*m}. Набрано ${P}, разница ${3*m} − ${P} = <b>${D}</b> — это и есть число ничьих.`,
+ explain2:`Проверка: ${m-D} ${plural(m-D,'матч','матча','матчей')} с победителем дают 3·${m-D} = ${3*(m-D)}, ${D} ${plural(D,'ничья','ничьи','ничьих')} дают 2·${D} = ${2*D}. Сумма ${3*(m-D)} + ${2*D} = ${P} ✅`};});
+G(4,()=>{for(;;){const n=R(5,6);const all=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)all.push([i,j]);const cross=(e,f)=>{const [a,b]=e,[c,d]=f;const inside=x=>x>a&&x<b;return !e.includes(c)&&!e.includes(d)&&!f.includes(a)&&!f.includes(b)&&inside(c)!==inside(d);};const E=[];for(const e of shuffle(all)){if(E.length>=R(n+1,2*n-3))break;if(E.every(f=>!cross(e,f)))E.push(e);}
+ const deg=range(0,n-1).map(v=>E.filter(e=>e.includes(v)).length);if(deg.some(d=>d===0))continue;
+ const seen=new Set([0]);let ch=true;while(ch){ch=false;E.forEach(([a,b])=>{if(seen.has(a)!==seen.has(b)){seen.add(a);seen.add(b);ch=true;}});}if(seen.size<n)continue;
+ const odd=deg.map((d,i)=>d%2?i:-1).filter(i=>i>=0);const yes=odd.length===0||odd.length===2;
+ return YN(`Можно ли нарисовать эту фигуру, не отрывая карандаша от бумаги и не проводя ни одну линию дважды?`,yes,{pic:graphSVG(n,E),
+ hint:'Посчитай, сколько линий выходит из каждой точки. Сколько точек с нечётным числом линий?',
+ short:`Нечётных вершин: ${odd.length}${odd.length?` (${odd.map(i=>VN[i]).join(', ')})`:''} → ${yes?'можно':'нельзя'}.`,
+ explain:`Степени вершин (сколько линий выходит): ${deg.map((d,i)=>`${VN[i]} — ${d}`).join(', ')}.<br>Нечётных вершин: <b>${odd.length}</b>${odd.length?` (${odd.map(i=>VN[i]).join(', ')})`:''}.<br>Правило Эйлера: если в «проходную» вершину вошёл, то и вышел — линии в ней идут парами. Нечётной может быть только вершина, где начали или закончили. Поэтому нечётных вершин должно быть 0 или 2.<br>${yes?`<b>Можно</b>${odd.length===2?`: начни в ${VN[odd[0]]} и закончишь в ${VN[odd[1]]}`:': начни в любой вершине — и вернёшься в неё же'}.`:`У нас ${odd.length} → <b>нельзя</b>.`}`,
+ explain2:yes?`Попробуй обвести пальцем${odd.length===2?`, начиная с ${VN[odd[0]]}`:''}. Если упёрся в тупик раньше времени — вернись и выбери другую линию: правило гарантирует, что способ есть.`:`Каждая из ${odd.length} нечётных вершин должна быть началом или концом пути. А у пути всего два конца — на ${odd.length} нечётных вершин не хватит.`},['Да, можно','Нет, нельзя']);}});
+G(4,()=>{for(;;){const n=R(6,20),d=R(2,6);if((n*d)%2||d>=n)continue;
+ return {type:'num',q:`В стране ${n} ${plural(n,'город','города','городов')}, и из каждого города выходит ровно ${d} ${plural(d,'дорога','дороги','дорог')} в другие города (каждая дорога соединяет два города). Сколько всего дорог в стране?`,ans:n*d/2,
+ hint:'Сложи дороги, выходящие из всех городов. Сколько раз посчитана каждая дорога?',
+ short:`${n}·${d} : 2 = ${n*d/2}.`,
+ explain:`Если сложить дороги, выходящие из каждого города, получится ${n}·${d} = ${n*d}. Но каждая дорога выходит из <b>двух</b> городов — её посчитали дважды. Дорог: ${n*d} : 2 = <b>${n*d/2}</b>.`,
+ explain2:`Это лемма о рукопожатиях: сумма степеней = 2 · число рёбер. ${n*d} = 2·${n*d/2}. Кстати, поэтому при нечётных n и d (например, 7 городов по 3 дороги) такая страна невозможна: 21 на 2 не делится.`};}});
+
+/* L5 — estimate + example */
+G(5,()=>CH('Что нужно сделать, чтобы полностью решить задачу «Найдите наибольшее количество…»?','Доказать, что больше нельзя (оценка), и показать пример, где это количество достигается',['Привести один удачный пример','Доказать, что больше нельзя, а пример не нужен','Перебрать несколько вариантов и выбрать лучший из найденных'],
+ {short:'Оценка + пример — обе части обязательны.',
+ explain:'Полное решение = <b>оценка</b> (почему больше нельзя) + <b>пример</b> (как получить ровно столько). Без примера — вдруг твоя оценка недостижима? Без оценки — вдруг кто-то найдёт пример лучше? «Лучший из найденных» — не доказательство.',
+ explain2:'Короли на доске 8×8: пример — 16 королей через клетку. Оценка — разбили доску на 16 квадратов 2×2, в каждом не больше одного короля. Только вместе они доказывают, что ответ 16.'}),'r');
+G(5,()=>{const n=R(3,9);const k=Math.ceil(n/2)**2;
+ return {type:'num',q:`Какое наибольшее число шахматных королей можно расставить на доске ${n}×${n}, чтобы они не били друг друга? (Король бьёт все соседние клетки, в том числе по диагонали.)`,ans:k,
+ hint:'Разбей доску на квадраты 2×2. Сколько королей может стоять в одном таком квадрате?',
+ short:`Квадратов-кусочков ${Math.ceil(n/2)}·${Math.ceil(n/2)} = ${k}, в каждом не больше одного короля.`,
+ explain:`<b>Оценка.</b> Разобьём доску на ${n%2?`кусочки: квадраты 2×2, а у правого и нижнего края — полоски 1×2 и уголок 1×1`:'квадраты 2×2'} — всего ${Math.ceil(n/2)}·${Math.ceil(n/2)} = ${k} ${plural(k,'кусочек','кусочка','кусочков')}. Любые две клетки одного кусочка соседние, поэтому в нём не больше одного короля → королей не больше ${k}.<br><b>Пример.</b> Ставим королей через одну клетку: в 1-й, 3-й, 5-й… строках и столбцах:<div class="fig">${kingsSVG(n)}</div>Ответ: <b>${k}</b>.`,
+ explain2:`Маленький пример: доска 3×3. Четыре короля по углам не бьют друг друга, а пять — уже нельзя: разбей доску на 4 кусочка (квадрат 2×2, две полоски 1×2 и угловую клетку) — в каждом максимум один. Для ${n}×${n} так же: ${k}.`};});
+G(5,()=>{const S=R(15,100);let k=1;while((k+1)*(k+2)/2<=S)k++;const ex=range(1,k-1).concat([S-(k-1)*k/2]);
+ return {type:'num',q:`Число ${S} представили в виде суммы нескольких <b>различных</b> натуральных чисел. Какое наибольшее количество слагаемых может быть?`,ans:k,
+ hint:'Чтобы слагаемых было много, они должны быть маленькими. Какие самые маленькие различные числа?',
+ short:`1 + 2 + … + ${k} = ${k*(k+1)/2} ≤ ${S} < 1 + … + ${k+1} = ${(k+1)*(k+2)/2}. Пример: ${ex.join(' + ')}.`,
+ explain:`<b>Оценка.</b> Если слагаемых ${k+1} и все разные, их сумма не меньше 1 + 2 + … + ${k+1} = ${(k+1)*(k+2)/2} > ${S}. Значит, слагаемых не больше ${k}.<br><b>Пример</b> на ${k}: ${ex.join(' + ')} = ${S} (все разные ✅).<br>Ответ: <b>${k}</b>.`,
+ explain2:`Идея: бери 1, 2, 3, … пока сумма не превысит ${S}: ${range(1,k).join(' + ')} = ${k*(k+1)/2}. Добавить ${k+1} уже нельзя (${(k+1)*(k+2)/2} > ${S}). Остаток ${S-k*(k+1)/2} прибавляем к самому большому слагаемому — числа остаются разными.`};});
+G(5,()=>{const N=R(5,100);const k=Math.ceil(Math.log2(N+1)-1e-9);const w=range(0,k-1).map(i=>2**i);
+ return {type:'num',q:`Какое наименьшее число гирь (их массы в граммах можно выбрать любыми целыми) нужно, чтобы на чашечных весах можно было взвесить любой груз массой 1, 2, 3, …, ${N} г? Гири кладут только на одну чашу.`,ans:k,
+ hint:'Сколько разных масс можно набрать из 3 гирь? Каждую гирю либо кладём, либо нет.',
+ short:`Пример: ${w.join(', ')}. Оценка: из ${k-1} гирь не больше ${2**(k-1)-1} разных масс.`,
+ explain:`<b>Оценка.</b> Каждую гирю можно положить или не положить: у k гирь 2·2·…·2 = 2<sup>k</sup> наборов, из них один пустой. Значит, разных масс не больше 2<sup>k</sup> − 1. Для ${k-1} ${plural(k-1,'гири','гирь','гирь')}: 2<sup>${k-1}</sup> − 1 = ${2**(k-1)-1} < ${N} — не хватит.<br><b>Пример</b> из ${k}: ${w.join(', ')} г — ими набирается любая масса от 1 до ${2**k-1} ≥ ${N} (как запись числа в двоичной системе).<br>Ответ: <b>${k}</b>.`,
+ explain2:`Маленький пример: гири 1, 2, 4. 3 = 1 + 2, 5 = 1 + 4, 6 = 2 + 4, 7 = 1 + 2 + 4. Каждая следующая гиря вдвое тяжелее — это двоичная система, которой пользуются компьютеры.`};});
+G(5,()=>{const mode=pick(['max','min']);let mx=0,mn=99,exY=null;for(let y=2001;y<=2100;y++){let c=0;const ms=[];for(let m=0;m<12;m++)if(new Date(Date.UTC(y,m,13)).getUTCDay()===5){c++;ms.push(m);}if(c>mx){mx=c;}if(c<mn)mn=c;if(mode==='max'&&c===3&&!exY&&y>=2026)exY=[y,ms];if(mode==='min'&&c===1&&!exY&&y>=2026)exY=[y,ms];}
+ const ans=mode==='max'?mx:mn;const MN=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+ return {type:'num',q:`Какое <b>${mode==='max'?'наибольшее':'наименьшее'}</b> количество «пятниц 13-го» может быть в одном году?`,ans,
+ hint:'Сдвиги дня недели 13-го числа от месяца к месяцу зависят от длины месяцев. Посчитай остатки при делении на 7.',
+ short:`${ans}. Пример: ${exY[0]} год (${exY[1].map(m=>MN[m]).join(', ')}).`,
+ explain:`Найдём, на сколько дней недели 13-е число каждого месяца сдвинуто относительно 13 января (остаток числа прошедших дней при делении на 7):<br>обычный год: 0, 3, 3, 6, 1, 4, 6, 2, 5, 0, 3, 5;<br>високосный: 0, 3, 4, 0, 2, 5, 0, 3, 6, 1, 4, 6.<br>${mode==='max'?`<b>Оценка:</b> одинаковых сдвигов не больше трёх (у обычного года «3» встречается 3 раза, у високосного «0» — 3 раза), а пятница 13-го — это месяцы с одним и тем же сдвигом. Значит, больше 3 не бывает.<br><b>Пример:</b> в ${exY[0]} году пятница 13-го — ${exY[1].map(m=>MN[m]).join(', ')}.`:`<b>Оценка:</b> в обоих списках встречаются все остатки 0, 1, 2, 3, 4, 5, 6 — значит, какой-то месяц обязательно попадёт на пятницу. Меньше 1 не бывает.<br><b>Пример:</b> в ${exY[0]} году пятница 13-го только одна — ${MN[exY[1][0]]}.`}<br>Ответ: <b>${ans}</b>.`,
+ explain2:`Проверка на компьютере: перебор всех лет с 2001 по 2100 даёт от ${mn} до ${mx} пятниц 13-го в году. А «оценка» через остатки объясняет, почему иначе и быть не может — для любого года.`};});
+G(5,()=>{const n=pick([3,3,4]);const ans=6;
+ return {type:'num',q:`Деревянный куб ${n}×${n}×${n} нужно распилить на ${n**3} кубиков 1×1×1. После каждого распила куски можно перекладывать как угодно и пилить сразу несколько, сложив их стопкой. Какое наименьшее число распилов понадобится?`,ans,
+ hint:n===3?'Посмотри на центральный кубик. Сколько у него граней и откуда они берутся?':'Посмотри на любой внутренний кубик.',
+ short:`У внутреннего кубика 6 граней, каждая появляется от отдельного распила → не меньше 6. И 6 хватает.`,
+ explain:`<b>Оценка.</b> Возьмём ${n===3?'центральный кубик':'любой внутренний кубик'}. Все 6 его граней — внутри большого куба, каждая появляется только от распила, и один плоский распил создаёт у этого кубика не больше одной грани. Значит, распилов не меньше <b>6</b>.<br><b>Пример.</b> Без всяких перекладываний: ${n-1} ${plural(n-1,'распил','распила','распилов')} параллельно каждой из трёх граней: ${n-1}·3 = ${3*(n-1)}.${n===4?' Это 9, но с перекладыванием хватит 6: после первого распила пополам кладём половинки рядом и снова пилим пополам — по каждому направлению 2 распила, всего 6.':''}<br>Ответ: <b>6</b>.`,
+ explain2:`Перекладывание ${n===3?'тут не помогает — центральный кубик всё равно требует 6 «ножей»':'помогает: 4 слоя получаются за 2 распила (пополам и ещё раз пополам стопкой)'}. Классическая задача: её любят за то, что «очевидный» путь — придумать хитрую укладку, а правильный — посмотреть на центр.`};});
+
+/* L6 — ★ */
+G(6,()=>CH('В задаче огромные числа (2026 жителей, 100 монет) и непонятно, как начать. Какой приём лучше всего попробовать первым?','Решить ту же задачу для маленьких чисел (2, 3, 4…), найти закономерность, а потом объяснить её',['Сразу перебрать все варианты для больших чисел','Угадать ответ и записать его без объяснения','Заменить все числа на 0 и решить так'],
+ {short:'Маленький пример → закономерность → доказательство.',
+ explain:'Приём «<b>угадай на маленьком примере</b>»: реши задачу для 1, 2, 3, 4 — руками, с картинкой. Увидишь закономерность (например, ответы 2, 4, 7, 11 растут на 2, 3, 4…). Потом объясни, почему так будет всегда, и подставь большие числа. Перебор «в лоб» для 2026 — нереально, а угаданный без объяснения ответ на олимпиаде не засчитают.',
+ explain2:'Пример: сколько кусков пиццы при 10 разрезах? 0 разрезов — 1 кусок, 1 — 2, 2 — 4, 3 — 7. Разности 1, 2, 3 → для 10: 1 + (1 + 2 + … + 10) = 56.'}),'r');
+G(6,()=>{const kind=pick(['meet','perp','opp']);const tg=kind==='meet'?[0]:kind==='perp'?[90,270]:[180];const ts=new Set();tg.forEach(T=>{for(let k=0;;k++){const t=(T+360*k)/5.5;if(t>=1440)break;ts.add(t.toFixed(6));}});const ans=ts.size;
+ const per=kind==='perp'?2:1;
+ return {type:'num',q:`Сколько раз за сутки (с 0:00 до 24:00, полночь считаем один раз) часовая и минутная стрелки ${kind==='meet'?'совпадают':kind==='perp'?'образуют прямой угол':'направлены в противоположные стороны (образуют развёрнутый угол)'}?`,ans,
+ hint:'Минутная обгоняет часовую на 5,5° в минуту. Сколько раз за 12 часов она обгонит её на полный круг?',
+ short:`За 12 ч минутная обгоняет часовую на 11 кругов → ${11*per} ${plural(11*per,'раз','раза','раз')}; за сутки ${ans}.`,
+ explain:`За 12 часов минутная стрелка делает 12 оборотов, а часовая — 1. Значит, минутная обгоняет часовую на <b>11</b> полных кругов.<br>За каждый такой «круг обгона» угол между стрелками пробегает все значения от 0° до 360°: ${kind==='meet'?'совпадение (0°) случается 1 раз':kind==='perp'?'прямой угол (90° и 270°) — 2 раза':'развёрнутый угол (180°) — 1 раз'}.<br>За 12 часов: 11·${per} = ${11*per}, за сутки: <b>${ans}</b>.<div class="box err"><b>Ловушка</b>Ответ «${kind==='meet'?24:kind==='perp'?48:24}» — «раз в час». Но между 11 и 1 часом ${kind==='meet'?'стрелки совпадают только один раз — в 12:00':'событие случается реже, потому что часовая стрелка «убегает»'}.</div>`,
+ explain2:`Можно посчитать точно: угол между стрелками меняется на 6 − 0,5 = 5,5° в минуту. ${kind==='meet'?'Совпадения через каждые 360 : 5,5 = 65 5/11 минуты':'Нужные моменты повторяются с периодом 360 : 5,5 = 65 5/11 минуты'}, а в сутках 1440 минут: 1440 : (360 : 5,5) = 22 полных круга обгона.`};},'s');
+G(6,()=>{const p=pick([7,11,13]);let x=2;for(;;x++)if(x%p===0&&[2,3,4,5,6].every(d=>x%d===1))break;const cands=[];for(let y=61;y<=x;y+=60)cands.push(y);
+ return {type:'num',q:`Найди наименьшее натуральное число, которое делится на ${p}, а при делении на 2, 3, 4, 5 и 6 даёт остаток 1.`,ans:x,
+ hint:'Число минус 1 делится на 2, 3, 4, 5, 6 — значит, на их НОК.',
+ short:`x − 1 кратно 60: ${cands.join(', ')} — первое кратное ${p}: ${x}.`,
+ explain:`Остаток 1 при делении на 2, 3, 4, 5, 6 значит: x − 1 делится на все эти числа, то есть на НОК(2, 3, 4, 5, 6) = <b>60</b>.<br>Кандидаты (x > 1): ${cands.join(', ')}, …<br>Проверяем делимость на ${p}: ${cands.map(y=>`${y} ${y%p===0?'= '+p+'·'+y/p+' ✅':'— нет'}`).join('; ')}.<br>Ответ: <b>${x}</b>.`,
+ explain2:`Это классическая задача-загадка (её приписывают ещё средневековым задачникам): «Торговка несла корзину яиц. Если раскладывать по 2, 3, 4, 5 или 6 — одно лишнее, а по 7 — ровно». Ответ для 7 — 301. У нас делитель ${p} — ответ ${x}.`};},'s');
+G(6,()=>{const k=R(4,12);const ans=1+k*(k+1)/2;
+ return {type:'num',q:`Какое наибольшее число кусков можно получить, разрезав круглую пиццу ${k} прямыми разрезами (куски не перекладывают)?`,ans,
+ hint:'Угадай на маленьком примере: 1, 2, 3, 4 разреза. Сколько новых кусков добавляет очередной разрез?',
+ short:`1 + (1 + 2 + … + ${k}) = ${ans}.`,
+ explain:`Маленькие случаи: 0 разрезов — 1 кусок, 1 — 2, 2 — 4, 3 — 7, 4 — 11.<br><b>Почему так:</b> k-й разрез пересекает не больше k − 1 старых разрезов, они делят его на не больше k отрезков, и каждый отрезок делит один кусок на два. Значит, k-й разрез добавляет <b>не больше k</b> кусков (это оценка), и ровно k, если все разрезы пересекаются внутри пиццы в разных точках (это пример).<br>Итого: 1 + 1 + 2 + … + ${k} = 1 + ${k*(k+1)/2} = <b>${ans}</b>.`,
+ explain2:`Ловушка: если резать все разрезы через центр, как обычно режут пиццу, получится только ${2*k} ${plural(2*k,'кусок','куска','кусков')}. Чтобы кусков было больше, разрезы должны пересекаться в разных точках — никакие три в одной.`};},'s');
+G(6,()=>{const C=pick([[6,4,3],[7,5,3],[7,4,5],[5,3,3],[6,3,5]]);const [n,t,k]=C;const tot=n*(n-1)/2;const f=x=>x*(x-1)/2+x*(n-x);
+ return {type:'num',q:`В турнире по волейболу ${n} команд, каждая сыграла с каждой по одному разу (ничьих в волейболе не бывает). Какое наибольшее число команд могли одержать <b>не меньше ${t}</b> побед?`,ans:k,
+ hint:'Пусть таких команд m. Сколько всего побед они могли одержать — в матчах между собой и с остальными?',
+ short:`Оценка: у ${k+1} команд не больше ${f(k+1)} побед < ${(k+1)*t}. Пример: ${k} команд обыгрывают всех остальных и «по кругу» друг друга.`,
+ explain:`<b>Оценка.</b> Пусть m команд одержали по ≥ ${t} побед — вместе ≥ ${t}·m. Но их победы — это победы в матчах между собой (их m(m − 1) : 2) и в матчах с остальными (m·(${n} − m)). При m = ${k+1}: ${k+1}·${k} : 2 + ${k+1}·${n-k-1} = ${f(k+1)} < ${t}·${k+1} = ${t*(k+1)} — не хватает. Значит, m ≤ ${k}.<br><b>Пример</b> на ${k}: эти ${k} ${plural(k,'команда','команды','команд')} выигрывают у всех ${n-k} остальных (по ${n-k} ${plural(n-k,'победе','победы','побед')}) и между собой играют «по кругу» — каждая выигрывает у ${(k-1)/2} ${plural((k-1)/2,'соперника','соперников','соперников')}. Итого у каждой ${n-k} + ${(k-1)/2} = ${n-k+(k-1)/2} ≥ ${t} ✅.<br>Ответ: <b>${k}</b>.`,
+ explain2:`Компьютерный перебор всех 2<sup>${tot}</sup> возможных исходов турнира подтверждает ответ ${k}. А сама идея — «ресурс»: побед всего столько же, сколько матчей (${tot}), и сильным командам нужно делить победы между собой.`};},'s');
+G(6,()=>{for(;;){const n=R(15,35);const ds=sample([1,2,3,4,5,6],3).sort((a,b)=>a-b);const a=R(2,n-4),b=R(1,n-a-1),c=n-a-b;if(c<1)continue;const seq=[].concat(Array(a).fill(ds[0]),Array(b).fill(ds[1]),Array(c).fill(ds[2]));const S=seq.reduce((x,y)=>x+y,0);
+ const graphic=(()=>{let s=seq.slice();for(;;){s.sort((x,y)=>y-x);if(s[0]===0)return true;const d=s.shift();if(d>s.length)return false;for(let i=0;i<d;i++){s[i]--;if(s[i]<0)return false;}}})();
+ const yes=S%2===0&&graphic;if(S%2===0&&!graphic)continue;if(yes&&Math.random()<0.55)continue;
+ return YN(`В классе ${n} ${plural(n,'ученик','ученика','учеников')}. Может ли быть так, что ${a} из них дружат ровно с ${ds[0]} одноклассниками каждый, ${b} — ровно с ${ds[1]}, а остальные ${c} — ровно с ${ds[2]}? (Дружба взаимна.)`.replace(/ровно с 1 одноклассниками/g,'ровно с 1 одноклассником'),yes,{
+ hint:'Сложи все количества друзей. Какой должна быть эта сумма?',
+ short:yes?`Сумма ${S} чётна, и такая компания существует.`:`Сумма ${S} нечётна — так не бывает.`,
+ explain:`Сложим числа друзей всех учеников: ${a}·${ds[0]} + ${b}·${ds[1]} + ${c}·${ds[2]} = ${a*ds[0]} + ${b*ds[1]} + ${c*ds[2]} = <b>${S}</b>.<br>Каждая дружба посчитана дважды (у обоих друзей), поэтому сумма обязана быть <b>чётной</b>.<br>${yes?`${S} чётна — противоречия нет. И такую компанию действительно можно построить: например, соединять «самого общительного» с самыми общительными из оставшихся (компьютер построил такой пример). Ответ: <b>может</b>.`:`${S} — нечётна. Ответ: <b>не может</b>.`}`,
+ explain2:yes?`Чётность суммы — необходимое условие. Для небольших чисел, как здесь, его хватает: учеников много, а друзей у каждого мало, поэтому всех можно «раскидать» по дружбам.`:`Представь дружбы как верёвочки между учениками: у каждой два конца. Концов всего ${S} — нечётное число. Но концы верёвочек всегда идут парами — противоречие.`},['Да, может','Нет, не может']);}},'s');
+G(6,()=>{const n=pick([6,8,10,12,14]);const yes=n%4===0;const cnt=[0,0,0,0];for(let i=0;i<n;i++)for(let j=0;j<n;j++)cnt[(i+j)%4]++;
+ return YN(`Можно ли квадрат ${n}×${n} клеток разрезать по линиям сетки на полоски 1×4?`,yes,{
+ hint:yes?'Посмотри на одну строку доски.':`Клеток ${n*n} — делится на 4. Но этого мало: попробуй раскрасить доску в 4 цвета по диагоналям.`,
+ short:yes?`${n} делится на 4 — каждую строку режем на ${n/4} ${plural(n/4,'полоску','полоски','полосок')}.`:`Раскраска в 4 цвета по диагоналям: ${cnt.join(', ')} клеток — не поровну.`,
+ explain:yes?`Можно: в каждой строке ${n} клеток — это ${n/4} ${plural(n/4,'полоска','полоски','полосок')} 1×4. Всего ${n*n/4} полосок.`
+  :`Площадь ${n*n} делится на 4 — кажется, что можно. Но раскрасим клетку в строке i и столбце j цветом (i + j) mod 4 — получатся диагональные полосы четырёх цветов 0, 1, 2, 3, 0, 1, …<br>Любая полоска 1×4 (и горизонтальная, и вертикальная) накрывает по <b>одной клетке каждого цвета</b>. Значит, если разрезать можно, клеток каждого цвета должно быть поровну — по ${n*n/4}.<br>А у нас цветов: ${cnt.map((c,i)=>`цвет ${i} — ${c}`).join(', ')}. Не поровну → <b>нельзя</b>.`,
+ explain2:yes?`Если ${n} делится на 4, разрезание очевидно. Интересно, что при ${n+2}×${n+2} — уже нельзя (раскраска в 4 цвета это доказывает), хотя ${(n+2)**2} тоже делится на 4.`:`Сначала угадай на маленьком примере: квадрат 2×2 (4 клетки) явно нельзя разрезать на полоску 1×4 — она не помещается. С ${n}×${n} то же самое, только доказательство нужно хитрее — через раскраску.`},['Да, можно','Нет, нельзя']);},'s');
+G(6,()=>{let best=99,ex=null;for(let m=1;m<1024;m++){let p=1;let rem=[];for(let i=1;i<=10;i++){if(m>>(i-1)&1)p=p*i;else rem.push(i);}if(p%10===2&&rem.length<best){best=rem.length;ex={rem,p};}}
+ return {type:'num',q:`Из чисел 1, 2, 3, …, 10 нужно вычеркнуть несколько так, чтобы произведение оставшихся оканчивалось цифрой 2. Какое наименьшее количество чисел придётся вычеркнуть?`,ans:best,
+ hint:'Если в произведении остаются 5 и какое-нибудь чётное число — на конце будет 0.',
+ short:`Надо вычеркнуть 5 и 10, но тогда оканчивается на 6; ещё одно — и получится 2. Пример: вычеркнуть ${ex.rem.join(', ')}.`,
+ explain:`<b>Оценка.</b> Если оставить 10, произведение оканчивается на 0. Если оставить 5 и хотя бы одно чётное число — тоже на 0 (5·2 = 10). Значит, 10 вычёркиваем обязательно, и ещё либо 5, либо все чётные числа (но если вычеркнуть все чётные, произведение будет нечётным и на 2 не закончится). Поэтому при двух вычеркнутых это ровно 5 и 10. Но 1·2·3·4·6·7·8·9 = 72576 — оканчивается на 6, а не на 2. Значит, двух вычеркнутых мало.<br><b>Пример</b> на ${best}: вычеркнем ${ex.rem.join(', ')} — произведение оставшихся ${ex.p} оканчивается на 2 ✅.<br>Ответ: <b>${best}</b>.`,
+ explain2:`Следи только за последней цифрой: 72576 оканчивается на 6. Надо убрать число, чтобы «6 превратилось в 2»: например, убрать 3 (6 = 2·3, и 2 остаётся) или 8 (…6 : 8 → оканчивается на 2). Компьютер проверил все 1024 способа вычеркнуть — меньше ${best} не получается.`};},'s');
+
+/* widget: clock */
+function onTheory(root){const w=root.querySelector('#w-clock');if(!w)return;
+  w.innerHTML=`<b>Покрути время — следи за углом</b><label>Часы: <input type="range" id="ch" min="0" max="11" value="3"><output id="cho"></output></label><label>Минуты: <input type="range" id="cm" min="0" max="59" value="15"><output id="cmo"></output></label><div id="cpic" style="display:flex;justify-content:center"></div><div id="cout" class="small" style="text-align:center"></div>`;
+  const hs=w.querySelector('#ch'),ms=w.querySelector('#cm');const u=()=>{const h=+hs.value||12,m=+ms.value;const hh=(h%12)*30+m*0.5,mm=m*6;
+    w.querySelector('#cho').textContent=h;w.querySelector('#cmo').textContent=m;w.querySelector('#cpic').innerHTML=clockSVG(h,m,{w:180});
+    w.querySelector('#cout').innerHTML=`Часовая: ${h%12}·30 + ${m}·0,5 = ${N_(hh)}°, минутная: ${m}·6 = ${mm}°. Угол между ними: <span class="out">${N_(clockAngle(h,m))}°</span>`;};
+  hs.oninput=ms.oninput=u;u();}
+
+gens.forEach(g=>{const m=g.make;g.make=()=>{for(let i=0;i<500;i++){const t=m();if(t)return t;}return null;};});
+
+window.TOPIC={id:'m6_olymp',title:'Олимпиадная математика 6 класса',subtitle:'Математика · 6 класс',
+intro:`<p>Задачи в стиле «Кенгуру», Математического праздника, олимпиады Эйлера и школьного этапа ВсОШ: хитрый счёт, клетчатые фигуры и разрезания, движение и часы, делимость, графы и турниры, «оценка + пример». Каждая задача решается не долгим счётом, а одной красивой идеей — её и учимся замечать.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Разминка: хитрый счёт','Клетчатые фигуры и разрезания','Движение и время','Делимость и цифры','Графы и турниры','Оценка + пример','★ Матпраздник и Эйлер'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

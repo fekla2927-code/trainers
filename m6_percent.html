@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Проценты — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,gcd}=H;
+const N=H.num;
+const NN=x=>N(x).replace(/^(−?)(\d+)/,(m,sg,d)=>sg+(d.length>4?d.replace(/\B(?=(\d{3})+(?!\d))/g,' '):d));
+const r2=x=>Math.round(x*100)/100;
+const isInt=x=>Math.abs(x-Math.round(x))<1e-9;
+const FR=H.frac;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+const SV=(w,h,inner,lab)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${lab||'Рисунок'}" style="font-family:system-ui,sans-serif;max-width:100%">${inner}</svg>`;
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.fs||14}" font-weight="${o.fw||600}" fill="${o.c||'var(--ink)'}">${s}</text>`;};
+const P=x=>N(x)+'%';
+
+/* ---------- pictures ---------- */
+function grid100(k,o){o=o||{};let s='';const c=19;for(let i=0;i<100;i++){const r=Math.floor(i/10),q=i%10;const on=i<k;
+  s+=`<rect x="${2+q*c}" y="${2+r*c}" width="${c-3}" height="${c-3}" rx="3" fill="${on?'var(--hl)':'var(--card)'}" fill-opacity="${on?0.75:1}" stroke="var(--fig)" stroke-opacity=".45" stroke-width="1"/>`;}
+  return SV(2+10*c,2+10*c,s,'Сто клеток');}
+/* percent bar: p% of the whole shaded */
+function pbar(p,partLab,totLab,o){o=o||{};const X0=20,W=280,w=Math.max(2,Math.min(W,W*p/100));let s='';
+  s+=`<rect x="${X0}" y="24" width="${W}" height="32" rx="6" fill="var(--card)" stroke="var(--fig)" stroke-width="1.5"/>`;
+  s+=`<rect x="${X0}" y="24" width="${w}" height="32" rx="6" fill="var(--hl)" fill-opacity=".7"/>`;
+  const pl=o.pLab||P(p);
+  if(w>=pl.length*9+10)s+=T(X0+w/2,45,pl,{fw:700});else s+=T(X0+w+6,45,pl,{a:'start',fw:700});
+  if(p<=72)s+=T(X0+W-6,45,'100%',{a:'end',c:'var(--muted)',fs:13});
+  if(partLab){const hw=partLab.length*4+4;const cx=Math.min(X0+W-hw,Math.max(X0+hw,X0+w/2));
+    s+=`<path d="M${X0},62 v6 H${X0+w} v-6" fill="none" stroke="var(--hl)" stroke-width="2"/>`+T(cx,86,partLab,{c:'var(--accent-ink)',fw:700});}
+  if(totLab){s+=`<path d="M${X0},96 v6 H${X0+W} v-6" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`+T(X0+W/2,120,totLab,{fw:700});}
+  return SV(320,totLab?128:(partLab?94:62),s,'Шкала процентов');}
+/* three columns: before, after step 1, after step 2 */
+function cols3(vals,labs){const mx=Math.max(...vals);let s=`<line x1="10" y1="150" x2="310" y2="150" stroke="var(--fig)"/>`;
+  vals.forEach((v,i)=>{const h=Math.max(2,v/mx*110);const x=30+i*100;s+=`<rect x="${x}" y="${150-h}" width="60" height="${h}" rx="4" fill="${i===0?'var(--accent)':'var(--hl)'}" fill-opacity=".55" stroke="var(--fig)"/>`;
+    s+=T(x+30,150-h-8,NN(r2(v)),{fw:700})+T(x+30,168,labs[i],{fs:12,c:'var(--muted)'});});
+  return SV(320,176,s,'Столбики');}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Процент — это сотая часть',lvl:0,html:`
+<p class="hook">Магазин кричит: «Скидка 50%, а на кассе — ещё 50%!» Значит, кроссовки достанутся бесплатно? Увы, нет — заплатишь четверть цены. А если цену сначала подняли на 20%, а потом снизили на 20%, она вернётся обратно? Тоже нет! Проценты — штука хитрая. Давай разберёмся, чтобы тебя никогда не обманули.</p>
+<div class="box rule"><b>Правило</b><b>Процент</b> — это одна сотая часть: <span class="m">1% = ${FR(1,100)} = 0,01</span>.<br>Всё целое — это <b>100%</b>.</div>
+<p>Возьми квадрат и разрежь его на 100 клеточек. Одна клеточка — 1%. Закрасили 37 клеточек — закрасили 37%.</p>
+<div class="fig">${grid100(37)}</div>
+<div class="box ex"><b>Примеры</b>• Заряд телефона 100% — полный, 50% — половина, 1% — паника 😱<br>• «Сок 100%» — весь напиток состоит из сока.<br>• 200% — это два целых: «выложился на 200%» — сделал вдвое больше обычного.</div>
+<div class="box err"><b>Частая ошибка</b>Думать, что больше 100% не бывает. Бывает! Если цена выросла вдвое, новая цена — 200% от старой.</div>
+<div class="fact">Знак % появился из итальянского сокращения <i>per cento</i> — «на сотню». Писцы сокращали его всё сильнее, пока не осталось колечко, чёрточка и ещё колечко.</div>`},
+{title:'Проценты, дроби и десятичные дроби',lvl:1,html:`
+<div class="box rule"><b>Правило</b><b>Процент → десятичная дробь:</b> раздели на 100 (запятая влево на 2 знака): 35% = 0,35; 7% = 0,07.<br><b>Десятичная дробь → процент:</b> умножь на 100 (запятая вправо на 2 знака): 0,6 = 60%; 1,25 = 125%.</div>
+<p><b>Почему так?</b> «Процент» = «сотая». 35% — это 35 сотых, а 35 сотых и есть 0,35.</p>
+<p><b>Дробь → процент:</b> сделай знаменатель 100 или раздели числитель на знаменатель: ${FR(3,4)} = ${FR(75,100)} = 75%; ${FR(1,8)} = 1 : 8 = 0,125 = 12,5%.</p>
+<div class="box tip"><b>Выучи наизусть — пригодится везде</b>
+50% = ${FR(1,2)}&nbsp;&nbsp; 25% = ${FR(1,4)}&nbsp;&nbsp; 75% = ${FR(3,4)}&nbsp;&nbsp; 20% = ${FR(1,5)}&nbsp;&nbsp; 10% = ${FR(1,10)}&nbsp;&nbsp; 1% = ${FR(1,100)}</div>
+<div class="box err"><b>Частая ошибка</b>0,5 = 5%? Нет! 0,5 = 0,50 = <b>50%</b>. И 0,05 = 5%. Считай знаки после запятой: их должно быть два.</div>`},
+{title:'Как найти процент от числа',lvl:2,html:`
+<div class="box rule"><b>Правило</b>Чтобы найти p% от числа a, переведи проценты в дробь и умножь: <span class="m">a · p : 100</span>.</div>
+<div class="box ex"><b>Пример</b>В классе 30 учеников, 40% из них — девочки. Сколько девочек?<br>1% от 30 — это 30 : 100 = 0,3. Тогда 40% — это 0,3 · 40 = <b>12</b>.<br>Или сразу: 30 · 0,4 = 12.</div>
+<div class="fig">${pbar(40,'девочки: 12','весь класс: 30 человек')}</div>
+<div class="box tip"><b>Быстрые трюки в уме</b>• 10% — раздели на 10: 10% от 350 = 35.<br>• 50% — половина, 25% — четверть, 20% — пятая часть.<br>• 5% — половина от 10%: 5% от 350 = 17,5.<br>• Хитрость: 8% от 25 = 25% от 8 = 2. Числа можно менять местами!</div>
+<div class="box err"><b>Частая ошибка</b>«20% от 80 — это 80 : 20 = 4». Нет! 20% — это пятая часть: 80 : 5 = <b>16</b>. Не дели на число процентов.</div>`},
+{title:'Как найти число по его проценту',lvl:3,html:`
+<div class="box rule"><b>Правило</b>Если p% числа равны b, то всё число: <span class="m">b : p · 100</span>. Сначала найди 1%, потом 100%.</div>
+<div class="box ex"><b>Пример</b>Игра скачалась на 60%, это 36 ГБ. Сколько весит вся игра?<br>1% — это 36 : 60 = 0,6 ГБ. 100% — это 0,6 · 100 = <b>60 ГБ</b>.</div>
+<div class="fig">${pbar(60,'скачано: 36 ГБ','вся игра: ? ГБ')}</div>
+<div class="box tip"><b>Проверка</b>60% от 60 = 60 · 0,6 = 36 ✅. Всегда можно проверить ответ «прямой» задачей.</div>
+<div class="box err"><b>Частая ошибка</b>Перепутать с процентом от числа и посчитать 60% от 36 = 21,6. Но ведь 36 — это <b>часть</b>, а весь файл должен быть <b>больше</b> части! Спроси себя: «ответ — больше или меньше данного числа?»</div>`},
+{title:'Сколько процентов одно число составляет от другого',lvl:4,html:`
+<div class="box rule"><b>Правило</b>Чтобы узнать, сколько процентов a составляет от b, раздели a на b и умножь на 100: <span class="m">a : b · 100%</span>.</div>
+<div class="box ex"><b>Пример</b>Футболист пробил 25 пенальти и забил 18. Какой процент реализации?<br>18 : 25 = 0,72 → <b>72%</b>.</div>
+<div class="fig">${pbar(72,'забил: 18','всего ударов: 25')}</div>
+<div class="box tip"><b>Что на что делить?</b>Делим на то, <b>от чего</b> считаем проценты (на целое, на «всего»). Слова-подсказки: «от», «из», «всего».</div>
+<div class="box err"><b>Частая ошибка</b>Делить наоборот: 25 : 18 · 100 ≈ 139% — забил больше, чем бил? Не бывает. Часть от целого всегда не больше 100%.</div>`},
+{title:'Скидки и наценки',lvl:5,html:`
+<div class="box rule"><b>Правило</b>Увеличить на p% — значит получить <b>(100 + p)%</b> от старого: умножить на <span class="m">1 + p/100</span>.<br>Уменьшить на p% — получить <b>(100 − p)%</b>: умножить на <span class="m">1 − p/100</span>.</div>
+<div class="box ex"><b>Пример</b>Кроссовки стоят 6000 ₽, скидка 15%. Ты платишь 100 − 15 = 85% цены: 6000 · 0,85 = <b>5100 ₽</b>. Экономия: 6000 − 5100 = 900 ₽ (это и есть 15%).</div>
+<p>Поиграй со скидочным калькулятором:</p>
+<div class="widget" id="w-disc"></div>
+<div class="box ex"><b>Обратная задача</b>После скидки 20% куртка стоит 4000 ₽. Какой была цена? 4000 ₽ — это 80% старой цены. 1% — 50 ₽, 100% — <b>5000 ₽</b>. А не 4000 + 20% = 4800!</div>
+<div class="box err"><b>Частая ошибка</b>Ответить размером скидки вместо новой цены: 15% от 6000 = 900 — это <b>сколько сэкономил</b>, а не сколько заплатил.</div>`},
+{title:'Ловушка: проценты от разных чисел',lvl:6,html:`
+<div class="box rule"><b>Правило</b>Каждый процент считается <b>от того числа, которое было в тот момент</b>. Поэтому «+20%, потом −20%» ≠ «ничего не изменилось».</div>
+<div class="box ex"><b>Пример</b>Цена 1000 ₽. Подняли на 20% → 1200 ₽. Потом снизили на 20% — но уже от 1200! 20% от 1200 = 240. Стало <b>960 ₽</b> — меньше, чем было.</div>
+<p>Подвигай ползунок: какой бы процент ни был, после «+p%, −p%» цена становится меньше.</p>
+<div class="widget" id="w-trap"></div>
+<div class="box tip"><b>Как считать цепочки</b>Каждое изменение — множитель. +20% → ×1,2; −20% → ×0,8. Цепочка: 1000 · 1,2 · 0,8 = 960. От перестановки множителей результат не меняется: сначала −20%, потом +20% — тоже 960.</div>
+<div class="box err"><b>Две скидки подряд</b>«Скидка 50% и на кассе ещё 50%» — это 0,5 · 0,5 = 0,25 цены, то есть ты платишь 25%, а не 0%. Общая скидка 75%, а не 100%.</div>`},
+{title:'Проценты в жизни',lvl:7,html:`
+<div class="box rule"><b>Главное</b>В любой задаче на проценты найди: <b>что принято за 100%</b> (целое) и какую часть ищем. Остальное — одно из трёх действий: процент от числа, число по проценту или процентное отношение.</div>
+<div class="box ex"><b>Банковский вклад</b>Положил 5000 ₽ под 8% годовых. Через год банк добавит 8% от 5000 = 400 ₽. Будет 5400 ₽.</div>
+<div class="box ex"><b>Процент от процента</b>40% учеников — девочки, а 25% девочек ходят на танцы. Танцующие девочки — это 25% от 40%: 0,25 · 0,4 = 0,1 = <b>10%</b> класса.</div>
+<div class="box ex"><b>Владение мячом</b>Матч длится 90 мин, у «Зенита» мяч 60% времени — это 54 мин; у соперника 40% — 36 мин.</div>
+<div class="fact">Около 71% поверхности Земли покрыто водой, и почти вся она (около 97%) — солёная вода океанов. Пресной воды на планете всего около 3%, да и та в основном заморожена в ледниках.</div>`},
+{title:'★ Олимпиадные приёмы',lvl:8,html:`
+<p><b>Сложные проценты.</b> Вклад 10 000 ₽ под 10% годовых, проценты прибавляются к вкладу. Через год: 10 000 · 1,1 = 11 000. Через два: 11 000 · 1,1 = <b>12 100</b> (а не 12 000!). Во второй год проценты начисляются и на прошлые проценты.</p>
+<p><b>Задача про арбуз.</b> Арбуз 20 кг, в нём 99% воды. Он подсох, и воды стало 98%. Сколько весит арбуз? «Сухого вещества» было 1% — это 0,2 кг, и оно не изменилось. Теперь оно составляет 2%, значит весь арбуз 0,2 : 2 · 100 = <b>10 кг</b>. Половина арбуза испарилась!</p>
+<p><b>Смеси.</b> Смешали 2 кг 10%-го и 3 кг 20%-го раствора соли. Соли: 0,2 + 0,6 = 0,8 кг на 5 кг раствора → 0,8 : 5 = 16%. Считай не проценты, а <b>килограммы вещества</b>.</p>
+<p><b>«На сколько процентов меньше?»</b> Если A на 25% больше B, то B меньше A не на 25%, а на 20%: B = 100, A = 125, разница 25 — это 20% от 125.</p>
+<div class="box tip"><b>Главный приём</b>Найди то, что <b>не меняется</b> (сухое вещество, соль, исходная цена), и считай через него.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>1% = 0,01. Всё целое = 100%.</li>
+<li>Процент → десятичная: : 100. Десятичная → процент: · 100.</li>
+<li>p% от a: a · p : 100.</li>
+<li>Число, если p% его = b: b : p · 100.</li>
+<li>Сколько % a от b: a : b · 100.</li>
+<li>+p% → · (1 + p/100); −p% → · (1 − p/100). Цепочка — перемножай.</li>
+<li>+p% и −p% не отменяют друг друга: результат меньше исходного.</li></ul>`}
+];
+
+const symbols={tab:'Формулы',title:'Главные формулы',rows:[
+['1%','Один процент','Одна сотая часть.','1% = 0,01 = '+FR(1,100)],
+['100%','Всё целое','То, от чего считаем проценты.','весь класс, вся цена'],
+['p% → p : 100','Процент в дробь','Запятая влево на 2 знака.','35% = 0,35'],
+['a · p : 100','p% от числа a','Умножаем число на дробь процентов.','40% от 30 = 12'],
+['b : p · 100','Число по его проценту','Сначала 1%, потом 100%.','60% — 36 → всё 60'],
+['a : b · 100%','Процентное отношение','Сколько % составляет a от b.','18 из 25 → 72%'],
+['· (1 + p/100)','Увеличение на p%','Новое = (100 + p)% от старого.','+15%: · 1,15'],
+['· (1 − p/100)','Уменьшение на p%','Новое = (100 − p)% от старого.','−20%: · 0,8'],
+['a · q · q','Сложные проценты','Каждый раз умножаем на тот же множитель.','10 000 · 1,1 · 1,1 = 12 100']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Всегда спрашивай: «Что здесь 100%?» И проверяй: часть меньше целого, после скидки цена меньше.</div>`};
+
+function onTheory(root){
+  const d=root.querySelector('#w-disc');
+  if(d){d.innerHTML=`<label>Цена: <output id="wdP">4000</output> ₽<input type="range" id="wdS" min="500" max="20000" step="500" value="4000"></label><label>Скидка: <output id="wdQ">25</output>%<input type="range" id="wdD" min="0" max="90" step="5" value="25"></label><div id="wdO"></div>`;
+    const S=d.querySelector('#wdS'),D=d.querySelector('#wdD');const draw=()=>{const pr=+S.value,q=+D.value;d.querySelector('#wdP').textContent=NN(pr);d.querySelector('#wdQ').textContent=q;
+      const pay=pr*(100-q)/100,save=pr-pay;const w=280*(100-q)/100;let s=`<rect x="20" y="10" width="280" height="34" rx="6" fill="var(--bad)" fill-opacity=".25" stroke="var(--fig)"/><rect x="20" y="10" width="${Math.max(1,w)}" height="34" rx="6" fill="var(--ok)" fill-opacity=".45"/>`;
+      if(w>=70)s+=T(20+w/2,32,'платишь',{fs:13});if(280-w>=70)s+=T(20+w+(280-w)/2,32,'скидка',{fs:13});
+      d.querySelector('#wdO').innerHTML=`<div style="display:flex;justify-content:center">${SV(320,52,s,'Скидка')}</div><div class="small" style="text-align:center">Платишь ${100-q}% цены: ${NN(pr)} · ${N((100-q)/100)} = <span class="out">${NN(r2(pay))} ₽</span>. Экономия: <span class="out">${NN(r2(save))} ₽</span>.</div>`;};
+    S.oninput=draw;D.oninput=draw;draw();}
+  const t=root.querySelector('#w-trap');
+  if(t){t.innerHTML=`<label>p = <output id="wtP">20</output>%<input type="range" id="wtS" min="5" max="90" step="5" value="20"></label><div id="wtO"></div>`;
+    const S=t.querySelector('#wtS');const draw=()=>{const p=+S.value;t.querySelector('#wtP').textContent=p;const a=1000,b=a*(1+p/100),c=b*(1-p/100);
+      t.querySelector('#wtO').innerHTML=`<div style="display:flex;justify-content:center">${cols3([a,b,c],['было',`+${p}%`,`−${p}%`])}</div><div class="small" style="text-align:center">1000 · ${N(1+p/100)} · ${N(1-p/100)} = <span class="out">${NN(r2(c))}</span> — меньше исходного на <span class="out">${N(r2(p*p/100))}%</span>.</div>`;};
+    S.oninput=draw;draw();}
+}
+
+/* =================== GENERATORS =================== */
+/* L0 */
+RULE(0,'Что такое <b>один процент</b>?','Одна сотая часть',['Одна десятая часть','Одна тысячная часть','Просто число 1'],
+{short:'1% = 1/100 = 0,01.',explain:'Слово «процент» происходит от латинского <i>pro centum</i> — «на сотню». <b>1% — это одна сотая</b> часть: 1% = ${FR(1,100)} = 0,01. Одна десятая — это 10%, одна тысячная — 0,1%.'.replace('${FR(1,100)}',FR(1,100)),
+explain2:'Разрежь пиццу на 100 одинаковых кусочков. Один крошечный кусочек — это 1% пиццы. А десятая часть пиццы — 10 кусочков, это 10%.'});
+RULE(0,'Сколько процентов составляет <b>всё целое</b>?','100%',['1%','10%','1000%'],
+{short:'Целое = 100 сотых = 100%.',explain:'Целое состоит из 100 сотых частей, а каждая сотая — 1%. Значит, целое — <b>100%</b>. Весь класс — 100% учеников, полный заряд — 100%.',
+explain2:'Квадрат из 100 клеточек. Закрасил все — закрасил 100 клеточек из 100, то есть 100%.'});
+G(0,()=>{const k=R(3,97);return {type:'num',q:'Какой процент квадрата закрашен? Квадрат разбит на 100 одинаковых клеточек.',pic:grid100(k),ans:k,
+hint:'Посчитай целые закрашенные ряды по 10 клеток и остаток.',short:`${Math.floor(k/10)} рядов по 10 и ещё ${k%10} — всего ${k} из 100 = ${k}%.`,
+explain:`Каждая клетка — одна сотая, то есть 1%. Закрашено ${Math.floor(k/10)} ${plural(Math.floor(k/10),'полный ряд','полных ряда','полных рядов')} по 10 клеток (${Math.floor(k/10)*10}) и ещё ${k%10} ${plural(k%10,'клетка','клетки','клеток')}. Всего ${k} клеток из 100 = <b>${k}%</b>.`,
+explain2:`Можно считать незакрашенные: их ${100-k}. Тогда закрашено 100 − ${100-k} = ${k}%.`};});
+G(0,()=>{const it=pick([['половина',50],['четверть',25],['три четверти',75],['десятая часть',10],['пятая часть',20],['две пятых',40]]);const what=pick(['пиццы','класса','торта','пути']);
+return {type:'num',q:`Сколько процентов составляет <b>${it[0]}</b> ${what}?`,ans:it[1],short:`${it[0]} = ${it[1]} сотых = ${it[1]}%.`,
+explain:`Всё целое — 100%. ${it[0].charAt(0).toUpperCase()+it[0].slice(1)} от 100% — это <b>${it[1]}%</b>.`,
+explain2:`Представь, что вместо ${what} у тебя 100 конфет. ${it[0].charAt(0).toUpperCase()+it[0].slice(1)} от 100 конфет — ${it[1]} конфет, то есть ${it[1]} из 100 = ${it[1]}%.`,pic:grid100(it[1])};});
+
+/* L1 */
+RULE(1,'Как записать p% <b>десятичной дробью</b>?','Разделить p на 100 (запятая влево на 2 знака)',['Разделить p на 10','Умножить p на 100','Просто написать «0,» перед числом p'],
+{short:'p% = p : 100. Например, 7% = 0,07.',explain:'Процент — это сотая часть, поэтому p% = p : 100: запятую переносим на <b>два</b> знака влево. 35% = 0,35; 7% = 0,07; 120% = 1,2. «Написать 0, перед числом» работает не всегда: 7% ≠ 0,7!',
+explain2:'Проверь на известном: 50% — это половина, 0,5. И правда: 50 : 100 = 0,5. А 50 : 10 = 5 — это пять целых, не половина.'});
+G(1,()=>{const p=pick([3,7,8,12,25,35,40,60,95,120,150,2.5,12.5]);return {type:'num',q:`Запиши ${P(p)} десятичной дробью.`,ans:p/100,
+short:`${P(p)} = ${N(p)} : 100 = ${N(p/100)}.`,explain:`Процент — сотая часть, поэтому делим на 100 (запятая на 2 знака влево): ${N(p)} : 100 = <b>${N(p/100)}</b>.${p<10?`<br>Ловушка: ${N(p)}% ≠ ${N(p/10)}. Вот ${N(p*10)}% = ${N(p/10)}.`:''}`,
+explain2:`Проверь в обратную сторону: ${N(p/100)} · 100 = ${N(p)} → ${P(p)} ✅.`};});
+G(1,()=>{const d=pick([0.5,0.05,0.07,0.35,0.8,0.125,1.2,1.5,0.009,0.6,0.03]);const p=Math.round(d*100*1e6)/1e6;return {type:'num',q:`Запиши число ${N(d)} в процентах. В ответ впиши только число (без знака %).`,ans:p,
+short:`${N(d)} · 100 = ${N(p)}%.`,explain:`Чтобы перевести число в проценты, умножаем на 100 (запятая на 2 знака вправо): ${N(d)} · 100 = <b>${N(p)}%</b>.`,
+explain2:`${N(d)} — это ${N(p)} сотых (${FR(N(p),100)}). А сотая — это процент. Значит, ${N(p)}%.`};});
+G(1,()=>{const f=pick([[1,2],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,10],[3,10],[7,10],[1,20],[3,20],[1,25],[7,25],[1,50],[9,50],[1,8],[3,8]]);const p=f[0]/f[1]*100;
+return CH(`Сколько процентов составляет дробь ${FR(f[0],f[1])}?`,P(p),[P(Number(String(f[0])+String(f[1]))),P(p/10),P(r2(f[1]/f[0]))].map(x=>x),
+{short:`${f[0]} : ${f[1]} = ${N(p/100)} = ${P(p)}.`,explain:`Делим числитель на знаменатель: ${f[0]} : ${f[1]} = ${N(p/100)}. Переводим в проценты (· 100): <b>${P(p)}</b>.${100%f[1]===0?`<br>Или: домножим до знаменателя 100: ${FR(f[0],f[1])} = ${FR(f[0]*100/f[1],100)} = ${P(p)}.`:''}`,
+explain2:`Представь 100 конфет. ${FR(f[0],f[1])} от них — это 100 : ${f[1]} · ${f[0]} = ${N(p)} конфет, то есть ${P(p)}. Записать цифры дроби подряд («${f[0]}${f[1]}%») — частая, но бессмысленная ошибка.`});});
+
+/* L2 */
+RULE(2,'Как найти <b>p% от числа a</b>?','a · p : 100',['a : p · 100','a : p','a · p'],
+{short:'Процент → дробь (p : 100), потом умножаем на число.',explain:'p% — это ${FR("p",100)}. Чтобы найти дробь от числа, умножаем: a · p : 100. Пример: 40% от 30 = 30 · 40 : 100 = 12. Ошибка «a : p»: 20% от 80 ≠ 80 : 20 = 4 (правильно 16).'.replace('${FR("p",100)}',FR('p',100)),
+explain2:'Сначала найди 1% (раздели на 100), потом возьми его p раз (умножь на p). 1% от 30 = 0,3; 40% = 0,3 · 40 = 12.'});
+G(2,()=>{const p=pick([5,10,15,20,25,30,40,50,60,75,80,12,35]);const a=pick([20,40,60,80,120,150,200,240,300,360,400,500,640,800]);const ans=a*p/100;if(!isInt(ans*10))return null;
+return {type:'num',q:`Найди ${P(p)} от числа ${a}.`,ans,pic:pbar(p,'?',`${a} — это 100%`),short:`${a} · ${N(p/100)} = ${N(ans)}.`,
+explain:`${P(p)} = ${N(p/100)}. Умножаем: ${a} · ${N(p/100)} = <b>${N(ans)}</b>.<br>Или по шагам: 1% от ${a} = ${N(a/100)}, а ${P(p)} = ${N(a/100)} · ${p} = ${N(ans)}.${a%p===0?`<br>Ловушка: ${a} : ${p} = ${a/p} — это не ${p}%, так делить нельзя.`:''}`,
+explain2:`Трюк: ${p===50?'50% — это половина':p===25?'25% — это четверть':p===10?'10% — раздели на 10':p===20?'20% — это пятая часть':p===75?'75% — три четверти':`10% от ${a} — это ${N(a/10)}; ${p}% — это ${N(p/10)} раз по ${N(a/10)}`}: ${N(ans)}.`};});
+G(2,()=>{const tot=pick([20,24,25,28,30,32]);const p=pick([10,20,25,40,50,60,75]);const ans=tot*p/100;if(!isInt(ans))return null;const who=pick([['девочки','девочек'],['отличники','отличников'],['ходят на футбол','ходит на футбол'],['левши','левшей']]);
+return {type:'num',q:`В классе ${tot} ${plural(tot,'ученик','ученика','учеников')}, ${P(p)} из них — ${who[0]}. Сколько это человек?`,ans,pic:pbar(p,'? чел.',`весь класс: ${tot}`),
+short:`${tot} · ${N(p/100)} = ${ans}.`,explain:`Весь класс (${tot}) — это 100%. Нужно ${P(p)} от ${tot}: ${tot} · ${p} : 100 = ${tot*p} : 100 = <b>${ans}</b>.`,
+explain2:`1% класса — ${N(tot/100)} человека (дробное, но это не страшно). ${p}% — это ${N(tot/100)} · ${p} = ${ans} человек.`};});
+G(2,()=>{const it=pick([['Игра весит','ГБ','скачалось'],['Видео длится','мин','просмотрено'],['Книга —','страниц','прочитано'],['Путь до бабушки —','км','проехали']]);const a=pick([40,50,60,80,120,150,200,250,300]);const p=pick([10,15,20,25,30,40,45,60,70,75,80,90]);const ans=a*p/100;if(!isInt(ans*10))return null;
+return {type:'num',q:`${it[0]} ${a} ${it[1]}. ${it[2].charAt(0).toUpperCase()+it[2].slice(1)} ${P(p)}. Сколько это ${it[1]}?`,ans,short:`${a} · ${N(p/100)} = ${N(ans)} ${it[1]}.`,
+explain:`Всё (${a} ${it[1]}) — это 100%. ${P(p)} от ${a}: ${a} · ${p} : 100 = <b>${N(ans)}</b> ${it[1]}.`,
+explain2:`10% от ${a} = ${N(a/10)}. ${P(p)} — это ${N(p/10)} раз по ${N(a/10)}: ${N(ans)}.`,pic:pbar(p,`${it[2]}: ?`,`всего: ${a} ${it[1]}`)};});
+
+/* L3 */
+RULE(3,'Если p% числа равны b, как найти <b>всё число</b>?','b : p · 100',['b · p : 100','b · p','b − p'],
+{short:'Сначала 1% (b : p), потом 100% (· 100).',explain:'b — это p%. Тогда 1% — это b : p, а всё число (100%) — это b : p · 100. Пример: 60% — это 36, значит 1% = 0,6, а 100% = 60. Формула «b · p : 100» — это процент от числа, совсем другая задача.',
+explain2:'Проверь здравым смыслом: если часть (меньше 100%) равна b, то целое должно быть <b>больше</b> b. b · p : 100 при p < 100 даёт число меньше b — значит, это не то.'});
+G(3,()=>{const p=pick([5,10,15,20,25,30,40,60,75,80]);const x=pick([40,60,80,100,120,200,240,300,400,500]);const b=x*p/100;if(!isInt(b))return null;
+return {type:'num',q:`${P(p)} числа равны ${b}. Найди это число.`,ans:x,pic:pbar(p,String(b),'всё число: ?'),short:`${b} : ${p} · 100 = ${x}.`,
+explain:`${b} — это ${P(p)} числа.<br>1% числа: ${b} : ${p} = ${N(b/p)}.<br>100%: ${N(b/p)} · 100 = <b>${x}</b>.<br>Проверка: ${P(p)} от ${x} = ${b} ✅`,
+explain2:`Можно через дробь: ${P(p)} = ${N(p/100)}. Число · ${N(p/100)} = ${b}, значит число = ${b} : ${N(p/100)} = ${x}.`};});
+G(3,()=>{const p=pick([10,15,20,25,30,40,45,60]);const x=pick([120,160,180,200,240,300,320,360,400]);const b=x*p/100;if(!isInt(b))return null;
+return {type:'num',q:`Маша прочитала ${b} ${plural(b,'страницу','страницы','страниц')} — это ${P(p)} книги. Сколько страниц во всей книге?`,ans:x,pic:pbar(p,`${b} стр.`,'вся книга: ?'),
+short:`1% — ${N(b/p)} стр.; 100% — ${x} стр.`,explain:`${b} страниц — это ${P(p)}. 1% книги — ${b} : ${p} = ${N(b/p)} стр. Вся книга (100%): ${N(b/p)} · 100 = <b>${x}</b>.`,
+explain2:`Ответ должен быть <b>больше</b> ${b} (прочитана только часть). Если получилось ${N(b*p/100)} — это ${P(p)} от ${b}, а нужна обратная задача.`};});
+G(3,()=>{const p=pick([20,25,40,50,60,75,80]);const x=pick([40,60,80,120,200,240]);const b=x*p/100;if(!isInt(b))return null;
+return {type:'num',q:`Полоска загрузки показывает ${P(p)}, скачано ${b} МБ. Сколько мегабайт весит весь файл?`,pic:pbar(p,`${b} МБ`,'весь файл: ? МБ'),ans:x,
+short:`${b} : ${N(p/100)} = ${x} МБ.`,explain:`${b} МБ — это ${P(p)}. 1% = ${b} : ${p} = ${N(b/p)} МБ; 100% = ${N(b/p)} · 100 = <b>${x} МБ</b>.`,
+explain2:`${p===50?`50% — половина. Весь файл вдвое больше: ${b} · 2 = ${x}.`:p===25?`25% — четверть. Весь файл в 4 раза больше: ${b} · 4 = ${x}.`:p===20?`20% — пятая часть. Весь файл: ${b} · 5 = ${x}.`:`Посмотри на полоску: закрашено ${p} частей из 100. Если ${p} частей — ${b} МБ, то одна часть — ${N(b/p)}, а 100 частей — ${x}.`}`};});
+
+/* L4 */
+RULE(4,'Как узнать, сколько процентов число a составляет от числа b?','a : b · 100%',['b : a · 100%','a · b : 100','a − b'],
+{short:'Делим часть на целое и умножаем на 100.',explain:'Чтобы узнать, какую часть a составляет от b, делим <b>a на b</b> (на то, от чего считаем). Потом переводим в проценты: · 100. Пример: 18 из 25 → 18 : 25 = 0,72 = 72%.',
+explain2:'Слово «от» показывает, на что делить. «Сколько % составляет 18 <b>от</b> 25» — делим на 25. Если поделить наоборот, получится больше 100% — часть больше целого, так не бывает.'});
+G(4,()=>{const tot=pick([20,25,40,50]);const k=R(1,tot-1);const p=k/tot*100;const who=pick([['Футболист пробил','ударов','забил'],['На контрольной было','заданий','Артём решил верно'],['В тесте было','вопросов','Павел ответил правильно на'],['В игре было','уровней','пройдено']]);
+return {type:'num',q:`${who[0]} ${tot} ${who[1]}, ${who[2]} ${k}. Сколько это процентов?`,ans:p,pic:pbar(p,String(k),`всего: ${tot}`,{pLab:'?%'}),
+short:`${k} : ${tot} = ${N(k/tot)} = ${P(p)}.`,explain:`Всего ${tot} — это 100%. Делим часть на целое: ${k} : ${tot} = ${N(k/tot)}. В процентах: ${N(k/tot)} · 100 = <b>${P(p)}</b>.`,
+explain2:`Сделаем знаменатель 100: ${FR(k,tot)} = ${FR(k*100/tot,100)} (умножили на ${100/tot}). ${N(p)} сотых = ${P(p)}.`};});
+G(4,()=>{const b=pick([40,60,80,120,150,200,250,300,400,500,600]);const p=pick([5,10,15,20,25,30,40,60,75,80,120,150]);const a=b*p/100;if(!isInt(a))return null;
+return {type:'num',q:`Сколько процентов составляет число ${a} от числа ${b}?`,ans:p,short:`${a} : ${b} · 100 = ${P(p)}.`,
+explain:`Делим ${a} на ${b} (на то, <b>от чего</b>): ${a} : ${b} = ${N(a/b)}. В проценты: · 100 = <b>${P(p)}</b>.${p>100?' Больше 100% — потому что ' +a+' больше '+b+'.':''}`,
+explain2:`Проверка: ${P(p)} от ${b} = ${b} · ${N(p/100)} = ${a} ✅. ${p<=100?`А если поделить наоборот: ${b} : ${a} · 100 = ${N(r2(b/a*100))}% — больше 100%, хотя ${a} меньше ${b}. Значит, это неверно.`:''}`};});
+G(4,()=>{const m=pick([3,6,9,12,15,30,45,24,18]);const p=m/60*100;
+return {type:'num',q:`Сколько процентов часа составляют ${m} минут?`,ans:p,short:`1 ч = 60 мин; ${m} : 60 = ${N(m/60)} = ${P(p)}.`,
+explain:`Сначала одинаковые единицы: 1 час = 60 минут (это 100%). ${m} : 60 = ${N(m/60)}. В процентах: <b>${P(p)}</b>.<br>Ловушка: ${m} : 100 = ${N(m/100)} → ${m}% — так было бы, если бы в часе было 100 минут.`,
+explain2:`1% часа — это 60 : 100 = 0,6 мин. ${m} мин : 0,6 = ${N(p)} — столько процентов.`};});
+
+/* L5 */
+RULE(5,'Цену <b>увеличили на p%</b>. Сколько процентов от старой цены составляет новая?','(100 + p)%',['p%','(100 − p)%','100%'],
+{short:'Была 100%, добавили p% → стала (100 + p)%.',explain:'Старая цена — 100%. Добавили p% — стало <b>(100 + p)%</b>. Например, +15% → новая цена 115% от старой, т.е. старая · 1,15. p% — это только размер прибавки.',
+explain2:'Цена 200 ₽, +10%. Прибавка: 20 ₽. Новая: 220 ₽. 220 от 200 — это 110% = 100% + 10%.'});
+RULE(5,'Товар стоил a рублей, на него сделали <b>скидку 20%</b>. Новая цена — это…','a · 0,8',['a · 0,2','a − 20','a : 0,8'],
+{short:'Платишь 100% − 20% = 80% цены, то есть a · 0,8.',explain:'Скидка 20% — значит, ты платишь <b>80%</b> старой цены: a · 0,8. a · 0,2 — это размер скидки (сколько сэкономил). a − 20 — вычли 20 рублей вместо 20 процентов.',
+explain2:'Пример: a = 1000 ₽. 20% от 1000 = 200 ₽ скидки. Платишь 1000 − 200 = 800 = 1000 · 0,8 ✅.'});
+G(5,()=>{const pr=pick([800,1200,1500,2000,2400,3000,4500,5000,6000,8000]);const p=pick([5,10,15,20,25,30,40,50]);const ans=pr*(100-p)/100;
+return {type:'num',q:`Кроссовки стоили ${NN(pr)} ₽. На них скидка ${P(p)}. Сколько рублей они стоят теперь?`,ans,pic:pbar(100-p,`платишь: ? ₽`,`старая цена ${NN(pr)} ₽`,{pLab:`${100-p}%`}),
+short:`${NN(pr)} · ${N((100-p)/100)} = ${NN(ans)} ₽.`,explain:`Скидка ${p}% — значит, платишь 100 − ${p} = ${100-p}% цены.<br>${NN(pr)} · ${N((100-p)/100)} = <b>${NN(ans)} ₽</b>.<br>Если ты написал ${NN(pr*p/100)} — это размер скидки, а не новая цена.`,
+explain2:`В два шага: скидка = ${p}% от ${NN(pr)} = ${NN(pr*p/100)} ₽. Новая цена: ${NN(pr)} − ${NN(pr*p/100)} = ${NN(ans)} ₽.`};});
+G(5,()=>{const pr=pick([200,400,500,600,800,1000,1200,1500,2000]);const p=pick([5,10,15,20,25,30,50]);const ans=pr*(100+p)/100;const it=pick(['Билет в аквапарк','Подписка на музыку на год','Набор LEGO','Абонемент в бассейн']);
+return {type:'num',q:`${it} стоил ${NN(pr)} ₽, цена выросла на ${P(p)}. Сколько рублей стоит теперь?`,ans,short:`${NN(pr)} · ${N(1+p/100)} = ${NN(ans)} ₽.`,
+explain:`Было 100%, стало 100 + ${p} = ${100+p}%. ${NN(pr)} · ${N((100+p)/100)} = <b>${NN(ans)} ₽</b>.`,
+explain2:`Прибавка: ${p}% от ${NN(pr)} = ${NN(pr*p/100)} ₽. Новая цена: ${NN(pr)} + ${NN(pr*p/100)} = ${NN(ans)} ₽.`};});
+G(5,()=>{const a=pick([200,250,400,500,800,1000,1200,1600,2000]);const p=pick([5,10,15,20,25,30,40,60]);const b=a*(100-p)/100;const up=Math.random()<0.4;const A=up?b:a,B=up?a:b;const pp=up?r2((a-b)/b*100):p;if(up&&!isInt(pp*10))return null;
+return {type:'num',q:`Цена ${up?'выросла':'снизилась'} с ${NN(A)} ₽ до ${NN(B)} ₽. На сколько процентов ${up?'выросла':'снизилась'} цена?`,ans:pp,
+short:`Изменение ${NN(Math.abs(A-B))} ₽; ${NN(Math.abs(A-B))} : ${NN(A)} · 100 = ${P(pp)}.`,
+explain:`1) На сколько рублей изменилась: ${NN(Math.abs(A-B))} ₽.<br>2) Проценты считаем <b>от старой цены</b> (${NN(A)} ₽ — это 100%): ${NN(Math.abs(A-B))} : ${NN(A)} · 100 = <b>${P(pp)}</b>.${up?`<br>Ловушка: если делить на новую цену, получится ${P(p)} — но «на сколько выросла» считают от того, что было.`:''}`,
+explain2:`По-другому: ${NN(B)} : ${NN(A)} = ${N(r2(B/A*10000)/10000)}, это ${P(r2(B/A*100))} от старой. ${up?`Больше на ${P(pp)}.`:`Меньше на 100 − ${N(r2(B/A*100))} = ${P(pp)}.`}`};});
+G(5,()=>{const p=pick([10,20,25,30,40,50]);const old=pick([1000,1200,2000,2500,3000,4000,5000,6000]);const nw=old*(100-p)/100;if(!isInt(nw))return null;
+return {type:'num',q:`После скидки ${P(p)} куртка стоит ${NN(nw)} ₽. Сколько рублей она стоила до скидки?`,ans:old,pic:pbar(100-p,`${NN(nw)} ₽`,'старая цена: ?',{pLab:`${100-p}%`}),
+short:`${NN(nw)} ₽ — это ${100-p}%; ${NN(nw)} : ${100-p} · 100 = ${NN(old)} ₽.`,
+explain:`Старая цена — 100%. После скидки осталось ${100-p}%, и это ${NN(nw)} ₽.<br>1% = ${NN(nw)} : ${100-p} = ${N(r2(nw/(100-p)))} ₽; 100% = <b>${NN(old)} ₽</b>.<br>Ловушка: ${NN(nw)} + ${p}% = ${NN(r2(nw*(1+p/100)))} — неверно, ведь ${p}% надо брать от <b>старой</b> цены, а не от новой.`,
+explain2:`Проверка: скидка ${p}% от ${NN(old)} = ${NN(old*p/100)}; ${NN(old)} − ${NN(old*p/100)} = ${NN(nw)} ✅.`};});
+
+/* L6 */
+G(6,()=>{const p=pick([10,20,25,30,50]);const up=Math.random()<0.5;const opts=['Стала меньше исходной','Вернулась к исходной','Стала больше исходной'];
+return {type:'choice',q:`Цену ${up?`сначала подняли на ${p}%, а потом снизили на ${p}%`:`сначала снизили на ${p}%, а потом подняли на ${p}%`}. Что стало с ценой?`,opts,ans:0,
+short:`1000 · ${N(1+p/100)} · ${N(1-p/100)} = ${N(1000*(1+p/100)*(1-p/100))} < 1000.`,
+explain:`Проценты считаются <b>от разных чисел</b>. Пусть цена 1000 ₽.<br>${up?`+${p}% → ${N(1000*(1+p/100))}; −${p}% уже от ${N(1000*(1+p/100))}: это ${N(10*(1+p/100)*p)} ₽ → ${N(1000*(1+p/100)*(1-p/100))}.`:`−${p}% → ${N(1000*(1-p/100))}; +${p}% уже от ${N(1000*(1-p/100))}: это ${N(10*(1-p/100)*p)} ₽ → ${N(1000*(1+p/100)*(1-p/100))}.`}<br>Итог <b>меньше</b> исходного на ${N(p*p/100)}%.`,
+explain2:`Множители: ${N(1+p/100)} · ${N(1-p/100)} = ${N((1+p/100)*(1-p/100))} — меньше 1. Порядок неважен: результат тот же. Снижение «бьёт» по большему числу, а повышение — по меньшему.`};},{rule:true});
+G(6,()=>{const pr=pick([500,1000,2000,4000,5000,10000]);const p=pick([10,20,25,30,40,50]);const up=Math.random()<0.5;const ans=pr*(1+p/100)*(1-p/100);
+return {type:'num',q:`Игровая приставка стоила ${NN(pr)} ₽. ${up?`Цену подняли на ${p}%, а через месяц снизили на ${p}%.`:`Цену снизили на ${p}%, а через месяц подняли на ${p}%.`} Сколько рублей стоит приставка теперь?`,ans,
+pic:cols3(up?[pr,pr*(1+p/100),ans]:[pr,pr*(1-p/100),ans],['было',up?`+${p}%`:`−${p}%`,up?`−${p}%`:`+${p}%`]),
+short:`${NN(pr)} · ${N(1+p/100)} · ${N(1-p/100)} = ${NN(r2(ans))} ₽.`,
+explain:`Шаг 1: ${up?`+${p}%: ${NN(pr)} · ${N(1+p/100)} = ${NN(pr*(1+p/100))}`:`−${p}%: ${NN(pr)} · ${N(1-p/100)} = ${NN(pr*(1-p/100))}`}.<br>Шаг 2: ${up?`−${p}% от новой цены: ${NN(pr*(1+p/100))} · ${N(1-p/100)}`:`+${p}% от новой цены: ${NN(pr*(1-p/100))} · ${N(1+p/100)}`} = <b>${NN(r2(ans))} ₽</b>.<br>Ответ ${NN(pr)} — ловушка: проценты брались от разных чисел.`,
+explain2:`Вторые ${p}% считались от ${up?'большей':'меньшей'} цены, поэтому ${up?'вычли больше, чем прибавили':'прибавили меньше, чем вычли'}. Итог: на ${N(p*p/100)}% меньше исходной: ${NN(pr)} − ${N(p*p/100)}% = ${NN(r2(ans))}.`};});
+G(6,()=>{const p=pick([10,20,25,30,50]),q=pick([10,20,25,40,50]);const pr=pick([1000,2000,5000]);const ans=pr*(1+p/100)*(1+q/100);
+return {type:'num',q:`Кот Барсик весил ${NN(pr)} г. За лето его масса выросла на ${p}%, а за осень — ещё на ${q}%. Сколько граммов весит Барсик?`,ans,
+short:`${NN(pr)} · ${N(1+p/100)} · ${N(1+q/100)} = ${NN(r2(ans))} г.`,
+explain:`Летом: ${NN(pr)} · ${N(1+p/100)} = ${NN(pr*(1+p/100))} г.<br>Осенью +${q}% уже от ${NN(pr*(1+p/100))}: ${NN(pr*(1+p/100))} · ${N(1+q/100)} = <b>${NN(r2(ans))} г</b>.<br>Ловушка: +${p+q}% сразу дало бы ${NN(pr*(1+(p+q)/100))} — меньше, потому что второй рост считается от уже выросшей массы.`,
+explain2:`Множители перемножаются: ${N(1+p/100)} · ${N(1+q/100)} = ${N((1+p/100)*(1+q/100))}. Значит, общий рост — ${N(r2(((1+p/100)*(1+q/100)-1)*100))}%, а не ${p+q}%.`};});
+G(6,()=>{const p=pick([10,15,20,25]);const pr=pick([2000,4000,5000,8000,10000]);const one=pr*(1-2*p/100),two=pr*(1-p/100)*(1-p/100);
+const c=`Одна скидка ${2*p}%`;return CH(`Смартфон стоит ${NN(pr)} ₽. Что выгоднее для покупателя: одна скидка ${2*p}% или две скидки по ${p}% подряд (вторая — от уже сниженной цены)?`,c,[`Две скидки по ${p}%`,'Одинаково'],
+{short:`${NN(one)} ₽ против ${NN(r2(two))} ₽ — одна скидка ${2*p}% выгоднее.`,
+explain:`Одна скидка ${2*p}%: ${NN(pr)} · ${N(1-2*p/100)} = <b>${NN(one)} ₽</b>.<br>Две по ${p}%: ${NN(pr)} · ${N(1-p/100)} = ${NN(pr*(1-p/100))}, затем · ${N(1-p/100)} = <b>${NN(r2(two))} ₽</b>.<br>Вторая скидка считается от меньшей цены, поэтому она меньше в рублях. Одна большая скидка выгоднее на ${NN(r2(two-one))} ₽.`,
+explain2:`Множители: ${N(1-2*p/100)} и ${N(1-p/100)} · ${N(1-p/100)} = ${N((1-p/100)*(1-p/100))}. Меньший множитель — меньше платишь: ${N(1-2*p/100)} < ${N((1-p/100)*(1-p/100))}.`});});
+
+/* L7 */
+RULE(7,'В задаче «Положил 5000 ₽ под 8% годовых» — что принимается за 100%?','5000 ₽ (сумма вклада)',['8 ₽','100 ₽','Сумма через год'],
+{short:'100% — то, от чего считаем проценты: сам вклад.',explain:'Проценты банк начисляет <b>от вклада</b>. Значит, 5000 ₽ — это 100%, а 8% от 5000 = 400 ₽ — доход за год. Найти, что принято за 100%, — первый шаг любой задачи на проценты.',
+explain2:'Спроси себя: «8% от чего?» — от вклада. «От чего» и есть 100%.'});
+G(7,()=>{const s=pick([3000,5000,8000,10000,12000,20000,50000]);const p=pick([4,5,6,8,10,12,15]);const ans=s*(100+p)/100;
+return {type:'num',q:`Павел положил в банк ${NN(s)} ₽ под ${p}% годовых. Сколько рублей будет на счёте через год?`,ans,short:`${NN(s)} + ${p}% = ${NN(s)} · ${N(1+p/100)} = ${NN(ans)} ₽.`,
+explain:`Доход за год: ${p}% от ${NN(s)} = ${NN(s)} · ${N(p/100)} = ${NN(s*p/100)} ₽.<br>На счёте: ${NN(s)} + ${NN(s*p/100)} = <b>${NN(ans)} ₽</b>.`,
+explain2:`Сразу множителем: было 100%, станет ${100+p}%: ${NN(s)} · ${N((100+p)/100)} = ${NN(ans)} ₽. Если ответил ${NN(s*p/100)} — это только доход, без самого вклада.`};});
+G(7,()=>{const a=pick([40,50,60,80]),b=pick([10,20,25,30,40,50]);const ans=a*b/100;if(!isInt(ans*10))return null;
+return {type:'num',q:`В школе ${P(a)} учеников — девочки, а ${P(b)} девочек занимаются танцами. Сколько процентов всех учеников школы — девочки-танцовщицы?`,ans,
+short:`${P(b)} от ${P(a)}: ${N(b/100)} · ${N(a/100)} = ${N(ans/100)} = ${P(ans)}.`,
+explain:`Танцовщицы — это ${P(b)} <b>от девочек</b>, а девочки — ${P(a)} от всех.<br>Значит, танцовщицы — ${P(b)} от ${P(a)} всех: ${N(b/100)} · ${a}% = <b>${P(ans)}</b>.<br>Ловушка: ${P(a+b)} или ${P(b)} — не годятся: ${P(b)} считались от девочек, а не от всей школы.`,
+explain2:`Возьми школу из 1000 учеников. Девочек: ${P(a)} = ${10*a}. Танцовщиц: ${P(b)} от ${10*a} = ${N(10*a*b/100)}. Это ${N(10*a*b/100)} из 1000 = ${P(ans)}.`};});
+G(7,()=>{const p=pick([52,55,58,60,62,65,70]);const ans=90*(100-p)/100;const tm=pick(['«Зенит»','«Спартак»','«Барселона»','«Реал»']);
+return {type:'num',q:`Матч длился 90 минут. ${tm} владел мячом ${P(p)} времени. Сколько минут мяч был у соперника? (Время, когда мяч вне игры, не учитываем.)`,ans,
+short:`Соперник: 100 − ${p} = ${100-p}%; 90 · ${N((100-p)/100)} = ${N(ans)} мин.`,
+explain:`Всё время матча (90 мин) — 100%. У соперника 100 − ${p} = ${100-p}%.<br>${100-p}% от 90 = 90 · ${N((100-p)/100)} = <b>${N(ans)} мин</b>.`,
+explain2:`Можно сначала найти время ${tm}: 90 · ${N(p/100)} = ${N(90*p/100)} мин. Соперник: 90 − ${N(90*p/100)} = ${N(ans)} мин.`};});
+
+/* L8 — ★ */
+RULE(8,'Что такое <b>сложные проценты</b> (как во вкладе с капитализацией)?','Проценты каждый раз начисляются на новую сумму — вместе с уже начисленными процентами',['Проценты больше 100%','Проценты, которые трудно посчитать','Проценты каждый раз начисляются только на первоначальную сумму'],
+{short:'Каждый год сумма умножается на один и тот же множитель: S · q · q · …',explain:'При сложных процентах процент начисляется на <b>текущую</b> сумму — с прошлыми процентами. Поэтому каждый год сумма умножается на (1 + p/100). 1000 под 10%: 1100, потом 1210 (а не 1200).',
+explain2:'Это как снежный ком: катится и налипает снег уже на большой ком. Проценты приносят свои проценты.'});
+G(8,()=>{const s=pick([1000,2000,5000,10000,20000,40000]);const p=pick([10,20,5,50]);const n=p===5?2:pick([2,3]);let v=s;for(let i=0;i<n;i++)v=v*(1+p/100);v=Math.round(v*1e6)/1e6;if(!isInt(v*100))return null;
+let steps=[];let w=s;for(let i=1;i<=n;i++){const nw=w*(1+p/100);steps.push(`${i}-й год: ${NN(r2(w))} · ${N(1+p/100)} = ${NN(r2(nw))}`);w=nw;}
+return {type:'num',q:`Вклад ${NN(s)} ₽ под ${p}% годовых, проценты каждый год прибавляются к вкладу. Сколько рублей будет через ${n} ${plural(n,'год','года','лет')}?`,ans:v,
+short:`${NN(s)} · ${N(1+p/100)}${n===3?' · '+N(1+p/100):''} · ${N(1+p/100)} = ${NN(r2(v))}.`,
+explain:`Каждый год сумма умножается на ${N(1+p/100)} (было 100%, стало ${100+p}%):<br>${steps.join('<br>')}.<br>Ответ: <b>${NN(r2(v))} ₽</b>.<br>Ловушка: ${NN(s)} + ${n} · ${p}% = ${NN(s*(1+n*p/100))} — так было бы, если бы проценты считались всегда от ${NN(s)}.`,
+explain2:`Проценты «на проценты»: в первый год доход ${NN(s*p/100)}, а в следующем уже больше — ведь сумма выросла. Поэтому итог больше, чем ${NN(s*(1+n*p/100))}.`};},{star:true});
+G(8,()=>{const p=pick([10,20,30,40,50]);const ans=p*p/100;
+return {type:'num',q:`Цену товара подняли на ${p}%, а затем снизили на ${p}%. На сколько процентов новая цена меньше первоначальной?`,ans,
+short:`${N(1+p/100)} · ${N(1-p/100)} = ${N(1-ans/100)} → меньше на ${P(ans)}.`,
+explain:`Пусть цена 100. После +${p}%: ${100+p}. После −${p}%: ${100+p} · ${N(1-p/100)} = ${N((100+p)*(1-p/100))}.<br>Стало ${N(100-ans)} вместо 100 — меньше на <b>${P(ans)}</b>.`,
+explain2:`Общая формула: (1 + x)(1 − x) = 1 − x·x. Здесь x = ${N(p/100)}, x·x = ${N(ans/100)} = ${P(ans)}.`};},{star:true});
+G(8,()=>{const c=pick([[99,98,2],[99,96,4],[99,95,5],[98,96,2],[95,90,2],[99,90,10],[98,95,2.5]]);const M=pick([10,20,30,40,50,100]);const dry=M*(100-c[0])/100;const ans=dry*100/(100-c[1]);if(!isInt(ans*10))return null;
+return {type:'num',q:`Арбуз массой ${M} кг содержал ${c[0]}% воды. Он полежал на солнце, и вода стала составлять ${c[1]}%. Сколько килограммов теперь весит арбуз?`,ans,
+hint:'Что не испаряется? Найди массу «сухого вещества».',short:`Сухое вещество ${N(dry)} кг — теперь это ${100-c[1]}%; ${N(dry)} : ${100-c[1]} · 100 = ${N(ans)} кг.`,
+explain:`Испаряется только вода. «Сухое вещество» не меняется.<br>1) Было сухого: ${100-c[0]}% от ${M} = ${N(dry)} кг.<br>2) Теперь сухое — это 100 − ${c[1]} = ${100-c[1]}% арбуза.<br>3) Весь арбуз: ${N(dry)} : ${100-c[1]} · 100 = <b>${N(ans)} кг</b>.<br>Ловушка: «воды стало на 1% меньше — значит, арбуз почти не изменился». Изменился, и сильно!`,
+explain2:`Сухое вещество было ${100-c[0]}%, стало ${100-c[1]}% — его доля выросла в ${N((100-c[1])/(100-c[0]))} раза. А масса сухого та же. Значит, весь арбуз уменьшился в ${N((100-c[1])/(100-c[0]))} раза: ${M} : ${N((100-c[1])/(100-c[0]))} = ${N(ans)} кг.`};},{star:true});
+G(8,()=>{const m1=R(1,6),m2=R(1,6),p1=pick([5,10,15,20,25,30]),p2=pick([10,20,30,40,50]);if(p1===p2)return null;const salt=m1*p1/100+m2*p2/100;const ans=salt/(m1+m2)*100;if(!isInt(ans*10))return null;
+return {type:'num',q:`Смешали ${m1} кг ${p1}%-го раствора соли и ${m2} кг ${p2}%-го раствора. Какова концентрация соли в смеси (в %)?`,ans,
+short:`Соли: ${N(m1*p1/100)} + ${N(m2*p2/100)} = ${N(salt)} кг на ${m1+m2} кг → ${P(ans)}.`,
+explain:`Считаем не проценты, а <b>килограммы соли</b>.<br>В первом: ${p1}% от ${m1} = ${N(m1*p1/100)} кг. Во втором: ${p2}% от ${m2} = ${N(m2*p2/100)} кг.<br>Всего соли ${N(salt)} кг на ${m1+m2} кг раствора: ${N(salt)} : ${m1+m2} · 100 = <b>${P(ans)}</b>.${m1!==m2?`<br>Ловушка: среднее (${p1} + ${p2}) : 2 = ${N((p1+p2)/2)}% — неверно, растворов взяли разное количество.`:''}`,
+explain2:`Проверка здравым смыслом: ответ между ${Math.min(p1,p2)}% и ${Math.max(p1,p2)}% и ближе к концентрации того раствора, которого больше${m1===m2?' (здесь поровну — ровно посередине)':''}.`};},{star:true});
+G(8,()=>{const m=pick([100,200,300,400,500]);const p1=pick([10,12,15,20,25]),p2=pick([4,5,6,8,10,12,15]);if(p2>=p1)return null;const salt=m*p1/100;const tot=salt*100/p2;const ans=tot-m;if(!isInt(ans))return null;
+return {type:'num',q:`Есть ${m} г ${p1}%-го раствора соли. Сколько граммов воды нужно добавить, чтобы получился ${p2}%-й раствор?`,ans,
+short:`Соль ${N(salt)} г = ${p2}% нового раствора → он ${N(tot)} г; воды добавить ${N(tot)} − ${m} = ${N(ans)} г.`,
+explain:`При добавлении воды <b>соль не меняется</b>.<br>1) Соли: ${p1}% от ${m} = ${N(salt)} г.<br>2) В новом растворе это ${p2}%, значит весь новый раствор: ${N(salt)} : ${p2} · 100 = ${N(tot)} г.<br>3) Воды добавили: ${N(tot)} − ${m} = <b>${N(ans)} г</b>.`,
+explain2:`Концентрация уменьшилась в ${N(r2(p1/p2))} раза — значит, раствор стал тяжелее во столько же раз (соли столько же): ${m} · ${N(r2(p1/p2))} = ${N(tot)} г. Добавили ${N(ans)} г воды.`};},{star:true});
+G(8,()=>{const p=pick([25,100,150,300,400,900]);const ans=p/(100+p)*100;
+return {type:'num',q:`Число A на ${p}% больше числа B. На сколько процентов B меньше A?`,ans,
+short:`B = 100, A = ${100+p}; разница ${p} — это ${P(ans)} от ${100+p}.`,
+explain:`Пусть B = 100, тогда A = 100 + ${p} = ${100+p}.<br>B меньше A на ${p}. Проценты теперь считаем <b>от A</b> (от того, с чем сравниваем): ${p} : ${100+p} · 100 = <b>${P(ans)}</b>.<br>Ловушка: ответ ${P(p)} — неверный, потому что 100% теперь другое число.`,
+explain2:`Проверка: ${100+p} − ${P(ans)} = ${100+p} − ${N((100+p)*ans/100)} = 100 = B ✅.`};},{star:true});
+G(8,()=>{const p=pick([10,20,30,50]);const ans=((1+p/100)**2-1)*100;
+return {type:'num',q:`Цену подняли на ${p}%, а потом ещё раз на ${p}%. На сколько процентов в итоге выросла цена?`,ans,
+short:`${N(1+p/100)} · ${N(1+p/100)} = ${N((1+p/100)**2)} → рост на ${P(r2(ans))}.`,
+explain:`Пусть цена 100. После первого повышения: ${100+p}. Второе +${p}% уже от ${100+p}: ${100+p} · ${N(1+p/100)} = ${N(r2(100*(1+p/100)**2))}.<br>Выросла на <b>${P(r2(ans))}</b>, а не на ${2*p}%.`,
+explain2:`Второе повышение даёт «проценты на проценты»: кроме ${2*p}% есть ещё ${p}% от ${p}% = ${N(p*p/100)}%. Итого ${2*p} + ${N(p*p/100)} = ${N(r2(ans))}%.`};},{star:true});
+
+window.TOPIC={id:'m6_percent',title:'Проценты',subtitle:'Математика · 6 класс',
+intro:`<p>Скидки, заряд телефона, загрузка игры, банковский вклад — проценты повсюду. Здесь: что такое процент, как переводить проценты в дроби, три главные задачи (процент от числа, число по проценту, сколько процентов), скидки и наценки и знаменитая ловушка «+20%, потом −20%». В конце — олимпиадные задачи про арбуз, растворы и сложные проценты.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Что такое процент','Проценты, дроби, десятичные','Процент от числа','Число по его проценту','Сколько процентов составляет','Скидки и наценки','Ловушка: проценты от разного','Проценты в жизни','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

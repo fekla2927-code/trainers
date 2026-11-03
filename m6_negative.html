@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Положительные и отрицательные числа — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const N=H.num;
+const NN=x=>N(x).replace(/^(−?)(\d+)/,(m,sg,d)=>sg+(d.length>4?d.replace(/\B(?=(\d{3})+(?!\d))/g,' '):d));
+const S=x=>x<0?`(${N(x)})`:N(x);           /* number in brackets if negative */
+const SG=x=>x>0?'+'+N(x):N(x);             /* with explicit sign */
+const r2=x=>Math.round(x*100)/100;
+const nz=(a,b)=>{let v;do{v=R(a,b);}while(v===0);return v;};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+const SV=(w,h,inner,lab)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${lab||'Рисунок'}" style="font-family:system-ui,sans-serif;max-width:100%">${inner}</svg>`;
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.fs||14}" font-weight="${o.fw||600}" fill="${o.c||'var(--ink)'}">${s}</text>`;};
+
+/* ---------- number line ---------- */
+function nl(o){const mn=o.min,mx=o.max,W=320,x0=18,x1=W-22;const X=v=>x0+(v-mn)/(mx-mn)*(x1-x0);
+  const hops=o.hops||[];const top=hops.length?(hops.length>1?78:62):(o.pts&&o.pts.some(p=>p.t)?26:10);const Y=top+8;
+  let s=`<line x1="${x0-8}" y1="${Y}" x2="${x1+14}" y2="${Y}" stroke="var(--fig)" stroke-width="2"/><path d="M${x1+16},${Y} l-9,-5 v10 z" fill="var(--fig)"/>`;
+  const rng=mx-mn;const step=o.step||(rng<=12?1:rng<=24?2:5);
+  for(let v=mn;v<=mx;v++){const big=v%5===0;s+=`<line x1="${X(v)}" y1="${Y-(big?6:4)}" x2="${X(v)}" y2="${Y+(big?6:4)}" stroke="var(--fig)" stroke-width="${v===0?2.5:1.2}"/>`;
+    const show=o.sparse?(v===0||v===1||(v%5===0)):(v%step===0);if(show)s+=T(X(v),Y+22,N(v),{fs:12,fw:v===0?800:500,c:v===0?'var(--ink)':'var(--muted)'});}
+  hops.forEach((h,i)=>{const a=X(h.a),b=X(h.b);const hh=i%2?44:28;const my=Y-4-hh;const mid=(a+b)/2;
+    s+=`<path d="M${a},${Y-4} Q${mid},${Y-4-2*hh} ${b},${Y-4}" fill="none" stroke="${h.col||'var(--accent)'}" stroke-width="2.4"/>`;
+    const dir=b>a?-1:1;s+=`<path d="M${b},${Y-3} l${dir*9},-5 l${dir*1},${-1} l${-dir*2},10 z" fill="${h.col||'var(--accent)'}"/>`;
+    if(h.t)s+=T(mid,my-6,h.t,{fs:13,fw:700,c:'var(--accent-ink)'});});
+  let lastX=-1e9,alt=false,low=false;
+  (o.pts||[]).slice().sort((p,q)=>p.x-q.x).forEach(p=>{s+=`<circle cx="${X(p.x)}" cy="${Y}" r="5.5" fill="${p.col||'var(--hl)'}" stroke="var(--fig)" stroke-width="1"/>`;
+    if(p.t){const w=String(p.t).length*7.5+6;const close=X(p.x)-lastX<w;alt=close?!alt:false;lastX=X(p.x);
+      if(hops.length){s+=T(X(p.x),Y+40+(alt?16:0),p.t,{fs:13,fw:700,c:'var(--accent-ink)'});low=true;}
+      else if(alt){s+=T(X(p.x),Y+40,p.t,{fs:14,fw:700,c:'var(--accent-ink)'});low=true;}
+      else s+=T(X(p.x),Y-12,p.t,{fs:14,fw:700,c:'var(--accent-ink)'});}});
+  const H0=Y+(low?(alt&&hops.length?64:48):30);return SV(W,H0,s,'Координатная прямая');}
+/* ---------- thermometer ---------- */
+function thermo(t,o){o=o||{};const y=v=>116-v*3;let s='';
+  s+=`<rect x="80" y="18" width="18" height="${y(-30)-18+14}" rx="9" fill="var(--card)" stroke="var(--fig)" stroke-width="1.6"/>`;
+  s+=`<rect x="84" y="${y(t)}" width="10" height="${y(-30)+20-y(t)}" fill="var(--bad)"/>`;
+  s+=`<circle cx="89" cy="${y(-30)+22}" r="14" fill="var(--bad)" stroke="var(--fig)" stroke-width="1.6"/><rect x="84" y="${y(-30)+4}" width="10" height="12" fill="var(--bad)"/>`;
+  for(let v=-30;v<=30;v+=2){const big=v%10===0;s+=`<line x1="98" y1="${y(v)}" x2="${big?110:104}" y2="${y(v)}" stroke="var(--fig)" stroke-width="${big?1.6:1}"/>`;
+    if(big)s+=T(74,y(v)+4,v>0?'+'+v:N(v),{a:'end',fs:12,fw:v===0?800:500,c:v===0?'var(--ink)':'var(--muted)'});}
+  const lab=o.lab!=null?o.lab:(t>0?'+'+N(t):N(t))+'°';s+=`<line x1="112" y1="${y(t)}" x2="128" y2="${y(t)}" stroke="var(--accent)" stroke-width="2"/>`+T(132,y(t)+5,lab,{a:'start',fs:16,fw:800,c:'var(--accent-ink)'});
+  return SV(200,y(-30)+40,s,'Термометр');}
+/* ---------- sea level ---------- */
+const seaFig=(()=>{let s=`<rect x="4" y="96" width="312" height="110" fill="var(--accent)" fill-opacity=".18"/>`;
+  s+=`<line x1="4" y1="96" x2="316" y2="96" stroke="var(--accent)" stroke-width="2"/>`+T(312,90,'уровень моря: 0 м',{a:'end',fs:12,c:'var(--accent-ink)'});
+  s+=`<path d="M20,96 L70,22 L120,96 Z" fill="var(--muted)" fill-opacity=".35" stroke="var(--fig)"/>`+T(130,36,'Эверест: +8849 м',{a:'start',fs:13});
+  s+=`<path d="M170,96 L200,96 L215,196 L230,96 L260,96" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`+T(314,214,'Марианская впадина: ≈ −11 000 м',{fs:13,a:'end'});
+  s+=`<ellipse cx="80" cy="150" rx="26" ry="9" fill="var(--hl)" fill-opacity=".8"/><rect x="74" y="136" width="10" height="8" fill="var(--hl)"/>`+T(80,178,'подлодка: −200 м',{fs:12});
+  return SV(320,222,s,'Выше и ниже уровня моря');})();
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Числа «ниже нуля»',lvl:0,html:`
+<p class="hook">21 июля 1983 года на станции «Восток» в Антарктиде термометр показал −89,2 °C — это самая низкая температура, измеренная на Земле. Плюнешь — и до снега долетит льдинка. А как записать долг другу, этаж подземной парковки или глубину, на которой плавает подводная лодка? Для всего этого нужны <b>отрицательные числа</b>.</p>
+<div class="box rule"><b>Правило</b>Числа больше нуля — <b>положительные</b> (5, +12, 3,7; знак «+» можно не писать).<br>Числа меньше нуля — <b>отрицательные</b>, у них всегда знак «−»: −5, −0,3, −100.<br><b>Ноль</b> — ни положительный, ни отрицательный. Это граница.</div>
+<div class="figrow"><div class="fig">${thermo(-12,{})}<div class="cap">12 градусов мороза = −12°</div></div><div class="fig">${seaFig}<div class="cap">Выше уровня моря «+», ниже «−»</div></div></div>
+<div class="box ex"><b>Где встречаются</b>• Температура: −12° — двенадцать градусов мороза.<br>• Деньги: −300 ₽ на счёте — долг 300 ₽.<br>• Высота: −200 м — двести метров под водой.<br>• Время: −3 секунды до старта ракеты («T минус 3»).</div>
+<div class="box err"><b>Частая ошибка</b>Считать 0 положительным. Ноль — ни то, ни другое.</div>
+<div class="fact">Отрицательные числа очень долго казались «ненастоящими». Ещё в XVI–XVII веках многие европейские математики называли их «ложными» или «нелепыми». А китайские математики пользовались ими уже около 2000 лет назад: на счётной доске положительные числа выкладывали красными палочками, а отрицательные — чёрными.</div>`},
+{title:'Координатная прямая',lvl:1,html:`
+<div class="box rule"><b>Правило</b>Чтобы получилась <b>координатная прямая</b>, на прямой выбирают: <b>начало отсчёта</b> O (точка 0), <b>единичный отрезок</b> (длина «1 шага») и <b>направление</b> (стрелка — туда, где числа растут).<br>Правее нуля — положительные числа, левее — отрицательные.</div>
+<div class="fig">${nl({min:-6,max:6,pts:[{x:-4,t:'A'},{x:0,t:'O'},{x:3,t:'B'}]})}</div>
+<p>Число, которое соответствует точке, — её <b>координата</b>. Пишут: A(−4), O(0), B(3). Читается: «точка A с координатой минус четыре».</p>
+<div class="box tip"><b>Как запомнить</b>Координатная прямая — это термометр, положенный набок: вправо — теплее, влево — холоднее.</div>
+<div class="box ex"><b>Как найти координату</b>Считай шаги от нуля: A на 4 шага левее нуля → −4. B на 3 шага правее → 3.</div>
+<div class="box err"><b>Частая ошибка</b>Считать деления, начиная с 1 у самого нуля. Ноль — это старт, первый шаг заканчивается на 1 (или на −1).</div>`},
+{title:'Противоположные числа и модуль',lvl:2,html:`
+<div class="box rule"><b>Правило</b><b>Противоположные числа</b> отличаются только знаком: 7 и −7, −2,5 и 2,5. На прямой они стоят на одинаковом расстоянии от нуля, по разные стороны. Число, противоположное 0, — сам 0.<br><b>Модуль</b> числа |a| — это <b>расстояние</b> от нуля до точки a. Расстояние не бывает отрицательным, поэтому |a| ≥ 0.</div>
+<div class="fig">${nl({min:-6,max:6,pts:[{x:-5,t:'−5'},{x:5,t:'5'}],hops:[{a:0,b:5,t:'5 шагов'},{a:0,b:-5,t:'5 шагов',col:'var(--hl)'}]})}</div>
+<div class="box ex"><b>Примеры</b>|5| = 5, |−5| = 5, |0| = 0, |−3,7| = 3,7.<br>−(−8) = 8 — число, противоположное −8, это 8.</div>
+<div class="box tip"><b>Как запомнить</b>Модуль «стирает» минус: он отвечает на вопрос «как далеко от нуля?», а не «в какую сторону». От дома до школы 500 м, и от школы до дома тоже 500 м, а не −500.</div>
+<div class="box err"><b>Частая ошибка</b>|−7| = −7. Нет! Модуль — расстояние, оно не бывает отрицательным: |−7| = 7. А вот −|7| = −7: минус стоит <i>снаружи</i> модуля.</div>`},
+{title:'Сравнение чисел',lvl:3,html:`
+<div class="box rule"><b>Правило</b>На координатной прямой <b>правее — больше</b>.<br>• Любое положительное число больше 0, а 0 больше любого отрицательного.<br>• Из двух отрицательных больше то, у которого <b>модуль меньше</b>: −3 > −8.</div>
+<div class="fig">${nl({min:-10,max:2,pts:[{x:-8,t:'−8'},{x:-3,t:'−3'}]})}</div>
+<p>−3 правее −8, значит −3 больше. С термометром это очевидно: −3° теплее, чем −8°.</p>
+<p>Поменяй температуру и посмотри на термометр:</p>
+<div class="widget" id="w-thermo"></div>
+<div class="box err"><b>Частая ошибка</b>«8 больше 3, значит −8 больше −3». Нет! Долг 8000 ₽ хуже долга 3000 ₽. У отрицательных чисел всё наоборот: чем больше модуль, тем меньше число.</div>`},
+{title:'Сложение: шаги по прямой',lvl:4,html:`
+<div class="box rule"><b>Правило</b>Прибавить положительное число — шагнуть <b>вправо</b>, прибавить отрицательное — шагнуть <b>влево</b>.<br>• <b>Одинаковые знаки:</b> сложи модули, поставь их общий знак: −5 + (−3) = −8.<br>• <b>Разные знаки:</b> из большего модуля вычти меньший и поставь знак числа с большим модулем: −5 + 3 = −2; 5 + (−3) = 2.</div>
+<p>Двигай ползунки — кузнечик прыгает по прямой:</p>
+<div class="widget" id="w-hop"></div>
+<div class="box ex"><b>Через деньги</b>Плюс — доход, минус — долг. −5 + 3: был долг 5, получил 3 — долг уменьшился до 2: −2.<br>−5 + (−3): долг 5, занял ещё 3 → долг 8: −8.</div>
+<div class="box tip"><b>Почему правило именно такое?</b>При разных знаках «плюсы» и «минусы» гасят друг друга. Остаётся то, чего было больше, — поэтому знак берём у числа с большим модулем.</div>
+<div class="box err"><b>Частая ошибка</b>−5 + 3 = −8 (сложили модули при разных знаках). Проверь шагами: от −5 три шага <b>вправо</b> — попадаешь в −2.</div>
+<div class="fact">Сумма противоположных чисел всегда равна нулю: 7 + (−7) = 0. Как в физике: частица и античастица при встрече исчезают, превращаясь в энергию.</div>`},
+{title:'Вычитание: прибавь противоположное',lvl:5,html:`
+<div class="box rule"><b>Правило</b>Чтобы вычесть число, прибавь <b>противоположное</b> ему: <span class="m">a − b = a + (−b)</span>.<br>Значит, вычесть отрицательное — это прибавить положительное: <span class="m">a − (−b) = a + b</span>.</div>
+<div class="box ex"><b>Примеры</b>3 − 7 = 3 + (−7) = −4.<br>−2 − 6 = −2 + (−6) = −8.<br>−2 − (−6) = −2 + 6 = 4.</div>
+<div class="fig">${nl({min:-8,max:6,pts:[{x:-2,t:'старт −2'},{x:4,t:'финиш 4'}],hops:[{a:-2,b:4,t:'− (−6) = + 6'}]})}</div>
+<div class="box tip"><b>Зачем это в жизни: «на сколько больше?»</b>Днём +5°, ночью −7°. На сколько ночью холоднее? 5 − (−7) = 5 + 7 = 12°. На прямой между 5 и −7 ровно 12 шагов.</div>
+<div class="box tip"><b>Как запомнить −(−)</b>«Убрать долг» — это всё равно что дать денег. Если с тебя списали долг 6 ₽, ты стал на 6 ₽ богаче.</div>
+<div class="box err"><b>Частая ошибка</b>−2 − 6 = 4 или −2 − 6 = −4. Медленно: −2 + (−6) — оба отрицательные, складываем модули: −8.</div>`},
+{title:'Умножение и деление: правило знаков',lvl:6,html:`
+<div class="box rule"><b>Правило</b>Перемножь (раздели) модули, а знак выбери так:<br>• <b>одинаковые знаки → «+»</b>: (−3) · (−4) = 12; (−12) : (−4) = 3;<br>• <b>разные знаки → «−»</b>: (−3) · 4 = −12; 12 : (−4) = −3.</div>
+<div class="box tip"><b>Как запомнить</b>«Друг моего друга — мой друг (+·+ = +). Враг моего друга — мой враг (−·+ = −). Друг моего врага — мой враг (+·− = −). Враг моего врага — мой друг (−·− = +)».</div>
+<p><b>Почему минус на минус даёт плюс?</b> Посмотри на закономерность:</p>
+<div class="box ex">(−3) · 3 = −9<br>(−3) · 2 = −6<br>(−3) · 1 = −3<br>(−3) · 0 = 0<br>(−3) · (−1) = <b>3</b> — каждый раз прибавляли 3, и закономерность продолжается!<br>(−3) · (−2) = <b>6</b></div>
+<div class="box rule"><b>Много множителей</b>Чётное количество минусов → «+», нечётное → «−». (−1) · (−1) · (−1) = −1, (−1) · (−1) · (−1) · (−1) = 1. А если хоть один множитель 0 — произведение 0.</div>
+<div class="box err"><b>Частая ошибка</b>Путать с правилом сложения: −3 + (−4) = −7, но (−3) · (−4) = +12. При сложении знаки не «перемножаются»!</div>`},
+{title:'Выражения и порядок действий',lvl:7,html:`
+<div class="box rule"><b>Правило</b>Порядок тот же, что и с обычными числами: 1) скобки; 2) умножение и деление слева направо; 3) сложение и вычитание слева направо. Отрицательные числа после знака действия пишут в скобках: 5 · (−2), а не 5 · −2.</div>
+<div class="box ex"><b>Пример</b>−8 + 12 : (−4) · 2<br>1) 12 : (−4) = −3; 2) −3 · 2 = −6; 3) −8 + (−6) = <b>−14</b>.</div>
+<div class="box tip"><b>Хитрость: ищи противоположные</b>−37 + 18 + 37 − 18 + 5: числа −37 и 37 взаимно уничтожаются, 18 и −18 тоже. Ответ: 5. Сначала посмотри на выражение целиком — может, его не надо считать «в лоб».</div>
+<div class="box tip"><b>Хитрость: сначала знак</b>В произведении (−2) · 5 · (−1) · (−3) сначала посчитай минусы: их три — нечётное число, значит ответ отрицательный. Потом модули: 2 · 5 · 1 · 3 = 30. Ответ: −30.</div>`},
+{title:'★ Олимпиадные приёмы',lvl:8,html:`
+<p><b>Группировка в пары.</b> 1 − 2 + 3 − 4 + … + 99 − 100 = (1 − 2) + (3 − 4) + … + (99 − 100). Каждая скобка равна −1, скобок 50. Ответ: −50. Без единого длинного сложения!</p>
+<p><b>Сумма от −a до b.</b> −5 + (−4) + … + 7: числа от −5 до 5 уничтожаются парами (−5 и 5, −4 и 4…), остаются 6 + 7 = 13.</p>
+<p><b>Модуль как расстояние.</b> |x − 3| = 5 значит «x на расстоянии 5 от точки 3». Таких точек две: 3 + 5 = 8 и 3 − 5 = −2.</p>
+<div class="fig">${nl({min:-4,max:10,pts:[{x:-2,t:'−2'},{x:3,t:'3'},{x:8,t:'8'}],hops:[{a:3,b:8,t:'5'},{a:3,b:-2,t:'5',col:'var(--hl)'}]})}</div>
+<p><b>Чётность и знаки.</b> Произведение нескольких чисел равно 1, и каждое из них — целое. Значит, каждое равно 1 или −1, а минусов чётное число. Отсюда решаются хитрые задачи «может ли сумма быть равна нулю?».</p>
+<div class="box tip"><b>Главное</b>Перед вычислением ищи пары, которые дают 0 или одно и то же число, и следи за количеством минусов.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>Отрицательные < 0 < положительные. 0 — ни то, ни другое.</li>
+<li>|a| — расстояние до нуля, всегда ≥ 0. Противоположные: a и −a.</li>
+<li>Правее на прямой — больше. Из отрицательных больше то, у кого модуль меньше.</li>
+<li>Сложение: одинаковые знаки — складываем модули; разные — вычитаем, знак большего модуля.</li>
+<li>Вычитание: a − b = a + (−b). Минус на минус при вычитании → плюс.</li>
+<li>Умножение и деление: одинаковые знаки → «+», разные → «−». Нечётное число минусов → «−».</li></ul>`}
+];
+
+const symbols={tab:'Знаки',title:'Знаки и правила',rows:[
+['−5','«Минус пять»','Отрицательное число: на 5 шагов левее нуля.','−5° — пять градусов мороза'],
+['+5 = 5','«Плюс пять»','Положительное число, знак «+» обычно не пишут.','+5° = 5°'],
+['A(−3)','Точка с координатой','Точка A стоит на числе −3.','A(−3), B(2)'],
+['|a|','Модуль a','Расстояние от нуля до a. Никогда не отрицательный.','|−7| = 7'],
+['−a','Противоположное число','То же число с другим знаком.','−(−4) = 4'],
+['−a + (−b)','Сумма отрицательных','Сложить модули, знак «−».','−5 + (−3) = −8'],
+['a + (−b)','Разные знаки','Из большего модуля вычесть меньший, знак большего модуля.','−5 + 3 = −2'],
+['a − b = a + (−b)','Вычитание','Прибавляем противоположное.','3 − (−4) = 7'],
+['(−) · (−) = +','Правило знаков','Одинаковые знаки → плюс, разные → минус.','(−3) · (−4) = 12']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Сложение — думай «шагами по прямой». Умножение — сначала посчитай минусы, потом модули.</div>`};
+
+function onTheory(root){
+  const h=root.querySelector('#w-hop');
+  if(h){h.innerHTML=`<label>Старт a = <output id="whA">−3</output><input type="range" id="whSa" min="-10" max="10" step="1" value="-3"></label><label>Прибавляем b = <output id="whB">5</output><input type="range" id="whSb" min="-10" max="10" step="1" value="5"></label><div id="whO"></div>`;
+    const A=h.querySelector('#whSa'),B=h.querySelector('#whSb');const draw=()=>{const a=+A.value,b=+B.value,c=a+b;h.querySelector('#whA').textContent=N(a);h.querySelector('#whB').textContent=N(b);
+      const pic=b===0?nl({min:-20,max:20,pts:[{x:a,t:'старт и финиш'}]}):nl({min:-20,max:20,pts:[{x:a,col:'var(--card)'},{x:c,col:'var(--hl)'}],hops:[{a,b:c,t:SG(b)}]});
+      h.querySelector('#whO').innerHTML=`<div style="display:flex;justify-content:center">${pic}</div><div class="small" style="text-align:center">${b===0?'Прибавили 0 — стоим на месте.':`${b>0?'b положительное → шагаем вправо':'b отрицательное → шагаем влево'} на ${Math.abs(b)} ${plural(Math.abs(b),'шаг','шага','шагов')}.`} ${N(a)} + ${S(b)} = <span class="out">${N(c)}</span></div>`;};
+    A.oninput=draw;B.oninput=draw;draw();}
+  const t=root.querySelector('#w-thermo');
+  if(t){t.innerHTML=`<label>Температура: <output id="wtT">−8</output>°<input type="range" id="wtS" min="-30" max="30" step="1" value="-8"></label><div id="wtO" style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap"></div>`;
+    const Sl=t.querySelector('#wtS');const draw=()=>{const v=+Sl.value;t.querySelector('#wtT').textContent=v>0?'+'+v:N(v);
+      t.querySelector('#wtO').innerHTML=thermo(v,{})+`<div class="small" style="max-width:260px">${v===0?'Ровно ноль — ни мороз, ни тепло.':v<0?`${-v} ${plural(-v,'градус','градуса','градусов')} мороза. До нуля |${N(v)}| = <span class="out">${-v}</span>.`:`${v} ${plural(v,'градус','градуса','градусов')} тепла. |${v}| = <span class="out">${v}</span>.`}<br>${v<-3?`Это холоднее, чем −3°: ${N(v)} < −3.`:v>-3?`Это теплее, чем −3°: ${v>0?'+'+v:N(v)} > −3.`:'Это как раз −3°.'}</div>`;};
+    Sl.oninput=draw;draw();}
+}
+
+/* =================== GENERATORS =================== */
+/* L0 */
+RULE(0,'Какое число <b>не является ни положительным, ни отрицательным</b>?','0',['1','−1','Такого числа нет'],
+{short:'Ноль — граница между положительными и отрицательными.',explain:'Положительные числа больше нуля, отрицательные — меньше нуля. А сам <b>0</b> не больше и не меньше себя — он ни положительный, ни отрицательный. Это точка отсчёта.',
+explain2:'На термометре 0° — это не тепло и не мороз, ровно граница. Так и число 0.'});
+RULE(0,'<b>Отрицательные числа</b> — это…','числа меньше нуля, они записываются со знаком «−»',['числа меньше единицы','все дробные числа','числа, которые пишут в скобках'],
+{short:'Отрицательное число меньше 0, перед ним стоит «−».',explain:'Отрицательные числа — это числа <b>меньше нуля</b>: −1, −5, −0,3. Числа меньше единицы бывают и положительными (0,5 > 0). Скобки — просто способ записи, например 3 · (−2), а не признак отрицательного числа.',
+explain2:'На термометре отрицательные — всё, что ниже нуля, «мороз». 0,5° — это ещё тепло, хоть и меньше 1°.'});
+G(0,()=>{const t=2*R(-14,14);return {type:'num',q:'Какую температуру показывает термометр? Ответ — число градусов (со знаком, если мороз).',pic:thermo(t,{lab:'?'}),ans:t,
+hint:'Найди ближайшую подписанную отметку. Одно маленькое деление — 2 градуса.',short:`Столбик ${t<0?'ниже':'выше'} нуля → ${t>0?'+'+t:N(t)}°.`,
+explain:`Большие деления подписаны через 10°, маленькие — через 2°. Столбик ${t===0?'ровно на нуле':t<0?`ниже нуля, это мороз`:'выше нуля'}: ${t!==0?`ближайшая подпись ${Math.trunc(t/10)*10===0?'0':N(Math.trunc(t/10)*10)}, от неё ещё ${Math.abs(t%10)/2} ${plural(Math.abs(t%10)/2,'деление','деления','делений')} по 2°.`:''} Ответ: <b>${N(t)}</b>.${t<0?' Отрицательная температура записывается со знаком «−».':''}`,
+explain2:`Считай от нуля: ${Math.abs(t)/2} ${plural(Math.abs(t)/2,'маленькое деление','маленьких деления','маленьких делений')} по 2° = ${Math.abs(t)}°, ${t<0?'вниз — значит мороз, −'+Math.abs(t):'вверх — тепло, +'+t}.`};});
+G(0,()=>{const it=pick([()=>{const v=R(2,25);return [`${v} ${plural(v,'градус','градуса','градусов')} мороза`,-v,'мороз — ниже нуля']},()=>{const v=R(2,30);return [`${v} ${plural(v,'градус','градуса','градусов')} тепла`,v,'тепло — выше нуля']},()=>{const v=pick([50,100,150,200,300,500]);return [`долг ${v} ₽ на счёте`,-v,'долг — это «меньше нуля» денег']},()=>{const v=pick([20,40,100,250,400]);return [`глубина ${v} м под уровнем моря`,-v,'ниже уровня моря — отрицательная высота']},()=>{const v=pick([100,350,1200,2500]);return [`высота ${v} м над уровнем моря`,v,'выше уровня моря — положительная высота']}])();
+return {type:'num',q:`Запиши числом: <b>${it[0]}</b>.`,ans:it[1],short:`${it[2]}: ${N(it[1])}.`,
+explain:`${it[2].charAt(0).toUpperCase()+it[2].slice(1)}, поэтому число ${it[1]<0?'отрицательное — со знаком «−»':'положительное'}: <b>${N(it[1])}</b>.`,
+explain2:`Задай вопрос: «Это больше нуля или меньше?» ${it[1]<0?'Меньше — значит, ставим минус.':'Больше — знак «+» можно не писать.'}`};});
+G(0,()=>{const pool=shuffle([nz(-20,-1),nz(-9,-1)-0.5,0,R(1,20),R(1,9)+0.5,nz(-50,-1)]);const vals=[...new Set(pool)];if(vals.length<6)return null;const ans=vals.map((v,i)=>v<0?i:-1).filter(i=>i>=0);
+return {type:'multi',q:'Отметь <b>все отрицательные</b> числа.',opts:vals.map(N),ans,short:`Отрицательные — со знаком «−»: ${vals.filter(v=>v<0).map(N).join(', ')}. Ноль — не отрицательный.`,
+explain:`Отрицательные числа — меньше нуля, у них знак «−»: <b>${vals.filter(v=>v<0).map(N).join(', ')}</b>.<br>0 — не отрицательный и не положительный, его отмечать не нужно.`,
+explain2:`Представь термометр: ${vals.map(v=>`${N(v)}° — ${v<0?'мороз ✅':v===0?'ровно ноль ❌':'тепло ❌'}`).join('; ')}.`};});
+
+/* L1 */
+RULE(1,'Что нужно выбрать на прямой, чтобы она стала <b>координатной</b>?','Начало отсчёта, единичный отрезок и направление',['Только две любые точки','Только точку 0','Начало отсчёта и цвет прямой'],
+{short:'Три вещи: точка 0, длина единицы и направление (стрелка).',explain:'Координатная прямая — это прямая, на которой выбраны: <b>начало отсчёта</b> (точка O с числом 0), <b>единичный отрезок</b> (какой длины «один шаг») и <b>направление</b> (стрелка показывает, куда числа растут). Без любого из трёх нельзя однозначно поставить числа.',
+explain2:'Это как правила игры «шаги»: откуда начинаем (0), какой длины шаг (1) и куда «плюс» (стрелка). Без них непонятно, где стоит число 3.'});
+G(1,()=>{const x=nz(-9,9);return {type:'num',q:'Какая координата у точки A?',pic:nl({min:-10,max:10,sparse:true,pts:[{x,t:'A'}]}),ans:x,
+hint:'Найди 0 и посчитай шаги до точки A.',short:`A на ${Math.abs(x)} ${plural(Math.abs(x),'шаг','шага','шагов')} ${x<0?'левее':'правее'} нуля → ${N(x)}.`,
+explain:`Начинаем с нуля и считаем деления до точки A: ${Math.abs(x)} ${plural(Math.abs(x),'шаг','шага','шагов')} ${x<0?'<b>влево</b>, поэтому число отрицательное':'вправо'}. Координата A: <b>${N(x)}</b>.`,
+explain2:`Удобно считать от подписанной отметки ${x<=-5?'−5':x>=5?'5':'0'}: ${x<=-5?`${Math.abs(x+5)} ${plural(Math.abs(x+5),'шаг','шага','шагов')} ${x<-5?'левее':''} → ${N(x)}`:x>=5?`${x-5} ${plural(x-5,'шаг','шага','шагов')} правее → ${x}`:`${Math.abs(x)} шаг(а) → ${N(x)}`}.`};});
+G(1,()=>{const v=nz(-8,-1);const others=sample([-v,v-1,v+1,v+2,v-2].filter(z=>z!==v&&z>=-9&&z<=9),3);if(others.length<3)return null;const L=['A','B','C','D'];const xs=shuffle([v,...others]);
+const pts=xs.map((x,i)=>({x,t:L[i]}));const ci=xs.indexOf(v);
+return {type:'choice',q:`Какая точка имеет координату <b>${N(v)}</b>?`,pic:nl({min:-10,max:10,sparse:true,pts}),opts:L,ans:ci,short:`${N(v)} — ${Math.abs(v)} ${plural(Math.abs(v),'шаг','шага','шагов')} влево от 0: точка ${L[ci]}.`,
+explain:`${N(v)} — отрицательное число, значит точка <b>левее нуля</b> на ${Math.abs(v)} ${plural(Math.abs(v),'шаг','шага','шагов')}. Это точка <b>${L[ci]}</b>.${xs.includes(-v)?` Точка ${L[xs.indexOf(-v)]} стоит на ${-v} — справа от нуля, это противоположное число.`:''}`,
+explain2:`Координаты точек: ${pts.map(p=>`${p.t}(${N(p.x)})`).join(', ')}. Нужная — ${L[ci]}.`};});
+G(1,()=>{const a=nz(-9,-1),b=R(1,9);return {type:'num',q:`На координатной прямой отмечены точки M(${N(a)}) и K(${b}). Сколько единичных отрезков между ними?`,pic:nl({min:-10,max:10,sparse:true,pts:[{x:a,t:'M'},{x:b,t:'K'}]}),ans:b-a,
+short:`От M до 0 — ${-a}, от 0 до K — ${b}; всего ${b-a}.`,explain:`Идём от M к нулю: ${-a} ${plural(-a,'шаг','шага','шагов')}. От нуля до K: ${b}. Всего <b>${b-a}</b>.<br>Ошибка «${b+a}» — если вычесть ${-a} из ${b}: расстояния по разные стороны от нуля <b>складываются</b>.`,
+explain2:`Это разность координат: ${b} − (${N(a)}) = ${b} + ${-a} = ${b-a}. Как термометр: от ${N(a)}° до +${b}° — потепление на ${b-a}°.`};});
+
+/* L2 */
+RULE(2,'<b>Модуль числа</b> — это…','расстояние от нуля до точки с этим числом на координатной прямой',['число с противоположным знаком','всегда отрицательное число','число без запятой'],
+{short:'|a| — расстояние до нуля, поэтому модуль не бывает отрицательным.',explain:'Модуль |a| — это <b>расстояние</b> от начала отсчёта до точки a. Расстояние не бывает отрицательным: |5| = 5, |−5| = 5, |0| = 0. «Число с противоположным знаком» — это противоположное число, а не модуль: противоположное к 5 — это −5, а |5| = 5.',
+explain2:'Из дома в школу 300 м, и из школы домой 300 м. Направление разное, расстояние одно. Модуль — это «сколько шагать», без «куда».'});
+RULE(2,'Какие числа называют <b>противоположными</b>?','Числа, которые отличаются только знаком, например 7 и −7',['Числа 7 и ${FR}','Числа 7 и 0','Любое положительное и любое отрицательное число'].map(s=>s.replace('${FR}',H.frac(1,7))),
+{short:'Противоположные: a и −a — на одинаковом расстоянии от нуля по разные стороны.',explain:'Противоположные числа отличаются <b>только знаком</b>: 7 и −7, −2,5 и 2,5. На прямой они симметричны относительно нуля. 7 и −3 — разного знака, но не противоположные. 7 и '+H.frac(1,7)+' — это обратные числа (их произведение 1), другое понятие.',
+explain2:'Пара противоположных в сумме даёт ноль: 7 + (−7) = 0. Проверь: 7 + (−3) = 4 ≠ 0 — не противоположные.'});
+G(2,()=>{const a=pick([nz(-60,60),nz(-9,9)+pick([0.5,0.3,0.25]),-R(100,999)]);return {type:'num',q:`Найди <span class="m">|${N(a)}|</span>.`,ans:Math.abs(a),
+short:`Модуль — расстояние до нуля: ${N(Math.abs(a))}.`,explain:`Модуль — расстояние от нуля до точки ${N(a)}. Расстояние не бывает отрицательным: |${N(a)}| = <b>${N(Math.abs(a))}</b>.${a<0?' Модуль просто «убирает» минус.':' У положительного числа модуль равен самому числу.'}`,
+explain2:`Точка ${N(a)} стоит ${a<0?'левее':'правее'} нуля на ${N(Math.abs(a))} единиц. Значит, |${N(a)}| = ${N(Math.abs(a))}.`};});
+G(2,()=>{const a=nz(-40,40);const k=pick([1,2]);const expr=k===1?`−(${N(a)})`:`−(−(${N(a)}))`;const ans=k===1?-a:a;
+return {type:'num',q:`Найди значение: <span class="m">${expr}</span>.`,ans,short:`${k===1?`Число, противоположное ${N(a)}, — это ${N(-a)}.`:`Два раза взяли противоположное — вернулись к ${N(a)}.`}`,
+explain:k===1?`Запись −(${N(a)}) означает «число, противоположное ${N(a)}». У него другой знак: <b>${N(-a)}</b>.`:`Сначала −(${N(a)}) = ${N(-a)}. Потом −(${N(-a)}) = ${N(a)}. Два раза поменяли знак — вернулись обратно: <b>${N(a)}</b>.`,
+explain2:`«Противоположное» — это отражение относительно нуля, как в зеркале. ${k===1?`${N(a)} отражается в ${N(-a)}.`:'Отразить дважды — вернуться на место.'}`};});
+G(2,()=>{const k=R(1,30);return {type:'set',q:`Найди все числа, модуль которых равен ${k}.`,ans:[k,-k],ph:'числа через запятую',short:`|${k}| = |−${k}| = ${k}: ответ ${k} и −${k}.`,
+explain:`Модуль — расстояние до нуля. На расстоянии ${k} от нуля <b>две</b> точки: справа ${k} и слева −${k}. Ответ: <b>${k}; −${k}</b>.`,
+explain2:`Отойди от нуля на ${k} шагов. Можно пойти вправо — придёшь в ${k}, а можно влево — в −${k}. Обе точки подходят.`};});
+/* L3 */
+RULE(3,'Какое из двух <b>отрицательных</b> чисел больше?','То, у которого модуль меньше',['То, у которого модуль больше','То, которое записано большим количеством цифр','Отрицательные числа сравнивать нельзя'],
+{short:'−3 > −8: у −3 модуль меньше, оно ближе к нулю (правее).',explain:'На прямой больше то число, что <b>правее</b>. Из двух отрицательных правее (ближе к нулю) то, у которого <b>модуль меньше</b>: −3 > −8, потому что |−3| = 3 < 8.',
+explain2:'Термометр: −3° теплее, чем −8°. Деньги: долг 3 ₽ лучше долга 8 ₽. Чем «больше минус», тем меньше число.'});
+G(3,()=>{const kind=R(0,3);let a,b;if(kind===0){a=nz(-30,-1);b=nz(-30,-1);}else if(kind===1){a=nz(-30,-1);b=R(0,30);}else if(kind===2){a=nz(-9,-1)-0.5;b=nz(-9,-1);}else{a=nz(-20,-1);b=-a;}
+if(Math.random()<0.5)[a,b]=[b,a];if(a===b)return null;const opts=['>','<','='];const ans=a>b?0:1;
+return {type:'choice',q:`Какой знак поставить вместо «?»: <span class="m">${N(a)} ? ${N(b)}</span>`,opts,ans,pic:nl({min:Math.floor(Math.min(a,b,0))-2,max:Math.ceil(Math.max(a,b,0))+2,pts:[{x:a,t:N(a)},{x:b,t:N(b)}],step:Math.max(a,b,0)-Math.min(a,b,0)>26?5:undefined}),
+short:`${N(a>b?a:b)} правее на прямой → ${N(a)} ${opts[ans]} ${N(b)}.`,
+explain:`Правее на прямой — больше. ${a<0&&b<0?`Оба отрицательные: больше то, у которого модуль меньше. |${N(a)}| = ${N(-a)}, |${N(b)}| = ${N(-b)}.`:`${N(Math.min(a,b))} ${Math.min(a,b)<0?'отрицательное':''}, а ${N(Math.max(a,b))} ${Math.max(a,b)>0?'положительное':'ноль'} — любое отрицательное меньше.`} Значит, <b>${N(a)} ${opts[ans]} ${N(b)}</b>.`,
+explain2:`Термометр: ${N(a)}° и ${N(b)}°. Теплее (больше) ${N(Math.max(a,b))}°. ${a<0&&b<0?'Чем сильнее мороз, тем меньше число.':''}`};});
+G(3,()=>{const vals=[...new Set([nz(-30,-1),nz(-30,-1),R(-5,25),nz(-9,9)])];if(vals.length<4)return null;const big=Math.random()<0.5;const tgt=big?Math.max(...vals):Math.min(...vals);
+const opts=vals.map(N);return {type:'choice',q:`Какое из чисел <b>${big?'наибольшее':'наименьшее'}</b>?`,opts,ans:vals.indexOf(tgt),
+short:`${big?'Правее всех':'Левее всех'} на прямой: ${N(tgt)}.`,explain:`Расположим числа по возрастанию (слева направо на прямой): ${vals.slice().sort((x,y)=>x-y).map(N).join(' < ')}.<br>${big?'Наибольшее':'Наименьшее'} — <b>${N(tgt)}</b>.${!big&&vals.some(v=>v<0)?' Самое маленькое — отрицательное с наибольшим модулем.':''}`,
+explain2:`${nl({min:Math.min(...vals,0)-1,max:Math.max(...vals,0)+1,pts:vals.map(v=>({x:v})),step:5})}Чем левее, тем меньше. ${big?'Самая правая':'Самая левая'} точка — ${N(tgt)}.`};});
+G(3,()=>{const vals=[...new Set([nz(-12,-1),nz(-12,-1),R(0,9),nz(-5,9)])];if(vals.length<4)return null;const asc=vals.slice().sort((x,y)=>x-y);
+const byMod=vals.slice().sort((x,y)=>Math.abs(x)-Math.abs(y)||x-y);const desc=asc.slice().reverse();const negRev=asc.filter(v=>v<0).sort((x,y)=>y-x).concat(asc.filter(v=>v>=0));
+const f=a=>a.map(N).join('; ');return CH(`Расположи числа ${shuffle(vals).map(N).join('; ')} <b>в порядке возрастания</b>. Какой вариант верный?`,f(asc),[f(byMod),f(desc),f(negRev)],
+{short:`Слева направо по прямой: ${f(asc)}.`,explain:`По возрастанию — от самого левого на прямой к самому правому: <b>${f(asc)}</b>.<br>Ловушка: упорядочить по модулю (${f(byMod)}) — так нельзя, у отрицательных «больше модуль — меньше число».`,
+explain2:`${nl({min:Math.min(...vals)-1,max:Math.max(...vals)+1,pts:vals.map(v=>({x:v,t:N(v)}))})}Читай точки слева направо.`});});
+/* L4 */
+RULE(4,'Как сложить два <b>отрицательных</b> числа?','Сложить их модули и поставить знак «−»',['Сложить модули и поставить знак «+»','Из большего модуля вычесть меньший','Ответ всегда равен 0'],
+{short:'−5 + (−3) = −(5 + 3) = −8.',explain:'Оба числа «тянут влево». −5 + (−3): от −5 шагаем ещё на 3 влево → −8. Правило: <b>сложить модули, поставить «−»</b>. Знак «+» был бы при умножении, а не при сложении.',
+explain2:'Долг 5 ₽, занял ещё 3 ₽ — долг стал 8 ₽: −8. Долги складываются.'});
+RULE(4,'Как сложить два числа <b>с разными знаками</b>?','Из большего модуля вычесть меньший и поставить знак числа с большим модулем',['Сложить модули и поставить знак «−»','Сложить модули и поставить знак первого числа','Из большего модуля вычесть меньший и всегда поставить «+»'],
+{short:'−9 + 4: 9 − 4 = 5, знак у −9 → −5.',explain:'Плюсы и минусы «гасят» друг друга. Что осталось — то и ответ: из большего модуля вычитаем меньший, а знак берём у того числа, у которого модуль больше. Пример: −9 + 4 → 9 − 4 = 5, больше модуль у −9 → <b>−5</b>.',
+explain2:'Деньги: долг 9 ₽, получил 4 ₽ — отдал, и долг уменьшился до 5 ₽: −5. А если долг 4 ₽, получил 9 — после отдачи долга осталось 5 ₽: +5.'});
+G(4,()=>{const a=nz(-40,-1),b=nz(-40,-1);const c=a+b;return {type:'num',q:`Вычисли: <span class="m">${N(a)} + ${S(b)}</span>`,ans:c,
+short:`Оба отрицательные: −(${-a} + ${-b}) = ${N(c)}.`,explain:`Оба слагаемых отрицательные. Складываем модули: ${-a} + ${-b} = ${-c}. Ставим «−»: <b>${N(c)}</b>.<br>Ловушка: ответ ${-c} (плюс) — путают с умножением.`,
+explain2:`${Math.abs(b)<=20&&Math.abs(c)<=40?nl({min:Math.min(c,-1)-2,max:2,pts:[{x:a,t:N(a)},{x:c,t:N(c)}],hops:[{a,b:c,t:SG(b)}],step:Math.abs(c)>26?5:undefined}):''}От ${N(a)} шагаем ещё на ${-b} влево — получаем ${N(c)}.`};});
+G(4,()=>{let a=nz(-20,20),b=nz(-20,20);if(Math.sign(a)===Math.sign(b))b=-b;const c=a+b;if(c===0)return null;const big=Math.abs(a)>Math.abs(b)?a:b;
+return {type:'num',q:`Вычисли: <span class="m">${N(a)} + ${S(b)}</span>`,ans:c,
+short:`${Math.max(Math.abs(a),Math.abs(b))} − ${Math.min(Math.abs(a),Math.abs(b))} = ${Math.abs(c)}, знак как у ${N(big)}: ${N(c)}.`,
+explain:`Знаки разные. 1) Из большего модуля вычитаем меньший: ${Math.max(Math.abs(a),Math.abs(b))} − ${Math.min(Math.abs(a),Math.abs(b))} = ${Math.abs(c)}.<br>2) Больший модуль у числа ${N(big)}, поэтому знак «${big<0?'−':'+'}»: <b>${N(c)}</b>.<br>Ловушка: ${N(big<0?-(Math.abs(a)+Math.abs(b)):Math.abs(a)+Math.abs(b))} — это если сложить модули, а при разных знаках их вычитают.`,
+explain2:`${nl({min:Math.min(a,c,0)-2,max:Math.max(a,c,0)+2,pts:[{x:a,t:'старт '+N(a)},{x:c,t:'финиш '+N(c)}],hops:[{a,b:c,t:SG(b)}],step:Math.max(a,c,0)-Math.min(a,c,0)>24?5:undefined})}Старт в ${N(a)}, ${b>0?'вправо':'влево'} на ${Math.abs(b)}. Финиш: ${N(c)}.`};});
+G(4,()=>{const debt=pick([150,200,300,450,500,800,1000]);const pay=pick([100,250,300,500,600,1200,1500]);if(pay===debt)return null;const c=pay-debt;
+return {type:'num',q:`На счёте у Павла в игре ${N(-debt)} монет (он должен банку). Он выиграл турнир и получил ${pay} монет. Сколько монет на счёте теперь?`,ans:c,
+short:`${N(-debt)} + ${pay} = ${N(c)}.`,explain:`${N(-debt)} + ${pay}: знаки разные. ${Math.max(debt,pay)} − ${Math.min(debt,pay)} = ${Math.abs(c)}. ${pay>debt?`Больше модуль у ${pay} → <b>${c}</b>: долг отдан, ещё остались монеты.`:`Больше модуль у ${N(-debt)} → <b>${N(c)}</b>: долг уменьшился, но не исчез.`}`,
+explain2:`Сначала монеты идут на погашение долга ${debt}. ${pay>debt?`Хватило: ${pay} − ${debt} = ${c} монет остаётся.`:`Не хватило: долг ${debt} − ${pay} = ${-c}, то есть ${N(c)}.`}`};});
+
+/* L5 */
+RULE(5,'Как вычесть из числа a число b?','Прибавить к a число, противоположное b: a − b = a + (−b)',['Вычесть модули: a − b = |a| − |b|','Поменять местами: a − b = b − a','Убрать все минусы и сложить'],
+{short:'a − b = a + (−b). Например, 4 − (−3) = 4 + 3 = 7.',explain:'Вычитание всегда можно заменить сложением: <b>a − b = a + (−b)</b>. Поэтому вычесть отрицательное — это прибавить положительное: 4 − (−3) = 4 + 3 = 7. Менять местами нельзя: 2 − 5 = −3, а 5 − 2 = 3.',
+explain2:'«Отнять долг» — как получить деньги. Если с тебя сняли долг 3 ₽, ты стал на 3 ₽ богаче: − (−3) = + 3.'});
+G(5,()=>{const a=nz(-20,20),b=nz(-20,-1);const c=a-b;return {type:'num',q:`Вычисли: <span class="m">${N(a)} − ${S(b)}</span>`,ans:c,
+short:`${N(a)} − ${S(b)} = ${N(a)} + ${-b} = ${N(c)}.`,explain:`Вычесть число — прибавить противоположное. Противоположное к ${N(b)} — это ${-b}.<br>${N(a)} − ${S(b)} = ${N(a)} + ${-b} = <b>${N(c)}</b>.<br>Ловушка: ${N(a+b)} — так получится, если «не заметить» второй минус.`,
+explain2:`Минус на минус в вычитании превращается в плюс: «−(−${-b})» = «+${-b}». Теперь обычное сложение: ${N(a)} + ${-b} = ${N(c)}.`};});
+G(5,()=>{const a=R(-15,15),b=R(1,25);const c=a-b;if(c>=0)return null;return {type:'num',q:`Вычисли: <span class="m">${N(a)} − ${b}</span>`,ans:c,
+short:`${N(a)} + (−${b}) = ${N(c)}.`,explain:`Заменим вычитание сложением: ${N(a)} − ${b} = ${N(a)} + (−${b}).<br>${a<0?`Оба отрицательные: −(${-a} + ${b}) = <b>${N(c)}</b>.`:a===0?`0 + (−${b}) = <b>${N(c)}</b>.`:`Знаки разные: ${b} − ${a} = ${-c}, знак у −${b} → <b>${N(c)}</b>.`}`,
+explain2:`${nl({min:Math.min(c,0)-2,max:Math.max(a,0)+2,pts:[{x:a,t:N(a)},{x:c,t:N(c)}],hops:[{a,b:c,t:'−'+b}],step:Math.max(a,0)-Math.min(c,0)>24?5:undefined})}От ${N(a)} шагаем на ${b} влево.`};});
+G(5,()=>{const d=R(1,15),n=nz(-20,-1);const diff=d-n;const city=pick(['в Сочи','в пустыне Сахара','на горе Эльбрус','в Новосибирске']);
+return {type:'num',q:`Днём ${city} было +${d}°, а ночью ${N(n)}°. На сколько градусов ночью было холоднее, чем днём?`,ans:diff,pic:thermo(Math.max(-30,n),{lab:N(n)+'°'}),
+short:`${d} − (${N(n)}) = ${d} + ${-n} = ${diff}°.`,explain:`«На сколько» — это разность: ${d} − (${N(n)}) = ${d} + ${-n} = <b>${diff}°</b>.<br>Ловушка: ${d} − ${-n} = ${d+n} — забыли, что ночная температура отрицательная.`,
+explain2:`По термометру: от +${d} до 0 — ${d}°, от 0 до ${N(n)} — ещё ${-n}°. Всего ${d} + ${-n} = ${diff}°.`};});
+/* L6 */
+RULE(6,'Какой знак у <b>произведения двух отрицательных</b> чисел?','«+» (произведение положительно)',['«−» (произведение отрицательно)','Зависит от того, какое число больше по модулю','Произведение всегда равно 0'],
+{short:'(−) · (−) = +. Например, (−3) · (−4) = 12.',explain:'При умножении одинаковые знаки дают <b>плюс</b>: (−3) · (−4) = 12. Не путай со сложением: −3 + (−4) = −7. Закономерность: (−3) · 1 = −3, (−3) · 0 = 0, (−3) · (−1) = 3 — каждый раз на 3 больше.',
+explain2:'«Враг моего врага — мой друг». Минус на минус — плюс.'});
+RULE(6,'Произведение нескольких чисел (среди них нет нулей) <b>отрицательно</b>, если…','количество отрицательных множителей нечётное',['количество отрицательных множителей чётное','среди множителей есть хотя бы одно отрицательное число','все множители отрицательные'],
+{short:'Каждая пара минусов даёт плюс. Остался лишний минус — ответ отрицательный.',explain:'Минусы «сокращаются» парами: (−)·(−) = +. Если отрицательных множителей <b>нечётное</b> число, один минус остаётся без пары — произведение отрицательное. Пример: (−1)·(−1)·(−1) = −1, а (−1)·(−1)·(−1)·(−1) = 1. «Хотя бы один минус» — неверно: два минуса уже дают плюс.',
+explain2:'Посчитай минусы в (−2)·3·(−5): их 2 — чётное число, значит ответ положительный: 30.'});
+G(6,()=>{const a=nz(-12,12),b=nz(-12,12);if(a>0&&b>0)return null;const c=a*b;return {type:'num',q:`Вычисли: <span class="m">${S(a)} · ${S(b)}</span>`,ans:c,
+short:`${Math.sign(a)===Math.sign(b)?'Знаки одинаковые → «+»':'Знаки разные → «−»'}; ${Math.abs(a)} · ${Math.abs(b)} = ${Math.abs(c)} → ${N(c)}.`,
+explain:`1) Модули: ${Math.abs(a)} · ${Math.abs(b)} = ${Math.abs(c)}.<br>2) Знак: ${Math.sign(a)===Math.sign(b)?'оба отрицательные — знаки <b>одинаковые</b> → «+»':'знаки <b>разные</b> → «−»'}.<br>Ответ: <b>${N(c)}</b>.`,
+explain2:`${Math.sign(a)===Math.sign(b)?`Закономерность: ${S(a)} · 1 = ${N(a)}, ${S(a)} · 0 = 0, ${S(a)} · (−1) = ${N(-a)} — с каждым шагом прибавляем ${-a}. Так и получаем «+».`:`Умножить на отрицательное — значит «умножить и развернуть»: ${Math.abs(a)} · ${Math.abs(b)} = ${Math.abs(c)}, разворачиваем → ${N(c)}.`}`};});
+G(6,()=>{const q=nz(-12,12),b=nz(-9,9);if(q>0&&b>0)return null;const a=q*b;return {type:'num',q:`Вычисли: <span class="m">${N(a)} : ${S(b)}</span>`,ans:q,
+short:`${Math.abs(a)} : ${Math.abs(b)} = ${Math.abs(q)}, ${Math.sign(a)===Math.sign(b)?'знаки одинаковые → +':'знаки разные → −'}: ${N(q)}.`,
+explain:`Деление — то же правило знаков, что и умножение.<br>1) Модули: ${Math.abs(a)} : ${Math.abs(b)} = ${Math.abs(q)}.<br>2) Знак: ${Math.sign(a)===Math.sign(b)?'одинаковые → «+»':'разные → «−»'}.<br>Ответ: <b>${N(q)}</b>.`,
+explain2:`Проверка умножением: ${S(q)} · ${S(b)} = ${N(a)} ✅. Деление — обратное действие к умножению, поэтому знаки работают так же.`};});
+G(6,()=>{const n=R(3,5);const xs=[];for(let i=0;i<n;i++)xs.push(nz(-5,5));const zero=Math.random()<0.2;if(zero)xs[R(0,n-1)]=0;const p=xs.reduce((s,x)=>s*x,1);const neg=xs.filter(x=>x<0).length;
+const opts=['Положительное','Отрицательное','Равно нулю'];return {type:'choice',q:`Каким будет произведение <span class="m">${xs.map(S).join(' · ')}</span>? (Считать до конца не обязательно.)`,opts,ans:p>0?0:p<0?1:2,
+short:zero?'Есть множитель 0 → произведение 0.':`Отрицательных множителей ${neg} — ${neg%2?'нечётное':'чётное'} число → ${p>0?'«+»':'«−»'}.`,
+explain:zero?'Среди множителей есть <b>0</b>. Любое число, умноженное на 0, даёт 0. Значит, произведение <b>равно нулю</b>, и знаки неважны.':`Считаем минусы: ${xs.filter(x=>x<0).map(S).join(', ')} — их <b>${neg}</b>. ${neg%2?'Нечётное число: один минус остаётся без пары → произведение <b>отрицательное</b>.':'Чётное число: минусы сокращаются парами → произведение <b>положительное</b>.'} Проверим: ${xs.map(S).join(' · ')} = ${N(p)}.`,
+explain2:zero?'Представь: ты 0 раз берёшь по любому количеству — получаешь 0.':`Перемножай по шагам и следи за знаком: ${(()=>{let v=1;return xs.map(x=>{v*=x;return N(v);}).join(' → ');})()}.`};});
+/* L7 */
+RULE(7,'В каком порядке выполняют действия в выражении <span class="m">−8 + 12 : (−4)</span>?','Сначала деление, потом сложение',['Слева направо, по порядку','Сначала сложение, потом деление','Порядок неважен'],
+{short:'Умножение и деление — раньше сложения и вычитания: 12 : (−4) = −3, −8 + (−3) = −11.',explain:'С отрицательными числами порядок действий тот же: скобки → умножение и деление → сложение и вычитание. Здесь: 12 : (−4) = −3, потом −8 + (−3) = <b>−11</b>. Если считать слева направо, получится (−8 + 12) : (−4) = −1 — неверно.',
+explain2:'Скобки вокруг −4 — это не «действие в скобках», а просто способ записать отрицательное число после знака деления.'});
+G(7,()=>{const a=nz(-9,9),b=nz(-9,9),c=nz(-9,9),d=nz(-9,9);const v=a*b+c*d;return {type:'num',q:`Вычисли: <span class="m">${S(a)} · ${S(b)} + ${S(c)} · ${S(d)}</span>`,ans:v,
+short:`${N(a*b)} + ${S(c*d)} = ${N(v)}.`,explain:`Сначала умножение:<br>${S(a)} · ${S(b)} = ${N(a*b)};<br>${S(c)} · ${S(d)} = ${N(c*d)}.<br>Потом сложение: ${N(a*b)} + ${S(c*d)} = <b>${N(v)}</b>.`,
+explain2:`Проверь знаки в каждом произведении отдельно: ${Math.sign(a)===Math.sign(b)?'одинаковые → +':'разные → −'} и ${Math.sign(c)===Math.sign(d)?'одинаковые → +':'разные → −'}. Потом сложи по правилу сложения.`};});
+G(7,()=>{const a=nz(-12,12),b=nz(-12,12),c=nz(-6,6);if(a===b)return null;const v=(a-b)*c;return {type:'num',q:`Вычисли: <span class="m">(${N(a)} − ${S(b)}) · ${S(c)}</span>`,ans:v,
+short:`(${N(a-b)}) · ${S(c)} = ${N(v)}.`,explain:`1) Скобки: ${N(a)} − ${S(b)} = ${N(a)} + ${S(-b)} = ${N(a-b)}.<br>2) Умножение: ${S(a-b)} · ${S(c)} = <b>${N(v)}</b>.`,
+explain2:`Можно раскрыть скобки: ${S(a)} · ${S(c)} − ${S(b)} · ${S(c)} = ${N(a*c)} − ${S(b*c)} = ${N(v)}. Сходится!`};});
+G(7,()=>{const a=R(11,99),b=R(11,99),c=nz(-30,30);if(a===b)return null;const v=c;const terms=shuffle([`${-a}`,`${b}`,`${a}`,`${-b}`]);const expr=[...terms,String(c)].map((t,i)=>{const x=Number(t);return i===0?N(x):x<0?`− ${-x}`:`+ ${x}`;}).join(' ');
+return {type:'num',q:`Вычисли удобным способом: <span class="m">${expr}</span>`,ans:v,short:`${a} и −${a}, ${b} и −${b} — противоположные, в сумме 0. Остаётся ${N(c)}.`,
+explain:`Ищем противоположные числа: ${a} и −${a} дают 0, ${b} и −${b} тоже дают 0. Остаётся только <b>${N(c)}</b>. Считать «в лоб» не нужно!`,
+explain2:`Переставим слагаемые (от перестановки сумма не меняется): (${a} − ${a}) + (${b} − ${b}) ${c<0?'− '+(-c):'+ '+c} = 0 + 0 ${c<0?'− '+(-c):'+ '+c} = ${N(c)}.`};});
+G(7,()=>{const a=nz(-20,20),b=nz(-9,9),c=nz(-9,-1);const v=Math.abs(a)-Math.abs(b)*c;return {type:'num',q:`Вычисли: <span class="m">|${N(a)}| − |${N(b)}| · ${S(c)}</span>`,ans:v,
+short:`${Math.abs(a)} − ${Math.abs(b)} · ${S(c)} = ${Math.abs(a)} − ${S(Math.abs(b)*c)} = ${N(v)}.`,
+explain:`1) Модули: |${N(a)}| = ${Math.abs(a)}, |${N(b)}| = ${Math.abs(b)}.<br>2) Умножение: ${Math.abs(b)} · ${S(c)} = ${N(Math.abs(b)*c)}.<br>3) Вычитание: ${Math.abs(a)} − ${S(Math.abs(b)*c)} = ${Math.abs(a)} + ${-Math.abs(b)*c} = <b>${N(v)}</b>.`,
+explain2:`Главная ловушка — шаг 3: вычитаем отрицательное число, значит прибавляем ${-Math.abs(b)*c}.`};});
+
+/* L8 — ★ */
+RULE(8,'Как быстрее всего найти <span class="m">1 − 2 + 3 − 4 + … + 99 − 100</span>?','Разбить на пары (1 − 2) + (3 − 4) + … — каждая пара равна −1',['Сложить все числа от 1 до 100','Ответ 0, потому что плюсов и минусов поровну','Вычесть 100 из 1'],
+{short:'50 пар по −1: ответ −50.',explain:'Группируем по два: (1 − 2) + (3 − 4) + … + (99 − 100). Каждая скобка равна <b>−1</b>, скобок 100 : 2 = 50. Ответ: −50. «Плюсов и минусов поровну» ещё не значит 0 — числа-то разные!',
+explain2:'Начни с маленького: 1 − 2 = −1; 1 − 2 + 3 − 4 = −2; 1 − 2 + 3 − 4 + 5 − 6 = −3. Видна закономерность: каждая пара добавляет −1.'});
+G(8,()=>{const n=R(10,60);const ans=n%2===0?-n/2:(n+1)/2;const last=n%2===0?`− ${n}`:`+ ${n}`;
+return {type:'num',q:`Вычисли: <span class="m">1 − 2 + 3 − 4 + 5 − … ${last}</span> (знаки чередуются, последнее число ${n}).`,ans,
+short:n%2===0?`${n/2} пар по −1: ${N(ans)}.`:`${(n-1)/2} пар по −1, и ещё + ${n}: ${N(-(n-1)/2)} + ${n} = ${ans}.`,
+explain:n%2===0?`Разобьём на пары: (1 − 2) + (3 − 4) + … + (${n-1} − ${n}). Каждая пара равна −1, пар ${n} : 2 = ${n/2}. Сумма: <b>${N(ans)}</b>.`:`Пары до ${n-1}: (1 − 2) + … + (${n-2} − ${n-1}) — их ${(n-1)/2}, каждая −1, вместе ${N(-(n-1)/2)}. И ещё последнее + ${n}: ${N(-(n-1)/2)} + ${n} = <b>${ans}</b>.`,
+explain2:n%2===0?'Проверь на маленьком: 1 − 2 + 3 − 4 = −2 (две пары). Тут то же самое, только пар больше.':`Другой способ: 1 + (−2 + 3) + (−4 + 5) + … + (−${n-1} + ${n}). Каждая скобка равна +1, их ${(n-1)/2}. Итого 1 + ${(n-1)/2} = ${ans}.`};},{star:true});
+G(8,()=>{const a=R(3,12),b=R(a+1,a+15);const ans=(a+1+b)*(b-a)/2;
+return {type:'num',q:`Найди сумму всех целых чисел от ${N(-a)} до ${b} включительно.`,ans,
+short:`От ${N(-a)} до ${a} — пары дают 0; остаются ${a+1} + … + ${b} = ${ans}.`,
+explain:`Числа от ${N(-a)} до ${a} разбиваются на пары противоположных: (${N(-a)} + ${a}), (${N(-a+1)} + ${a-1}), … — каждая пара даёт 0, а ещё есть 0.<br>Остаются ${a+1} + ${a+2} + … + ${b}${b-a>3?` (${b-a} ${plural(b-a,'число','числа','чисел')})`:''}: = <b>${ans}</b>.${b-a>3?`<br>Быстро: (первое + последнее) · количество : 2 = (${a+1} + ${b}) · ${b-a} : 2 = ${ans}.`:''}`,
+explain2:`Нарисуй прямую: точки слева от нуля «гасят» точки справа, симметричные им. Несгоревшими остаются только числа больше ${a}.`};},{star:true});
+G(8,()=>{const a=nz(-8,8),b=R(1,9);return {type:'set',q:`Найди все числа x, для которых <span class="m">|x − ${S(a)}| = ${b}</span>.`.replace('− (−','+ (').replace(/\+ \((\d+)\)/,'+ $1'),ans:[a+b,a-b],ph:'числа через запятую',
+short:`x на расстоянии ${b} от ${N(a)}: ${N(a+b)} и ${N(a-b)}.`,
+explain:`|x − a| — это <b>расстояние</b> между x и a на прямой. Значит, x стоит на расстоянии ${b} от точки ${N(a)}. Таких точек две: ${N(a)} + ${b} = ${N(a+b)} и ${N(a)} − ${b} = ${N(a-b)}.<br>Ответ: <b>${N(a+b)}; ${N(a-b)}</b>.`,
+explain2:`${nl({min:Math.min(a-b,0)-1,max:Math.max(a+b,0)+1,pts:[{x:a-b,t:N(a-b)},{x:a,t:N(a)},{x:a+b,t:N(a+b)}],hops:[{a,b:a+b,t:String(b)},{a,b:a-b,t:String(b),col:'var(--hl)'}]})}Проверка: |${N(a+b)} − ${S(a)}| = ${b} ✅, |${N(a-b)} − ${S(a)}| = |${N(-b)}| = ${b} ✅.`};},{star:true});
+G(8,()=>{const k=R(3,40);const ask=Math.random()<0.5;return {type:'num',q:ask?`Сколько существует <b>целых</b> чисел x, для которых <span class="m">|x| < ${k}</span>?`:`Найди <b>сумму</b> всех целых чисел x, для которых <span class="m">|x| < ${k}</span>.`,ans:ask?2*k-1:0,
+short:ask?`От −${k-1} до ${k-1}: ${k-1} + ${k-1} + 1 (ноль) = ${2*k-1}.`:'Числа от −'+(k-1)+' до '+(k-1)+' разбиваются на пары противоположных — сумма 0.',
+explain:ask?`|x| < ${k} — это числа, которые ближе к нулю, чем ${k}: от −${k-1} до ${k-1}. Положительных ${k-1}, отрицательных ${k-1}, и ещё 0. Всего ${k-1} + ${k-1} + 1 = <b>${2*k-1}</b>.<br>Ловушка: забыть ноль или взять ±${k} (у них модуль равен ${k}, а нужно строго меньше).`:`Подходят все целые от −${k-1} до ${k-1}. Каждое число x стоит в паре со своим противоположным −x, а x + (−x) = 0. Ноль ничего не добавляет. Сумма <b>0</b>.`,
+explain2:ask?`Проверь на маленьком: |x| < 2 → x = −1, 0, 1 — три числа = 2 · 2 − 1.`:`Например, |x| < 3: −2 + (−1) + 0 + 1 + 2 = 0. Так и для любого числа.`};},{star:true});
+G(8,()=>{const n=pick([10,11,12,14,15,16,20,21,2024,2025,2026,2027]);const ok=n%4===0;const opts=['Да, может','Нет, не может'];
+return {type:'choice',q:`Произведение ${NN(n)} целых чисел равно 1. Может ли их сумма быть равна 0?`,opts,ans:ok?0:1,
+short:ok?`Да: ${NN(n/2)} единиц и ${NN(n/2)} минус единиц — минусов чётное число.`:n%2?`Нет: для суммы 0 нужно поровну 1 и −1, а ${NN(n)} — нечётное.`:`Нет: −1 пришлось бы взять ${NN(n/2)} — нечётное число, и произведение стало бы −1.`,
+explain:`Целые числа с произведением 1 — это только 1 и −1. Сумма 0 ⇔ единиц и минус единиц <b>поровну</b>, по n : 2.<br>${n%2?`Но ${NN(n)} нечётно — поровну не разделить. Ответ: <b>нет</b>.`:`n : 2 = ${NN(n/2)}. Произведение равно (−1)<sup>${NN(n/2)}</sup>: ${ok?`${NN(n/2)} — чётное, это 1 ✅. Ответ: <b>да</b>.`:`${NN(n/2)} — нечётное, это −1, а нужно 1. Ответ: <b>нет</b>.`}`}`,
+explain2:`Проверь на маленьком: n = 4: 1 · 1 · (−1) · (−1) = 1, сумма 0 — можно. n = 6: три −1 дают произведение −1 — нельзя. Работает, только когда n делится на 4. ${NN(n)} ${ok?'делится':'не делится'} на 4.`};},{star:true});
+G(8,()=>{const m=nz(-12,-1);const S5=5*m;return {type:'num',q:`Сумма пяти последовательных целых чисел равна ${N(S5)}. Найди <b>наибольшее</b> из них.`,ans:m+2,
+short:`Среднее число ${N(S5)} : 5 = ${N(m)}; числа ${[m-2,m-1,m,m+1,m+2].map(N).join(', ')}.`,
+explain:`У пяти последовательных чисел среднее (третье) равно сумме, делённой на 5: ${N(S5)} : 5 = ${N(m)}.<br>Числа: ${[m-2,m-1,m,m+1,m+2].map(N).join(', ')}. Наибольшее — <b>${N(m+2)}</b>.<br>Ловушка: у отрицательных «наибольшее» — то, что ближе к нулю.`,
+explain2:`Проверка: ${[m-2,m-1,m,m+1,m+2].map(S).join(' + ')} = ${N(S5)} ✅. Крайние числа отличаются от среднего на 2 в обе стороны, поэтому (m − 2) + (m + 2) и (m − 1) + (m + 1) дают по 2m.`};},{star:true});
+G(8,()=>{const a=pick([2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,0.5,10.5,3,7]);let neg=0,zero=false;for(let k=1;k<=10;k++){if(a-k<0)neg++;if(a===k)zero=true;}const opts=['Положительное','Отрицательное','Равно нулю'];const ans=zero?2:neg%2?1:0;
+return {type:'choice',q:`Каким будет значение произведения <span class="m">(a − 1)(a − 2)(a − 3)…(a − 10)</span> при a = ${N(a)}?`,opts,ans,
+short:zero?`Множитель (a − ${a}) = 0 → всё произведение 0.`:`Отрицательные множители: (a − k) при k > ${N(a)} — их ${neg}, ${neg%2?'нечётное':'чётное'} число.`,
+explain:zero?`При a = ${a} множитель (a − ${a}) = 0. Произведение с нулевым множителем равно <b>нулю</b>.`:`Множитель (a − k) отрицателен, когда k > a = ${N(a)}: это k = ${range(Math.ceil(a),10).join(', ')} — <b>${neg}</b> ${plural(neg,'множитель','множителя','множителей')}. Остальные положительные. ${neg%2?'Нечётное число минусов → произведение <b>отрицательное</b>.':'Чётное число минусов → произведение <b>положительное</b>.'}`,
+explain2:zero?'Ноль «съедает» всё произведение, как бы ни были велики остальные множители.':`Выпиши знаки: ${range(1,10).map(k=>a-k>0?'+':'−').join(' ')}. Минусов ${neg}.`};},{star:true});
+
+window.TOPIC={id:'m6_negative',title:'Положительные и отрицательные числа',subtitle:'Математика · 6 класс',
+intro:`<p>Мороз, долги, подводные лодки и подземные этажи — всё это отрицательные числа. Здесь: координатная прямая, противоположные числа и модуль, сравнение, сложение и вычитание «шагами по прямой», правило знаков для умножения и деления. В конце — олимпиадные задачи с хитрыми суммами и модулями.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Положительные и отрицательные','Координатная прямая','Противоположные числа и модуль','Сравнение чисел','Сложение','Вычитание','Умножение и деление','Выражения и порядок действий','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

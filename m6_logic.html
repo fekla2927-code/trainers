@@ -1,0 +1,1240 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Логика и смекалка — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,gcd}=H;
+
+/* ================= helpers ================= */
+const gens=[];
+const G=(lvl,make,f)=>gens.push({lvl,make,star:f==='s'||undefined,rule:f==='r'||undefined});
+function CH(q,ok,bad,o){const opts=shuffle([ok,...bad]);return Object.assign({type:'choice',q,opts,ans:opts.indexOf(ok)},o||{});}
+function YN(q,yes,o,labels){const opts=labels||['Да, можно','Нет, нельзя'];return Object.assign({type:'choice',q,opts,ans:yes?0:1},o||{});}
+const ceilLog3=n=>{let k=0,p=1;while(p<n){p*=3;k++;}return k;};
+const fact=n=>n<=1?1:n*fact(n-1);
+const TXT='font-family:system-ui,sans-serif';
+
+/* ---------- SVG: balance scale ---------- */
+function scale(o){o=o||{};const L=o.L||'',Rt=o.R||'',tilt=o.tilt||0; // tilt: -1 left side down (left heavier), 1 right down, 0 equal
+  const W=300,Hh=170,cx=150,by=70,arm=95,dy=tilt*16;
+  const lx=cx-arm,rx=cx+arm,ly=by+dy,ry=by-dy;
+  const pan=(x,y,label)=>`<line x1="${x}" y1="${y}" x2="${x-30}" y2="${y+38}" stroke="var(--fig)" stroke-width="1.4"/><line x1="${x}" y1="${y}" x2="${x+30}" y2="${y+38}" stroke="var(--fig)" stroke-width="1.4"/><path d="M${x-40},${y+38} Q${x},${y+58} ${x+40},${y+38} Z" fill="var(--hl)" fill-opacity=".35" stroke="var(--fig)" stroke-width="1.6"/>`+(label?`<text x="${x}" y="${y+33}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--accent-ink)">${label}</text>`:'');
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${o.w||300}" role="img" aria-label="Чашечные весы" style="${TXT}">`;
+  s+=`<path d="M${cx-34},${Hh-8} L${cx+34},${Hh-8} L${cx},${by+6} Z" fill="var(--card)" stroke="var(--fig)" stroke-width="1.6"/>`;
+  s+=`<line x1="${lx}" y1="${ly}" x2="${rx}" y2="${ry}" stroke="var(--fig)" stroke-width="3" stroke-linecap="round"/><circle cx="${cx}" cy="${by}" r="5" fill="var(--fig)"/>`;
+  s+=pan(lx,ly,L)+pan(rx,ry,Rt);
+  if(o.aside)s+=`<text x="${cx}" y="22" text-anchor="middle" font-size="13" fill="var(--muted)">${o.aside}</text>`;
+  return s+'</svg>';}
+
+/* ---------- SVG: Dirichlet cages ---------- */
+function cages(counts,o){o=o||{};const n=counts.length,cw=Math.min(70,300/n),W=n*cw+20,Hh=110;
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${Math.min(320,W)}" role="img" aria-label="Кролики в клетках" style="${TXT}">`;
+  counts.forEach((c,i)=>{const x=10+i*cw;const bad=c===Math.max(...counts)&&o.hl;
+    s+=`<rect x="${x+3}" y="20" width="${cw-6}" height="66" rx="6" fill="${bad?'var(--hl)':'var(--card)'}" fill-opacity="${bad?0.35:1}" stroke="var(--fig)" stroke-width="1.5"/>`;
+    for(let k=1;k<4;k++)s+=`<line x1="${x+3+k*(cw-6)/4}" y1="20" x2="${x+3+k*(cw-6)/4}" y2="86" stroke="var(--fig)" stroke-width=".6" stroke-opacity=".5"/>`;
+    s+=`<text x="${x+cw/2}" y="60" text-anchor="middle" font-size="20" font-weight="700" fill="var(--ink)">${c}</text>`;
+    s+=`<text x="${x+cw/2}" y="104" text-anchor="middle" font-size="12" fill="var(--muted)">клетка ${i+1}</text>`;});
+  return s+'</svg>';}
+
+/* ---------- SVG: vessels ---------- */
+function vessels(list){ // [{cap,amt}]
+  const maxc=Math.max(...list.map(v=>v.cap)),W=list.length*100+20,Hh=170,base=140,sc=110/maxc;
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${Math.min(320,W)}" role="img" aria-label="Сосуды" style="${TXT}">`;
+  list.forEach((v,i)=>{const x=30+i*100,w=50,h=v.cap*sc,hw=v.amt*sc;
+    if(v.amt>0)s+=`<rect x="${x}" y="${base-hw}" width="${w}" height="${hw}" fill="var(--hl)" fill-opacity=".5"/>`;
+    s+=`<path d="M${x},${base-h} L${x},${base} L${x+w},${base} L${x+w},${base-h}" fill="none" stroke="var(--fig)" stroke-width="2"/>`;
+    s+=`<text x="${x+w/2}" y="${base+20}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--accent-ink)">${v.cap} л</text>`;
+    s+=`<text x="${x+w/2}" y="${base-h-8}" text-anchor="middle" font-size="13" fill="var(--ink)">${v.amt} л</text>`;});
+  return s+'</svg>';}
+
+/* ---------- SVG: chessboard with removed cells ---------- */
+function board(n,removed,o){o=o||{};const c=Math.min(32,300/n),W=n*c+30,Hh=n*c+28;
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${Math.min(320,W)}" role="img" aria-label="Доска" style="${TXT}">`;
+  for(let r=0;r<n;r++)for(let k=0;k<n;k++){const x=22+k*c,y=4+(n-1-r)*c;const rem=removed.some(([a,b])=>a===k&&b===r);
+    const dark=(r+k)%2===0;
+    if(rem){s+=`<rect x="${x}" y="${y}" width="${c}" height="${c}" fill="var(--card)" stroke="var(--line)"/><line x1="${x+4}" y1="${y+4}" x2="${x+c-4}" y2="${y+c-4}" stroke="var(--bad)" stroke-width="2"/><line x1="${x+c-4}" y1="${y+4}" x2="${x+4}" y2="${y+c-4}" stroke="var(--bad)" stroke-width="2"/>`;}
+    else s+=`<rect x="${x}" y="${y}" width="${c}" height="${c}" fill="${dark?'var(--fig)':'var(--card)'}" fill-opacity="${dark?0.55:1}" stroke="var(--line)" stroke-width=".5"/>`;}
+  s+=`<rect x="22" y="4" width="${n*c}" height="${n*c}" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`;
+  if(n===8){for(let k=0;k<8;k++)s+=`<text x="${22+k*c+c/2}" y="${Hh-6}" text-anchor="middle" font-size="12" fill="var(--muted)">${'abcdefgh'[k]}</text>`;
+    for(let r=0;r<8;r++)s+=`<text x="12" y="${4+(7-r)*c+c/2+4}" text-anchor="middle" font-size="12" fill="var(--muted)">${r+1}</text>`;}
+  return s+'</svg>';}
+
+/* ---------- SVG: grid paths ---------- */
+function gridPic(m,n,blocked){const c=Math.min(46,250/Math.max(m,n)),W=m*c+60,Hh=n*c+50,ox=30,oy=20;
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${Math.min(320,W)}" role="img" aria-label="Сетка дорог" style="${TXT}">`;
+  for(let i=0;i<=m;i++)s+=`<line x1="${ox+i*c}" y1="${oy}" x2="${ox+i*c}" y2="${oy+n*c}" stroke="var(--fig)" stroke-width="1.6"/>`;
+  for(let j=0;j<=n;j++)s+=`<line x1="${ox}" y1="${oy+j*c}" x2="${ox+m*c}" y2="${oy+j*c}" stroke="var(--fig)" stroke-width="1.6"/>`;
+  if(blocked){const [bx,by]=blocked;const X=ox+bx*c,Y=oy+(n-by)*c;s+=`<circle cx="${X}" cy="${Y}" r="9" fill="var(--bad)"/><line x1="${X-5}" y1="${Y-5}" x2="${X+5}" y2="${Y+5}" stroke="var(--card)" stroke-width="2.4"/><line x1="${X+5}" y1="${Y-5}" x2="${X-5}" y2="${Y+5}" stroke="var(--card)" stroke-width="2.4"/>`;}
+  s+=`<circle cx="${ox}" cy="${oy+n*c}" r="6" fill="var(--accent)"/><text x="${ox-10}" y="${oy+n*c+20}" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent-ink)">A</text>`;
+  s+=`<circle cx="${ox+m*c}" cy="${oy}" r="6" fill="var(--accent)"/><text x="${ox+m*c+14}" y="${oy-4}" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent-ink)">B</text>`;
+  return s+'</svg>';}
+
+/* ---------- knights & liars engine ---------- */
+const ISL=['Аня','Боря','Вика','Гена','Даша','Егор','Женя','Зоя','Илья','Катя','Лёва','Мила'];
+const KL=k=>k?'рыцарь':'лжец';
+function stmt(i,n,nm){const others=range(0,n-1).filter(j=>j!==i);const X=pick(others),Y=others.find(j=>j!==X);
+  const t=R(0,n===2?4:6);
+  if(t===0)return {t:`${nm[X]} — лжец`,f:k=>!k[X]};
+  if(t===1)return {t:`${nm[X]} — рыцарь`,f:k=>k[X]};
+  if(t===2){const m=R(0,n);return {t:m===0?'Среди нас нет лжецов':`Среди нас ровно ${m} ${plural(m,'лжец','лжеца','лжецов')}`,f:k=>k.filter(x=>!x).length===m};}
+  if(t===3)return {t:`${nm[X]} — такого же типа, как я`,f:k=>k[X]===k[i]};
+  if(t===4)return {t:`${nm[X]} — не такого типа, как я`,f:k=>k[X]!==k[i]};
+  if(t===5)return {t:`${nm[X]} и ${nm[Y]} — оба лжецы`,f:k=>!k[X]&&!k[Y]};
+  return {t:'Среди нас есть хотя бы один лжец',f:k=>k.some(x=>!x)};}
+function allAssign(n){const out=[];for(let m=0;m<(1<<n);m++)out.push(range(0,n-1).map(i=>!!(m>>(n-1-i)&1)));return out;}
+function klPuzzle(n){for(;;){const nm=sample(ISL,n);const st=range(0,n-1).map(i=>stmt(i,n,nm));
+  if(new Set(st.map(s=>s.t)).size<n)continue;
+  const res=allAssign(n).map(k=>{const bad=st.findIndex((s,i)=>s.f(k)!==k[i]);return {k,bad};});
+  const good=res.filter(r=>r.bad<0);if(good.length!==1)continue;
+  return {nm,st,res,sol:good[0].k};}}
+function klCases(P){return P.res.map(r=>{const who=P.nm.map((x,i)=>`${x} — ${r.k[i]?'Р':'Л'}`).join(', ');
+  if(r.bad<0)return `<b>${who}: ✅ всё сходится</b>`;const b=r.bad;
+  return `${who}: ❌ ${P.nm[b]} — ${KL(r.k[b])}, но фраза «${P.st[b].t}» тогда ${P.st[b].f(r.k)?'правдива':'ложна'}`;}).join('<br>');}
+
+/* ---------- logic grid engine ---------- */
+const THEMES=[
+ {vals:['кот','собака','попугай','хомяк'],neg:['не держит дома кота','не держит дома собаку','не держит дома попугая','не держит дома хомяка'],who:['кота','собаку','попугая','хомяка'],q:'Кто держит дома',verb:'держит дома',rel:['хозяин кота','хозяин собаки','хозяин попугая','хозяин хомяка']},
+ {vals:['футбол','шахматы','плавание','теннис'],neg:['не занимается футболом','не занимается шахматами','не занимается плаванием','не занимается теннисом'],who:['футболом','шахматами','плаванием','теннисом'],q:'Кто занимается',verb:'занимается',rel:['футболист','шахматист','пловец','теннисист']},
+ {vals:['гитара','скрипка','барабаны','флейта'],neg:['не играет на гитаре','не играет на скрипке','не играет на барабанах','не играет на флейте'],who:['на гитаре','на скрипке','на барабанах','на флейте'],q:'Кто играет',verb:'играет',rel:['гитарист','скрипач','барабанщик','флейтист']}];
+function perms(a){if(a.length<=1)return [a.slice()];const out=[];a.forEach((x,i)=>perms(a.slice(0,i).concat(a.slice(i+1))).forEach(p=>out.push([x].concat(p))));return out;}
+function propagate(n,neg){ // neg: list [i,v]; returns {grid,steps,solved}
+  const g=range(0,n-1).map(()=>Array(n).fill(0));neg.forEach(([i,v])=>g[i][v]=-1);const steps=[];
+  let ch=true;while(ch){ch=false;
+    for(let i=0;i<n;i++){if(g[i].includes(1))continue;const free=range(0,n-1).filter(v=>g[i][v]===0);if(free.length===1){const v=free[0];g[i][v]=1;for(let j=0;j<n;j++)if(j!==i)g[j][v]=-1;steps.push(['row',i,v]);ch=true;}}
+    for(let v=0;v<n;v++){if(range(0,n-1).some(i=>g[i][v]===1))continue;const free=range(0,n-1).filter(i=>g[i][v]===0);if(free.length===1){const i=free[0];g[i][v]=1;for(let w=0;w<n;w++)if(w!==v)g[i][w]=-1;steps.push(['col',i,v]);ch=true;}}}
+  const solved=g.every(r=>r.includes(1));return {g,steps,solved};}
+function lgPuzzle(n){for(;;){const th=pick(THEMES);const vals=th.vals.slice(0,n);const idx=range(0,n-1);const nm=sample(ISL,n);const sol=shuffle(idx);
+  let pool=[];for(let i=0;i<n;i++)for(let v=0;v<n;v++)if(sol[i]!==v)pool.push([i,v]);pool=shuffle(pool);
+  let cl=[];for(const f of pool){cl.push(f);if(propagate(n,cl).solved)break;}
+  for(let k=cl.length-1;k>=0;k--){const t=cl.slice(0,k).concat(cl.slice(k+1));if(propagate(n,t).solved)cl=t;}
+  if(cl.length<n-1)continue;
+  const cnt=perms(idx).filter(p=>cl.every(([i,v])=>p[i]!==v)).length;if(cnt!==1)continue;
+  const text=cl.map(([i,v])=>Math.random()<0.35?`${nm[i]} дружит с тем, кто ${th.who[v].startsWith('на ')?'играет '+th.who[v]:th===THEMES[0]?'держит дома '+th.who[v]:'занимается '+th.who[v]}.`:`${nm[i]} ${th.neg[v]}.`);
+  return {th,vals,nm,sol,cl,text,n};}}
+function lgTable(P,g){const n=P.n;const c=v=>v===1?'<b style="color:var(--ok)">✓</b>':v===-1?'<span style="color:var(--bad)">✗</span>':'';
+  return `<table style="border-collapse:collapse;margin:8px 0;font-size:15px"><tr><th style="padding:4px 8px"></th>${P.vals.map(v=>`<th style="padding:4px 8px;border-bottom:1px solid var(--line)">${v}</th>`).join('')}</tr>${P.nm.map((x,i)=>`<tr><th style="padding:4px 8px;text-align:left;border-right:1px solid var(--line)">${x}</th>${range(0,n-1).map(v=>`<td style="padding:4px 8px;text-align:center;border:1px solid var(--line);min-width:28px">${c(g[i][v])}</td>`).join('')}</tr>`).join('')}</table>`;}
+function lgExplain(P){const st=propagate(P.n,P.cl);const g0=range(0,P.n-1).map(()=>Array(P.n).fill(0));P.cl.forEach(([i,v])=>g0[i][v]=-1);
+  const steps=st.steps.map(([k,i,v])=>k==='row'?`В строке «${P.nm[i]}» остался один свободный вариант — «${P.vals[v]}» → ✓, а в столбце «${P.vals[v]}» у остальных ставим ✗.`:`В столбце «${P.vals[v]}» остался один свободный — ${P.nm[i]} → ✓, остальное в строке ${P.nm[i]} — ✗.`);
+  return {start:lgTable(P,g0),steps,end:lgTable(P,st.g)};}
+
+/* ---------- pouring BFS ---------- */
+function pourBFS(caps,start,isGoal,src){ // caps array; src: unlimited water (fill/empty allowed)
+  const key=s=>s.join(',');const prev=new Map();prev.set(key(start),null);const q=[start];
+  while(q.length){const s=q.shift();if(isGoal(s)){const path=[];let k=key(s);while(prev.get(k)){const [p,a]=prev.get(k);path.unshift({s:k.split(',').map(Number),a});k=p;}return path;}
+    const moves=[];const n=caps.length;
+    if(src)for(let i=0;i<n;i++){if(s[i]<caps[i]){const t=s.slice();t[i]=caps[i];moves.push([t,`наполнить ${caps[i]}-литровый`]);}if(s[i]>0){const t=s.slice();t[i]=0;moves.push([t,`вылить ${caps[i]}-литровый`]);}}
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++)if(i!==j&&s[i]>0&&s[j]<caps[j]){const t=s.slice();const d=Math.min(s[i],caps[j]-s[j]);t[i]-=d;t[j]+=d;moves.push([t,`перелить из ${caps[i]}-литрового в ${caps[j]}-литровый`]);}
+    for(const [t,a] of moves){const k=key(t);if(!prev.has(k)){prev.set(k,[key(s),a]);q.push(t);}}}
+  return null;}
+function pourTable(caps,start,path){return `<table style="border-collapse:collapse;margin:8px 0;font-size:15px"><tr><th style="padding:3px 8px;text-align:left">Действие</th>${caps.map(c=>`<th style="padding:3px 8px">${c} л</th>`).join('')}</tr><tr><td style="padding:3px 8px;color:var(--muted)">в начале</td>${start.map(x=>`<td style="padding:3px 8px;text-align:center">${x}</td>`).join('')}</tr>${path.map((p,i)=>`<tr><td style="padding:3px 8px;border-top:1px solid var(--line)">${i+1}) ${p.a}</td>${p.s.map(x=>`<td style="padding:3px 8px;text-align:center;border-top:1px solid var(--line)">${x}</td>`).join('')}</tr>`).join('')}</table>`;}
+
+/* ================= theory ================= */
+const theory=[
+{title:'Рыцари и лжецы',lvl:0,html:`
+<p class="hook">На острове живут только <b>рыцари</b> (всегда говорят правду) и <b>лжецы</b> (всегда врут). Ты встречаешь жителя, и он говорит: «Я лжец». Стоп. Если он рыцарь — он соврал, а рыцари не врут. Если он лжец — он сказал правду, а лжецы правду не говорят. Значит, <b>никто на острове такого сказать не может</b>! Добро пожаловать в логику.</p>
+<div class="box rule"><b>Правило острова</b>Рыцарь <b>всегда</b> говорит правду. Лжец <b>всегда</b> лжёт — каждое его утверждение ложно. Других жителей нет.</div>
+<p><b>Почему это работает как головоломка.</b> Каждое высказывание — это «проверка». Если житель рыцарь, его фраза обязана быть правдой; если лжец — обязана быть враньём. Перебираем, кто есть кто, и выкидываем всё, где проверка не прошла.</p>
+<ol class="steps"><li><b>Предположи</b>: пусть Аня — рыцарь.</li><li><b>Проверь</b> все фразы при этом предположении.</li><li>Получилось противоречие — значит, Аня лжец. Нет противоречия — запомни вариант.</li><li>Если жителей трое — вариантов всего 2·2·2 = 8, их можно честно перебрать.</li></ol>
+<div class="box ex"><b>Пример</b>Аня: «Боря — лжец». Боря: «Мы с Аней одного типа».<br>Пусть Аня — рыцарь. Тогда Боря — лжец, и его фраза «мы одного типа» должна быть ложью: Аня Р, Боря Л — правда разного типа, фраза ложна ✅.<br>Пусть Аня — лжец. Тогда Боря — рыцарь, и «мы одного типа» должна быть правдой, но Л и Р — разные ❌.<br>Ответ: Аня — рыцарь, Боря — лжец.</div>
+<div class="box tip"><b>Полезные факты</b>• На вопрос «Ты рыцарь?» <b>любой</b> житель ответит «Да» (рыцарь честно, лжец — соврав).<br>• Фразу «Я лжец» не может сказать никто.<br>• Если двое говорят друг про друга «он лжец», то они <b>разного типа</b>.</div>
+<div class="box err"><b>Частая ошибка</b>Думать, что лжец «иногда врёт». Нет: <b>каждая</b> его фраза ложна. «Среди нас ровно 2 лжеца» в устах лжеца значит: лжецов <b>не</b> 2 (может быть 0, 1, 3…).</div>`},
+{title:'Таблицы: кто где живёт',lvl:1,html:`
+<p class="hook">«Аня не держит кота, а Боря дружит с хозяином собаки…» Через три фразы в голове каша. Спасение — <b>таблица</b>: её придумали детективы задолго до тебя.</p>
+<div class="box rule"><b>Метод таблицы</b>Строки — люди, столбцы — варианты. Каждое «не» из условия → ✗. Если в строке (или в столбце) остался <b>один</b> свободный квадратик — там ✓, а остальные клетки в этом столбце (и строке) вычёркиваем.</div>
+<p><b>Почему это работает:</b> у каждого ровно один вариант, и каждый вариант достался ровно одному человеку. Значит, в каждой строке и в каждом столбце ровно одна ✓.</p>
+<div class="box ex"><b>Пример</b>Аня, Боря, Вика: футбол, шахматы, плавание. «Аня не занимается футболом. Аня не занимается шахматами. Боря не занимается футболом.»<br>У Ани свободно только «плавание» → ✓. Тогда в столбце «футбол» свободна только Вика → ✓. Боре остаются шахматы.</div>
+<div class="box tip"><b>Хитрость</b>Фраза «Аня дружит с шахматистом» тоже даёт ✗: сама с собой Аня не «дружит», значит, Аня — не шахматист.</div>
+<div class="box err"><b>Ошибка</b>Поставить ✓ и забыть вычеркнуть остальные клетки в этом же столбце. Именно эти ✗ двигают решение дальше.</div>`},
+{title:'Принцип Дирихле: кролики и клетки',lvl:2,html:`
+<p class="hook">В Москве живёт больше 13 миллионов человек, а волос на голове у человека — не больше пары сотен тысяч. Значит, <b>точно</b> есть два москвича с одинаковым числом волос. И считать никого не надо!</p>
+<div class="box rule"><b>Принцип Дирихле</b>Если кроликов <b>больше</b>, чем клеток, то хотя бы в одной клетке сидят <b>не меньше двух</b> кроликов.<br><b>Усиленный:</b> если кроликов больше, чем k·N, а клеток N, то в какой-то клетке <b>не меньше k + 1</b> кролика.</div>
+<p><b>Почему:</b> пусть в каждой клетке не больше одного кролика. Тогда кроликов не больше, чем клеток. А их больше — противоречие!</p>
+<div class="fig">${cages([2,1,1,1],{hl:true})}</div><p class="small" style="text-align:center;margin-top:0">5 кроликов, 4 клетки — где-то двое</p>
+<div class="widget" id="w-dir"></div>
+<div class="box ex"><b>Пример: носки</b>В ящике носки 3 цветов. Сколько вытащить вслепую, чтобы точно была пара? Клетки — цвета (3), кролики — носки. 4 носка в 3 «цвета» → два одного цвета. А 3 может не хватить: красный, синий, зелёный. Ответ: 4.</div>
+<div class="box tip"><b>Как применять</b>1) Пойми, что здесь «клетки» (цвета, месяцы, остатки, пары чисел). 2) Кролики — то, что раскладываем. 3) Представь <b>самый невезучий</b> случай — «злой волшебник» раскладывает как можно равномернее.</div>
+<div class="box err"><b>Ошибка</b>Принцип говорит «<b>хотя бы в одной</b>» клетке двое — но не говорит, в какой, и не говорит, что пустых клеток нет.</div>
+<div class="fact">Петер Густав Лежён Дирихле — немецкий математик XIX века. Сам принцип он называл «принципом ящиков» (Schubfachprinzip). В русских задачниках его объясняют на кроликах и клетках, а в английских — на голубях и голубятнях (pigeonhole principle).</div>`},
+{title:'Чётность',lvl:3,html:`
+<p class="hook">Можно ли расставить между числами 1, 2, 3, 4, 5 знаки «+» и «−», чтобы получился 0? Можно перебирать 16 вариантов… а можно за 5 секунд доказать, что нельзя. Секрет — чётность.</p>
+<div class="box rule"><b>Правила чётности</b>чёт ± чёт = чёт; нечёт ± нечёт = чёт; чёт ± нечёт = нечёт.<br>Сумма нескольких чисел чётна ⇔ <b>нечётных слагаемых чётное количество</b>.</div>
+<p><b>Почему:</b> нечётные числа «ходят парами»: каждые два нечётных в сумме дают чётное. Если одно нечётное осталось без пары — сумма нечётная.</p>
+<div class="box ex"><b>Пример про знаки</b>1 + 2 + 3 + 4 + 5 = 15 — нечётное. Если перед числом x поменять «+» на «−», сумма уменьшится на 2x — на чётное число. Чётность не меняется! Значит, всегда получится нечётное, а 0 — чётное. Нельзя.</div>
+<div class="box ex"><b>Пример про дружбу</b>В классе 25 человек. Может ли каждый дружить ровно с 3? Сложим «количество друзей» всех: 25·3 = 75. Но каждая дружба посчитана дважды (у обоих друзей), поэтому сумма должна быть чётной. 75 — нечётно → нельзя.</div>
+<div class="box tip"><b>Чередование</b>Если предметы двух видов стоят по кругу и чередуются (Р, Л, Р, Л…), то их <b>чётное</b> количество. Шахматный конь каждым ходом меняет цвет клетки — поэтому вернуться на старт он может только за чётное число ходов.</div>
+<div class="box err"><b>Ошибка</b>«Сумма чётна, если слагаемых чётное число». Нет! 1 + 2 = 3: слагаемых два, а сумма нечётна. Считай только <b>нечётные</b> слагаемые.</div>`},
+{title:'Взвешивания: фальшивая монета',lvl:4,html:`
+<p class="hook">Перед тобой 9 одинаковых монет, одна фальшивая — она легче. Есть чашечные весы без гирь. Сколько взвешиваний нужно? Большинство говорит «3 или 4». Правильный ответ — <b>2</b>!</p>
+<div class="fig">${scale({L:'3',R:'3',tilt:1,aside:'3 монеты отложены'})}</div><p class="small" style="text-align:center;margin-top:0">левая чаша легче — фальшивка среди этих трёх</p>
+<div class="box rule"><b>Главная идея</b>Дели монеты на <b>три кучки</b>: две одинаковые — на весы, третью — в сторону. Весы покажут одно из трёх: «легче левая», «легче правая», «равны» (тогда фальшивка в отложенной кучке).<br>За 1 взвешивание — среди <b>3</b> монет, за 2 — среди <b>9</b>, за 3 — среди <b>27</b>, за k — среди <b>3<sup>k</sup></b>.</div>
+<p><b>Почему тройки, а не половинки?</b> У весов три исхода, а не два. Деля пополам, ты «тратишь» исход «равны» впустую — он никогда не выпадет.</p>
+<ol class="steps"><li>9 монет: кладём 3 и 3, 3 откладываем. Узнали тройку с фальшивкой.</li><li>Из этой тройки кладём 1 и 1. Легче — она; равны — фальшивка та, что в стороне.</li></ol>
+<div class="widget" id="w-coins"></div>
+<div class="box err"><b>Ошибка</b>«10 монет — нужно 2 взвешивания, ведь 10 почти 9». Нет: 9 = 3² — предел для 2 взвешиваний, для 10 монет нужно 3.</div>
+<div class="box tip"><b>Почему нельзя быстрее</b>Это «оценка»: после k взвешиваний может быть не больше 3·3·…·3 = 3<sup>k</sup> разных исходов, а каждая монета должна дать свой исход.</div>`},
+{title:'Переливания',lvl:5,html:`
+<p class="hook">В фильме «Крепкий орешек 3» герои должны за несколько минут получить ровно 4 галлона воды с помощью канистр на 3 и 5 галлонов — иначе взорвётся бомба. Ты решишь это быстрее Брюса Уиллиса.</p>
+<div class="box rule"><b>Что можно делать</b>• наполнить сосуд доверху; • вылить сосуд целиком; • переливать из одного в другой, <b>пока первый не опустеет или второй не наполнится</b>. Делений на сосудах нет!</div>
+<div class="fig">${vessels([{cap:3,amt:0},{cap:5,amt:4}])}</div><p class="small" style="text-align:center;margin-top:0">цель: 4 л в 5-литровой канистре</p>
+<p><b>Как решать.</b> Веди <b>таблицу состояний</b>: после каждого действия записывай, сколько где воды. Решение для 3 и 5 → 4: наполнили 5 (0, 5) → перелили в 3 (3, 2) → вылили 3 (0, 2) → перелили (2, 0) → наполнили 5 (2, 5) → долили 3 (3, 4). Готово!</p>
+<div class="box tip"><b>Когда вообще можно?</b>Отмерить можно только количество, которое делится на <b>НОД объёмов</b> (и не больше большого сосуда). Сосуды 4 и 6 л: НОД = 2, поэтому 3 л не получить никогда — вся вода будет ходить «по 2 литра».</div>
+<div class="box err"><b>Ошибка</b>«Отолью половину на глаз» — нельзя: меряем только «до края» и «до дна».</div>
+<div class="fact">Говорят, что французский математик Симеон Пуассон в юности решил задачу о переливании и после этого решил стать математиком. Задачу про сосуды 8, 5 и 3 литра до сих пор называют задачей Пуассона.</div>`},
+{title:'Инварианты и задачи «с конца»',lvl:6,html:`
+<p class="hook">Шоколадка 6×4 из 24 долек. Ломаем по одному куску вдоль линий. Сколько разломов нужно, чтобы получить все дольки? Как ни ломай — <b>ровно 23</b>. Почему? Каждый разлом увеличивает число кусков ровно на 1!</p>
+<div class="box rule"><b>Инвариант</b>— величина или свойство, которое <b>не меняется</b> при разрешённых действиях (чётность, сумма, остаток…). Если в начале оно одно, а в желаемом конце другое — получить такой конец <b>нельзя</b>.</div>
+<div class="box ex"><b>Пример</b>На доске числа 1, 2, 3, 4, 5. Можно стереть два числа и написать их разность. Останется одно число. Чётное или нечётное? Сумма 15 нечётна. Заменяя a и b на a − b, сумма меняется на 2b — чётно. Чётность суммы — инвариант → в конце нечётное число.</div>
+<div class="box rule"><b>Задачи «с конца»</b>Если известен <b>конец</b>, а не начало, — иди назад: делай <b>обратные</b> действия в <b>обратном</b> порядке. «+» ↔ «−», «·» ↔ «:», «отдал половину и ещё одно» ↔ «прибавь одно и удвой».</div>
+<div class="box ex"><b>Пример</b>Задумал число, умножил на 3, прибавил 4, получил 25. Назад: 25 − 4 = 21, 21 : 3 = 7.</div>
+<div class="box err"><b>Ошибка</b>Делать обратные действия в <b>прямом</b> порядке: 25 : 3 … — не делится, и всё сломалось.</div>`},
+{title:'Перебор: сколько способов',lvl:7,html:`
+<p class="hook">У тебя 4 футболки и 3 пары джинсов. Сколько дней подряд можно приходить в школу в новом сочетании? Не 7, а 12!</p>
+<div class="box rule"><b>Правило умножения</b>Если первый выбор можно сделать <b>a</b> способами, а второй (после любого первого) — <b>b</b> способами, то пару выборов — <b>a·b</b> способами.</div>
+<p><b>Почему:</b> к каждой из 4 футболок можно надеть любые из 3 джинсов: 3 + 3 + 3 + 3 = 4·3.</p>
+<div class="box ex"><b>Пример</b>Сколько трёхзначных чисел из цифр 1, 2, 3, если цифры не повторяются? Первая — 3 варианта, вторая — 2 (одну уже взяли), третья — 1. Всего 3·2·1 = 6: 123, 132, 213, 231, 312, 321.</div>
+<div class="box tip"><b>Перебирай по порядку</b>Выписывай варианты «по возрастанию» или деревом — так ничего не потеряешь и не повторишь.</div>
+<div class="box err"><b>Ошибка с нулём</b>Трёхзначное число не может начинаться с 0. Из цифр 0, 1, 2 (без повторов) получится не 6, а 2·2·1 = 4 числа: 102, 120, 201, 210.</div>
+<div class="box err"><b>Ошибка с парами</b>Рукопожатия: 5 человек, каждый пожал руку каждому. 5·4 = 20 — неверно: рукопожатие Ани с Борей и Бори с Аней — одно и то же. Ответ 20 : 2 = 10.</div>`},
+{title:'Олимпиадные приёмы ★',lvl:8,html:`
+<p class="hook">Шахматную доску 8×8 без двух противоположных угловых клеток нельзя разрезать на доминошки 1×2. Доказательство занимает одну строчку — если знаешь, куда смотреть.</p>
+<div class="fig">${board(8,[[0,0],[7,7]])}</div><p class="small" style="text-align:center;margin-top:0">вырезаны a1 и h8 — обе тёмные</p>
+<div class="box rule"><b>Раскраска</b>Каждая доминошка накрывает <b>одну тёмную и одну светлую</b> клетку. Значит, у фигуры, которую можно разрезать на доминошки, тёмных и светлых клеток поровну. У доски без a1 и h8 тёмных 30, светлых 32 → нельзя.</div>
+<div class="box rule"><b>Оценка + пример</b>Чтобы найти «наибольшее» или «наименьшее», нужно две вещи: <b>оценка</b> (доказать, что лучше нельзя) и <b>пример</b> (показать, что столько можно).</div>
+<div class="box tip"><b>Сначала угадай на маленьком примере</b>Не знаешь, как подступиться к 100 монетам или 2026 жителям? Реши для 3, 4, 5 — увидишь закономерность, а потом объясни её.</div>`},
+{title:'Шпаргалка',html:`<ul class="steps">
+<li>Рыцари/лжецы: предположи → проверь → выкинь противоречия.</li>
+<li>Таблица: ✗ из условий, один свободный в строке/столбце → ✓.</li>
+<li>Дирихле: кроликов больше, чем клеток → где-то двое. Ищи «клетки» и худший случай.</li>
+<li>Чётность: сумма чётна ⇔ нечётных слагаемых чётное число.</li>
+<li>Взвешивания: три кучки; за k взвешиваний — 3<sup>k</sup> монет.</li>
+<li>Переливания: таблица состояний; отмерить можно только кратное НОД.</li>
+<li>Инвариант не меняется. «С конца» — обратные действия в обратном порядке.</li>
+<li>Правило умножения: a·b. Пары без порядка — дели на 2.</li></ul>`}
+];
+
+/* ================= symbols ================= */
+const symbols={tab:'Приёмы',title:'Главные приёмы логических задач',rows:[
+['Р / Л','Рыцарь / лжец','Рыцарь всегда говорит правду, лжец всегда лжёт.','«Ты рыцарь?» — оба ответят «да»'],
+['?→✓✗','Предположение','Предположи, проверь фразы, выкинь варианты с противоречием.','3 жителя — 8 вариантов'],
+['▦','Таблица','Строки — люди, столбцы — варианты. В каждой строке и столбце ровно одна ✓.','«Аня не кот» → ✗'],
+['🐇▢','Принцип Дирихле','Кроликов больше, чем клеток → в какой-то клетке ≥ 2.','13 учеников → двое родились в одном месяце'],
+['чёт/нечёт','Чётность','Сумма чётна ⇔ нечётных слагаемых чётное количество.','1 ± 2 ± 3 ± 4 ± 5 ≠ 0'],
+['3<sup>k</sup>','Взвешивания','Три кучки; за k взвешиваний — до 3<sup>k</sup> монет.','27 монет — 3 взвешивания'],
+['НОД','Переливания','Отмерить можно только кратное НОД объёмов.','4 и 6 л → только чётное'],
+['∞=','Инвариант','То, что не меняется при действиях.','разломы: кусков +1'],
+['↩','С конца','Обратные действия в обратном порядке.','×3, +4 = 25 → (25 − 4) : 3'],
+['a·b','Правило умножения','Выбор из a и потом из b — всего a·b вариантов.','4 футболки · 3 джинсов = 12'],
+['♟','Раскраска','Раскрась фигуру; доминошка — 1 тёмная + 1 светлая.','доска без углов'],
+['≤ + ✓','Оценка + пример','Доказать, что лучше нельзя, и показать пример.','наименьшее число рыцарей']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Не можешь решить — реши для маленьких чисел, нарисуй картинку или иди с конца.</div>`};
+
+/* ================= generators ================= */
+
+/* L0 — knights & liars */
+G(0,()=>CH('Кто такие рыцари и лжецы в логических задачах?','Рыцарь всегда говорит правду, лжец всегда лжёт',['Рыцарь всегда говорит правду, лжец иногда лжёт, иногда нет','Рыцарь чаще говорит правду, а лжец — чаще лжёт','Лжец на любой вопрос отвечает «нет», а рыцарь — «да»'],
+ {short:'Рыцарь — всегда правда, лжец — всегда ложь, в каждой фразе.',
+ explain:'Правило острова: <b>рыцарь всегда говорит правду, лжец всегда лжёт</b>. Никаких «иногда» и «чаще»: <b>каждая</b> фраза лжеца ложна. И лжец может сказать «да» — например, на вопрос «Ты рыцарь?».',
+ explain2:'Представь двух роботов: у одного программа «говорить только правду», у другого — «говорить только неправду». Они не устают и не ошибаются. Вот это и есть рыцарь и лжец.'}),'r');
+G(0,()=>CH('Как решают задачи про рыцарей и лжецов?','Предполагают, кто есть кто, проверяют все фразы и отбрасывают варианты с противоречием',['Верят тому, кто говорит увереннее','Считают, что рыцарей и лжецов всегда поровну','Считают, что правду говорит тот, кто высказался первым'],
+ {short:'Предположи → проверь → выкинь противоречия.',
+ explain:'Метод: <b>предположи</b> (пусть Аня — рыцарь), <b>проверь</b> каждую фразу (у рыцаря она должна быть правдой, у лжеца — ложью), <b>отбрось</b> вариант, если что-то не сходится. Что осталось — ответ. Ни «уверенность», ни очерёдность ничего не говорят.',
+ explain2:'Это как детектив: «Допустим, преступник — садовник. Тогда он был в саду в 9 часов… но его видели в городе! Противоречие — значит, не садовник». Перебираем подозреваемых, пока не останется один вариант.'}),'r');
+G(0,()=>{const v=pick(['ask','liar']);
+ if(v==='ask')return CH('Житель острова рыцарей и лжецов отвечает на вопрос «Ты рыцарь?». Что он скажет?','Любой житель ответит «Да»',['Рыцарь ответит «Да», лжец — «Нет»','Любой житель ответит «Нет»','Ответ может быть любым'],
+  {short:'Рыцарь честно скажет «да», а лжец соврёт и тоже скажет «да».',
+  explain:'Рыцарь — рыцарь, и честно говорит «Да». Лжец на самом деле лжец; честный ответ был бы «Нет», но он обязан соврать — и говорит «Да». Поэтому <b>оба говорят «Да»</b>, и этот вопрос ничего не выясняет!',
+  explain2:'Проверь вариант «лжец — "Нет"»: лжец сказал «Нет, я не рыцарь» — это же правда! А лжец правду не говорит. Значит, так ответить он не может.'});
+ return CH('Кто на острове рыцарей и лжецов может сказать: «Я лжец»?','Никто',['Только рыцарь','Только лжец','Любой житель'],
+  {short:'Рыцарь соврал бы, лжец сказал бы правду — оба варианта невозможны.',
+  explain:'Пусть это рыцарь. Тогда фраза «Я лжец» — ложь, а рыцарь не лжёт ❌.<br>Пусть это лжец. Тогда «Я лжец» — правда, а лжец правду не говорит ❌.<br>Оба варианта — противоречие → <b>никто</b> такое сказать не может.',
+  explain2:'А вот «Я рыцарь» может сказать любой: рыцарь — честно, лжец — соврав. Фраза «Я лжец» — «запрещённая» на острове.'});});
+G(0,()=>{const P=klPuzzle(2);const opts=allAssign(2).map(k=>P.nm.map((x,i)=>`${x} — ${KL(k[i])}`).join(', '));const ans=allAssign(2).findIndex(k=>k.every((x,i)=>x===P.sol[i]));
+ return {type:'choice',q:`На острове рыцарей и лжецов встретились двое.<br>${P.nm.map((x,i)=>`${x}: «${P.st[i].t}».`).join('<br>')}<br>Кто есть кто?`,opts,ans,
+ hint:`Предположи, что ${P.nm[0]} — рыцарь, и проверь обе фразы. Потом — что лжец.`,
+ short:`Сходится только вариант: ${opts[ans]}.`,
+ explain:`Переберём все 4 варианта (Р — рыцарь, Л — лжец). Фраза рыцаря должна быть правдой, фраза лжеца — ложью:<br>${klCases(P)}<br>Остался один вариант: <b>${opts[ans]}</b>.`,
+ explain2:`Проверим ответ. ${P.nm.map((x,i)=>`${x} — ${KL(P.sol[i])}, фраза «${P.st[i].t}» ${P.st[i].f(P.sol)?'правдива':'ложна'} — ${P.sol[i]?'рыцарь и должен говорить правду ✅':'лжец и должен лгать ✅'}`).join('.<br>')}.<br>А в остальных вариантах кто-то «нарушает правила острова».`};});
+G(0,()=>{const P=klPuzzle(3);const k=P.sol.filter(x=>x).length;
+ return {type:'num',q:`На острове рыцарей и лжецов встретились трое.<br>${P.nm.map((x,i)=>`${x}: «${P.st[i].t}».`).join('<br>')}<br>Сколько среди них рыцарей?`,ans:k,
+ hint:'У троих всего 8 вариантов «кто есть кто». Перебери их по очереди.',
+ short:`${P.nm.map((x,i)=>`${x} — ${KL(P.sol[i])}`).join(', ')}: рыцарей ${k}.`,
+ explain:`Перебираем все 8 вариантов. Для каждого ищем первого, кто «нарушил правила» (рыцарь сказал ложь или лжец — правду):<br>${klCases(P)}<br>Без противоречий только один вариант → рыцарей <b>${k}</b>.`,
+ explain2:`Проверка ответа: ${P.nm.map((x,i)=>`${x} — ${KL(P.sol[i])}: «${P.st[i].t}» — ${P.st[i].f(P.sol)?'правда':'ложь'} ✅`).join('; ')}.<br>Совет: начинай с фраз вида «X — лжец» — они сразу связывают двух жителей: если говорящий рыцарь, X — лжец, и наоборот.`};});
+G(0,()=>{const n=R(4,9);const v=pick(['exact','others','atleast']);
+ if(v==='atleast'&&n%2)return null;
+ let qs,f;if(v==='exact'){qs=`Первый сказал: «Среди нас ровно 1 лжец», второй: «Среди нас ровно 2 лжеца», …, ${n}-й: «Среди нас ровно ${n} ${plural(n,'лжец','лжеца','лжецов')}».`;f=(i,L)=>L===i+1;}
+ else if(v==='others'){qs=`Каждый из них сказал: «Все остальные здесь — лжецы».`;f=(i,L,k)=>k.every((x,j)=>j===i||!x);}
+ else {qs=`Первый сказал: «Среди нас не меньше 1 лжеца», второй: «Среди нас не меньше 2 лжецов», …, ${n}-й: «Среди нас не меньше ${n} лжецов».`;f=(i,L)=>L>=i+1;}
+ const good=allAssign(n).filter(k=>{const L=k.filter(x=>!x).length;return k.every((x,i)=>f(i,L,k)===x);});
+ const ks=new Set(good.map(k=>k.filter(x=>x).length));if(ks.size!==1)return null;const K=[...ks][0];
+ const ex=v==='exact'?`Все фразы противоречат друг другу (лжецов не может быть одновременно 1 и 2), поэтому правду говорит <b>не больше одного</b>. Если все лгут — лжецов ${n}, но тогда ${n}-й сказал правду ❌. Значит, рыцарь ровно один, лжецов ${n-1}, и рыцарь — тот, кто сказал «ровно ${n-1}». Ответ: <b>1</b>.`
+  :v==='others'?`Двух рыцарей быть не может: каждый из них назвал бы другого лжецом — неправда. Ноль рыцарей тоже нельзя: тогда фраза «все остальные — лжецы» у любого — правда, а лжецы правду не говорят. Значит, рыцарь ровно <b>1</b> (остальные лгут: среди «остальных» для них есть рыцарь ✅).`
+  :`Пусть лжецов L. Фраза «не меньше i» правдива для i = 1, …, L — эти L человек рыцари. Остальные ${n} − L — лжецы. Значит, ${n} − L = L, L = ${n/2}. Рыцарей <b>${n/2}</b>.`;
+ return {type:'num',q:`В комнате ${n} ${plural(n,'житель','жителя','жителей')} острова рыцарей и лжецов. ${qs} Сколько среди них рыцарей?`,ans:K,
+ hint:v==='exact'?'Могут ли две фразы быть правдой одновременно?':'Попробуй предположить, что рыцарей 0, 1, 2…',
+ short:ex,explain:ex,
+ explain2:`Угадай на маленьком примере: возьми не ${n}, а 3 жителя и переберь все 8 вариантов — получится та же картина. ${v==='atleast'?'(Для 4 жителей: 2 рыцаря и 2 лжеца.)':'Рыцарь всегда ровно один.'} Компьютерный перебор всех ${2**n} вариантов для ${n} жителей тоже даёт ответ ${K}.`};});
+
+/* L1 — tables */
+G(1,()=>CH('Как решать задачи «кто чем занимается» с помощью таблицы?','Строки — люди, столбцы — варианты; по условиям ставим ✗, а если в строке или столбце остался один свободный квадратик — ставим ✓ и вычёркиваем остальные в его строке и столбце',['Строки — люди, столбцы — варианты; ставим ✓ туда, где больше всего пустых клеток','Записываем условия в столбик и выбираем вариант, который встречается чаще всего','Ставим ✓ в первую свободную клетку каждой строки'],
+ {short:'В каждой строке и каждом столбце ровно одна ✓.',
+ explain:'Метод таблицы: каждое «не» → ✗. Так как у каждого <b>ровно один</b> вариант и каждый вариант у <b>ровно одного</b> человека, в каждой строке и столбце ровно одна ✓. Остался один свободный — значит, он и есть ✓, а остальные клетки его столбца и строки — ✗.',
+ explain2:'Это как судоку, только проще: в каждой строке и каждом столбце должна быть одна ✓. Ставить ✓ «на удачу» нельзя — только туда, где других вариантов уже нет.'}),'r');
+G(1,()=>{const nm=['Белов','Чернов','Рыжов'],hair=['блондин','брюнет','рыжий'];const X=R(0,2);
+ const all=perms([0,1,2]).filter(p=>p.every((h,i)=>h!==i)&&p[0]!==1);const sol=all[0]; // Belov red, Chernov blond, Ryzhov brunet
+ return {type:'choice',q:`Встретились трое: Белов, Чернов и Рыжов. Брюнет сказал Белову: «Забавно: один из нас блондин, другой брюнет, третий рыжий, но ни у кого цвет волос не совпадает с фамилией». Какого цвета волосы у ${['Белова','Чернова','Рыжова'][X]}?`,opts:['светлые (блондин)','чёрные (брюнет)','рыжие'],ansText:hair[sol[X]],ans:sol[X],
+ hint:'Брюнет разговаривает с Беловым — значит, Белов не брюнет.',
+ short:`Белов — рыжий, Чернов — блондин, Рыжов — брюнет. ${nm[X]} — ${hair[sol[X]]}.`,
+ explain:`Таблица «фамилия × цвет»:<br>• Белов не блондин (фамилия) и не брюнет (брюнет говорит <b>с</b> ним, а не сам с собой) → Белов <b>рыжий</b>.<br>• Чернов не брюнет (фамилия) и не рыжий (рыжий уже Белов) → Чернов <b>блондин</b>.<br>• Рыжову остаётся <b>брюнет</b>.<br>Значит, ${nm[X]} — <b>${hair[sol[X]]}</b>.`,
+ explain2:`Перебор: всего 6 способов раздать цвета. Условие «цвет не совпадает с фамилией» оставляет 2: (Белов-брюнет, Чернов-рыжий, Рыжов-блондин) и (Белов-рыжий, Чернов-блондин, Рыжов-брюнет). Первый не годится — Белов не может быть брюнетом, ведь брюнет обращается к Белову. Остаётся второй.`};});
+const lgTask=(n)=>()=>{const P=lgPuzzle(n);const askVal=Math.random()<0.5;const E=lgExplain(P);
+ let q,opts,ans;
+ if(askVal){const v=R(0,n-1);const who=P.sol.indexOf(v);q=`${P.th.q} ${P.th.who[v]}?`;opts=P.nm.slice();ans=who;}
+ else{const i=R(0,n-1);q=`${P.nm[i]} ${P.th.verb}…`;opts=P.th.who.slice(0,n);ans=P.sol[i];}
+ return {type:'choice',q:`${P.nm.join(', ')} — у каждого ${n===3?'одно':'одно'} из: ${P.vals.join(', ')} (у всех разное).<br>${P.text.join(' ')}<br><b>${q}</b>`,opts,ans,
+  hint:'Нарисуй таблицу: строки — имена, столбцы — варианты. Каждое условие даёт ✗.',
+  short:`Итог: ${P.nm.map((x,i)=>`${x} — ${P.vals[P.sol[i]]}`).join(', ')}.`,
+  explain:`Отметим условия в таблице (каждая фраза — это ✗; «дружит с тем, кто…» значит, что сам он не такой):${E.start}${E.steps.map((s,i)=>`${i+1}) ${s}`).join('<br>')}${E.end}Ответ: <b>${opts[ans]}</b>.`,
+  explain2:`Проверка ответа: ${P.nm.map((x,i)=>`${x} — ${P.vals[P.sol[i]]}`).join(', ')}. Каждое условие выполнено: ${P.cl.map(([i,v])=>`${P.nm[i]} — не ${P.vals[v]} ✅`).join('; ')}. И другого распределения нет: таблица привела к ответу без угадываний — каждый ✓ был вынужденным.`};};
+G(1,lgTask(3));G(1,lgTask(4));
+
+/* L2 — Dirichlet */
+G(2,()=>CH('Как звучит принцип Дирихле?','Если кроликов больше, чем клеток, то хотя бы в одной клетке сидят не меньше двух кроликов',['Если кроликов больше, чем клеток, то в каждой клетке сидят не меньше двух кроликов','Если кроликов больше, чем клеток, то ровно в одной клетке сидят два кролика','Если кроликов столько же, сколько клеток, то в каждой клетке по одному кролику'],
+ {short:'«Хотя бы в одной» клетке — не меньше двух.',
+ explain:'Принцип Дирихле: кроликов <b>больше</b>, чем клеток → <b>хотя бы в одной</b> клетке не меньше двух. Он не говорит, что «в каждой» (5 кроликов в 4 клетках: 2, 1, 1, 1), и не говорит, что «ровно в одной» (может быть 3, 2, 0, 0). А если кроликов столько же, сколько клеток, они могут все сесть в одну клетку.',
+ explain2:'Докажем от противного: если бы в каждой клетке сидело не больше одного кролика, кроликов было бы не больше, чем клеток. А их больше. Значит, где-то двое.'}),'r');
+G(2,()=>{const k=R(2,6),cols=['красные','синие','зелёные','чёрные','белые','жёлтые'].slice(0,k);const same=Math.random()<0.5;const m=same?R(3,4):2;const ans=(m-1)*k+1;
+ return {type:'num',q:`В ящике лежат носки ${k} цветов: ${cols.join(', ')} — каждого цвета много. Какое наименьшее количество носков нужно вытащить не глядя, чтобы среди них <b>наверняка</b> нашлись ${m===2?'два носка одного цвета':`${m} носка одного цвета`}?`,ans,
+ hint:'Представь самый невезучий случай: носки достаются как можно «разноцветнее».',
+ short:`Худший случай: по ${m-1} каждого цвета — это ${(m-1)*k}; следующий носок даст ${m} одного цвета. Ответ ${ans}.`,
+ explain:`Клетки — цвета (их ${k}), кролики — носки.<br><b>Оценка:</b> ${(m-1)*k} носков может не хватить — невезучий случай: по ${m-1} каждого цвета (${m-1}·${k} = ${(m-1)*k}), и ${m} одного цвета нет.<br><b>Почему ${ans} хватит:</b> если бы каждого цвета было не больше ${m-1}, носков было бы не больше ${(m-1)*k}. А их ${ans} — значит, какого-то цвета не меньше ${m}.<br>Ответ: <b>${ans}</b>.`,
+ explain2:`Представь «злого волшебника», который подсовывает тебе носки так, чтобы ${m} одинаковых не набралось как можно дольше. Он даст ${m-1} ${cols[0]}, ${m-1} ${cols[1]}${k>2?', …':''} — по ${m-1} каждого из ${k} цветов. Дальше ему некуда деваться: любой следующий носок — уже ${m}-й какого-то цвета. ${(m-1)*k} + 1 = ${ans}.`};});
+G(2,()=>{let a=R(3,12),b=R(3,12);if(a===b)b++;const v=pick(['red','both','red2']);
+ const ans=v==='red'?b+1:v==='both'?Math.max(a,b)+1:b+2;
+ const what=v==='red'?'хотя бы один красный':v==='both'?'шары обоих цветов':'хотя бы два красных';
+ const bad=v==='red'?`все ${b} синих`:v==='both'?`все ${Math.max(a,b)} ${a>b?'красных':'синих'} (шаров того цвета, которого больше)`:`все ${b} синих и один красный`;
+ return {type:'num',q:`В мешке лежат шары: красных — ${a}, синих — ${b}. Какое наименьшее число шаров нужно вытащить не глядя, чтобы среди них наверняка были ${what}?`,ans,
+ hint:'Подумай, какой случай самый невезучий.',
+ short:`Самый невезучий случай — сначала достаём ${bad}. Ещё один шар — и готово: ${ans}.`,
+ explain:`Самый невезучий случай: сначала нам попадаются ${bad} — это ${ans-1} ${plural(ans-1,'шар','шара','шаров')}, а нужного ещё нет. Значит, ${ans-1} мало.<br>Следующий шар ${v==='both'?'точно другого цвета':'точно красный (синих больше не осталось)'}. Ответ: <b>${ans}</b>.${v==='both'?`<div class="box err"><b>Ловушка</b>Не «${Math.min(a,b)}+1»: невезение — это когда сначала вытаскиваешь <b>весь</b> больший цвет.</div>`:''}`,
+ explain2:`Проверь на маленьком примере: 2 красных и 3 синих. ${v==='red'?'Чтобы был красный, надо 3 + 1 = 4 шара (можно вытащить 3 синих подряд).':v==='both'?'Чтобы были оба цвета — 3 + 1 = 4 (можно вытащить 3 синих подряд).':'Чтобы было 2 красных — 3 + 2 = 5.'} А у нас ${a} красных и ${b} синих → ${ans}.`};});
+G(2,()=>{const n=R(25,40);const k=Math.ceil(n/12);
+ return {type:'num',q:`В классе ${n} ${plural(n,'ученик','ученика','учеников')}. Какое наибольшее число k можно гарантировать: «обязательно найдутся k учеников, родившихся в одном и том же месяце»?`,ans:k,
+ hint:'Клетки — 12 месяцев. Раздели учеников как можно равномернее.',
+ short:`${n} = 12·${Math.floor(n/12)} + ${n%12} → в каком-то месяце не меньше ${k}.`,
+ explain:`Клетки — 12 месяцев, кролики — ${n} учеников.<br><b>Почему ${k} гарантировано:</b> если бы в каждом месяце родилось не больше ${k-1}, учеников было бы не больше 12·${k-1} = ${12*(k-1)} < ${n}.<br><b>Почему больше гарантировать нельзя:</b> можно рассадить учеников по месяцам так, что ни в одном не будет больше ${k}: ${n%12?`в ${n%12} ${plural(n%12,'месяце','месяцах','месяцах')} по ${k}, в остальных — по ${k-1}`:`в каждом месяце ровно по ${k}`}.<br>Ответ: <b>${k}</b>.`,
+ explain2:`Это деление с округлением вверх: ${n} : 12 = ${(n/12).toFixed(2).replace('.',',')} → ${k}. «Злой волшебник» раскладывает дни рождения как можно равномернее — и всё равно где-то набирается ${k}.`};});
+/* L3 — parity */
+G(3,()=>CH('Когда сумма нескольких целых чисел чётна?','Когда среди слагаемых чётное количество нечётных чисел',['Когда все слагаемые чётные (и только тогда)','Когда слагаемых чётное количество','Когда хотя бы одно слагаемое чётное'],
+ {short:'Считаем только нечётные слагаемые: их чётное число → сумма чётна.',
+ explain:'Чётные слагаемые на чётность не влияют. Нечётные «гасят» друг друга парами: нечёт + нечёт = чёт. Поэтому <b>сумма чётна ⇔ нечётных слагаемых чётное количество</b>.<br>«Все чётные» — слишком узко (3 + 5 = 8 чётно). «Слагаемых чётное число» — неверно (1 + 2 = 3). «Хотя бы одно чётное» — неверно (2 + 3 = 5).',
+ explain2:'Проверь на примерах: 1 + 3 + 5 = 9 (три нечётных — нечётно), 1 + 3 + 5 + 7 = 16 (четыре нечётных — чётно), 2 + 4 + 1 = 7 (одно нечётное — нечётно).'}),'r');
+G(3,()=>{const n=R(4,9);const S=n*(n+1)/2;const vals=new Map();for(let m=0;m<(1<<(n-1));m++){let s=1;const sg=[];for(let i=2;i<=n;i++){const neg=m>>(i-2)&1;s+=neg?-i:i;sg.push(neg?'−':'+');}if(!vals.has(s))vals.set(s,sg);}
+ const yes=Math.random()<0.45;let k;
+ if(yes){const c=[...vals.keys()].filter(x=>x!==S&&Math.abs(x)<S);k=pick(c);}else{const c=range(-S+1,S-1).filter(x=>!vals.has(x)&&(x-S)%2!==0);k=pick(c);}
+ const row=range(1,n).join(' ? ');const ks=k<0?'−'+(-k):String(k);
+ const expr=yes?'1 '+vals.get(k).map((s,i)=>`${s} ${i+2}`).join(' ')+' = '+ks:'';
+ return YN(`Можно ли вместо знаков «?» поставить «+» или «−» так, чтобы получилось верное равенство?<br><span class="m">${row} = ${ks}</span>`,yes,{
+ hint:`Посчитай 1 + 2 + … + ${n}. Что происходит с суммой, если один «+» заменить на «−»?`,
+ short:yes?`Можно: <span class="m">${expr}</span>.`:`Нельзя: 1 + … + ${n} = ${S} — ${S%2?'нечётное':'чётное'}, а смена знака меняет сумму на чётное число. ${ks} — ${Math.abs(k)%2?'нечётное':'чётное'}.`,
+ explain:yes?`Можно. Например: <span class="m">${expr}</span>. Проверка чётностью: 1 + … + ${n} = ${S} и ${ks} одной чётности — ${S%2?'оба нечётные':'оба чётные'}, так что противоречия нет, а пример подобрали перебором.`
+  :`Сначала поставим все «+»: 1 + 2 + … + ${n} = <b>${S}</b> — ${S%2?'нечётное':'чётное'} число.<br>Если перед числом x поменять «+» на «−», сумма уменьшится на 2x — на <b>чётное</b> число. Значит, при любых знаках результат будет ${S%2?'нечётным':'чётным'}.<br>А ${ks} — ${Math.abs(k)%2?'нечётное':'чётное'}. Поэтому <b>нельзя</b>.`,
+ explain2:yes?`Как искать пример: от суммы ${S} нужно «отнять» ${S-k}, а смена знака у x отнимает 2x. Значит, нужно набрать числа с суммой ${(S-k)/2} и поставить перед ними «−».`:`Можно и так: в выражении ${n} чисел, из них нечётных ${Math.ceil(n/2)}. Знак не меняет чётность числа (−3 тоже нечётное). Нечётных слагаемых ${Math.ceil(n/2)} — ${Math.ceil(n/2)%2?'нечётное':'чётное'} количество → результат всегда ${S%2?'нечётный':'чётный'}.`},['Да, можно','Нет, нельзя']);});
+G(3,()=>{const n=R(5,31),d=R(1,Math.min(5,n-1));const yes=(n*d)%2===0;
+ const constr=d%2===0?`Посадим всех по кругу, и пусть каждый дружит с ${d/2} ближайшими соседями слева и ${d/2} справа — у каждого ровно ${d} ${plural(d,'друг','друга','друзей')}.`:`Посадим всех по кругу (их ${n} — чётное число). Пусть каждый дружит ${d>1?`с ${(d-1)/2} ближайшими соседями слева и справа и `:''}с тем, кто сидит прямо напротив. У каждого ровно ${d} ${plural(d,'друг','друга','друзей')}.`;
+ return YN(`В классе ${n} ${plural(n,'ученик','ученика','учеников')}. Может ли быть так, что каждый дружит ровно с ${d} ${plural(d,'одноклассником','одноклассниками','одноклассниками')}?`,yes,{
+ hint:'Сложи количества друзей у всех. Сколько раз посчитана каждая дружба?',
+ short:yes?`Может: ${n}·${d} = ${n*d} — чётно, и пример строится по кругу.`:`Нет: ${n}·${d} = ${n*d} — нечётно, а должно быть чётным.`,
+ explain:`Сложим числа друзей всех учеников: ${n}·${d} = <b>${n*d}</b>. Каждая дружба (пара друзей) посчитана <b>два раза</b> — у обоих друзей. Значит, сумма обязана быть чётной.<br>${yes?`${n*d} — чётно, противоречия нет. Пример: ${constr}`:`${n*d} — нечётно → <b>так быть не может</b>.`}`,
+ explain2:`Представь, что каждая дружба — это верёвочка, у которой два конца (по одному у каждого друга). Концов всего ${n}·${d} = ${n*d}. У каждой верёвочки 2 конца, поэтому концов — чётное число. ${yes?'Здесь чётное — можно, и пример выше.':'Здесь нечётное — значит, такой «верёвочной схемы» не существует.'}`},['Да, может','Нет, не может']);});
+G(3,()=>{const n=R(5,16);const S=n*(n+1)/2;const yes=S%2===0;let g=[];if(yes){let t=S/2;for(let x=n;x>=1;x--)if(x<=t){g.push(x);t-=x;}}
+ const other=range(1,n).filter(x=>!g.includes(x));
+ return YN(`Можно ли числа 1, 2, 3, …, ${n} разбить на две группы с <b>одинаковыми</b> суммами?`,yes,{
+ hint:`Найди сумму всех чисел. Какой должна быть сумма каждой группы?`,
+ short:yes?`Можно: сумма ${S}, по ${S/2} в группе: {${g.sort((a,b)=>a-b).join(', ')}} и {${other.join(', ')}}.`:`Нельзя: сумма ${S} нечётная, пополам не делится.`,
+ explain:`1 + 2 + … + ${n} = ${n}·${n+1} : 2 = <b>${S}</b>. Если суммы групп равны, каждая равна ${S} : 2.<br>${yes?`${S} : 2 = ${S/2} — целое. Пример: {${g.join(', ')}} (сумма ${S/2}) и {${other.join(', ')}} (сумма ${S/2}). <b>Можно</b>.`:`${S} — <b>нечётное</b>, на две равные целые части не делится. <b>Нельзя</b>.`}`,
+ explain2:yes?`Как найти пример: бери числа с самого большого, пока не превысишь ${S/2}: ${g.join(' + ')} = ${S/2}. Остальные числа сами дадут вторую половину.`:`Две одинаковые суммы — это x + x = 2x, а 2x — всегда чётно. Значит, общая сумма должна быть чётной. А у нас ${S}.`},['Да, можно','Нет, нельзя']);});
+
+/* L4 — weighings */
+G(4,()=>CH('Какая главная идея в задачах на поиск лёгкой фальшивой монеты на чашечных весах?','Делить монеты на три кучки: две равные кладём на весы, третью откладываем',['Делить монеты пополам и класть половины на чаши','Взвешивать монеты по одной, пока одна не окажется легче','Класть на чаши разное количество монет'],
+ {short:'У весов три исхода — поэтому три кучки.',
+ explain:'У весов <b>три</b> исхода: легче левая, легче правая, равновесие. Поэтому делим монеты на <b>три кучки</b>: две равные — на весы, третью — в сторону. Легче левая → фальшивка там; легче правая → там; равновесие → в отложенной. Разное количество монет на чашах класть бессмысленно: больше монет всегда тяжелее.',
+ explain2:'При делении пополам исход «равновесие» никогда не выпадет — мы «тратим» одно взвешивание на выбор только из двух вариантов. Три кучки используют все три исхода.'}),'r');
+G(4,()=>{const k=R(2,4);return CH(`За ${k} ${plural(k,'взвешивание','взвешивания','взвешиваний')} на чашечных весах без гирь можно найти одну лёгкую фальшивую монету среди скольких монет (наибольшее количество)?`,`3<sup>${k}</sup> = ${3**k}`,[`2<sup>${k}</sup> = ${2**k}`,`3·${k} = ${3*k}`,`${k} + 1 = ${k+1}`],
+ {short:`Каждое взвешивание уменьшает кучку втрое: 3<sup>${k}</sup> = ${3**k}.`,
+ explain:`Правило: за k взвешиваний — до <b>3<sup>k</sup></b> монет. Каждое взвешивание делит кучку на 3 части и оставляет одну. ${3**k} → ${range(1,k).map(i=>3**(k-i)).join(' → ')}. ${k} ${plural(k,'шаг','шага','шагов')} — и монета найдена. 2<sup>${k}</sup> — это для деления пополам, хуже.`,
+ explain2:`Цепочка: 1 взвешивание — 3 монеты, 2 — 9, 3 — 27, 4 — 81. Каждый раз ×3. Больше нельзя: у ${k} взвешиваний всего 3<sup>${k}</sup> = ${3**k} разных результатов.`});},'r');
+G(4,()=>{let n;do{n=R(4,250);}while([9,27,81,243,3].includes(n)&&Math.random()<0.5);const k=ceilLog3(n);const chain=[];let m=n;while(m>1){chain.push(m);m=Math.ceil(m/3);}chain.push(1);
+ return {type:'num',q:`Среди ${n} одинаковых на вид монет одна фальшивая — она легче остальных. За какое наименьшее число взвешиваний на чашечных весах без гирь её можно наверняка найти?`,ans:k,
+ hint:'Найди наименьшую степень тройки, которая не меньше числа монет.',
+ short:`3<sup>${k-1}</sup> = ${3**(k-1)} < ${n} ≤ 3<sup>${k}</sup> = ${3**k} → ${k}.`,
+ explain:`Степени тройки: ${range(1,k).map(i=>`3<sup>${i}</sup> = ${3**i}`).join(', ')}.<br>${n} ≤ ${3**k}, значит, хватит <b>${k}</b> ${plural(k,'взвешивания','взвешиваний','взвешиваний')}: каждый раз делим кучку на три почти равные части (на чаши — поровну), и кучка с фальшивкой уменьшается так: ${chain.join(' → ')}.<br>Меньше нельзя: за ${k-1} ${plural(k-1,'взвешивание','взвешивания','взвешиваний')} различимо не больше ${3**(k-1)} монет, а у нас ${n}.`,
+ explain2:`Думай так: одно взвешивание «делит на 3» (с округлением вверх). ${chain.join(' → ')} — ${chain.length-1} ${plural(chain.length-1,'деление','деления','делений')}, пока не останется 1 монета. Ответ ${k}.`};});
+G(4,()=>{const n=pick([9,27]);const p=n/3;const out=R(0,2);const tilt=out===0?1:out===1?-1:0;
+ const opts=[`Среди ${p} монет на левой чаше`,`Среди ${p} монет на правой чаше`,`Среди ${p} отложенных монет`,'Фальшивой монеты нет'];const ans=out;
+ const res=out===0?'Левая чаша поднялась (она легче)':out===1?'Правая чаша поднялась (она легче)':'Весы в равновесии';
+ return {type:'choice',q:`Среди ${n} монет одна фальшивая (легче). Положили по ${p} ${plural(p,'монете','монеты','монет')} на каждую чашу, ${p} — отложили. ${res}. Где фальшивая монета?`,pic:scale({L:p,R:p,tilt,aside:`${p} ${plural(p,'монета отложена','монеты отложены','монет отложены')}`}),opts,ans,
+ short:out===2?'Равновесие — на чашах все настоящие, фальшивка в стороне.':'Фальшивка легче — она на той чаше, что поднялась.',
+ explain:`Фальшивая монета легче. ${out===2?`Чаши уравновешены — значит, на обеих все монеты настоящие. Фальшивка среди <b>${p} отложенных</b>.`:`Чаша с фальшивкой легче и поднимается. Поднялась ${out===0?'левая':'правая'} → фальшивка <b>среди ${p} монет на ${out===0?'левой':'правой'} чаше</b>.`}<br>Дальше из этих ${p} снова делаем три кучки по ${p/3}.`,
+ explain2:`Вариант «фальшивой нет» невозможен по условию. А «тяжелее» та чаша, которая опустилась, — значит, на ней все монеты настоящие.`};});
+
+/* L5 — pouring */
+G(5,()=>CH('Какие действия разрешены в задачах на переливание (сосуды без делений)?','Наполнить сосуд доверху, вылить его целиком или переливать из одного в другой, пока первый не опустеет или второй не наполнится',['Наполнить сосуд до половины, на глаз','Переливать из одного сосуда в другой любое количество воды, сколько захочешь','Отмерять воду по делениям на стенке сосуда'],
+ {short:'Только «до края» и «до дна» — делений нет.',
+ explain:'В сосудах <b>нет делений</b>, поэтому мы точно знаем только два положения: «полный» и «пустой». Переливаем, <b>пока первый не опустеет или второй не наполнится</b>. Половину на глаз — нельзя. Записывай всё в таблицу состояний.',
+ explain2:'Представь, что сосуды непрозрачные: внутрь не видно. Ты знаешь только, когда вода начала переливаться через край или когда сосуд опустел. Только эти моменты и можно использовать.'}),'r');
+G(5,()=>{for(;;){const a=R(3,9),b=R(a+1,13);if(gcd(a,b)!==1)continue;const c=R(1,b-1);if(c===a)continue;const path=pourBFS([a,b],[0,0],s=>s[0]===c||s[1]===c,true);if(!path||path.length<4||path.length>10)continue;
+ return {type:'num',q:`Есть два пустых сосуда без делений: на ${a} л и на ${b} л, и кран с водой. Одно действие — наполнить сосуд доверху, вылить его целиком или перелить воду из одного сосуда в другой. За какое наименьшее число действий можно получить ровно ${c} л в одном из сосудов?`,pic:vessels([{cap:a,amt:0},{cap:b,amt:0}]),ans:path.length,
+ hint:'Веди таблицу: сколько воды в каждом сосуде после каждого действия. Попробуй начать с наполнения меньшего, потом — большего.',
+ short:`Хватит ${path.length} действий, меньше нельзя (проверено перебором всех состояний).`,
+ explain:`Самый короткий путь (${path.length} ${plural(path.length,'действие','действия','действий')}):${pourTable([a,b],[0,0],path)}Перебор показывает, что за ${path.length-1} ${plural(path.length-1,'действие','действия','действий')} ${c} л получить нельзя: ни в одном состоянии, достижимом за ${path.length-1} ${plural(path.length-1,'шаг','шага','шагов')}, нет ${c} л. Ответ: <b>${path.length}</b>.`,
+ explain2:`Как искать: из каждого состояния есть всего несколько ходов. Нарисуй «дерево»: после 1 действия — (${a}, 0) или (0, ${b}); после двух — ещё несколько новых состояний… Ищи, на каком «этаже» дерева впервые появится ${c}. Нашёлся на этаже ${path.length}.`};}});
+G(5,()=>{for(;;){const a=R(2,10),b=R(a+1,14);const c=R(1,b-1);if(c===a)continue;const d=gcd(a,b);const path=pourBFS([a,b],[0,0],s=>s[0]===c||s[1]===c,true);const yes=!!path;if(yes!==(c%d===0))continue;if(Math.random()<0.5&&yes)continue;
+ return YN(`Есть сосуды на ${a} л и на ${b} л без делений и кран с водой. Можно ли отмерить ровно ${c} л?`,yes,{
+ hint:`Найди НОД(${a}, ${b}).`,
+ short:yes?`НОД(${a}, ${b}) = ${d}, ${c} делится на ${d} → можно (${path.length} ${plural(path.length,'действие','действия','действий')}).`:`НОД(${a}, ${b}) = ${d}, а ${c} на ${d} не делится → нельзя.`,
+ explain:`НОД(${a}, ${b}) = <b>${d}</b>. ${d>1?`Оба объёма делятся на ${d}, поэтому в каждом сосуде всегда будет количество воды, кратное ${d}: наполняя, выливая и переливая, мы только складываем и вычитаем числа, кратные ${d}.`:'Объёмы взаимно просты — можно отмерить любое целое количество литров от 1 до '+b+'.'}<br>${yes?`${c} делится на ${d} → <b>можно</b>. Например:${pourTable([a,b],[0,0],path)}`:`${c} на ${d} не делится → <b>нельзя</b>.`}`,
+ explain2:yes?`Проверь таблицу шаг за шагом — после последнего действия в одном из сосудов ровно ${c} л.`:`Это инвариант: «количество воды в каждом сосуде делится на ${d}». В начале 0 и 0 — делится. Любое действие это свойство сохраняет. А ${c} на ${d} не делится — значит, ${c} никогда не появится.`},['Да, можно','Нет, нельзя']);}});
+G(5,()=>{for(;;){const a=R(3,7),b=R(a+1,11);let s=[0,0];const acts=[];const names=[];
+ for(let i=0;i<5;i++){const opts=[];if(s[0]<a)opts.push(['fa',`наполнить ${a}-литровый`]);if(s[1]<b)opts.push(['fb',`наполнить ${b}-литровый`]);if(s[0]>0&&s[1]<b)opts.push(['ab',`перелить из ${a}-литрового в ${b}-литровый`]);if(s[1]>0&&s[0]<a)opts.push(['ba',`перелить из ${b}-литрового в ${a}-литровый`]);if(s[0]>0&&i>1)opts.push(['ea',`вылить ${a}-литровый`]);if(s[1]>0&&i>1)opts.push(['eb',`вылить ${b}-литровый`]);
+  const [k,t]=pick(opts);const n=s.slice();if(k==='fa')n[0]=a;if(k==='fb')n[1]=b;if(k==='ea')n[0]=0;if(k==='eb')n[1]=0;if(k==='ab'){const d=Math.min(s[0],b-s[1]);n[0]-=d;n[1]+=d;}if(k==='ba'){const d=Math.min(s[1],a-s[0]);n[1]-=d;n[0]+=d;}
+  s=n;acts.push({s:n.slice(),a:t});}
+ const ask=R(0,1);const cap=ask?b:a;const ans=s[ask];if(ans===0||ans===cap)continue;if(!acts.some(x=>x.a.startsWith('перелить')))continue;
+ return {type:'num',q:`Сосуды на ${a} л и ${b} л сначала пустые. Делаем по очереди:<br>${acts.map((x,i)=>`${i+1}) ${x.a};`).join('<br>')}<br>Сколько литров окажется в ${cap}-литровом сосуде?`,ans,
+ hint:'Записывай в таблицу, сколько воды в каждом сосуде после каждого шага. При переливании льём, пока один не опустеет или другой не наполнится.',
+ short:`После всех шагов: ${s[0]} л и ${s[1]} л.`,
+ explain:`Таблица состояний:${pourTable([a,b],[0,0],acts)}В ${cap}-литровом: <b>${ans} л</b>.<br>Главное при переливании: льём, пока первый не опустеет <b>или</b> второй не наполнится — смотри, что наступит раньше.`,
+ explain2:`Пример одного переливания: если в ${b}-литровом ${b-1} л, а в ${a}-литровом 2 л, то перелить из ${a}-литрового в ${b}-литровый можно только 1 л — дальше будет через край. В ${a}-литровом останется 1 л. Проверь каждый свой шаг именно так.`};}});
+
+/* L6 — invariants & backwards */
+G(6,()=>CH('Что такое инвариант?','Величина или свойство, которое не меняется при разрешённых действиях',['Величина, которая при каждом действии увеличивается на 1','Самое большое число в задаче','Действие, которое можно отменить'],
+ {short:'Инвариант — то, что не меняется.',
+ explain:'<b>Инвариант</b> — то, что <b>не меняется</b> при разрешённых действиях: чётность суммы, остаток, количество чего-то. Если в начале инвариант один, а в нужном конце — другой, значит, туда не добраться.',
+ explain2:'Пример: в шахматах слон всегда стоит на клетках одного цвета. Цвет клеток слона — инвариант. Поэтому белопольный слон никогда не попадёт на чёрное поле.'}),'r');
+G(6,()=>CH('Как решать задачи, где известен результат, а начало нужно найти («с конца»)?','Идти от результата назад, выполняя обратные действия в обратном порядке',['Выполнять те же действия, начиная с результата','Выполнять обратные действия в том же порядке, что в условии','Подбирать начальное число наугад, пока не получится'],
+ {short:'Обратные действия в обратном порядке.',
+ explain:'Идём <b>с конца</b>: последнее действие отменяем первым. Каждое действие меняем на <b>обратное</b>: «+» ↔ «−», «·» ↔ «:». Пример: ×3, +4 → 25. Назад: 25 − 4 = 21, потом 21 : 3 = 7.',
+ explain2:'Это как снимать одежду: надевал носки, потом ботинки — снимаешь сначала ботинки, потом носки. Обратные действия, обратный порядок.'}),'r');
+G(6,()=>{for(;;){const x=R(2,20);const ops=[];let v=x;
+ const a=R(2,5);v*=a;ops.push({t:`умножил на ${a}`,inv:`${v} : ${a} = ${v/a}`,v});
+ const b=R(2,15);v+=b;ops.push({t:`прибавил ${b}`,inv:`${v} − ${b} = ${v-b}`,v});
+ const ds=range(2,9).filter(d=>v%d===0);if(!ds.length)continue;const c=pick(ds);v/=c;ops.push({t:`разделил на ${c}`,inv:`${v} · ${c} = ${v*c}`,v});
+ const d=R(1,Math.max(1,v-1));v-=d;ops.push({t:`вычел ${d}`,inv:`${v} + ${d} = ${v+d}`,v});if(v<=0)continue;
+ return {type:'num',q:`Петя задумал число, ${ops.map(o=>o.t).join(', ')} и получил ${v}. Какое число задумал Петя?`,ans:x,
+ hint:'Иди с конца: последнее действие отменяй первым.',
+ short:`С конца: ${ops.slice().reverse().map(o=>o.inv).join('; ')}.`,
+ explain:`Идём с конца, обратные действия в обратном порядке:<br>${ops.slice().reverse().map((o,i)=>`${i+1}) было «${o.t}» → ${o.inv}`).join('<br>')}<br>Задумано <b>${x}</b>. Проверка: ${x}${ops.map(o=>` → ${o.v}`).join('')} ✅`,
+ explain2:`Нарисуй цепочку стрелок: □ → ×${a} → +${b} → :${c} → −${d} → ${v}. Теперь иди по стрелкам назад, меняя знаки: ${v} → +${d} → ·${c} → −${b} → :${a} → ${x}.`};}});
+G(6,()=>{const k=R(1,9);const steps=R(2,3);const who=['другу','сестре','соседу'].slice(0,steps);const vals=[k];for(let i=0;i<steps;i++)vals.unshift(2*(vals[0]+1));
+ return {type:'num',q:`У Вовы были яблоки. Сначала он отдал ${who[0]} половину всех яблок и ещё одно, потом ${who[1]} — половину оставшихся и ещё одно${steps===3?`, потом ${who[2]} — половину оставшихся и ещё одно`:''}. У Вовы осталось ${k} ${plural(k,'яблоко','яблока','яблок')}. Сколько яблок было сначала?`,ans:vals[0],
+ hint:'С конца: «отдал половину и ещё одно» → обратно: прибавь одно и удвой.',
+ short:`С конца: ${vals.slice().reverse().join(' → ')}.`,
+ explain:`«Отдал половину и ещё одно» — значит, осталось: половина − 1. Обратное действие: <b>прибавить 1 и умножить на 2</b>.<br>${vals.slice().reverse().slice(0,-1).map((v,i,arr)=>{const p=2*(v+1);return `(${v} + 1)·2 = ${p} — было до того, как он дал ${who[steps-1-i]}`;}).join('<br>')}<br>Сначала было <b>${vals[0]}</b>.`,
+ explain2:`Проверка вперёд: ${vals.slice(0,-1).map((v,i)=>`было ${v}, отдал ${v/2} + 1 = ${v/2+1}, осталось ${vals[i+1]}`).join('; ')} ✅`};});
+G(6,()=>{const n=R(5,20);const S=n*(n+1)/2;const v=pick(['sum','diff']);
+ if(v==='sum')return {type:'num',q:`На доске написаны числа 1, 2, 3, …, ${n}. Разрешается стереть любые два числа и вместо них написать их сумму. Так делают, пока не останется одно число. Какое?`,ans:S,
+  short:`Сумма всех чисел не меняется: ${S}.`,
+  explain:`Инвариант — <b>сумма всех чисел на доске</b>: стёрли a и b, написали a + b — сумма та же. В начале 1 + 2 + … + ${n} = ${n}·${n+1} : 2 = ${S}. В конце одно число, и оно равно сумме: <b>${S}</b>.`,
+  explain2:`Попробуй с 1, 2, 3: (1, 2, 3) → (3, 3) → (6). А 1 + 2 + 3 = 6. Сумма не меняется — значит, в конце ровно сумма.`};
+ return CH(`На доске написаны числа 1, 2, 3, …, ${n}. Разрешается стереть любые два числа и написать вместо них их разность (из большего вычесть меньшее). Так делают, пока не останется одно число. Каким оно будет?`,S%2?'Обязательно нечётным':'Обязательно чётным',[S%2?'Обязательно чётным':'Обязательно нечётным','Обязательно нулём','Может быть и чётным, и нечётным'],
+  {short:`Чётность суммы не меняется; сумма ${S} — ${S%2?'нечётная':'чётная'}.`,
+  explain:`Стираем a и b (a ≥ b), пишем a − b. Сумма всех чисел меняется на (a + b) − (a − b) = 2b — на чётное число. Значит, <b>чётность суммы — инвариант</b>.<br>В начале сумма 1 + … + ${n} = ${S} — ${S%2?'нечётная':'чётная'}. В конце одно число, его чётность та же → оно <b>${S%2?'нечётное':'чётное'}</b>.`,
+  explain2:`Проверь на маленьком примере 1, 2, 3 (сумма 6, чётная): (3 − 2 = 1) → 1, 1 → 0 — чётное. Или (2 − 1 = 1) → 1, 3 → 2 — снова чётное. Чётность угадали заранее!`});});
+G(6,()=>{const m=R(2,9),n=R(2,9);return {type:'num',q:`Шоколадка размером ${m}×${n} долек. За один разлом можно разломить один кусок по прямой линии на два. Какое наименьшее число разломов нужно, чтобы получить все ${m*n} ${plural(m*n,'дольку','дольки','долек')}?`,ans:m*n-1,
+ hint:'Как меняется число кусков после одного разлома?',
+ short:`Каждый разлом +1 кусок: из 1 в ${m*n} — ${m*n-1} разломов.`,
+ explain:`Инвариант-счётчик: каждый разлом превращает один кусок в два, то есть <b>кусков становится ровно на 1 больше</b>. В начале 1 кусок, в конце ${m*n}. Значит, разломов ровно ${m*n} − 1 = <b>${m*n-1}</b> — как ни ломай, не меньше и не больше.`,
+ explain2:`Маленький пример: шоколадка 2×2 (4 дольки). Разломили пополам — 2 куска, каждый ещё раз — 4. Всего 3 разлома = 4 − 1. Хитрый порядок не помогает — один разлом всегда даёт ровно +1 кусок.`};});
+
+/* L7 — counting */
+G(7,()=>CH('Как звучит правило умножения в комбинаторике?','Если первый выбор можно сделать a способами, а второй (после любого первого) — b способами, то оба выбора вместе — a·b способами',['Если первый выбор можно сделать a способами, а второй — b способами, то оба вместе — a + b способами','Число способов всегда равно количеству предметов','Если есть a и b способов, то всего способов a·b : 2'],
+ {short:'Каждый из a вариантов сочетается с каждым из b → a·b.',
+ explain:'<b>Правило умножения</b>: к каждому из a первых выборов можно присоединить любой из b вторых, получается b + b + … + b (a раз) = <b>a·b</b>. «a + b» — это если выбираем что-то <b>одно</b>: <i>или</i> из первой группы, <i>или</i> из второй.',
+ explain2:'3 футболки и 2 шорт: Ф1-Ш1, Ф1-Ш2, Ф2-Ш1, Ф2-Ш2, Ф3-Ш1, Ф3-Ш2 — 6 = 3·2 комплектов. А если ты выбираешь только одну вещь (футболку или шорты) — 3 + 2 = 5 вариантов.'}),'r');
+G(7,()=>{const a=R(3,7),b=R(2,6),c=Math.random()<0.5?R(2,4):0;const ans=a*b*(c||1);
+ return {type:'num',q:`У Пашки ${a} ${plural(a,'футболка','футболки','футболок')}, ${b} ${plural(b,'пара','пары','пар')} штанов${c?` и ${c} ${plural(c,'пара','пары','пар')} кроссовок`:''}. Сколькими способами он может одеться (${c?'футболка, штаны и кроссовки':'футболка и штаны'})?`,ans,
+ short:`${a}·${b}${c?'·'+c:''} = ${ans}.`,
+ explain:`К каждой из ${a} футболок можно надеть любые из ${b} штанов: ${a}·${b} = ${a*b} ${plural(a*b,'комплект','комплекта','комплектов')}${c?`. К каждому комплекту — любые из ${c} кроссовок: ${a*b}·${c} = ${ans}`:''}. Ответ: <b>${ans}</b>.<div class="box err"><b>Ошибка</b>${a} + ${b}${c?' + '+c:''} = ${a+b+c} — так считают, когда выбирают <b>одну</b> вещь, а не комплект.</div>`,
+ explain2:`Нарисуй дерево: от «старта» ${a} веточек-футболок, от каждой — ${b} веточек-штанов${c?`, от каждой из них — ${c} веточек-кроссовок`:''}. Концов у дерева: ${ans}.`};});
+G(7,()=>{for(;;){const zero=Math.random()<0.5;const k=R(3,5);const D=(zero?[0]:[]).concat(sample(range(1,9),zero?k-1:k)).sort((a,b)=>a-b);const rep=Math.random()<0.4;
+ let cnt=0;for(const a of D)for(const b of D)for(const c of D){if(a===0)continue;if(!rep&&(a===b||b===c||a===c))continue;cnt++;}
+ const f1=zero?k-1:k,f2=rep?k:k-1,f3=rep?k:k-2;if(f1*f2*f3!==cnt)continue;
+ return {type:'num',q:`Сколько трёхзначных чисел можно составить из цифр ${D.join(', ')}, если цифры ${rep?'<b>могут</b> повторяться':'<b>не</b> повторяются'}?`,ans:cnt,
+ hint:zero?'Помни: трёхзначное число не может начинаться с нуля.':'Сколько вариантов для первой цифры? Для второй?',
+ short:`${f1}·${f2}·${f3} = ${cnt}.`,
+ explain:`Выбираем цифры по очереди:<br>• первая (сотни): ${f1} ${plural(f1,'вариант','варианта','вариантов')}${zero?' — ноль нельзя':''};<br>• вторая (десятки): ${f2}${rep?' — любая из '+k:' — любая, кроме уже взятой'+(zero?' (теперь ноль можно)':'')};<br>• третья (единицы): ${f3}${rep?'':' — кроме двух уже взятых'}.<br>По правилу умножения: ${f1}·${f2}·${f3} = <b>${cnt}</b>.`,
+ explain2:`Представь три пустые клеточки □□□ и заполняй их по очереди. Для первой клеточки — ${f1} ${plural(f1,'вариант','варианта','вариантов')}. Какую бы ты ни поставил, для второй остаётся ${f2}, для третьей — ${f3}. Например, числа, начинающиеся с ${D.find(x=>x>0)}: их ${f2}·${f3} = ${f2*f3}. Таких «пачек» ${f1}, всего ${f1}·${f2*f3} = ${cnt} (компьютер перебором насчитал столько же).`};}});
+G(7,()=>{const n=R(5,15);const v=pick(['hand','cap','duty']);
+ if(v==='cap')return {type:'num',q:`В команде ${n} ${plural(n,'игрок','игрока','игроков')}. Сколькими способами можно выбрать капитана и его заместителя?`,ans:n*(n-1),
+  short:`${n}·${n-1} = ${n*(n-1)} — порядок важен (капитан ≠ заместитель).`,
+  explain:`Капитана выбираем ${n} способами, заместителя — из оставшихся ${n-1}. Здесь <b>порядок важен</b>: «Аня капитан, Боря зам» и «Боря капитан, Аня зам» — разные варианты. Ответ: ${n}·${n-1} = <b>${n*(n-1)}</b>.`,
+  explain2:`Сравни с задачей «выбрать двух дежурных»: там Аня+Боря и Боря+Аня — одно и то же, и ответ делят на 2. А у капитана и заместителя разные роли — делить не нужно.`};
+ const ans=n*(n-1)/2;
+ return {type:'num',q:v==='hand'?`Встретились ${n} друзей, и каждый пожал руку каждому. Сколько было рукопожатий?`:`В классе ${n} ${plural(n,'ученик','ученика','учеников')}. Сколькими способами можно выбрать двух дежурных?`,ans,
+ hint:'Каждый — с каждым из остальных. Но пара «Аня–Боря» и «Боря–Аня» — одна и та же!',
+ short:`${n}·${n-1} : 2 = ${ans}.`,
+ explain:`Каждый из ${n} человек ${v==='hand'?`пожимает руку ${n-1} другим`:`может попасть в пару с любым из ${n-1} других`}: ${n}·${n-1} = ${n*(n-1)}. Но так каждая пара посчитана <b>дважды</b> (Аня–Боря и Боря–Аня). Делим на 2: <b>${ans}</b>.`,
+ explain2:`Посчитай по очереди: первый ${v==='hand'?'пожимает руки':'составляет пары с'} ${n-1} остальным, второй — с ${n-2} новыми (с первым уже было), третий — с ${n-3}… ${range(1,n-1).reverse().join(' + ')} = ${ans}.`};});
+G(7,()=>{const s=R(3,9);let cnt=0;for(let x=100;x<1000;x++){const d=String(x).split('').map(Number);if(d[0]+d[1]+d[2]===s)cnt++;}
+ const rows=range(1,s).map(a=>`сотни ${a}: десятки + единицы = ${s-a} → ${s-a+1} ${plural(s-a+1,'вариант','варианта','вариантов')}`);
+ return {type:'num',q:`Сколько существует трёхзначных чисел, сумма цифр которых равна ${s}?`,ans:cnt,
+ hint:'Перебирай по первой цифре: 1, 2, 3, … Для каждой посчитай, сколькими способами набрать остаток двумя цифрами.',
+ short:`${range(1,s).map(a=>s-a+1).join(' + ')} = ${cnt}.`,
+ explain:`Перебираем по порядку — по цифре сотен (от 1 до ${s}):<br>${rows.join('<br>')}<br>(если две цифры дают в сумме m ≤ 9, то вариантов m + 1: первая цифра 0, 1, …, m.)<br>Итого: ${range(1,s).map(a=>s-a+1).join(' + ')} = <b>${cnt}</b>.`,
+ explain2:`Проверим маленький кусочек: сотни = ${s}, тогда остаток 0 → только ${s}00. Сотни = ${s-1}: остаток 1 → ${s-1}10 и ${s-1}01 — два числа. Каждый шаг добавляет по одному варианту — получается сумма ${cnt}.`};});
+
+/* L8 — olympiad ★ */
+G(8,()=>CH('Какой приём помогает доказать, что фигуру нельзя разрезать на доминошки 1×2?','Раскраска в шахматном порядке: каждая доминошка накрывает одну тёмную и одну светлую клетку',['Принцип Дирихле: доминошек больше, чем клеток','Задача «с конца»: начинаем с последней доминошки','Правило умножения: считаем, сколькими способами можно положить доминошки'],
+ {short:'Раскраска: в каждой доминошке 1 тёмная + 1 светлая.',
+ explain:'Приём <b>раскраски</b>: раскрась клетки в шахматном порядке. Любая доминошка 1×2 накрывает <b>одну тёмную и одну светлую</b>. Значит, если фигуру можно разрезать на доминошки, тёмных и светлых клеток в ней поровну. Если не поровну — нельзя.',
+ explain2:'Раскраска превращает «картинку» в счёт: вместо того чтобы перебирать тысячи способов положить доминошки, считаем тёмные и светлые клетки. Не поровну → нельзя, и всё.'}),'r');
+G(8,()=>{const N=R(7,14);const mode=pick(['min','max']);let best=mode==='min'?99:-1,ex=null;
+ for(let m=0;m<(1<<N);m++){const k=range(0,N-1).map(i=>!!(m>>i&1));let ok=true;for(let i=0;i<N&&ok;i++){const l=k[(i+N-1)%N],r=k[(i+1)%N];const st=!l&&!r;if(st!==k[i])ok=false;}
+  if(!ok)continue;const c=k.filter(x=>x).length;if(mode==='min'?c<best:c>best){best=c;ex=k;}}
+ const pat=ex.map(x=>x?'Р':'Л').join(' ');
+ return {type:'num',q:`За круглым столом сидят ${N} жителей острова рыцарей и лжецов. Каждый сказал: «Оба моих соседа — лжецы». Какое <b>${mode==='min'?'наименьшее':'наибольшее'}</b> число рыцарей может быть за столом?`,ans:best,
+ hint:mode==='min'?'Если у лжеца оба соседа — лжецы, то его фраза правдива. Значит, рядом с каждым лжецом сидит рыцарь.':'Могут ли два рыцаря сидеть рядом?',
+ short:`${mode==='min'?'Оценка: каждый рыцарь «прикрывает» не больше 2 лжецов':'Оценка: рыцари не сидят рядом'} → ${best}. Пример: ${pat}.`,
+ explain:mode==='min'?`<b>Оценка.</b> Лжец солгал, значит, хотя бы один его сосед — рыцарь. Рыцарь сказал правду: оба его соседа — лжецы. Каждый рыцарь может быть соседом не больше чем <b>двух</b> лжецов. Если рыцарей k, то лжецов не больше 2k, и всех вместе не больше 3k. ${N} ≤ 3k → k ≥ ${N/3%1?(N/3).toFixed(2).replace('.',','):N/3} → k ≥ <b>${best}</b>.<br><b>Пример</b> на ${best} (по кругу): ${pat}. Каждый Р сидит между двумя Л ✅, у каждого Л есть сосед Р ✅.<br>Ответ: <b>${best}</b>.`
+  :`<b>Оценка.</b> У рыцаря оба соседа — лжецы, значит, два рыцаря рядом не сидят. Тогда рыцари занимают не больше половины мест: k ≤ ${N} : 2 → k ≤ <b>${best}</b>.<br><b>Пример</b> на ${best} (по кругу): ${pat}. Каждый Р — между двумя Л ✅, у каждого Л есть сосед Р ✅.<br>Ответ: <b>${best}</b>.`,
+ explain2:`Это задача «оценка + пример»: нужно и доказать, что ${mode==='min'?'меньше':'больше'} ${best} нельзя, и показать расстановку на ${best}. Компьютерный перебор всех ${2**N} рассадок даёт тот же ответ. Попробуй сначала на маленьком столе — 6 человек: ${mode==='min'?'Р Л Л Р Л Л — 2 рыцаря':'Р Л Р Л Р Л — 3 рыцаря'}.`};},'s');
+G(8,()=>{const n=R(5,15);const N=2*n;
+ return {type:'num',q:`Какое наименьшее количество чисел из 1, 2, 3, …, ${N} нужно выбрать, чтобы среди них наверняка нашлись два числа, одно из которых делится на другое?`,ans:n+1,
+ hint:'Любое число — это нечётное число, умноженное на несколько двоек. Сколько всего нечётных «основ»?',
+ short:`«Клетки» — ${n} нечётных чисел 1, 3, …, ${N-1}. Пример без делимости: ${n+1}, …, ${N}.`,
+ explain:`Запишем каждое число как <b>нечётное · 2·2·…·2</b>: например, 12 = 3·4, 40 = 5·8. Нечётных «основ» от 1 до ${N} ровно <b>${n}</b>: 1, 3, …, ${N-1}. Это клетки.<br>Выберем ${n+1} ${plural(n+1,'число','числа','чисел')} — по Дирихле два будут с одной основой: m·2<sup>a</sup> и m·2<sup>b</sup>, и большее делится на меньшее.<br><b>Пример</b>, что ${n} мало: ${n+1}, ${n+2}, …, ${N}. Любое из них, умноженное хотя бы на 2, больше ${N}, поэтому никакое не делится на другое.<br>Ответ: <b>${n+1}</b>.`,
+ explain2:`Маленький пример: числа 1…6. Основы: 1 (1, 2, 4), 3 (3, 6), 5 (5) — три клетки. Возьмёшь 4 числа — два из одной клетки, например 2 и 4. А тройка 4, 5, 6 — без делимости. Ответ для 6 чисел: 4 = 3 + 1.`};},'s');
+G(8,()=>{const vars=[{rem:[[0,0],[7,7]],t:'a1 и h8 (противоположные углы)',yes:false},{rem:[[0,0],[7,0]],t:'a1 и h1 (два угла одной стороны)',yes:true,line:'row'},{rem:[[0,0],[0,7]],t:'a1 и a8 (два угла одной стороны)',yes:true,line:'col'},{rem:[[7,0],[0,7]],t:'h1 и a8 (противоположные углы)',yes:false}];const v=pick(vars);
+ return YN(`Из шахматной доски 8×8 вырезали клетки ${v.t}. Можно ли оставшуюся часть разрезать на доминошки 1×2?`,v.yes,{pic:board(8,v.rem),
+ hint:'Посчитай, сколько осталось тёмных и сколько светлых клеток.',
+ short:v.yes?'Вырезаны одна тёмная и одна светлая — 31 и 31; разрезать можно.':'Вырезаны две клетки одного цвета: 30 и 32 — нельзя.',
+ explain:v.yes?`Клетки ${v.t.split(' (')[0]} — <b>разного цвета</b>. Осталось 31 тёмная и 31 светлая — раскраска не мешает. И разрезать действительно можно: ${v.line==='row'?'первую строку между вырезанными углами (6 клеток) режем на 3 доминошки, а каждую из остальных 7 строк (по 8 клеток) — на 4 доминошки':'столбец a между вырезанными углами (6 клеток) режем на 3 доминошки, а каждый из остальных 7 столбцов (по 8 клеток) — на 4 доминошки'}. Ответ: <b>можно</b>.`
+  :`Раскрасим доску. Противоположные углы ${v.t.split(' (')[0]} — <b>одного цвета</b>. Осталось 30 клеток этого цвета и 32 — другого. Каждая доминошка накрывает 1 тёмную + 1 светлую, поэтому 31 доминошка накрыла бы 31 + 31. А у нас 30 и 32 → <b>нельзя</b>.`,
+ explain2:v.yes?'Если вырезали два угла одной стороны, то ряд между ними — 6 клеток подряд — это 3 доминошки, а каждый из остальных 7 рядов — 4 доминошки. Всего 3 + 28 = 31 доминошка = 62 клетки ✅.':'Клеток 62 — чётное число, и кажется, что можно. Ловушка! Чётности мало — нужно ещё, чтобы тёмных и светлых было поровну. Компьютер перебором тоже подтверждает: разрезать нельзя.'},['Да, можно','Нет, нельзя']);},'s');
+G(8,()=>{const N=R(5,12),w=pick([10,20,5]),f=w-1;const B=R(2,N);const total=w*N*(N+1)/2-B;
+ return {type:'num',q:`Есть ${N} мешков с монетами, в каждом много монет. В одном мешке все монеты фальшивые: весят ${f} г вместо ${w} г. Есть весы со стрелкой, показывающие точный вес. За какое наименьшее число взвешиваний можно узнать, в каком мешке фальшивые монеты?`,ans:1,
+ hint:'Можно взять из разных мешков разное количество монет.',
+ short:`Одно: берём 1 монету из 1-го мешка, 2 — из 2-го, …, ${N} — из ${N}-го. Недовес в граммах = номер мешка.`,
+ explain:`Хватит <b>одного</b> взвешивания! Возьмём 1 монету из 1-го мешка, 2 — из 2-го, …, ${N} — из ${N}-го. Всего 1 + 2 + … + ${N} = ${N*(N+1)/2} монет; если бы все были настоящими, они весили бы ${w}·${N*(N+1)/2} = ${w*N*(N+1)/2} г.<br>Каждая фальшивая монета легче на 1 г. Если фальшивые в мешке номер m, недовес — ровно m грамм.<br>Например, весы показали ${total} г: недовес ${w*N*(N+1)/2} − ${total} = ${B} → фальшивые в мешке №${B}. Меньше одного взвешивания не бывает.`,
+ explain2:`Главная хитрость — <b>пометить</b> мешки разным количеством монет. Тогда одно число на весах «рассказывает», какой мешок фальшивый. На чашечных весах так не получится, а на весах со стрелкой — легко.`};},'s');
+G(8,()=>{const path=pourBFS([8,5,3],[8,0,0],s=>s[0]===4&&s[1]===4,false);
+ return {type:'num',q:`Восьмилитровое ведро доверху наполнено квасом. Есть ещё пустые бидоны на 5 л и на 3 л. Нужно разделить квас пополам: по 4 л в ведре и в пятилитровом бидоне. Можно только переливать из сосуда в сосуд (без делений, ничего не выливая). За какое наименьшее число переливаний это можно сделать?`,pic:vessels([{cap:8,amt:8},{cap:5,amt:0},{cap:3,amt:0}]),ans:path.length,
+ hint:'Веди таблицу (8, 5, 3). Попробуй начать с переливания в трёхлитровый.',
+ short:`${path.length} переливаний — меньше нельзя (перебор всех состояний).`,
+ explain:`Самое короткое решение:${pourTable([8,5,3],[8,0,0],path)}Перебор всех возможных состояний показывает, что быстрее нельзя: ${path.length-1} переливаний не хватает. Ответ: <b>${path.length}</b>.`,
+ explain2:`Если начать с переливания в 5-литровый бидон: (3, 5, 0) → (3, 2, 3) → (6, 2, 0) → (6, 0, 2) → (1, 5, 2) → (1, 4, 3) → (4, 4, 0) — 7 шагов. Тоже 7: оба пути одинаково короткие.`};},'s');
+G(8,()=>{const p=R(5,20),m=R(5,20);const res=m%2?'минус':'плюс';
+ return CH(`На доске написаны ${p} ${plural(p,'плюс','плюса','плюсов')} и ${m} ${plural(m,'минус','минуса','минусов')}. Разрешается стереть любые два знака и написать вместо них плюс, если знаки были одинаковые, и минус — если разные. В конце остался один знак. Какой?`,`Обязательно ${res}`,[`Обязательно ${res==='минус'?'плюс':'минус'}`,'Может остаться любой знак'],{
+ hint:'Как меняется количество минусов при каждом действии?',
+ short:`Чётность числа минусов не меняется; ${m} — ${m%2?'нечётно → минус':'чётно → плюс'}.`,
+ explain:`Следим за числом <b>минусов</b>:<br>• «+ +» → «+»: минусов столько же;<br>• «− −» → «+»: минусов на 2 меньше;<br>• «+ −» → «−»: минусов столько же.<br>Число минусов меняется на 0 или на 2 — его <b>чётность — инвариант</b>. В начале минусов ${m} — ${m%2?'нечётное':'чётное'} число. В конце остался один знак: если это «−», минусов 1 (нечётно), если «+» — 0 (чётно). Значит, останется <b>${res}</b>.`,
+ explain2:`Можно заменить «+» на 1, а «−» на −1. Тогда действие — это просто умножение двух чисел: (+1)(+1) = +1, (−1)(−1) = +1, (+1)(−1) = −1. Произведение всех чисел не меняется! В начале оно (−1)<sup>${m}</sup> = ${m%2?'−1':'+1'} → в конце ${res}.`});},'s');
+G(8,()=>{for(;;){const a=R(4,16),b=R(4,16),c=R(4,16);if(a===b||b===c||a===c)continue;const T=a+b+c;
+ const key=s=>s.join(',');const seen=new Map([[key([a,b,c]),null]]);const q=[[a,b,c]];let goal=null;
+ while(q.length){const s=q.shift();if(s.filter(x=>x===T).length===1){goal=s;break;}for(const [i,j] of [[0,1],[0,2],[1,2]]){if(s[i]>0&&s[j]>0){const t=s.slice();t[i]--;t[j]--;t[3-i-j]+=2;const k=key(t);if(!seen.has(k)){seen.set(k,key(s));q.push(t);}}}}
+ const yes=!!goal;const d1=(a-b+300)%3,d2=(b-c+300)%3,d3=(a-c+300)%3;if(yes!==(d1===0||d2===0||d3===0))continue;
+ let steps=0;if(yes){let k=key(goal);while(seen.get(k)){k=seen.get(k);steps++;}}
+ return YN(`На острове живут хамелеоны: ${a} серых, ${b} бурых и ${c} малиновых. Когда встречаются два хамелеона <b>разного</b> цвета, оба меняют цвет на третий (серый и бурый становятся малиновыми и т. д.). Могут ли со временем все хамелеоны стать одного цвета?`,yes,{
+ hint:'Посмотри на разности количеств и их остатки от деления на 3.',
+ short:yes?`Могут: остатки от деления на 3 у двух цветов совпадают; хватит ${steps} встреч.`:`Нет: остатки ${a%3}, ${b%3}, ${c%3} попарно разные, а встречи этого не меняют.`,
+ explain:`Встреча, например, серого и бурого: (с, б, м) → (с − 1, б − 1, м + 2). Разность двух количеств меняется на 0 или на 3 — значит, <b>остаток разности при делении на 3 — инвариант</b>.<br>Остатки от деления на 3: серых ${a} → ${a%3}, бурых ${b} → ${b%3}, малиновых ${c} → ${c%3}.<br>Если все станут одного цвета, два других количества будут 0 и 0 — их разность 0, остаток 0. ${yes?`У нас есть два цвета с одинаковым остатком — противоречия нет, и компьютерный перебор находит путь за ${steps} встреч. <b>Могут</b>.`:`А у нас остатки ${a%3}, ${b%3}, ${c%3} — все разные, ни одна разность не делится на 3. <b>Не могут</b>.`}`,
+ explain2:yes?`Идея примера: пусть у двух цветов одинаковый остаток при делении на 3. Встречами «третьего цвета» с ними можно уравнять их количества, а потом встречать их попарно — каждая пара превращается в третий цвет, пока эти два цвета не исчезнут.`:`Попробуй на маленьком примере: 1 серый, 2 бурых, 0 малиновых (остатки 1, 2, 0). Встреча С+Б → (0, 1, 2). Б+М → (2, 0, 1). Мы ходим по кругу и никогда не придём к «все одного цвета».`},['Да, могут','Нет, не могут']);}},'s');
+
+gens.forEach(g=>{const m=g.make;g.make=()=>{for(let i=0;i<500;i++){const t=m();if(t)return t;}return null;};});
+
+/* widgets */
+function onTheory(root){
+  const w=root.querySelector('#w-dir');
+  if(w){w.innerHTML=`<b>Рассади кроликов как можно равномернее</b><label>Кроликов: <input type="range" id="dr" min="1" max="30" value="7"><output id="dro"></output></label><label>Клеток: <input type="range" id="dc" min="1" max="8" value="3"><output id="dco"></output></label><div id="dpic" style="display:flex;justify-content:center"></div><div id="dout" class="small" style="text-align:center"></div>`;
+    const r=w.querySelector('#dr'),c=w.querySelector('#dc');const u=()=>{const R_=+r.value,C=+c.value;w.querySelector('#dro').textContent=R_;w.querySelector('#dco').textContent=C;
+      const arr=range(0,C-1).map(i=>Math.floor(R_/C)+(i<R_%C?1:0));w.querySelector('#dpic').innerHTML=cages(arr,{hl:true});
+      const k=Math.ceil(R_/C);w.querySelector('#dout').innerHTML=`Даже при самой равномерной рассадке в какой-то клетке <span class="out">${k}</span> ${plural(k,'кролик','кролика','кроликов')} (${R_} : ${C} с округлением вверх).`;};
+    r.oninput=c.oninput=u;u();}
+  const v=root.querySelector('#w-coins');
+  if(v){v.innerHTML=`<b>Сколько взвешиваний нужно?</b><label>Монет: <input type="range" id="cn" min="2" max="250" value="10"><output id="cno"></output></label><div id="cout" style="line-height:1.7"></div>`;
+    const s=v.querySelector('#cn');const u=()=>{const n=+s.value;v.querySelector('#cno').textContent=n;const ch=[];let m=n;while(m>1){ch.push(m);m=Math.ceil(m/3);}ch.push(1);const k=ceilLog3(n);
+      v.querySelector('#cout').innerHTML=`Кучка с фальшивкой: ${ch.join(' → ')}<br>Взвешиваний: <span class="out">${k}</span> (потому что ${k>1?`3<sup>${k-1}</sup> = ${3**(k-1)} < `:''}${n} ≤ 3<sup>${k}</sup> = ${3**k})`;};
+    s.oninput=u;u();}
+}
+
+window.TOPIC={id:'m6_logic',title:'Логика и смекалка',subtitle:'Математика · 6 класс',
+intro:`<p>Рыцари и лжецы, детективные таблицы, кролики в клетках, фальшивые монеты, переливания и хитрые «невозможные» задачи. Здесь почти ничего не нужно считать — нужно <b>думать</b>. Это самые любимые темы олимпиад для 5–7 классов.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Рыцари и лжецы','Таблицы: кто чем занимается','Принцип Дирихле','Чётность','Взвешивания','Переливания','Инварианты и задачи «с конца»','Перебор: сколько способов','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

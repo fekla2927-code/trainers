@@ -1,0 +1,1060 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Обыкновенные дроби — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,gcd,lcm}=H;
+const M=s=>`<span class="m">${s}</span>`;
+const F=(p,q)=>H.frac(p,q);
+/* ---------- дроби: точная арифметика ---------- */
+const nr=(p,q)=>{if(q<0){p=-p;q=-q;}const g=gcd(p,q)||1;return [p/g,q/g];};
+const add=(a,b)=>nr(a[0]*b[1]+b[0]*a[1],a[1]*b[1]);
+const sub=(a,b)=>nr(a[0]*b[1]-b[0]*a[1],a[1]*b[1]);
+const mul=(a,b)=>nr(a[0]*b[0],a[1]*b[1]);
+const dvd=(a,b)=>nr(a[0]*b[1],a[1]*b[0]);
+// показ: смешанное число, если неправильная
+const S=(f,mixed)=>{const [p,q]=nr(f[0],f[1]);if(q===1)return String(p);if(mixed!==false&&p>q){const w=Math.floor(p/q);return `${w}${F(p%q,q)}`;}return F(p,q);};
+const plain=(f)=>{const [p,q]=nr(f[0],f[1]);if(q===1)return String(p);if(p>q)return `${Math.floor(p/q)} ${p%q}/${q}`;return `${p}/${q}`;};
+const MX=(w,p,q)=>`${w}${F(p,q)}`;
+// разбор ответа ученика → {p,q,kind}
+function parseFr(raw){let s=String(raw).trim().replace(/[−–—]/g,'-').replace(/,/g,'.').replace(/\s+/g,' ');let m;
+  if((m=s.match(/^(\d+) (\d+) ?\/ ?(\d+)$/))){const w=+m[1],p=+m[2],q=+m[3];if(!q)return null;return {p:w*q+p,q,kind:'mixed',fp:p};}
+  if((m=s.match(/^(-?\d+) ?\/ ?(\d+)$/))){if(!+m[2])return null;return {p:+m[1],q:+m[2],kind:'frac'};}
+  if((m=s.match(/^-?\d+$/)))return {p:+s,q:1,kind:'int'};
+  if((m=s.match(/^-?\d*\.\d+$/))){const k=s.split('.')[1].length;return {p:Math.round(+s*Math.pow(10,k)),q:Math.pow(10,k),kind:'dec'};}
+  return null;}
+// задача с ответом-дробью. opt.irr — ответ нужно сократить; opt.mixed — записать смешанным числом; opt.improper — неправильной дробью
+function FA(f,opt){opt=opt||{};const [p,q]=nr(f[0],f[1]);
+  const right=opt.improper?`${p}/${q}`:plain([p,q]);
+  return {type:'num',ans:p/q,right,keys:['/'],ph:opt.ph||(p>q&&q>1?'например 2 1/3 или 7/3':'например 3/4'),
+    check:raw=>{const r=parseFr(raw);if(!r)return false;if(r.p*q!==p*r.q)return false;
+      if(opt.irr&&(r.kind==='frac'||r.kind==='mixed')){if(gcd(r.kind==='mixed'?r.fp:r.p,r.q)!==1)return false;}
+      if(opt.mixed&&q!==1&&r.kind!=='mixed')return false;
+      if(opt.mixed&&r.kind==='mixed'&&r.fp>=r.q)return false;
+      if(opt.improper&&r.kind!=='frac'&&!(r.kind==='int'&&q===1))return false;
+      return true;}};}
+
+/* ---------- pictures ---------- */
+function pizza(n,k,r,lab){r=r||60;const cx=r+8,cy=r+8;let o=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--card)" stroke="var(--fig)" stroke-width="1.6"/>`;
+  for(let i=0;i<n;i++){const a0=-Math.PI/2+i*2*Math.PI/n,a1=a0+2*Math.PI/n;const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    if(i<k)o+=n===1?`<circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--hl)" fill-opacity=".75"/>`:`<path d="M${cx},${cy} L${x0},${y0} A${r},${r} 0 ${2*Math.PI/n>Math.PI?1:0} 1 ${x1},${y1} Z" fill="var(--hl)" fill-opacity=".75"/>`;}
+  if(n>1)for(let i=0;i<n;i++){const a0=-Math.PI/2+i*2*Math.PI/n;o+=`<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(a0)}" y2="${cy+r*Math.sin(a0)}" stroke="var(--fig)" stroke-width="1.2"/>`;}
+  o+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--fig)" stroke-width="1.6"/>`;
+  const W=2*r+16,Hh=2*r+16+(lab?22:0);if(lab)o+=`<text x="${cx}" y="${2*r+34}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--accent-ink)">${lab}</text>`;
+  return `<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="Пицца" style="font-family:system-ui,sans-serif">${o}</svg>`;}
+function bar(n,k,w,lab,h){w=w||300;h=h||34;let o='';const cw=w/n;for(let i=0;i<n;i++)o+=`<rect x="${6+i*cw}" y="6" width="${cw}" height="${h}" fill="${i<k?'var(--hl)':'var(--card)'}" fill-opacity="${i<k?.75:1}" stroke="var(--fig)" stroke-width="1"/>`;
+  if(lab)o+=`<text x="${w+14}" y="${6+h/2+5}" font-size="14" font-weight="700" fill="var(--accent-ink)">${lab}</text>`;
+  return `<svg viewBox="0 0 ${w+(lab?60:12)} ${h+12}" width="${Math.min(330,w+(lab?60:12))}" role="img" aria-label="Полоска" style="font-family:system-ui,sans-serif">${o}</svg>`;}
+// несколько полосок одна под другой (одинаковая длина целого)
+function bars(rows,w){w=w||250;const h=26;let o='';rows.forEach((r,j)=>{const y=6+j*(h+12);const cw=w/r.n;for(let i=0;i<r.n;i++)o+=`<rect x="6" y="${y}" width="${cw}" height="${h}" transform="translate(${i*cw},0)" fill="${i<r.k?'var(--hl)':'var(--card)'}" fill-opacity="${i<r.k?.75:1}" stroke="var(--fig)" stroke-width="1"/>`;
+  o+=`<text x="${w+16}" y="${y+h/2+5}" font-size="14" font-weight="700" fill="var(--accent-ink)">${r.lab}</text>`;});
+  return `<svg viewBox="0 0 ${w+70} ${rows.length*(h+12)+4}" width="${Math.min(330,w+70)}" role="img" aria-label="Полоски" style="font-family:system-ui,sans-serif">${o}</svg>`;}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Что такое дробь',lvl:0,html:`
+<p class="hook">Пиццу разрезали на 8 кусков, ты съел 3. Сколько пиццы ты съел? «Три» — неправильно: три чего? Ответ — <b>3/8</b> пиццы. Дроби — это язык, на котором говорят про части целого.</p>
+<div class="figrow"><div class="fig">${pizza(8,3,55,'3/8')}</div><div class="fig">${pizza(4,1,55,'1/4')}</div><div class="fig">${pizza(6,5,55,'5/6')}</div></div>
+<div class="box rule"><b>Правило</b>${M(F('a','b'))}: <b>знаменатель b</b> (внизу) — на сколько равных частей делим целое; <b>числитель a</b> (вверху) — сколько таких частей взяли.<br>Дробная черта — это знак деления: ${M(F(3,4)+' = 3 : 4')}.</div>
+<div class="box tip"><b>Как запомнить</b><b>Зн</b>аменатель <b>зн</b>ает, на сколько частей режем. <b>Чис</b>литель <b>чис</b>лит (считает), сколько взяли.</div>
+<div class="box rule"><b>Правильные и неправильные</b>Правильная дробь — числитель меньше знаменателя (меньше 1): ${M(F(3,8))}. Неправильная — числитель больше или равен (≥ 1): ${M(F(9,8))}, ${M(F(8,8)+' = 1')}.</div>`},
+{title:'Основное свойство дроби',lvl:0,html:`
+<div class="box rule"><b>Правило</b>Если числитель и знаменатель <b>умножить или разделить на одно и то же</b> число (не 0), получится <b>равная</b> дробь.<br>${M(F(1,2)+' = '+F(2,4)+' = '+F(3,6)+' = '+F(4,8))}</div>
+<p>Почему? Разрежь каждый кусок пиццы ещё пополам: кусков стало вдвое больше, но и каждый вдвое меньше. Пиццы съедено столько же!</p>
+<div class="fig">${bars([{n:4,k:3,lab:'3/4'},{n:8,k:6,lab:'6/8'},{n:12,k:9,lab:'9/12'}])}</div>
+<div class="widget" id="w-frac"></div>
+<div class="box err"><b>Частая ошибка</b><b>Прибавлять</b> одно и то же нельзя! ${M(F(1,2))} и ${M(F('1 + 1','2 + 1')+' = '+F(2,3))} — разные дроби (полпиццы ≠ две трети).</div>`},
+{title:'Сокращение дробей',lvl:1,html:`
+<div class="box rule"><b>Правило</b>Сократить дробь — разделить числитель и знаменатель на их <b>общий делитель</b>. Если делить сразу на <b>НОД</b>, получится <b>несократимая</b> дробь за один шаг.</div>
+<div class="box ex"><b>Пример</b>${M(F(18,24))}: НОД(18, 24) = 6 → ${M(F('18 : 6','24 : 6')+' = '+F(3,4))}.<br>Можно и по шагам: ${M(F(18,24)+' = '+F(9,12)+' = '+F(3,4))} (сначала на 2, потом на 3).</div>
+<div class="box tip"><b>Признаки делимости в помощь</b>Оба числа чётные — делим на 2. Оба кончаются на 0 или 5 — на 5. Суммы цифр делятся на 3 — на 3.</div>
+<div class="box err"><b>Ловушка</b>Нельзя «сокращать» цифры: ${M(F(16,64))} — «зачеркнуть шестёрки» и получить 1/4 — случайно верно, но ${M(F(26,65))} → «2/5» тоже случайно, а ${M(F(12,24))} → «1/4» — уже неправильно (на самом деле 1/2). Делим только на общий множитель!</div>
+<div class="box rule"><b>Несократимая дробь</b>Числитель и знаменатель — взаимно простые (НОД = 1): ${M(F(8,15))}, ${M(F(7,9))}.</div>`},
+{title:'Общий знаменатель и сравнение',lvl:2,html:`
+<div class="box rule"><b>Правило</b>Чтобы привести дроби к общему знаменателю: 1) найди <b>НОК</b> знаменателей; 2) для каждой дроби найди <b>дополнительный множитель</b> = НОК : знаменатель; 3) умножь на него числитель и знаменатель.</div>
+<div class="box ex"><b>Пример</b>${M(F(5,6))} и ${M(F(3,8))}: НОК(6, 8) = 24. Доп. множители: 24 : 6 = 4, 24 : 8 = 3.<br>${M(F(5,6)+' = '+F(20,24))}, ${M(F(3,8)+' = '+F(9,24))}.</div>
+<div class="box rule"><b>Сравнение</b>• Знаменатели равны — больше та, у которой <b>больше числитель</b>: ${M(F(5,9)+' > '+F(4,9))}.<br>• Числители равны — больше та, у которой <b>меньше знаменатель</b>: ${M(F(3,5)+' > '+F(3,7))} (кусков меньше — они крупнее!).<br>• Иначе — приведи к общему знаменателю.</div>
+<div class="figrow"><div class="fig">${pizza(5,1,45,'1/5')}</div><div class="fig">${pizza(8,1,45,'1/8')}</div></div>
+<p class="small" style="text-align:center">Кусок 1/5 больше куска 1/8: делили на меньшее число частей.</p>
+<div class="box err"><b>Ловушка</b>«8 больше 5, значит 1/8 больше 1/5». Наоборот! Чем больше гостей делят пиццу, тем меньше кусок.</div>`},
+{title:'Сложение и вычитание',lvl:3,html:`
+<div class="box rule"><b>Правило</b>Одинаковые знаменатели — складываем (вычитаем) <b>числители</b>, знаменатель оставляем: ${M(F(2,7)+' + '+F(3,7)+' = '+F(5,7))}.<br>Разные знаменатели — сначала приводим к <b>общему</b>, потом как выше.</div>
+<p>Почему знаменатель не складывают? 2 куска по 1/7 плюс 3 куска по 1/7 — это 5 кусков по 1/7. Размер куска (седьмая часть) не меняется!</p>
+<div class="box ex"><b>Пример</b>${M(F(1,4)+' + '+F(1,6))}: НОК(4, 6) = 12 → ${M(F(3,12)+' + '+F(2,12)+' = '+F(5,12))}.</div>
+<div class="fig">${bars([{n:4,k:1,lab:'1/4'},{n:6,k:1,lab:'1/6'},{n:12,k:5,lab:'5/12'}])}</div>
+<div class="box err"><b>Главная ошибка</b>${M(F(1,2)+' + '+F(1,3)+' = '+F(2,5))}? Нет! Полпиццы и ещё треть — это больше половины, а 2/5 меньше половины. Правильно: ${M(F(3,6)+' + '+F(2,6)+' = '+F(5,6))}.</div>
+<div class="box tip"><b>В конце</b>Всегда проверь, нельзя ли сократить ответ: ${M(F(1,6)+' + '+F(1,3)+' = '+F(3,6)+' = '+F(1,2))}.</div>`},
+{title:'Смешанные числа',lvl:4,html:`
+<div class="box rule"><b>Правило</b>Смешанное число — целая часть + правильная дробь: ${M(MX(2,1,3)+' = 2 + '+F(1,3))}.<br><b>Неправильная → смешанное:</b> раздели числитель на знаменатель: частное — целая часть, остаток — новый числитель. ${M(F(11,4))}: 11 : 4 = 2 (ост. 3) → ${M(MX(2,3,4))}.<br><b>Смешанное → неправильная:</b> ${M(MX(2,3,4)+' = '+F('2 · 4 + 3',4)+' = '+F(11,4))}.</div>
+<div class="figrow"><div class="fig">${pizza(4,4,38)}</div><div class="fig">${pizza(4,4,38)}</div><div class="fig">${pizza(4,3,38)}</div></div>
+<p class="small" style="text-align:center">${MX(2,3,4)} пиццы = 11 четвертинок.</p>
+<div class="box ex"><b>Сложение и вычитание</b>Целые — с целыми, дроби — с дробями: ${M(MX(3,1,5)+' + '+MX(1,2,5)+' = '+MX(4,3,5))}.<br>Если дроби «не хватает» — займи единицу: ${M(MX(5,1,4)+' − '+MX(2,3,4))} = ${M(MX(4,5,4)+' − '+MX(2,3,4)+' = '+MX(2,2,4)+' = '+MX(2,1,2))}.</div>
+<div class="box err"><b>Ловушка</b>${M(MX(2,1,3))} — это 2 <b>плюс</b> 1/3, а не 2 умножить на 1/3.</div>`},
+{title:'Умножение дробей',lvl:5,html:`
+<div class="box rule"><b>Правило</b>${M(F('a','b')+' · '+F('c','d')+' = '+F('a · c','b · d'))} — числитель на числитель, знаменатель на знаменатель. Смешанные числа сначала переводим в неправильные дроби. <b>Сокращай до умножения</b> — так проще!</div>
+<div class="box ex"><b>Пример</b>${M(F(3,4)+' · '+F(8,9))}: сокращаем 3 и 9 (на 3), 4 и 8 (на 4): ${M(F(1,1)+' · '+F(2,3)+' = '+F(2,3))}.<br>${M(F(2,5)+' · 3 = '+F(6,5)+' = '+MX(1,1,5))} (натуральное число — это дробь со знаменателем 1).</div>
+<p>Смысл: «${F(1,2)} от ${F(1,3)}». Половина от трети пиццы — это шестая часть: ${M(F(1,2)+' · '+F(1,3)+' = '+F(1,6))}.</p>
+<div class="box err"><b>Ловушка</b>${M(MX(2,1,2)+' · '+MX(2,1,2))} ≠ 4${F(1,4)}! Нельзя умножать «целые на целые, дроби на дроби». Правильно: ${M(F(5,2)+' · '+F(5,2)+' = '+F(25,4)+' = '+MX(6,1,4))}.</div>
+<div class="fact">Умножение на дробь меньше 1 <b>уменьшает</b> число: 10 · ${F(1,2)} = 5. Так что «умножение всегда увеличивает» — миф из начальной школы.</div>`},
+{title:'Деление дробей',lvl:6,html:`
+<div class="box rule"><b>Правило</b>Разделить на дробь — <b>умножить на перевёрнутую</b> (обратную) дробь: ${M(F('a','b')+' : '+F('c','d')+' = '+F('a','b')+' · '+F('d','c'))}.</div>
+<div class="box ex"><b>Пример</b>${M(F(3,4)+' : '+F(3,8)+' = '+F(3,4)+' · '+F(8,3)+' = 2')}.<br>Смысл: сколько раз 3/8 пиццы помещается в 3/4 пиццы? Два раза!</div>
+<div class="fig">${bars([{n:8,k:6,lab:'3/4'},{n:8,k:3,lab:'3/8'}])}</div>
+<div class="box rule"><b>Обратные числа</b>${M(F(3,7))} и ${M(F(7,3))} — взаимно обратные: их произведение равно 1. Обратное к 5 — это ${M(F(1,5))}.</div>
+<div class="box err"><b>Ловушка</b>Переворачивают <b>только делитель</b> (вторую дробь), первую не трогают. И смешанные числа сначала превращают в неправильные дроби.</div>
+<div class="box tip"><b>Деление на натуральное</b>${M(F(4,5)+' : 2 = '+F(4,5)+' · '+F(1,2)+' = '+F(2,5))} — то же, что разделить числитель на 2.</div>`},
+{title:'Дробь от числа и число по дроби',lvl:7,html:`
+<div class="box rule"><b>Найти дробь от числа</b> — <b>умножить</b> число на дробь. ${M(F(3,5)+' от 40 = 40 · '+F(3,5)+' = 24')}.<br>(40 : 5 — одна пятая, · 3 — три пятых.)</div>
+<div class="box rule"><b>Найти число по его дроби</b> — <b>разделить</b> на дробь. «${F(3,5)} числа равны 24» → 24 : ${F(3,5)} = 24 · ${F(5,3)} = 40.<br>(24 : 3 = 8 — одна пятая, · 5 — всё число.)</div>
+<div class="fig">${bar(5,3,250,'24 — это 3/5')}</div>
+<div class="box ex"><b>Пример из жизни</b>У Павла 600 ₽, на игру он потратил ${F(2,3)}. Потратил 600 · ${F(2,3)} = 400 ₽.<br>Павел прочитал 45 страниц — это ${F(3,8)} книги. Всего 45 : ${F(3,8)} = 45 · ${F(8,3)} = 120 страниц.</div>
+<div class="box tip"><b>Как не перепутать</b>Известно <b>целое</b> — ищем часть → умножаем. Известна <b>часть</b> — ищем целое → делим. Проверка: часть должна быть меньше целого (при дроби меньше 1).</div>`},
+{title:'Хитрые суммы и египетские дроби (★)',lvl:8,html:`
+<div class="box rule"><b>Телескоп</b>${M(F(1,'n(n + 1)')+' = '+F(1,'n')+' − '+F(1,'n + 1'))}. Например, ${M(F(1,'2 · 3')+' = '+F(1,2)+' − '+F(1,3)+' = '+F(1,6))} ✅.</div>
+<div class="box ex"><b>Пример</b>${M(F(1,'1·2')+' + '+F(1,'2·3')+' + '+F(1,'3·4'))} = (1 − ${F(1,2)}) + (${F(1,2)} − ${F(1,3)}) + (${F(1,3)} − ${F(1,4)}) = 1 − ${F(1,4)} = ${F(3,4)}. Середина «складывается, как подзорная труба» — отсюда название.</div>
+<div class="box rule"><b>Египетские дроби</b>Древние египтяне записывали дроби только как суммы <b>разных</b> дробей с числителем 1: ${M(F(3,4)+' = '+F(1,2)+' + '+F(1,4))}. Полезная формула: ${M(F(1,'n')+' = '+F(1,'n + 1')+' + '+F(1,'n(n + 1)'))}.</div>
+<div class="fact">Папирус Ринда (около 1650 г. до н. э.) начинается с таблицы: как записать 2/n египетскими дробями для всех нечётных n от 5 до 101. Например, 2/5 = 1/3 + 1/15.</div>`},
+{title:'Шпаргалка',html:`<ul class="steps">
+<li>Основное свойство: умножать/делить числитель и знаменатель на одно число можно, прибавлять — нельзя.</li>
+<li>Сокращай на НОД — получишь несократимую дробь.</li>
+<li>Общий знаменатель — НОК знаменателей; доп. множитель = НОК : знаменатель.</li>
+<li>+ и −: только с одинаковыми знаменателями, складываем числители.</li>
+<li>Смешанные: целые с целыми, дроби с дробями; не хватает — займи единицу.</li>
+<li>·: числитель на числитель, знаменатель на знаменатель (сокращай до!). : — умножь на перевёрнутую.</li>
+<li>Дробь от числа — умножаем. Число по дроби — делим.</li></ul>`}
+];
+
+const symbols={tab:'Правила',title:'Главные правила',rows:[
+[F('a','b'),'Дробь','b — на сколько частей делим, a — сколько взяли.',`${F(3,8)} пиццы`],
+['=','Основное свойство',`${F('a','b')+' = '+F('a · k','b · k')}`,`${F(3,4)+' = '+F(9,12)}`],
+['сократить','Сокращение','Делим числитель и знаменатель на НОД.',`${F(18,24)+' = '+F(3,4)}`],
+['НОЗ','Общий знаменатель','НОК знаменателей.',`${F(5,6)}, ${F(3,8)} → 24`],
+['+ −','Сложение и вычитание','Общий знаменатель, потом числители.',`${F(1,4)+' + '+F(1,6)+' = '+F(5,12)}`],
+[MX(2,1,3),'Смешанное число','Целая часть + правильная дробь.',`${MX(2,1,3)+' = '+F(7,3)}`],
+['·','Умножение',`${F('a','b')+' · '+F('c','d')+' = '+F('ac','bd')}`,`${F(2,3)+' · '+F(3,5)+' = '+F(2,5)}`],
+[':','Деление','Умножить на перевёрнутую.',`${F(3,4)+' : '+F(3,8)+' = 2'}`],
+[F(1,'a'),'Обратное число','Произведение с a равно 1.',`5 · ${F(1,5)} = 1`],
+['от','Дробь от числа','Умножить.',`${F(2,3)} от 60 = 40`],
+['по','Число по дроби','Разделить на дробь.',`${F(2,3)} числа = 40 → 60`]
+],after:`<div class="box tip" style="margin-top:14px"><b>Как вводить ответ</b>Дробь — через косую черту: <b>7/12</b>. Смешанное число — через пробел: <b>2 1/3</b>. Можно и десятичной дробью, если она точная: 0,75.</div>`};
+
+function onTheory(root){const w=root.querySelector('#w-frac');if(!w)return;
+  w.innerHTML=`<label>Числитель: <output id="wf-a">2</output><input type="range" id="wf-A" min="0" max="6" value="2"></label><label>Знаменатель: <output id="wf-b">3</output><input type="range" id="wf-B" min="1" max="6" value="3"></label><label>Режем каждый кусок ещё на: <output id="wf-k">2</output><input type="range" id="wf-K" min="1" max="4" value="2"></label><div id="wf-s" style="display:flex;justify-content:center"></div><div class="small" id="wf-t" style="text-align:center;margin-top:6px"></div>`;
+  const A=w.querySelector('#wf-A'),B=w.querySelector('#wf-B'),K=w.querySelector('#wf-K');
+  const draw=()=>{let a=+A.value,b=+B.value;if(a>b){a=b;A.value=b;}const k=+K.value;
+    ['a','b','k'].forEach((x,i)=>w.querySelector('#wf-'+x).textContent=[a,b,k][i]);
+    w.querySelector('#wf-s').innerHTML=bars([{n:b,k:a,lab:`${a}/${b}`},{n:b*k,k:a*k,lab:`${a*k}/${b*k}`}]);
+    const [p,q]=a?nr(a,b):[0,1];
+    w.querySelector('#wf-t').innerHTML=`<span class="out">${a}/${b} = ${a*k}/${b*k}</span> — закрашено столько же! ${a&&a!==p?`А сократить ${a}/${b} можно до ${p}/${q}.`:a?`Несократимый вид: ${p}/${q}.`:''}`;};
+  A.oninput=B.oninput=K.oninput=draw;draw();}
+
+/* ---------- generators ---------- */
+const gens=[];
+const G=(lvl,make,o)=>gens.push(Object.assign({lvl,make},o||{}));
+const RULE=(lvl,vars,o)=>G(lvl,()=>{const v=pick(vars);const opts=shuffle([v.ok,...v.bad]);return {type:'choice',q:v.q,opts,ans:opts.indexOf(v.ok),short:v.ex,explain:v.ex,explain2:v.ex2};},Object.assign({rule:true},o||{}));
+const T=(base,f,opt)=>Object.assign(base,FA(f,opt));
+const props=n=>{const r=[];for(let q=2;q<=n;q++)for(let p=1;p<q;p++)if(gcd(p,q)===1)r.push([p,q]);return r;};
+
+/* L0 */
+RULE(0,[{q:'Что показывает знаменатель дроби?',ok:'На сколько равных частей разделили целое',bad:['Сколько частей взяли','Сколько всего пицц','Во сколько раз числитель больше'],
+ ex:'<b>Зн</b>аменатель <b>зн</b>ает, на сколько равных частей режем целое. В 3/8 — на 8 кусков. А числитель (3) — сколько кусков взяли.',ex2:'Знаменатель — «название» кусочка: восьмые, пятые, десятые. Числитель — «сколько штук» таких кусочков.'},
+{q:'Основное свойство дроби: дробь не изменится, если…',ok:'числитель и знаменатель умножить (или разделить) на одно и то же число, не равное 0',bad:['к числителю и знаменателю прибавить одно и то же число','умножить только числитель','поменять местами числитель и знаменатель'],
+ ex:'Умножать и делить числитель и знаменатель на одно число — можно: 1/2 = 2/4 = 3/6. Прибавлять — нельзя: 1/2 ≠ 2/3.',ex2:'Пиццу, разрезанную на 4 куска, режем ещё раз пополам: кусков 8, взятых тоже вдвое больше — 2/4 = 4/8. Количество пиццы то же.'}]);
+G(0,()=>{const n=pick([3,4,5,6,8,10,12]);const k=R(1,n-1);
+ return T({q:'Какая часть пиццы закрашена? Запиши дробью.',pic:pizza(n,k,70),
+ short:`Кусков ${n}, закрашено ${k} → ${k}/${n}${gcd(k,n)>1?` = ${nr(k,n).join('/')}`:''}.`,
+ explain:`Считаем все куски — это <b>знаменатель</b>: ${n}.<br>Считаем закрашенные — это <b>числитель</b>: ${k}.<br>Ответ: ${M(F(k,n))}${gcd(k,n)>1?` (можно сократить: ${M(F(...nr(k,n)))})`:''}.`,
+ explain2:`Знаменатель — «на сколько частей разрезали», числитель — «сколько взяли». Частая ошибка — записать «закрашенные / незакрашенные» (${k}/${n-k}). Внизу должно быть <b>всё количество</b> кусков: ${n}.`},[k,n]);});
+G(0,()=>{const [p,q]=pick(props(7));const k=R(2,6);const which=pick(['num','den']);
+ const qq=which==='num'?`${M(F(p,q)+' = '+F('?',q*k))}`:`${M(F(p,q)+' = '+F(p*k,'?'))}`;const ans=which==='num'?p*k:q*k;
+ return {type:'num',q:`Какое число нужно поставить вместо «?»: ${qq}`,ans,
+ short:`Множитель ${k}: ${p}·${k} = ${p*k}, ${q}·${k} = ${q*k}.`,
+ explain:`Основное свойство: числитель и знаменатель умножаем на <b>одно и то же</b> число.<br>${which==='num'?`Знаменатель: ${q} → ${q*k}, умножили на ${q*k} : ${q} = <b>${k}</b>. Значит, и числитель: ${p} · ${k} = <b>${p*k}</b>.`:`Числитель: ${p} → ${p*k}, умножили на <b>${k}</b>. Значит, и знаменатель: ${q} · ${k} = <b>${q*k}</b>.`}`,
+ explain2:`Посмотри на полоски: ${p}/${q} и ${p*k}/${q*k} закрашены одинаково — каждый кусок просто разрезали на ${k}.<div class="fig">${bars([{n:q,k:p,lab:`${p}/${q}`},{n:q*k,k:p*k,lab:`${p*k}/${q*k}`}])}</div>`};});
+G(0,()=>{for(;;){const [p,q]=pick(props(6));const k=R(2,5);const ok=`${p*k}/${q*k}`;const opts=[ok,`${p+k}/${q+k}`,`${p*k}/${q}`,`${p}/${q*k}`];if(new Set(opts).size<4||(p+k)*q===p*(q+k))continue;const o=shuffle(opts);
+ return {type:'choice',q:`Какая дробь <b>равна</b> ${M(F(p,q))}?`,opts:o,ans:o.indexOf(ok),
+ short:`${p}·${k} / ${q}·${k} = ${ok}.`,
+ explain:`По основному свойству умножаем <b>и числитель, и знаменатель</b> на одно число: ${M(F(p+' · '+k,q+' · '+k)+' = '+F(p*k,q*k))}.<br>• ${p+k}/${q+k} — прибавили ${k} к обоим, так нельзя.<br>• ${p*k}/${q} и ${p}/${q*k} — умножили только что-то одно.`,
+ explain2:`Проверь «перекрёстным умножением»: дроби a/b и c/d равны, если a · d = b · c. ${p} · ${q*k} = ${p*q*k} и ${q} · ${p*k} = ${p*q*k} — равны ✅. А для ${p+k}/${q+k}: ${p} · ${q+k} = ${p*(q+k)}, ${q} · ${p+k} = ${q*(p+k)} — не равны.`};}});
+
+/* L1 */
+RULE(1,[{q:'Сократить дробь — значит…',ok:'разделить числитель и знаменатель на их общий делитель',bad:['вычесть из числителя и знаменателя одно и то же число','зачеркнуть одинаковые цифры','разделить только числитель'],
+ ex:'Сокращение — это основное свойство «в обратную сторону»: делим числитель и знаменатель на <b>общий делитель</b>. Делим на НОД — сразу получаем несократимую дробь.',ex2:'18/24: общий делитель 6 → 3/4. Это та же часть пиццы, просто куски крупнее.'}]);
+G(1,()=>{const [p,q]=pick(props(9));const g=R(2,12);const a=p*g,b=q*g;
+ return T({q:`Сократи дробь ${M(F(a,b))}. Ответ запиши несократимой дробью.`,
+ hint:`Найди НОД(${a}, ${b}).`,
+ short:`НОД(${a}, ${b}) = ${g}: ${a/g}/${b/g}.`,
+ explain:`Ищем НОД(${a}, ${b}) = <b>${g}</b> (${a} = ${g} · ${p}, ${b} = ${g} · ${q}).<br>${M(F(a+' : '+g,b+' : '+g)+' = '+F(p,q))}.<br>${p} и ${q} взаимно простые — дальше не сокращается.`,
+ explain2:`Можно по шагам, маленькими делителями: ${(()=>{let x=a,y=b;const s=[`${x}/${y}`];for(const d of [2,3,5,7,11]){while(x%d===0&&y%d===0){x/=d;y/=d;s.push(`${x}/${y} (на ${d})`);}}return s.join(' → ');})()}. Главное — дойти до конца.`},[a,b],{irr:true});});
+G(1,()=>{for(;;){const ok=pick(props(12));const bads=sample(props(6),3).map(([p,q])=>{const k=pick([2,3,5]);return [p*k,q*k];});const opts=[ok,...bads].map(f=>`${f[0]}/${f[1]}`);if(new Set(opts).size<4)continue;const o=shuffle(opts);
+ return {type:'choice',q:'Какая дробь <b>несократимая</b>?',opts:o,ans:o.indexOf(`${ok[0]}/${ok[1]}`),
+ short:`НОД(${ok[0]}, ${ok[1]}) = 1.`,
+ explain:`Несократимая — у числителя и знаменателя нет общих делителей, кроме 1.<br>${[ok,...bads].map(f=>`${f[0]}/${f[1]}: ${gcd(f[0],f[1])===1?'НОД = 1 ✅ несократимая':`оба делятся на ${gcd(f[0],f[1])} → ${nr(f[0],f[1]).join('/')}`}`).join('<br>')}`,
+ explain2:`Проверяй простые делители: на 2 (оба чётные?), на 3 (суммы цифр делятся на 3?), на 5 (оба на 0/5?). У ${ok[0]}/${ok[1]} ни один не подходит одновременно.`};}});
+G(1,()=>{const [p,q]=pick(props(11).filter(f=>f[1]>=5));const g=pick([12,14,15,18,21,24]);const a=p*g,b=q*g;
+ return T({q:`Сократи: ${M(F(a,b))}. Ответ — несократимая дробь.`,
+ short:`${a}/${b} = ${p}/${q} (НОД = ${g}).`,
+ explain:`Раскладываем на простые: ${a} = ${fac(a)}, ${b} = ${fac(b)}.<br>Общие множители: ${fac(g)} = ${g} — это НОД.<br>${M(F(a,b)+' = '+F(p,q))}.`,
+ explain2:`Начни с очевидного: ${a%2===0&&b%2===0?`оба чётные → ${a/2}/${b/2}`:a%3===0&&b%3===0?`оба делятся на 3 → ${a/3}/${b/3}`:`оба делятся на ${gcd(a,b)}`}, и продолжай, пока можно. Итог: ${p}/${q}.`},[a,b],{irr:true});});
+function fac(n){const r=[];for(let p=2;p*p<=n;p++)while(n%p===0){r.push(p);n/=p;}if(n>1)r.push(n);return r.join(' · ');}
+
+/* L2 */
+RULE(2,[{q:'Как сравнить две дроби с одинаковыми числителями, например 3/5 и 3/7?',ok:'Больше та, у которой знаменатель меньше',bad:['Больше та, у которой знаменатель больше','Они равны, раз числители одинаковые','Сравнить нельзя'],
+ ex:'Числители равны — кусков взяли поровну. Но при знаменателе 5 куски <b>крупнее</b>, чем при 7. Значит, 3/5 > 3/7.',ex2:'Одна пицца на 5 друзей или на 7 друзей — где кусок больше? Где друзей меньше!'},
+{q:'Общий знаменатель двух дробей удобнее всего брать равным…',ok:'НОК знаменателей',bad:['НОД знаменателей','сумме знаменателей','большему из знаменателей всегда'],
+ ex:'Общий знаменатель должен делиться на оба знаменателя → общее кратное. Самое маленькое — <b>НОК</b>. Для 6 и 8 это 24 (а не 48).',ex2:'Сумма не подходит: 6 + 8 = 14 не делится на 6. Больший знаменатель подходит, только если он делится на меньший (4 и 8 → 8).'}]);
+G(2,()=>{let b,d;do{b=R(3,12);d=R(3,15);}while(b===d||lcm(b,d)===b*d&&Math.random()<.5||lcm(b,d)>72);const a=pick(range(1,b-1).filter(x=>gcd(x,b)===1)),c=pick(range(1,d-1).filter(x=>gcd(x,d)===1));const L=lcm(b,d);
+ return {type:'num',q:`Приведи дроби ${M(F(a,b))} и ${M(F(c,d))} к наименьшему общему знаменателю. Какой это знаменатель?`,ans:L,
+ short:`НОК(${b}, ${d}) = ${L}: ${a}/${b} = ${a*L/b}/${L}, ${c}/${d} = ${c*L/d}/${L}.`,
+ explain:`Наименьший общий знаменатель = <b>НОК(${b}, ${d}) = ${L}</b>.<br>Доп. множители: ${L} : ${b} = ${L/b}, ${L} : ${d} = ${L/d}.<br>${M(F(a,b)+' = '+F(a*L/b,L))}, ${M(F(c,d)+' = '+F(c*L/d,L))}.`,
+ explain2:`Выписывай кратные большего знаменателя (${Math.max(b,d)}), пока не встретишь делящееся на ${Math.min(b,d)}: ${range(1,L/Math.max(b,d)).map(k=>Math.max(b,d)*k).join(', ')}. Первое подходящее — ${L}. Произведение ${b} · ${d} = ${b*d} тоже годится, но оно ${b*d===L?'здесь совпадает с НОК':'больше и неудобнее'}.`};});
+G(2,()=>{for(;;){const t=pick(['den','num','diff']);let a,b,c,d;
+ if(t==='den'){b=d=R(5,15);a=R(1,b-1);c=R(1,b-1);}else if(t==='num'){a=c=R(1,6);b=R(a+1,15);d=R(a+1,15);}else{b=R(3,12);d=R(3,12);a=R(1,b-1);c=R(1,d-1);}
+ if(a*d===b*c||b===d&&t!=='den')continue;const ans=a*d>b*c?0:1;const L=lcm(b,d);
+ return {type:'choice',q:`Какой знак поставить: ${M(F(a,b)+' ? '+F(c,d))}`,opts:['>','<','='],ans,
+ short:`${t==='den'?'Знаменатели равны — сравниваем числители':t==='num'?'Числители равны — больше та, где знаменатель меньше':`К знаменателю ${L}: ${a*L/b}/${L} и ${c*L/d}/${L}`}.`,
+ explain:t==='den'?`Знаменатели одинаковые (${b}) — куски одного размера. Больше та дробь, где кусков больше: ${a} ${a>c?'>':'<'} ${c} → ${M(F(a,b)+(ans?' < ':' > ')+F(c,d))}.`:t==='num'?`Числители равны (${a}) — кусков взяли поровну. Но куски размера 1/${b} и 1/${d}: чем <b>меньше</b> знаменатель, тем <b>крупнее</b> кусок. ${Math.min(b,d)} < ${Math.max(b,d)} → ${M(F(a,b)+(ans?' < ':' > ')+F(c,d))}.`:`Приводим к общему знаменателю НОК(${b}, ${d}) = ${L}:<br>${M(F(a,b)+' = '+F(a*L/b,L))}, ${M(F(c,d)+' = '+F(c*L/d,L))}.<br>${a*L/b} ${ans?'<':'>'} ${c*L/d} → ${M(F(a,b)+(ans?' < ':' > ')+F(c,d))}.`,
+ explain2:`Перекрёстное умножение: сравни ${a} · ${d} = ${a*d} и ${c} · ${b} = ${b*c}. ${a*d>b*c?'Первое больше':'Второе больше'} → ${M(F(a,b)+(ans?' < ':' > ')+F(c,d))}.<div class="fig">${bars([{n:b,k:a,lab:`${a}/${b}`},{n:d,k:c,lab:`${c}/${d}`}],220)}</div>`};}});
+G(2,()=>{for(;;){const fs=sample(props(12),4);const vals=fs.map(f=>f[0]/f[1]);if(new Set(vals).size<4)continue;const mx=vals.indexOf(Math.max(...vals));const o=fs.map(f=>`${f[0]}/${f[1]}`);const order=fs.map((f,i)=>i).sort((x,y)=>vals[y]-vals[x]);
+ return {type:'choice',q:'Какая из дробей <b>самая большая</b>?',opts:o,ans:mx,
+ short:`Больше всех ${o[mx]} ≈ ${H.num(Math.round(vals[mx]*1000)/1000)}.`,
+ explain:`Сравним каждую с половиной и между собой. Удобно привести к общему знаменателю ${fs.reduce((x,f)=>lcm(x,f[1]),1)}:<br>${fs.map(f=>{const L=fs.reduce((x,g)=>lcm(x,g[1]),1);return `${f[0]}/${f[1]} = ${f[0]*L/f[1]}/${L}`;}).join('<br>')}<br>Самая большая: <b>${o[mx]}</b>.`,
+ explain2:`Прикинь, сколько не хватает до целой пиццы: ${fs.map(f=>`${f[0]}/${f[1]} — не хватает ${f[1]-f[0]}/${f[1]}`).join('; ')}. Порядок по убыванию: ${order.map(i=>o[i]).join(' > ')}.`};}});
+
+/* L3 */
+RULE(3,[{q:'Как сложить дроби с одинаковыми знаменателями?',ok:'Сложить числители, знаменатель оставить тем же',bad:['Сложить числители и сложить знаменатели','Перемножить числители','Сложить знаменатели, числитель оставить'],
+ ex:'2/7 + 3/7 = 5/7: два куска по 1/7 и три куска по 1/7 — пять кусков по 1/7. Размер куска не меняется, поэтому знаменатель тот же.',ex2:'Если сложить и знаменатели: 1/2 + 1/2 = 2/4 = 1/2? Две половинки пиццы — это целая пицца, а не половина! Значит, знаменатели складывать нельзя.'},
+{q:'Как сложить дроби с разными знаменателями?',ok:'Привести к общему знаменателю, потом сложить числители',bad:['Сложить числители и знаменатели отдельно','Перемножить дроби','Сложить числители, а знаменатель взять больший'],
+ ex:'Складывать можно только одинаковые куски. Сначала режем пиццы на одинаковые куски — приводим к общему знаменателю: 1/4 + 1/6 = 3/12 + 2/12 = 5/12.',ex2:'Как с единицами измерения: 1 м + 20 см не равно 21 чего-то. Сначала переведи в сантиметры: 100 + 20 = 120 см. Общий знаменатель — это «общие единицы».'}]);
+G(3,()=>{const b=R(5,15);const op=pick(['+','−']);let a,c;if(op==='+'){a=R(1,b-1);c=R(1,b-1);}else{a=R(2,b-1);c=R(1,a-1);}
+ const r=op==='+'?nr(a+c,b):nr(a-c,b);
+ return T({q:`Вычисли: ${M(F(a,b)+` ${op} `+F(c,b))}`,
+ short:`${a} ${op} ${c} = ${op==='+'?a+c:a-c}, знаменатель ${b}: ${S(r)}.`,
+ explain:`Знаменатели одинаковые — работаем только с числителями: ${a} ${op} ${c} = ${op==='+'?a+c:a-c}.<br>${M(F(a,b)+` ${op} `+F(c,b)+' = '+F(op==='+'?a+c:a-c,b))}${(op==='+'?a+c:a-c)!==r[0]||r[1]!==b?` = ${M(S(r))}`:''}.`,
+ explain2:`Куски по 1/${b}: ${op==='+'?`было ${a}, добавили ${c} — стало ${a+c}`:`было ${a}, забрали ${c} — осталось ${a-c}`}. Размер куска (знаменатель) не изменился.`},r);});
+G(3,()=>{let b,d;do{b=R(2,10);d=R(2,12);}while(b===d||lcm(b,d)>60);const a=pick(range(1,b-1).filter(x=>gcd(x,b)===1)),c=pick(range(1,d-1).filter(x=>gcd(x,d)===1));const L=lcm(b,d);const r=add([a,b],[c,d]);
+ return T({q:`Вычисли: ${M(F(a,b)+' + '+F(c,d))}`,
+ hint:`Общий знаменатель — НОК(${b}, ${d}).`,
+ short:`${a*L/b}/${L} + ${c*L/d}/${L} = ${a*L/b+c*L/d}/${L}${r[1]!==L?` = ${plain(r)}`:''}.`,
+ explain:`1) Общий знаменатель: НОК(${b}, ${d}) = <b>${L}</b>.<br>2) Доп. множители: ${L/b} и ${L/d}: ${M(F(a,b)+' = '+F(a*L/b,L))}, ${M(F(c,d)+' = '+F(c*L/d,L))}.<br>3) ${M(F(a*L/b,L)+' + '+F(c*L/d,L)+' = '+F(a*L/b+c*L/d,L))}${r[1]!==L||r[0]>r[1]?` = ${M(S(r))}`:''}.<br>Ошибка «${a+c}/${b+d}» — складывать знаменатели нельзя.`,
+ explain2:`Проверка прикидкой: ${a}/${b} ≈ ${H.num(Math.round(a/b*100)/100)}, ${c}/${d} ≈ ${H.num(Math.round(c/d*100)/100)}, сумма ≈ ${H.num(Math.round((a/b+c/d)*100)/100)}. Наш ответ ${plain(r)} ≈ ${H.num(Math.round(r[0]/r[1]*100)/100)} ✅.`},r);});
+G(3,()=>{let a,b,c,d;do{b=R(2,10);d=R(2,12);a=R(1,b-1);c=R(1,d-1);}while(b===d||lcm(b,d)>60||a*d<=c*b||gcd(a,b)>1||gcd(c,d)>1);const L=lcm(b,d);const r=sub([a,b],[c,d]);
+ return T({q:`Вычисли: ${M(F(a,b)+' − '+F(c,d))}`,
+ short:`${a*L/b}/${L} − ${c*L/d}/${L} = ${a*L/b-c*L/d}/${L}${r[1]!==L?` = ${plain(r)}`:''}.`,
+ explain:`Общий знаменатель НОК(${b}, ${d}) = ${L}.<br>${M(F(a,b)+' − '+F(c,d)+' = '+F(a*L/b,L)+' − '+F(c*L/d,L)+' = '+F(a*L/b-c*L/d,L))}${r[1]!==L?` = ${M(S(r))}`:''}.`,
+ explain2:`Проверь сложением: ${plain(r)} + ${c}/${d} должно дать ${a}/${b}. ${S(r)} + ${F(c,d)} = ${S(add(r,[c,d]))} ✅.`},r);});
+G(3,()=>{for(;;){const ds=sample([2,3,4,6,8,12],2);const fs=ds.map(d=>[pick(range(1,d-1).filter(x=>gcd(x,d)===1)),d]);const tot=add(fs[0],fs[1]);if(tot[0]>=tot[1])continue;const rest=sub([1,1],tot);const nm=sample(['Павел','Артём','Миша','Костя'],2);
+ return T({q:`${nm[0]} съел ${M(F(...fs[0]))} пиццы, ${nm[1]} — ${M(F(...fs[1]))}. Какая часть пиццы осталась?`,
+ short:`1 − (${plain(fs[0])} + ${plain(fs[1])}) = 1 − ${plain(tot)} = ${plain(rest)}.`,
+ explain:`1) Вместе съели: ${M(F(...fs[0])+' + '+F(...fs[1])+' = '+S(tot))}.<br>2) Вся пицца — это 1 = ${F(tot[1],tot[1])}. Осталось: ${M(F(tot[1],tot[1])+' − '+F(tot[0],tot[1])+' = '+S(rest))}.`,
+ explain2:`Разрежь пиццу на ${lcm(ds[0],ds[1])} кусков. ${nm[0]} съел ${fs[0][0]*lcm(ds[0],ds[1])/fs[0][1]}, ${nm[1]} — ${fs[1][0]*lcm(ds[0],ds[1])/fs[1][1]}. Осталось ${lcm(ds[0],ds[1])-fs[0][0]*lcm(ds[0],ds[1])/fs[0][1]-fs[1][0]*lcm(ds[0],ds[1])/fs[1][1]} из ${lcm(ds[0],ds[1])} = ${plain(rest)}.<div class="fig">${pizza(lcm(ds[0],ds[1]),lcm(ds[0],ds[1])*tot[0]/tot[1],60)}</div>`},rest);}});
+
+/* L4 */
+RULE(4,[{q:'Как перевести смешанное число 2 3/4 в неправильную дробь?',ok:'(2 · 4 + 3) / 4 = 11/4',bad:['(2 + 3) / 4 = 5/4','2 · 3 / 4 = 6/4','(2 · 3 + 4) / 4 = 10/4'],
+ ex:'Целую часть умножаем на знаменатель и прибавляем числитель: 2 целых = 8 четвертей, плюс 3 четверти = <b>11/4</b>.',ex2:'Две целые пиццы, нарезанные на четвертинки, — это 8 кусков. Плюс ещё 3 куска — 11 четвертинок.'},
+{q:'Как перевести неправильную дробь 17/5 в смешанное число?',ok:'Разделить 17 на 5 с остатком: 3 (ост. 2) → 3 2/5',bad:['17 − 5 = 12 → 12/5','Разделить 5 на 17','Записать 1 7/5'],
+ ex:'Делим числитель на знаменатель с остатком: 17 : 5 = <b>3</b> (ост. <b>2</b>). Частное — целая часть, остаток — новый числитель: 3 2/5.',ex2:'17 кусков по 1/5: из каждых 5 кусков собирается целая пицца. 3 пиццы (15 кусков) и ещё 2 куска.'}]);
+G(4,()=>{const q=R(2,9);const w=R(1,6);const p=pick(range(1,q-1));const n=w*q+p;
+ return T({q:`Запиши неправильную дробь ${M(F(n,q))} в виде смешанного числа.`,ph:'например 2 1/3',
+ short:`${n} : ${q} = ${w} (ост. ${p}) → ${w} ${p}/${q}.`,
+ explain:`Делим числитель на знаменатель с остатком: ${n} : ${q} = <b>${w}</b> (остаток <b>${p}</b>).<br>Частное — целая часть, остаток — числитель, знаменатель тот же: ${M(MX(w,p,q))}.<br>Вводи через пробел: <b>${w} ${p}/${q}</b>.`,
+ explain2:`${n} кусков по 1/${q}. Каждые ${q} кусков — целая пицца. ${w} ${plural(w,'пицца','пиццы','пицц')} = ${w*q} кусков, лишних ${n-w*q}. Итого ${w} целых и ${p}/${q}.`},[n,q],{mixed:true});});
+G(4,()=>{const q=R(2,9);const w=R(1,8);const p=pick(range(1,q-1).filter(x=>gcd(x,q)===1));const n=w*q+p;
+ return T({q:`Запиши смешанное число ${M(MX(w,p,q))} в виде неправильной дроби.`,ph:'например 7/3',
+ short:`(${w} · ${q} + ${p})/${q} = ${n}/${q}.`,
+ explain:`Целую часть умножаем на знаменатель и прибавляем числитель:<br>${M(MX(w,p,q)+' = '+F(`${w} · ${q} + ${p}`,q)+' = '+F(n,q))}.`,
+ explain2:`${w} целых — это ${w} · ${q} = ${w*q} кусков по 1/${q}. Плюс ещё ${p} — всего ${n} кусков: ${n}/${q}.`},[n,q],{improper:true});});
+G(4,()=>{let q,w1,w2,p1,p2;do{q=R(3,12);w1=R(1,7);w2=R(1,5);p1=R(1,q-1);p2=R(1,q-1);}while(gcd(p1,q)>1||gcd(p2,q)>1);const r=add([w1*q+p1,q],[w2*q+p2,q]);
+ return T({q:`Вычисли: ${M(MX(w1,p1,q)+' + '+MX(w2,p2,q))}`,
+ short:`${w1+w2} + ${p1+p2}/${q} = ${plain(r)}.`,
+ explain:`Целые с целыми: ${w1} + ${w2} = ${w1+w2}. Дроби с дробями: ${M(F(p1,q)+' + '+F(p2,q)+' = '+F(p1+p2,q))}.<br>${p1+p2>=q?`${p1+p2}/${q} — неправильная, выделяем целое: ${M(F(p1+p2,q)+' = '+S(nr(p1+p2,q)))}. Итого: ${w1+w2} + ${S(nr(p1+p2,q))} = `:'Итого: '}<b>${M(S(r))}</b>.`,
+ explain2:`Через неправильные дроби: ${M(F(w1*q+p1,q)+' + '+F(w2*q+p2,q)+' = '+F(w1*q+p1+w2*q+p2,q))} = ${M(S(r))}.`},r);});
+G(4,()=>{let q,w1,w2,p1,p2;do{q=R(3,10);w1=R(3,9);w2=R(1,w1-1);p1=R(1,q-1);p2=R(1,q-1);}while(p1>=p2);const r=sub([w1*q+p1,q],[w2*q+p2,q]);
+ return T({q:`Вычисли: ${M(MX(w1,p1,q)+' − '+MX(w2,p2,q))}`,
+ hint:`${p1}/${q} меньше ${p2}/${q} — займи единицу у целой части.`,
+ short:`${MX(w1-1,p1+q,q)} − ${MX(w2,p2,q)} = ${plain(r)}.`,
+ explain:`Дробь ${p1}/${q} меньше ${p2}/${q} — вычесть не получится. <b>Займём единицу</b>: ${M(MX(w1,p1,q)+' = '+MX(w1-1,p1+q,q))} (1 = ${q}/${q}).<br>Теперь: целые ${w1-1} − ${w2} = ${w1-1-w2}, дроби ${p1+q}/${q} − ${p2}/${q} = ${p1+q-p2}/${q}.<br>Ответ: <b>${M(S(r))}</b>.`,
+ explain2:`Через неправильные дроби: ${M(F(w1*q+p1,q)+' − '+F(w2*q+p2,q)+' = '+F(w1*q+p1-w2*q-p2,q))} = ${M(S(r))}. Типичная ошибка — вычесть «наоборот» ${p2} − ${p1} в дробях.`},r);});
+
+/* L5 */
+RULE(5,[{q:'Как умножить дробь на дробь?',ok:'Числитель умножить на числитель, знаменатель — на знаменатель',bad:['Привести к общему знаменателю и перемножить числители','Перемножить крест-накрест','Умножить только числители'],
+ ex:'a/b · c/d = (a · c)/(b · d). Общий знаменатель для умножения <b>не нужен</b>! 2/3 · 3/5 = 6/15 = 2/5.',ex2:'1/2 · 1/3 — это «половина от трети»: разрезали треть пополам — получили шестую часть. 1 · 1 = 1, 2 · 3 = 6.'}]);
+G(5,()=>{let a,b,c,d;do{b=R(2,9);d=R(2,9);a=R(1,b-1);c=R(1,d-1);}while(gcd(a,b)>1||gcd(c,d)>1||gcd(a,d)===1&&gcd(c,b)===1&&Math.random()<.6);const r=mul([a,b],[c,d]);
+ return T({q:`Вычисли: ${M(F(a,b)+' · '+F(c,d))}`,
+ short:`${a}·${c} / ${b}·${d} = ${a*c}/${b*d}${r[1]!==b*d?` = ${plain(r)}`:''}.`,
+ explain:`Числитель на числитель, знаменатель на знаменатель:<br>${M(F(a,b)+' · '+F(c,d)+' = '+F(`${a} · ${c}`,`${b} · ${d}`))}.<br>${gcd(a,d)>1||gcd(c,b)>1?`Сначала сократим крест-накрест: ${gcd(a,d)>1?`${a} и ${d} на ${gcd(a,d)}`:''}${gcd(a,d)>1&&gcd(c,b)>1?', ':''}${gcd(c,b)>1?`${c} и ${b} на ${gcd(c,b)}`:''}. `:''}Получаем <b>${M(S(r))}</b>.`,
+ explain2:`Можно без сокращения: ${a*c}/${b*d}, а потом сократить на НОД(${a*c}, ${b*d}) = ${gcd(a*c,b*d)} → ${plain(r)}. Но числа больше — легче ошибиться. Сокращай заранее!`},r);});
+G(5,()=>{const b=R(3,12);const a=pick(range(1,b-1).filter(x=>gcd(x,b)===1));const n=pick([R(2,9),b*R(1,3),R(2,20)]);const r=mul([a,b],[n,1]);
+ return T({q:`Вычисли: ${M(F(a,b)+' · '+n)}`,
+ short:`${a} · ${n} / ${b} = ${a*n}/${b}${r[1]!==b||r[0]>r[1]?` = ${plain(r)}`:''}.`,
+ explain:`Натуральное число — это дробь со знаменателем 1: ${n} = ${n}/1. Умножаем только числитель: ${M(F(`${a} · ${n}`,b)+' = '+F(a*n,b))}${r[1]!==b||r[0]>r[1]?` = ${M(S(r))}`:''}.`,
+ explain2:`${a}/${b} · ${n} — это ${n} раз по ${a}/${b}: ${n<=5?Array(n).fill(`${a}/${b}`).join(' + '):`${a}/${b} + ${a}/${b} + … (${n} раз)`} = ${a*n}/${b}. ${r[0]>r[1]?`Выделяем целую часть: ${plain(r)}.`:''}`},r);});
+G(5,()=>{let q1,q2,w1,w2,p1,p2,A,B,r,wrong;do{q1=R(2,5);q2=R(2,5);w1=R(1,3);w2=R(1,3);p1=R(1,q1-1);p2=R(1,q2-1);A=[w1*q1+p1,q1];B=[w2*q2+p2,q2];r=mul(A,B);wrong=add([w1*w2,1],mul([p1,q1],[p2,q2]));}while(gcd(p1,q1)>1||gcd(p2,q2)>1||wrong[0]*r[1]===r[0]*wrong[1]);
+ return T({q:`Вычисли: ${M(MX(w1,p1,q1)+' · '+MX(w2,p2,q2))}`,
+ hint:'Сначала переведи оба смешанных числа в неправильные дроби.',
+ short:`${A[0]}/${A[1]} · ${B[0]}/${B[1]} = ${plain(r)}.`,
+ explain:`1) В неправильные дроби: ${M(MX(w1,p1,q1)+' = '+F(...A))}, ${M(MX(w2,p2,q2)+' = '+F(...B))}.<br>2) ${M(F(...A)+' · '+F(...B)+' = '+F(A[0]*B[0],A[1]*B[1]))}${nr(A[0]*B[0],A[1]*B[1])[1]!==A[1]*B[1]||r[0]>r[1]?` = <b>${M(S(r))}</b>`:''}.<br>Ошибка «${w1}·${w2} и ${p1}/${q1}·${p2}/${q2}» даёт ${plain(wrong)} — так нельзя: потеряны произведения целого на дробь.`,
+ explain2:`Прикидка: ${MX(w1,p1,q1)} ≈ ${H.num(Math.round(A[0]/A[1]*10)/10)}, ${MX(w2,p2,q2)} ≈ ${H.num(Math.round(B[0]/B[1]*10)/10)}. Произведение ≈ ${H.num(Math.round(A[0]/A[1]*B[0]/B[1]*10)/10)}. Наш ответ ${plain(r)} ≈ ${H.num(Math.round(r[0]/r[1]*10)/10)} ✅.`},r);});
+
+/* L6 */
+RULE(6,[{q:'Как разделить дробь на дробь?',ok:'Умножить делимое на дробь, обратную делителю',bad:['Разделить числитель на числитель и знаменатель на знаменатель всегда удобнее','Перевернуть первую дробь и умножить','Перевернуть обе дроби и умножить'],
+ ex:'a/b : c/d = a/b · d/c — переворачиваем <b>только вторую</b> (делитель). 3/4 : 3/8 = 3/4 · 8/3 = 2.',ex2:'Почему: деление — это «сколько раз помещается». 1 : 1/2 = 2 (две половинки в целом), и правда 1 · 2/1 = 2.'},
+{q:'Какое число обратно числу 3/7?',ok:'7/3',bad:['−3/7','3/7','1/7'],
+ ex:'Обратное — перевёрнутая дробь: 3/7 → <b>7/3</b>. Проверка: 3/7 · 7/3 = 21/21 = 1.',ex2:'Взаимно обратные числа в произведении дают 1. 5 и 1/5, 2/3 и 3/2.'}]);
+G(6,()=>{let a,b,c,d;do{b=R(2,9);d=R(2,9);a=R(1,9);c=R(1,9);}while(gcd(a,b)>1||gcd(c,d)>1||a===c&&b===d);const r=dvd([a,b],[c,d]);
+ return T({q:`Вычисли: ${M(F(a,b)+' : '+F(c,d))}`,
+ short:`${a}/${b} · ${d}/${c} = ${plain(r)}.`,
+ explain:`Делить на дробь — умножать на <b>перевёрнутую</b>:<br>${M(F(a,b)+' : '+F(c,d)+' = '+F(a,b)+' · '+F(d,c)+' = '+F(a*d,b*c))}${nr(a*d,b*c)[1]!==b*c||r[0]>r[1]?` = <b>${M(S(r))}</b>`:''}.<br>Ошибка — перевернуть первую дробь: ${b}/${a} · ${c}/${d} = ${plain(mul([b,a],[c,d]))}.`,
+ explain2:`Проверь умножением: ответ · делитель = делимое. ${S(r)} · ${F(c,d)} = ${S(mul(r,[c,d]))} — это ${F(a,b)} ✅.`},r);});
+G(6,()=>{const n=R(2,6);const b=R(2,9);const a=pick(range(1,12).filter(x=>gcd(x,b)===1));const r=dvd([a,b],[n,1]);
+ return T({q:`Вычисли: ${M(F(a,b)+' : '+n)}`,
+ short:`${a}/${b} · 1/${n} = ${plain(r)}.`,
+ explain:`${n} = ${n}/1, обратное — ${F(1,n)}. ${M(F(a,b)+' : '+n+' = '+F(a,b)+' · '+F(1,n)+' = '+F(a,b*n))}${r[1]!==b*n?` = ${M(S(r))}`:''}.`,
+ explain2:`Делим ${a}/${b} пиццы на ${n} друзей: каждый кусок 1/${b} режем ещё на ${n} — получаются куски 1/${b*n}, и каждому достаётся ${a} таких: ${a}/${b*n}${r[1]!==b*n?` = ${plain(r)}`:''}.`},r);});
+G(6,()=>{for(;;){const per=pick([[1,4],[1,3],[1,2],[2,3],[3,4],[1,5],[2,5],[1,6]]);const total=pick([[3,1],[2,1],[5,1],[3,2],[9,2],[4,1],[6,1]]);const r=dvd(total,per);if(r[1]!==1||r[0]<2)continue;const it=pick(['сока','молока','лимонада']);
+ return T({q:`В бутылке ${M(S(total))} л ${it}. Сколько стаканов по ${M(F(...per))} л можно наполнить?`,
+ short:`${plain(total)} : ${plain(per)} = ${r[0]}.`,
+ explain:`Узнаём, сколько раз ${plain(per)} л помещается в ${plain(total)} л — это деление:<br>${M(S(total)+' : '+F(...per)+' = '+F(...total)+' · '+F(per[1],per[0])+' = '+F(total[0]*per[1],total[1]*per[0]))} = <b>${r[0]}</b>.`,
+ explain2:`Проверка: ${r[0]} стаканов по ${plain(per)} л = ${r[0]} · ${plain(per)} = ${plain(mul([r[0],1],per))} л — ровно вся бутылка ✅.`},r);}});
+
+/* L7 */
+RULE(7,[{q:'Как найти дробь от числа, например 3/5 от 40?',ok:'Умножить число на дробь: 40 · 3/5',bad:['Разделить число на дробь: 40 : 3/5','Умножить на знаменатель: 40 · 5','Прибавить дробь: 40 + 3/5'],
+ ex:'Дробь от числа — <b>умножение</b>: 40 · 3/5 = 24. Смысл: 40 : 5 = 8 (одна пятая), 8 · 3 = 24 (три пятых).',ex2:'Знаменатель — «на сколько частей делим», числитель — «сколько частей берём». Раздели 40 конфет на 5 кучек по 8, возьми 3 кучки — 24 конфеты.'},
+{q:'Как найти число по его дроби, например «3/5 числа равны 24»?',ok:'Разделить на дробь: 24 : 3/5 = 40',bad:['Умножить на дробь: 24 · 3/5','Разделить на знаменатель: 24 : 5','Умножить на числитель: 24 · 3'],
+ ex:'Число по его дроби — <b>деление на дробь</b>: 24 : 3/5 = 24 · 5/3 = 40. Смысл: 24 — это 3 части; одна часть 24 : 3 = 8; всего 5 частей — 40.',ex2:'Проверка: 3/5 от 40 = 24 ✅. Целое должно получиться больше части.'}]);
+G(7,()=>{const q=pick([3,4,5,6,8,10]);const p=pick(range(1,q-1).filter(x=>gcd(x,q)===1));const N=q*R(2,15)*10;const ans=N/q*p;const g=pick(['новую игру','наушники','подарок маме','скин в Minecraft']);
+ return {type:'num',q:`У Павла было ${N} ₽. На ${g} он потратил ${M(F(p,q))} своих денег. Сколько рублей он потратил?`,ans,
+ short:`${N} · ${p}/${q} = ${N} : ${q} · ${p} = ${ans}.`,
+ explain:`Ищем <b>дробь от числа</b> → умножаем: ${M(N+' · '+F(p,q)+' = '+F(`${N} · ${p}`,q)+' = '+ans)}.<br>По шагам: ${N} : ${q} = ${N/q} — это 1/${q}; ${N/q} · ${p} = <b>${ans}</b> ₽ — это ${p}/${q}.`,
+ explain2:`Полоска — все ${N} ₽, разрезанные на ${q} равных частей по ${N/q} ₽. Закрашено ${p} частей: ${p} · ${N/q} = ${ans}.<div class="fig">${bar(q,p,240,`${p}/${q}`)}</div>`};});
+G(7,()=>{const q=pick([3,4,5,6,8]);const p=pick(range(1,q-1).filter(x=>gcd(x,q)===1));const one=R(5,30);const part=one*p,N=one*q;
+ return {type:'num',q:`Павел прочитал ${part} страниц — это ${M(F(p,q))} книги. Сколько страниц в книге?`,ans:N,
+ short:`${part} : ${p}/${q} = ${part} · ${q}/${p} = ${N}.`,
+ explain:`Известна <b>часть</b> (${p}/${q}), ищем <b>целое</b> → делим на дробь:<br>${M(part+' : '+F(p,q)+' = '+part+' · '+F(q,p)+' = '+N)}.<br>По шагам: ${part} : ${p} = ${one} страниц — это 1/${q} книги; ${one} · ${q} = <b>${N}</b>.`,
+ explain2:`Проверка: ${p}/${q} от ${N} = ${N} : ${q} · ${p} = ${part} ✅. Частая ошибка — умножить ${part} · ${p}/${q} = ${H.num(Math.round(part*p/q*100)/100)}: книга получилась бы <b>меньше</b> прочитанного куска — абсурд!<div class="fig">${bar(q,p,240,`${part} стр.`)}</div>`};});
+G(7,()=>{const q=pick([3,4,5,7,8]);const p=pick(range(1,q-1).filter(x=>gcd(x,q)===1));const one=R(4,20);const N=one*q;const rest=N-one*p;
+ return {type:'num',q:`В первый день Павел прошёл в игре ${M(F(p,q))} всех уровней. Ему осталось пройти ${rest} ${plural(rest,'уровень','уровня','уровней')}. Сколько всего уровней в игре?`,ans:N,
+ hint:`Какая часть уровней осталась?`,
+ short:`Осталось ${q-p}/${q} = ${rest} → всего ${rest} : ${q-p}/${q} = ${N}.`,
+ explain:`1) Какая часть осталась: 1 − ${F(p,q)} = ${M(F(q-p,q))}.<br>2) ${F(q-p,q)} всех уровней = ${rest} → всего ${M(rest+' : '+F(q-p,q)+' = '+rest+' · '+F(q,q-p)+' = '+N)}.<br>Ловушка: ${rest} — это не ${p}/${q}, а <b>оставшаяся</b> часть!`,
+ explain2:`Разделим игру на ${q} равных частей. Пройдено ${p}, осталось ${q-p} частей = ${rest} уровней. Одна часть: ${rest} : ${q-p} = ${one}. Всего: ${one} · ${q} = ${N}.<div class="fig">${bar(q,p,240,'пройдено')}</div>`};});
+
+/* L8 ★ */
+RULE(8,[{q:'Какое равенство верно для любого натурального n?',ok:'1/(n(n + 1)) = 1/n − 1/(n + 1)',bad:['1/(n(n + 1)) = 1/n + 1/(n + 1)','1/(n + 1) = 1/n − 1','1/n − 1/(n + 1) = 1'],
+ ex:'1/n − 1/(n + 1) = (n + 1 − n)/(n(n + 1)) = 1/(n(n + 1)). Проверка при n = 2: 1/2 − 1/3 = 1/6 = 1/(2 · 3) ✅.',ex2:'Именно из-за этого суммы 1/(1·2) + 1/(2·3) + … «схлопываются» — всё в середине сокращается.'}],{star:true});
+G(8,()=>{const n=R(4,30);let s=[0,1];for(let k=1;k<=n;k++)s=add(s,[1,k*(k+1)]);if(s[0]*(n+1)!==n*s[1])throw new Error('tel');
+ return T({q:`Вычисли: ${M(F(1,'1 · 2')+' + '+F(1,'2 · 3')+' + '+F(1,'3 · 4')+' + … + '+F(1,`${n} · ${n+1}`))}`,
+ hint:'Каждое слагаемое 1/(k(k+1)) = 1/k − 1/(k+1).',
+ short:`1 − 1/${n+1} = ${n}/${n+1}.`,
+ explain:`Расписываем каждое слагаемое как разность: ${F(1,'k(k + 1)')} = ${F(1,'k')} − ${F(1,'k + 1')}.<br>(1 − ${F(1,2)}) + (${F(1,2)} − ${F(1,3)}) + … + (${F(1,n)} − ${F(1,n+1)}).<br>Все средние слагаемые уничтожаются парами, остаются первое и последнее: 1 − ${F(1,n+1)} = <b>${M(F(n,n+1))}</b>.`,
+ explain2:`Посмотри на маленькие суммы: 1/2 = 1/2; 1/2 + 1/6 = 2/3; + 1/12 = 3/4; + 1/20 = 4/5… Закономерность: n/(n + 1). Для n = ${n}: ${n}/${n+1}.`},s,{irr:false});},{star:true});
+G(8,()=>{const n=R(5,40);let s=[1,1];for(let k=2;k<=n;k++)s=mul(s,[k-1,k]);if(s[0]!==1||s[1]!==n)throw new Error('prod');
+ return T({q:`Вычисли: ${M(`(1 − ${F(1,2)}) · (1 − ${F(1,3)}) · (1 − ${F(1,4)}) · … · (1 − ${F(1,n)})`)}`,
+ short:`1/2 · 2/3 · 3/4 · … · ${n-1}/${n} = 1/${n}.`,
+ explain:`Каждая скобка: 1 − ${F(1,'k')} = ${F('k − 1','k')}.<br>Произведение: ${F(1,2)} · ${F(2,3)} · ${F(3,4)} · … · ${F(n-1,n)}.<br>Знаменатель каждой дроби сокращается с числителем следующей! Остаётся ${M(F(1,n))}.`,
+ explain2:`Проверь на маленьких: 1/2 · 2/3 = 1/3; · 3/4 = 1/4; · 4/5 = 1/5. Каждый раз получается 1/(последний знаменатель). Значит, ответ 1/${n}.`},s);},{star:true});
+G(8,()=>{const n=R(2,12);const x=n*(n+1);if(!(add([1,n+1],[1,x])[0]===1&&add([1,n+1],[1,x])[1]===n))throw new Error('egy');
+ return {type:'num',q:`Египетская дробь: найди натуральное x, при котором ${M(F(1,n)+' = '+F(1,n+1)+' + '+F(1,'x'))}.`,ans:x,
+ short:`1/${n} − 1/${n+1} = 1/${x}.`,
+ explain:`${F(1,'x')} = ${F(1,n)} − ${F(1,n+1)} = ${F(`${n+1} − ${n}`,`${n} · ${n+1}`)} = ${F(1,x)}. Значит, x = <b>${x}</b>.`,
+ explain2:`Формула египтян: ${F(1,'n')} = ${F(1,'n + 1')} + ${F(1,'n(n + 1)')}. При n = ${n}: x = ${n} · ${n+1} = ${x}. Проверка: ${F(1,n+1)} + ${F(1,x)} = ${F(n,x)} + ${F(1,x)} = ${F(n+1,x)} = ${F(1,n)} ✅.`};},{star:true});
+G(8,()=>{const A=pick([99,365,999,1000,2024,2025,2026,9999,12345]);const a=[A-1,A],b=[A,A+1];// (A-1)/A < A/(A+1)
+ const ok=`${A-1}/${A} < ${A}/${A+1}`;const opts=[`${A-1}/${A} < ${A}/${A+1}`,`${A-1}/${A} > ${A}/${A+1}`,`${A-1}/${A} = ${A}/${A+1}`];const o=shuffle(opts);
+ if(!((A-1)*(A+1)<A*A))throw new Error('cmp');
+ return {type:'choice',q:`Сравни дроби ${M(F(A-1,A))} и ${M(F(A,A+1))}.`,opts:o,ans:o.indexOf(ok),
+ short:`Первой до 1 не хватает 1/${A}, второй — 1/${A+1}, а это меньше.`,
+ explain:`Сравним, сколько каждой не хватает до 1:<br>1 − ${F(A-1,A)} = ${F(1,A)}, 1 − ${F(A,A+1)} = ${F(1,A+1)}.<br>${F(1,A+1)} < ${F(1,A)} (знаменатель больше — кусок меньше). Второй не хватает меньше — значит, она <b>ближе к 1 и больше</b>: ${M(F(A-1,A)+' < '+F(A,A+1))}.`,
+ explain2:`Перекрёстное умножение: ${A-1} · ${A+1} = ${A}² − 1, а ${A} · ${A} = ${A}². Первое на 1 меньше → первая дробь меньше. Работает для любого числа: (n − 1)/n < n/(n + 1).`};},{star:true});
+G(8,()=>{const n=R(4,12);let s=[0,1];for(let k=1;k<=n;k++)s=add(s,[1,Math.pow(2,k)]);if(s[0]!==Math.pow(2,n)-1||s[1]!==Math.pow(2,n))throw new Error('geo');
+ return T({q:`Вычисли: ${M(F(1,2)+' + '+F(1,4)+' + '+F(1,8)+' + … + '+F(1,Math.pow(2,n)))}`,
+ short:`1 − 1/${Math.pow(2,n)} = ${s[0]}/${s[1]}.`,
+ explain:`Смотри, как растёт сумма: ${F(1,2)}; ${F(3,4)}; ${F(7,8)}; ${F(15,16)}… Каждый раз до 1 не хватает ровно последнего слагаемого.<br>Значит, сумма = 1 − ${F(1,Math.pow(2,n))} = <b>${M(F(s[0],s[1]))}</b>.`,
+ explain2:`Представь: ты съедаешь половину пиццы, потом половину остатка, потом половину нового остатка… После ${n} шагов остаётся кусок 1/${Math.pow(2,n)}. Съедено 1 − 1/${Math.pow(2,n)} = ${s[0]}/${s[1]}.`},s);},{star:true});
+G(8,()=>{const n=R(3,20);let s=[0,1];for(let k=1;k<=n;k++)s=add(s,[1,(2*k-1)*(2*k+1)]);if(s[0]*(2*n+1)!==n*s[1])throw new Error('odd');
+ return T({q:`Вычисли: ${M(F(1,'1 · 3')+' + '+F(1,'3 · 5')+' + '+F(1,'5 · 7')+' + … + '+F(1,`${2*n-1} · ${2*n+1}`))}`,
+ hint:'1/(1·3) = (1/2)·(1 − 1/3). Попробуй так же с остальными.',
+ short:`½ · (1 − 1/${2*n+1}) = ${n}/${2*n+1}.`,
+ explain:`Здесь знаменатели отличаются на 2, поэтому ${F(1,'k(k + 2)')} = ${F(1,2)} · (${F(1,'k')} − ${F(1,'k + 2')}).<br>Сумма = ${F(1,2)} · (1 − ${F(1,3)} + ${F(1,3)} − ${F(1,5)} + … − ${F(1,2*n+1)}) = ${F(1,2)} · (1 − ${F(1,2*n+1)}) = ${F(1,2)} · ${F(2*n,2*n+1)} = <b>${M(F(n,2*n+1))}</b>.`,
+ explain2:`Маленькие суммы: 1/3; 1/3 + 1/15 = 2/5; + 1/35 = 3/7. Видишь? n/(2n + 1). У нас ${n} слагаемых → ${n}/${2*n+1}.`},s);},{star:true});
+
+window.TOPIC={id:'m6_fractions',title:'Обыкновенные дроби',subtitle:'Математика · 6 класс',
+intro:'<p>Пицца, полоски, стаканы сока — всё про части целого. Основное свойство и сокращение, общий знаменатель и сравнение, все четыре действия (и со смешанными числами), дробь от числа и число по дроби. В конце — египетские дроби и хитрые суммы ★.</p><p class="small">Ответ-дробь вводи через косую черту: <b>5/12</b>, смешанное число — через пробел: <b>2 1/3</b>.</p>',
+theory,symbols,figs:{},onTheory,
+levels:['Дробь и основное свойство','Сокращение дробей','Общий знаменатель и сравнение','Сложение и вычитание','Смешанные числа','Умножение дробей','Деление дробей','Дробь от числа и число по дроби','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
