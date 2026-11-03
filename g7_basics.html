@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Точки, прямые, отрезки, углы — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,num:N}=H;
+/* =====================================================================
+   Geometry SVG helper (math coords, y up → auto-fit into ≤ 320 px)
+   ===================================================================== */
+const D2R=Math.PI/180;
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(a,k)=>[a[0]*k,a[1]*k];
+const len=a=>Math.hypot(a[0],a[1]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
+const unit=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l];};
+const polar=(p,L,d)=>[p[0]+L*Math.cos(d*D2R),p[1]+L*Math.sin(d*D2R)];
+const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+const foot=(p,a,b)=>{const d=sub(b,a);const t=dot(sub(p,a),d)/dot(d,d);return lerp(a,b,t);};
+const inter=(a,b,c,d)=>{const r=sub(b,a),s=sub(d,c);const den=r[0]*s[1]-r[1]*s[0];const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den;return add(a,mul(r,t));};
+const angAt=(v,a,b)=>{const u=unit(sub(a,v)),w=unit(sub(b,v));return Math.acos(Math.max(-1,Math.min(1,dot(u,w))))/D2R;};
+const r1=x=>Math.round(x*10)/10;
+const tw=(t,fs)=>{t=String(t).replace(/<[^>]+>/g,'');let w=0;for(const ch of t)w+=/[°·,.\s₁₂₃₄]/.test(ch)?fs*0.36:/[0-9]/.test(ch)?fs*0.56:fs*0.64;return w;};
+const SUB={A1:'A₁',A2:'A₂',A3:'A₃',A4:'A₄',B1:'B₁',B2:'B₂',B3:'B₃',B4:'B₄'};
+
+function geo(o){
+  const P={};for(const k in o.P)if(Array.isArray(o.P[k]))P[k]=o.P[k];const W=o.W||300,MH=o.maxH||220,pad=o.pad==null?30:o.pad;
+  const all=Object.values(P).concat(o.extra||[]);
+  const x0=Math.min(...all.map(p=>p[0])),x1=Math.max(...all.map(p=>p[0]));
+  const y0=Math.min(...all.map(p=>p[1])),y1=Math.max(...all.map(p=>p[1]));
+  const bw=Math.max(x1-x0,1e-6),bh=Math.max(y1-y0,1e-6);
+  const s=Math.min((W-2*pad)/bw,(MH-2*pad)/bh);
+  const w=Math.round(bw*s+2*pad),h=Math.round(bh*s+2*pad);
+  const X=p=>[pad+(p[0]-x0)*s,pad+(y1-p[1])*s];
+  const Q={};for(const k in P)Q[k]=X(P[k]);
+  const g=k=>Array.isArray(k)?X(k):Q[k];
+  const polys=o.poly||[];
+  const cen=pts=>[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];
+  const allC=cen(Object.values(Q));
+  const pstr=pts=>pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ');
+  const T=(x,y,t,fs,col,wt,anc)=>`<text x="${r1(x)}" y="${r1(y+fs*0.36)}" text-anchor="${anc||'middle'}" font-size="${fs}" font-weight="${wt||600}" fill="${col||'var(--ink)'}">${t}</text>`;
+  const place=(p,d,t,fs,gap)=>{const ww=tw(t,fs),hh=fs*0.78;const k=gap+0.5*(ww*Math.abs(d[0])+hh*Math.abs(d[1]));return [p[0]+d[0]*k,p[1]+d[1]*k];};
+  let out=`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${o.aria||'Чертёж'}" style="font-family:system-ui,sans-serif">`;
+  const LS=[];const ln=(A,B,attr)=>{LS.push([A,B]);return `<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" ${attr}/>`;};
+  if(o.grid){const G=o.grid;for(let x=G[0];x<=G[2]+1e-9;x++){const a=X([x,G[1]]),b=X([x,G[3]]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}
+    for(let y=G[1];y<=G[3]+1e-9;y++){const a=X([G[0],y]),b=X([G[2],y]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}}
+  (o.fill||[]).forEach(f=>{const pts=(f.pts||f).map(g);out+=`<polygon points="${pstr(pts)}" fill="${f.col||'var(--hl)'}" fill-opacity="${f.op||0.35}" stroke="none"/>`;});
+  polys.forEach(pl=>{out+=`<polygon points="${pstr(pl.map(g))}" fill="none" stroke="var(--fig)" stroke-width="2.2" stroke-linejoin="round"/>`;pl.forEach((k,i)=>LS.push([g(k),g(pl[(i+1)%pl.length])]));});
+  (o.seg||[]).forEach(sg=>{const op=sg[2]||{};let A=g(sg[0]),B=g(sg[1]);if(op.ext){const e=mul(sub(B,A),op.ext);A=sub(A,e);B=add(B,e);}
+    out+=ln(A,B,`stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||1.7}" ${op.dash?'stroke-dasharray="6 4"':''} stroke-linecap="round"`);});
+  (o.tick||[]).forEach(tk=>{const A=g(tk[0]),B=g(tk[1]),n=tk[2]||1;const e=unit(sub(B,A)),nn=[-e[1],e[0]],m=mid(A,B);
+    for(let i=0;i<n;i++){const c=add(m,mul(e,(i-(n-1)/2)*5));out+=ln(add(c,mul(nn,6)),sub(c,mul(nn,6)),'stroke="var(--fig)" stroke-width="1.7"');}});
+  (o.rt||[]).forEach(rt=>{const Vv=g(rt[0]),u=unit(sub(g(rt[1]),Vv)),ww=unit(sub(g(rt[2]),Vv)),k=10;const a=add(Vv,mul(u,k)),b=add(a,mul(ww,k)),c=add(Vv,mul(ww,k));LS.push([a,b],[b,c]);
+    out+=`<path d="M${r1(a[0])},${r1(a[1])} L${r1(b[0])},${r1(b[1])} L${r1(c[0])},${r1(c[1])}" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`;});
+  const angInfo=(o.ang||[]).map(an=>{const op=an[4]||{};const Vv=g(an[0]),A=g(an[1]),B=g(an[2]);
+    const a1=Math.atan2(A[1]-Vv[1],A[0]-Vv[0]);let dl=Math.atan2(B[1]-Vv[1],B[0]-Vv[0])-a1;while(dl>Math.PI)dl-=2*Math.PI;while(dl<=-Math.PI)dl+=2*Math.PI;
+    const th=Math.abs(dl);const rr=op.r||(th<0.75?26:19);const n=op.n||1;
+    for(let i=0;i<n;i++){const r=rr+i*4;const p=[Vv[0]+r*Math.cos(a1),Vv[1]+r*Math.sin(a1)],q=[Vv[0]+r*Math.cos(a1+dl),Vv[1]+r*Math.sin(a1+dl)];
+      out+=`<path d="M${r1(p[0])},${r1(p[1])} A${r},${r} 0 0 ${dl>0?1:0} ${r1(q[0])},${r1(q[1])}" fill="none" stroke="${op.col||'var(--accent)'}" stroke-width="1.6"/>`;
+      let prev=p;for(let j=1;j<=6;j++){const an2=a1+dl*j/6;const c=[Vv[0]+r*Math.cos(an2),Vv[1]+r*Math.sin(an2)];LS.push([prev,c]);prev=c;}}
+    return {an,op,Vv,a1,dl,th,rr,n};});
+  (o.dots||[]).forEach(k=>{const p=g(k);out+=`<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="2.8" fill="var(--fig)"/>`;});
+  /* ---- collision-aware label placement ---- */
+  const boxes=[];
+  const segRect=(a,b,c,hw,hh)=>{const xmin=c[0]-hw,xmax=c[0]+hw,ymin=c[1]-hh,ymax=c[1]+hh;let t0=0,t1=1,hit=true;const dx=b[0]-a[0],dy=b[1]-a[1];const pp=[-dx,dx,-dy,dy],qq=[a[0]-xmin,xmax-a[0],a[1]-ymin,ymax-a[1]];
+    for(let i=0;i<4;i++){if(Math.abs(pp[i])<1e-12){if(qq[i]<0){hit=false;break;}}else{const r=qq[i]/pp[i];if(pp[i]<0){if(r>t1){hit=false;break;}if(r>t0)t0=r;}else{if(r<t0){hit=false;break;}if(r<t1)t1=r;}}}
+    if(hit)return -1;const pr=p=>Math.hypot(Math.max(xmin-p[0],0,p[0]-xmax),Math.max(ymin-p[1],0,p[1]-ymax));
+    const ps=p=>{const d=sub(b,a);const t=Math.max(0,Math.min(1,dot(sub(p,a),d)/Math.max(dot(d,d),1e-9)));return len(sub(p,lerp(a,b,t)));};
+    return Math.min(pr(a),pr(b),ps([xmin,ymin]),ps([xmax,ymin]),ps([xmin,ymax]),ps([xmax,ymax]));};
+  const clr=(c,hw,hh)=>{let m=Math.min(c[0]-hw,w-c[0]-hw,c[1]-hh,h-c[1]-hh)+1;for(const L of LS)m=Math.min(m,segRect(L[0],L[1],c,hw,hh));for(const bx of boxes)m=Math.min(m,Math.max(Math.abs(c[0]-bx[0])-hw-bx[2],Math.abs(c[1]-bx[1])-hh-bx[3]));return m;};
+  const choose=(cands,t,fs,thr)=>{const hw=tw(t,fs)/2+1,hh=fs*0.4+1;let best=cands[0],bs=-1e9;for(const c of cands){const v=clr(c,hw,hh);if(v>=thr){best=c;break;}if(v>bs){bs=v;best=c;}}boxes.push([best[0],best[1],hw,hh]);return best;};
+  let labels='';
+  const vdir=k=>{
+    if(o.dir&&o.dir[k]!=null){const d=o.dir[k];return [Math.cos(d*D2R),-Math.sin(d*D2R)];}
+    const p=Q[k];
+    for(const pl of polys){const i=pl.indexOf(k);if(i<0)continue;const n=pl.length;const u1=unit(sub(g(pl[(i-1+n)%n]),p)),u2=unit(sub(g(pl[(i+1)%n]),p));let d=add(u1,u2);
+      if(len(d)>0.15)return mul(unit(d),-1);const c=cen(pl.map(g));d=[-u1[1],u1[0]];if(dot(d,sub(c,p))>0)d=mul(d,-1);return d;}
+    for(const pl of polys){for(let i=0;i<pl.length;i++){const A=g(pl[i]),B=g(pl[(i+1)%pl.length]);const f=foot(p,A,B);const t=dot(sub(p,A),sub(B,A))/dot(sub(B,A),sub(B,A));
+      if(len(sub(f,p))<1&&t>0.02&&t<0.98){const e=unit(sub(B,A));let d=[-e[1],e[0]];if(dot(d,sub(cen(pl.map(g)),p))>0)d=mul(d,-1);return d;}}}
+    let d=sub(p,allC);if(len(d)<4)d=[0.7,0.7];return unit(d);};
+  (o.txt||[]).forEach(tx=>{const arr=Array.isArray(tx[0]);const p=arr?X(tx[0]):X([tx[0],tx[1]]);const t=arr?tx[1]:tx[2];const op=(arr?tx[2]:tx[3])||{};const fs=op.fs||14;
+    boxes.push([p[0],p[1],tw(t,fs)/2+1,fs*0.4+1]);labels+=T(p[0],p[1],t,fs,op.col||'var(--ink)',op.wt||600,op.anc);});
+  const labs=o.lab||Object.keys(P);
+  labs.forEach(k=>{const t=(o.names&&o.names[k])||SUB[k]||k;const d0=vdir(k);const th0=Math.atan2(d0[1],d0[0]);const cands=[];
+    for(const gp of [5,9])for(let j=0;j<=12;j++)for(const sg of (j?[1,-1]:[1])){const th=th0+sg*j*15*D2R;cands.push(place(Q[k],[Math.cos(th),Math.sin(th)],t,15,gp));}
+    const p=choose(cands,t,15,2.5);labels+=T(p[0],p[1],t,15,'var(--accent-ink)',700);});
+  (o.side||[]).forEach(sd=>{const op=sd[3]||{};const A=g(sd[0]),B=g(sd[1]);const e=unit(sub(B,A));let n=[-e[1],e[0]];const t0=op.t==null?0.5:op.t;
+    let c=allC;for(const pl of polys){const i=pl.indexOf(sd[0]),j=pl.indexOf(sd[1]);if(i>=0&&j>=0&&(Math.abs(i-j)===1||Math.abs(i-j)===pl.length-1)){c=cen(pl.map(g));break;}}
+    if(dot(n,sub(c,lerp(A,B,t0)))>0)n=mul(n,-1);if(op.flip)n=mul(n,-1);const fs=op.fs||14;const gp=op.gap==null?4:op.gap;const cands=[];
+    for(const nn of [n,mul(n,-1)])for(const gg of [gp,gp+5])for(const dt of [0,0.1,-0.1,0.2,-0.2,0.3,-0.3])cands.push(place(lerp(A,B,Math.max(0.08,Math.min(0.92,t0+dt))),nn,sd[2],fs,gg));
+    const p=choose(cands,sd[2],fs,2);labels+=T(p[0],p[1],sd[2],fs,op.col||'var(--ink)',600);});
+  angInfo.forEach(({an,op,Vv,a1,dl,th,rr,n})=>{if(!an[3])return;const fs=op.fs||14;const rad=Math.max(tw(an[3],fs),fs)/2+2;const d=Math.max(rr+(n-1)*4+rad+3,(rad+3)/Math.sin(th/2));const cands=[];
+    for(const dd of [0,7,14,22,32])for(const f of [0,0.3,-0.3,0.6,-0.6]){const am=a1+dl/2+f*dl/2;cands.push([Vv[0]+(d+dd)*Math.cos(am),Vv[1]+(d+dd)*Math.sin(am)]);}
+    const p=choose(cands,an[3],fs,1.5);labels+=T(p[0],p[1],an[3],fs,'var(--accent-ink)',700);});
+  return out+labels+'</svg>';
+}
+
+/* ---------- shared utilities ---------- */
+const fig=s=>`<div class="fig">${s}</div>`;
+const sq=x=>x*x;
+const isInt=x=>Math.abs(x-Math.round(x))<1e-9;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<400;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+/* choice from correct + wrongs; null if not distinct */
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const mark=s=>`<b style="color:var(--accent-ink)">${s}</b>`;
+
+/* =====================================================================
+   g7_basics — точки, прямые, отрезки, углы
+   ===================================================================== */
+const C2=n=>n*(n-1)/2;
+const LET='ABCDEFGHKMNP'.split('');
+const KIND=d=>d<90?'острый':d===90?'прямой':d<180?'тупой':'развёрнутый';
+/* angle picture: vertex O, side OA at angle a0 (deg), OB at a0+d */
+function angPic(d,o){o=o||{};const a0=o.a0==null?0:o.a0;const nm=o.names||['A','O','B'];
+  const P={O:[0,0],A:polar([0,0],5,a0),B:polar([0,0],5,a0+d)};
+  return geo({P,seg:[['O','A'],['O','B']],ang:d===90?[]:[['O','A','B',o.lab||'',{r:24}]],rt:d===90?[['O','A','B']]:[],dots:['O'],names:{A:nm[0],O:nm[1],B:nm[2]},maxH:o.maxH||140,W:o.W||220,pad:26,extra:[[-1.2,-0.6],[1.2,0.6]]});}
+/* collinear points: pts [{n,x}], spans [[i,j,text]] drawn as brackets above */
+function linePic(pts,spans,o){o=o||{};const W=o.W||310,pad=22;const x0=Math.min(...pts.map(p=>p.x)),x1=Math.max(...pts.map(p=>p.x));const s=(W-2*pad)/(x1-x0||1);const X=x=>pad+(x-x0)*s;
+  const lv=[];spans=spans||[];spans.forEach((sp,k)=>{const a=Math.min(pts[sp[0]].x,pts[sp[1]].x),b=Math.max(pts[sp[0]].x,pts[sp[1]].x);let l=0;while(lv.some(q=>q.l===l&&!(q.b<=a||q.a>=b)))l++;lv.push({a,b,l,t:sp[2]});});
+  const top=Math.max(0,...lv.map(q=>q.l+1));const base=26+top*26;const h=base+30;
+  let out=`<svg viewBox="0 0 ${W} ${h}" width="${W}" role="img" aria-label="Точки на прямой" style="font-family:system-ui,sans-serif">`;
+  out+=`<line x1="4" y1="${base}" x2="${W-4}" y2="${base}" stroke="var(--fig)" stroke-width="1.7"/>`;
+  lv.forEach(q=>{const y=base-14-q.l*26;const xa=X(q.a)+2,xb=X(q.b)-2;out+=`<path d="M${r1(xa)},${y+7} L${r1(xa)},${y} L${r1(xb)},${y} L${r1(xb)},${y+7}" fill="none" stroke="var(--muted)" stroke-width="1.2"/>`;
+    out+=`<rect x="${r1((xa+xb)/2-tw(q.t,13)/2-3)}" y="${y-9}" width="${r1(tw(q.t,13)+6)}" height="16" fill="var(--card)"/><text x="${r1((xa+xb)/2)}" y="${y+4}" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">${q.t}</text>`;});
+  pts.forEach(p=>{out+=`<circle cx="${r1(X(p.x))}" cy="${base}" r="3.2" fill="var(--fig)"/><text x="${r1(X(p.x))}" y="${base+20}" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent-ink)">${p.n}</text>`;});
+  return out+'</svg>';}
+/* point / segment / ray / line pictures */
+function primPic(kind,W){W=W||150;const y=30,h=56;let out=`<svg viewBox="0 0 ${W} ${h}" width="${W}" role="img" aria-label="Фигура" style="font-family:system-ui,sans-serif">`;
+  const dot=(x,t)=>`<circle cx="${x}" cy="${y}" r="3.2" fill="var(--fig)"/><text x="${x}" y="${y+20}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--accent-ink)">${t}</text>`;
+  const arr=(x,dir)=>`<path d="M${x-dir*9},${y-5} L${x},${y} L${x-dir*9},${y+5}" fill="none" stroke="var(--fig)" stroke-width="1.6"/>`;
+  if(kind==='отрезок')out+=`<line x1="30" y1="${y}" x2="${W-30}" y2="${y}" stroke="var(--fig)" stroke-width="2"/>`+dot(30,'A')+dot(W-30,'B');
+  if(kind==='луч')out+=`<line x1="30" y1="${y}" x2="${W-8}" y2="${y}" stroke="var(--fig)" stroke-width="2"/>`+arr(W-8,1)+dot(30,'O');
+  if(kind==='прямая')out+=`<line x1="8" y1="${y}" x2="${W-8}" y2="${y}" stroke="var(--fig)" stroke-width="2"/>`+arr(W-8,1)+arr(8,-1)+`<text x="${W/2}" y="${y-8}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--accent-ink)">a</text>`;
+  if(kind==='точка')out+=dot(W/2,'A');
+  return out+'</svg>';}
+/* protractor with two rays at degrees a<b (multiples of 10) */
+function protractor(a,b){const W=300,cx=150,cy=150,r=116;let out=`<svg viewBox="0 0 ${W} 178" width="${W}" role="img" aria-label="Транспортир" style="font-family:system-ui,sans-serif">`;
+  out+=`<path d="M${cx-r},${cy} A${r},${r} 0 0 1 ${cx+r},${cy} Z" fill="var(--hl)" fill-opacity=".12" stroke="var(--fig)" stroke-width="1.4"/>`;
+  for(let d=0;d<=180;d+=5){const L=d%10===0?11:6;const c=Math.cos(d*D2R),s=Math.sin(d*D2R);out+=`<line x1="${r1(cx+r*c)}" y1="${r1(cy-r*s)}" x2="${r1(cx+(r-L)*c)}" y2="${r1(cy-(r-L)*s)}" stroke="var(--fig)" stroke-width="${d%10?0.8:1.3}"/>`;
+    if(d%20===0){out+=`<text x="${r1(cx+(r+12)*c)}" y="${r1(cy-(r+12)*s+4)}" text-anchor="middle" font-size="10.5" fill="var(--muted)">${d}</text>`;}}
+  [a,b].forEach((d,i)=>{const c=Math.cos(d*D2R),s=Math.sin(d*D2R);out+=`<line x1="${cx}" y1="${cy}" x2="${r1(cx+(r-2)*c)}" y2="${r1(cy-(r-2)*s)}" stroke="var(--accent)" stroke-width="2.4"/>`;});
+  const am=(a+b)/2;out+=`<path d="M${r1(cx+34*Math.cos(a*D2R))},${r1(cy-34*Math.sin(a*D2R))} A34,34 0 0 0 ${r1(cx+34*Math.cos(b*D2R))},${r1(cy-34*Math.sin(b*D2R))}" fill="none" stroke="var(--accent)" stroke-width="1.6"/>`;
+  out+=`<circle cx="${cx}" cy="${cy}" r="3" fill="var(--fig)"/><text x="${cx}" y="${cy+20}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--accent-ink)">O</text>`;
+  return out+'</svg>';}
+/* clock face */
+function clockPic(h,m,W){W=W||170;const c=W/2,r=W/2-8;let out=`<svg viewBox="0 0 ${W} ${W}" width="${W}" role="img" aria-label="Часы" style="font-family:system-ui,sans-serif">`;
+  out+=`<circle cx="${c}" cy="${c}" r="${r}" fill="var(--card)" stroke="var(--fig)" stroke-width="2"/>`;
+  for(let i=0;i<60;i++){const t=i*6*D2R,L=i%5?4:9;out+=`<line x1="${r1(c+r*Math.sin(t))}" y1="${r1(c-r*Math.cos(t))}" x2="${r1(c+(r-L)*Math.sin(t))}" y2="${r1(c-(r-L)*Math.cos(t))}" stroke="var(--fig)" stroke-width="${i%5?0.8:1.6}"/>`;}
+  for(let i=1;i<=12;i++){const t=i*30*D2R;out+=`<text x="${r1(c+(r-20)*Math.sin(t))}" y="${r1(c-(r-20)*Math.cos(t)+4.5)}" text-anchor="middle" font-size="12" fill="var(--ink)">${i}</text>`;}
+  const ha=(30*(h%12)+0.5*m)*D2R,ma=6*m*D2R;
+  out+=`<line x1="${c}" y1="${c}" x2="${r1(c+r*0.5*Math.sin(ha))}" y2="${r1(c-r*0.5*Math.cos(ha))}" stroke="var(--fig)" stroke-width="4.5" stroke-linecap="round"/>`;
+  out+=`<line x1="${c}" y1="${c}" x2="${r1(c+r*0.8*Math.sin(ma))}" y2="${r1(c-r*0.8*Math.cos(ma))}" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/><circle cx="${c}" cy="${c}" r="4" fill="var(--fig)"/>`;
+  return out+'</svg>';}
+/* fan of rays from O at given degrees, names, angle marks */
+function fan(degs,names,angs,o){o=o||{};const P={O:[0,0]};degs.forEach((d,i)=>P[names[i]]=polar([0,0],5,d));
+  return geo({P,seg:names.map(n=>['O',n]),ang:angs||[],dots:['O'],maxH:o.maxH||170,W:o.W||260,pad:24,extra:[[-0.5,-0.5],[0.5,0.5]]});}
+const clockAng=(h,m)=>{const d=Math.abs(30*(h%12)+0.5*m-6*m)%360;return Math.min(d,360-d);};
+
+/* ---------- theory figures ---------- */
+const fPrims=`<div class="figrow">${['точка','отрезок','луч','прямая'].map(k=>`<div class="fig">${primPic(k,130)}<div class="cap">${k}</div></div>`).join('')}</div>`;
+const fAdd=linePic([{n:'A',x:0},{n:'B',x:3},{n:'C',x:8}],[[0,1,'3 см'],[1,2,'5 см'],[0,2,'8 см']]);
+const fMid=linePic([{n:'A',x:0},{n:'M',x:4},{n:'B',x:8}],[[0,1,'4'],[1,2,'4']]);
+const fKinds=`<div class="figrow">${[[50,'острый'],[90,'прямой'],[130,'тупой']].map(([d,k])=>`<div class="fig">${angPic(d,{lab:d===90?'':d+'°',W:120,maxH:100})}<div class="cap">${k}: ${d}°</div></div>`).join('')}</div>`;
+const fAngAdd=fan([0,40,95],['A','C','B'],[['O','A','C','40°',{r:30}],['O','C','B','55°',{r:22}]]);
+
+const theory=[
+{title:'С чего начинается геометрия',lvl:0,html:`
+<p class="hook">Около 240 года до н. э. Эратосфен из Александрии узнал: в городе Сиене в полдень летнего солнцестояния солнце освещает дно глубокого колодца — то есть стоит прямо над головой. А в Александрии в тот же момент вертикальный столб отбрасывал тень, и угол между столбом и солнечным лучом был около 7°. Эратосфен рассудил: 7° — это примерно 1/50 полного круга, значит окружность Земли — около 50 расстояний от Александрии до Сиены. Получилось почти 40 000 км! Прямые, лучи и углы — и ты измерил планету, не выходя из города.</p>
+<p>Геометрия начинается с самых простых фигур. Их не определяют через что-то другое — их просто «показывают на пальцах»:</p>
+${fPrims}
+<ul class="steps"><li><b>Точка</b> — «укол карандашом», у неё нет размера. Обозначают большими буквами: A, B, C.</li>
+<li><b>Прямая</b> — бесконечно тянется в обе стороны (как лазерный луч, у которого нет ни начала, ни конца). Обозначают маленькой буквой (a) или двумя точками (AB).</li>
+<li><b>Отрезок AB</b> — кусок прямой между точками A и B вместе с ними. У него есть длина.</li>
+<li><b>Луч OA</b> — половинка прямой: есть начало O, а дальше бесконечно в одну сторону. Первая буква — всегда начало!</li></ul>
+<div class="box rule"><b>Главная аксиома</b>Через любые две точки проходит прямая, и притом <b>только одна</b>.</div>
+<p><b>Почему это важно:</b> натяни нитку между двумя гвоздями — получится ровно одна линия, другой нет. Поэтому строители «отбивают» прямую линию на стене шнуром между двумя точками.</p>
+<div class="box ex"><b>Пример</b>Две различные прямые могут иметь только <b>одну</b> общую точку (пересекаются) или <b>ни одной</b> (не пересекаются). Двух общих точек быть не может: тогда через эти две точки прошли бы две разные прямые.</div>
+<div class="box err"><b>Ловушка с лучами</b>Луч OA и луч AO — это <b>разные</b> лучи: у первого начало O, у второго A. А вот если точка B лежит на луче OA, то лучи OA и OB — один и тот же луч.</div>
+<div class="fact">Эратосфену не хватило всего около 2% до правильной длины окружности Земли (≈ 40 000 км) — если верить самому распространённому пересчёту его единицы длины, стадия.</div>`},
+{title:'Длина отрезка: складываем кусочки',lvl:1,html:`
+<div class="box rule"><b>Свойство длины</b>Если точка B лежит на отрезке AC (между A и C), то <span class="m">AB + BC = AC</span>.</div>
+${fig(fAdd)}
+<p><b>Почему так:</b> отрезок AC «разрезали» точкой B на два куска. Целое равно сумме частей — как дорога из дома в школу через магазин.</p>
+<div class="box ex"><b>Пример</b>AC = 12 см, AB = 7 см, B лежит на AC. Тогда BC = 12 − 7 = 5 см.</div>
+<div class="box err"><b>А если неизвестно, где точка?</b>Если просто сказано «точки A, B, C лежат на одной прямой, AB = 5, BC = 3», то возможны два случая: B между A и C (AC = 8) или C между A и B (AC = 5 − 3 = 2). Нарисуй оба!</div>
+<div class="box tip"><b>Как решать</b>Сначала нарисуй прямую и точки в правильном порядке, подпиши известные длины. Всё остальное — сложение и вычитание.</div>`},
+{title:'Середина отрезка',lvl:2,html:`
+<div class="box rule"><b>Определение</b><b>Серединой</b> отрезка называется точка, которая делит его на два равных отрезка.</div>
+${fig(fMid)}
+<p>Если M — середина AB, то <span class="m">AM = MB = AB : 2</span>, и <span class="m">AB = 2 · AM</span>.</p>
+<div class="box ex"><b>Пример на координатной прямой</b>A(2), B(10). Середина — среднее арифметическое: (2 + 10) : 2 = 6. Проверка: от 2 до 6 — 4, от 6 до 10 — 4 ✅.</div>
+<div class="box ex"><b>Красивый факт</b>B лежит на отрезке AC, M — середина AB, N — середина BC. Тогда <span class="m">MN = AC : 2</span>, где бы ни стояла B! Ведь MN = MB + BN = AB/2 + BC/2 = (AB + BC)/2.</div>
+<div class="box err"><b>Ошибка</b>«Середина AB равна 5» — так говорить неверно: середина — это <b>точка</b>, у неё нет длины. Правильно: «AM = 5».</div>`},
+{title:'Угол и как его измерить',lvl:3,html:`
+<div class="box rule"><b>Определение</b><b>Угол</b> — фигура из точки (вершины) и двух лучей (сторон), выходящих из неё.</div>
+<p>Угол обозначают тремя буквами, вершина — <b>всегда посередине</b>: ∠AOB (или ∠BOA). Если ясно, о каком угле речь, пишут одной буквой: ∠O.</p>
+<p>Углы измеряют в <b>градусах</b>. Если разделить развёрнутый угол (две стороны лежат на одной прямой, как раскрытая книга, положенная на стол) на 180 равных частей, одна часть — это 1°. Значит, <span class="m">развёрнутый угол = 180°</span>.</p>
+<div class="widget" id="w-ang"></div>
+<div class="box tip"><b>Транспортир</b>Центр транспортира — в вершину, одну сторону — по линии 0. Считай деления от нуля <b>той же</b> шкалы. Если обе стороны не на нуле — вычти: 130° − 40° = 90°.</div>
+<div class="box err"><b>Ошибка шкал</b>На транспортире две шкалы (по и против часовой стрелки). Перепутал — и вместо 50° получил 130°. Проверяй глазом: угол явно острый? Тогда меньше 90°.</div>`},
+{title:'Острый, прямой, тупой, развёрнутый',lvl:4,html:`
+<div class="box rule"><b>Виды углов</b>Острый — меньше 90°. Прямой — ровно 90°. Тупой — больше 90°, но меньше 180°. Развёрнутый — 180°.</div>
+${fKinds}
+<p><b>Как запомнить:</b> «острый» — как остриё ножа, узкий. «Тупой» — как тупой край, широкий. Прямой угол — угол тетрадной клетки или экрана телефона. На чертеже прямой угол отмечают маленьким квадратиком.</p>
+<div class="box ex"><b>Часы</b>Циферблат — 360°, 12 делений по 30°. В 3:00 стрелки образуют 3 · 30° = 90° — прямой угол. В 6:00 — 180° (развёрнутый), в 1:00 — 30° (острый), в 5:00 — 150° (тупой).</div>
+<div class="box err"><b>Ловушка</b>Угол 180° не тупой! Тупой строго меньше 180°. А ещё «тупой + тупой» всегда больше 180°.</div>
+<div class="fact">Столяры проверяют прямой угол так: прикладывают угольник, проводят линию, а потом переворачивают угольник на другую сторону. Если угольник неточный (скажем, 91°), после переворота линии разойдутся на удвоенную ошибку — 2°, и это сразу видно.</div>`},
+{title:'Сложение углов',lvl:5,html:`
+<div class="box rule"><b>Свойство</b>Если луч OC проходит внутри угла AOB, то <span class="m">∠AOC + ∠COB = ∠AOB</span>.</div>
+${fig(fAngAdd)}
+<p>Это то же самое, что сложение отрезков, только для углов: луч «режет» угол на два куска. На рисунке 40° + 55° = 95°.</p>
+<div class="box ex"><b>Пример</b>∠AOB = 120°, луч OC внутри, ∠AOC в 2 раза больше ∠COB. Пусть ∠COB = x, тогда 2x + x = 120°, x = 40°, ∠AOC = 80°.</div>
+<div class="box err"><b>Два случая</b>Если сказано только «∠AOB = 70°, ∠BOC = 30°», луч OC может лежать внутри ∠AOB (тогда ∠AOC = 40°) или снаружи (тогда ∠AOC = 100°). Нарисуй оба варианта.</div>`},
+{title:'Аксиома, определение, теорема, доказательство',lvl:6,html:`
+<p>Геометрия устроена как игра с правилами. Вот четыре главных слова:</p>
+<ul class="steps"><li><b>Определение</b> — объясняет, что значит новое слово. «Серединой отрезка называется…». Определение не доказывают — им <b>договариваются</b>.</li>
+<li><b>Аксиома</b> — утверждение, которое принимают <b>без доказательства</b> (стартовые правила игры). «Через две точки проходит ровно одна прямая».</li>
+<li><b>Теорема</b> — утверждение, которое <b>доказывают</b>. «Вертикальные углы равны».</li>
+<li><b>Доказательство</b> — цепочка шагов, где каждый шаг опирается на аксиому, определение или уже доказанную теорему.</li></ul>
+<div class="box rule"><b>Строение теоремы</b>«<b>Если</b> (условие — что дано), <b>то</b> (заключение — что нужно доказать)». Если поменять их местами, получится <b>обратное</b> утверждение — оно может оказаться неверным!</div>
+<div class="box ex"><b>Пример</b>«Если углы вертикальные, то они равны» — верно. Обратное: «Если углы равны, то они вертикальные» — неверно: два угла по 30° в разных концах тетради равны, но не вертикальны. Такой пример называется <b>контрпримером</b>.</div>
+<div class="box err"><b>Ошибка</b>«Я нарисовал, и на рисунке видно — значит, доказано». Нет: рисунок помогает, но доказательство — это рассуждение, которое верно для <b>любого</b> рисунка.</div>
+<div class="fact">Около 300 года до н. э. Евклид написал «Начала» — 13 книг, где вся геометрия выводилась из 5 постулатов (аксиом). Это одна из самых переиздаваемых книг в истории.</div>`},
+{title:'Сколько отрезков? Комбинаторика на чертеже',lvl:7,html:`
+<p class="hook">5 друзей встретились, и каждый пожал руку каждому. Сколько рукопожатий? Не 25 и не 20, а 10. Эта же задача — про отрезки между точками!</p>
+<div class="box rule"><b>Формула пар</b>Из n объектов можно составить <span class="m">n · (n − 1) : 2</span> пар.</div>
+<p><b>Почему:</b> каждую из n точек соединяем с n − 1 другими — это n(n − 1) «концов», но каждый отрезок посчитан дважды (AB и BA), поэтому делим на 2.</p>
+<ul class="steps"><li>n точек на прямой → n(n − 1)/2 отрезков с концами в них.</li>
+<li>n точек, никакие три не на одной прямой → n(n − 1)/2 прямых.</li>
+<li>n лучей с общим началом → n(n − 1)/2 углов (пар лучей).</li></ul>
+<div class="box ex"><b>Пример</b>6 точек на прямой: 6 · 5 : 2 = 15 отрезков. Проверка «вручную»: от первой — 5, от второй — 4, … 5 + 4 + 3 + 2 + 1 = 15 ✅.</div>
+<div class="box err"><b>Ловушка с лучами</b>«n точек на прямой. Сколько лучей с началом в отмеченной точке, проходящих через другую отмеченную точку?» Из крайней точки — 1 луч, из каждой внутренней — 2 (влево и вправо). Итого 2 + 2(n − 2) = 2n − 2, а не n(n − 1).</div>`},
+{title:'★ Олимпиадные идеи',lvl:8,html:`
+<div class="box rule"><b>Сумма расстояний</b>Точка X на прямой, где сумма расстояний до отмеченных точек наименьшая, — «средняя» точка (медиана): слева и справа от неё одинаковое число точек.</div>
+<p><b>Почему:</b> разбей точки на пары «крайняя левая — крайняя правая». Для каждой пары сумма расстояний минимальна, когда X между ними, и равна длине отрезка между ними. Подходит точка, лежащая внутри всех таких отрезков.</p>
+<div class="box rule"><b>Часы</b>Минутная стрелка: 6° в минуту. Часовая: 30° в час = 0,5° в минуту. В h ч m мин угол = |30h + 0,5m − 6m| (если больше 180°, бери 360° минус это).</div>
+<div class="box ex"><b>Пример</b>3:20 → часовая: 90° + 10° = 100°, минутная: 120°. Угол 20°.</div>
+<div class="box rule"><b>Прямые общего положения</b>n прямых, никакие две не параллельны, никакие три не проходят через одну точку: точек пересечения n(n − 1)/2, частей плоскости 1 + n + n(n − 1)/2.</div>
+<p><b>Почему частей столько:</b> каждая новая прямая (k-я) пересекает k − 1 старых и делится ими на k кусков; каждый кусок режет одну часть на две — частей становится на k больше.</p>`}
+];
+
+const symbols={tab:'Знаки',title:'Обозначения и правила',rows:[
+['AB','отрезок AB (или прямая AB)','Кусок прямой между A и B; длину тоже пишут AB.','AB = 5 см'],
+['луч OA','луч с началом O','Первая буква — начало луча.','OA ≠ AO'],
+['∠AOB','угол AOB','Вершина — средняя буква O.','∠AOB = 40°'],
+['°','градус','1/180 развёрнутого угла.','прямой = 90°'],
+['AB + BC = AC','сложение отрезков','Если B лежит между A и C.','3 + 5 = 8'],
+['AM = MB = AB/2','середина отрезка','M делит AB пополам.','AB = 10 → AM = 5'],
+['∠AOC + ∠COB = ∠AOB','сложение углов','Если OC внутри ∠AOB.','40° + 55° = 95°'],
+['< 90°, 90°, > 90°, 180°','острый, прямой, тупой, развёрнутый','Виды углов.','120° — тупой'],
+['n(n − 1)/2','число пар','Отрезки, прямые, углы, рукопожатия.','n = 5 → 10']
+],after:`<div class="box tip" style="margin-top:14px"><b>Главный совет</b>В любой задаче на отрезки и углы сначала нарисуй картинку. Если расположение точек не сказано — рассмотри все случаи.</div>`};
+
+/* =====================================================================
+   GENERATORS
+   ===================================================================== */
+/* L0 — фигуры */
+G(0,()=>CH('Что такое <b>луч</b>?','Часть прямой: точка (начало) и все точки по одну сторону от неё',['Часть прямой между двумя точками вместе с этими точками','Линия, бесконечная в обе стороны','Любая кривая линия, выходящая из точки'],
+ {short:'Луч — «полупрямая»: начало есть, конца нет.',explain:'Луч — это часть прямой, состоящая из точки (начала луча) и всех точек, лежащих по одну сторону от неё. «Между двумя точками» — это отрезок, «бесконечная в обе стороны» — прямая.',
+ explain2:'Фонарик в темноте: свет начинается у фонарика и уходит бесконечно в одну сторону. Это луч. Прямая — как бесконечная дорога в обе стороны, отрезок — кусок дороги между двумя столбами.'}),{rule:true});
+G(0,()=>CH('Сколько прямых можно провести через две различные точки?','Ровно одну',['Две','Бесконечно много','Ни одной'],
+ {short:'Аксиома: через две точки проходит ровно одна прямая.',explain:'Это аксиома (основное правило) геометрии: через любые две точки проходит прямая, и притом только одна. Через <b>одну</b> точку прямых бесконечно много — а вторая точка «фиксирует» прямую.',
+ explain2:'Натяни нитку между двумя гвоздиками. Можно ли натянуть её по-другому, но тоже прямо? Нет — только одна прямая линия. Так строители отбивают ровную линию шнуром.'}),{rule:true});
+G(0,()=>{const k=pick(['точка','отрезок','луч','прямая']);const opts=['точка','отрезок','луч','прямая'];
+ return {type:'choice',q:'Что изображено на рисунке?',pic:primPic(k,220),opts,ans:opts.indexOf(k),short:`Это ${k}.`,
+ explain:`На рисунке — <b>${k}</b>. ${k==='отрезок'?'Две точки-конца, дальше линия не продолжается.':k==='луч'?'Есть начало O, а с другой стороны стрелка — линия уходит бесконечно.':k==='прямая'?'Стрелки с обеих сторон — линия бесконечна в обе стороны, концов нет.':'Только одна точка, линий нет.'}`,
+ explain2:'Смотри на концы: точка-конец = граница, стрелка = «бесконечно дальше». Две точки — отрезок, точка и стрелка — луч, две стрелки — прямая.'};});
+G(0,()=>{const n=R(4,5);const nm=LET.slice(0,n);const x=R(0,n-1);let y=R(0,n-1),z=R(0,n-1);if(x===y||x===z||y===z)return null;const same=(y-x)*(z-x)>0;
+ const q=`На прямой отмечены точки ${nm.join(', ')} (именно в таком порядке). Лучи ${nm[x]}${nm[y]} и ${nm[x]}${nm[z]} — это один и тот же луч?`;
+ return CH(q+`<div class="fig">${linePic(nm.map((t,i)=>({n:t,x:i})),[])}</div>`,same?'Да, один и тот же':'Нет, разные (направлены в разные стороны)',[same?'Нет, разные (направлены в разные стороны)':'Да, один и тот же'],
+ {short:same?`${nm[y]} и ${nm[z]} лежат по одну сторону от ${nm[x]}.`:`${nm[y]} и ${nm[z]} лежат по разные стороны от ${nm[x]}.`,
+ explain:`Оба луча начинаются в точке ${nm[x]}. Луч ${nm[x]}${nm[y]} идёт от ${nm[x]} в сторону ${nm[y]}, луч ${nm[x]}${nm[z]} — в сторону ${nm[z]}. Точки ${nm[y]} и ${nm[z]} лежат ${same?'<b>по одну сторону</b> от '+nm[x]+' — значит, лучи совпадают':'<b>по разные стороны</b> от '+nm[x]+' — значит, лучи направлены противоположно и это разные лучи (их называют дополнительными)'}.`,
+ explain2:`Поставь палец на ${nm[x]} и «посвети фонариком» в сторону ${nm[y]}, потом в сторону ${nm[z]}. ${same?'Фонарик светит в одну и ту же сторону.':'Фонарик пришлось развернуть.'}`});});
+G(0,()=>CH('Сколько общих точек могут иметь две <b>различные</b> прямые?','Одну или ни одной',['Только одну','Одну, две или ни одной','Сколько угодно'],
+ {short:'Две общие точки → прямые совпали бы (аксиома).',explain:'Если бы у двух разных прямых было две общие точки, то через эти две точки проходили бы две разные прямые — а по аксиоме прямая через две точки только одна. Значит, общих точек либо одна (прямые пересекаются), либо ни одной (параллельные прямые).',
+ explain2:'Нарисуй две прямые. Либо они где-то пересекаются (одна точка), либо идут как рельсы и не встречаются никогда (ноль точек). Пересечься «дважды» прямые не могут — это не кривые.'}));
+/* L1 — длина */
+G(1,()=>CH('Точка B лежит на отрезке AC. Какое равенство верно?','AB + BC = AC',['AB + AC = BC','AB · BC = AC','AB − BC = AC'],
+ {short:'Целое = сумма частей.',explain:'Точка B делит отрезок AC на две части: AB и BC. Целый отрезок равен сумме частей: <b>AB + BC = AC</b>. Остальные равенства неверны: AC — самый длинный из трёх, его нельзя получить вычитанием или умножением.',
+ explain2:'Дорога из дома (A) в школу (C) через магазин (B): путь «дом → магазин» + «магазин → школа» = весь путь, если магазин прямо по дороге.'}),{rule:true});
+G(1,()=>{const a=R(2,15),b=R(2,15);const ask=pick(['AC','BC']);const ac=a+b;
+ const q=ask==='AC'?`Точка B лежит на отрезке AC, AB = ${a} см, BC = ${b} см. Найди AC (в см).`:`Точка B лежит на отрезке AC, AC = ${ac} см, AB = ${a} см. Найди BC (в см).`;
+ return {type:'num',q,pic:linePic([{n:'A',x:0},{n:'B',x:a},{n:'C',x:ac}],ask==='AC'?[[0,1,a+' см'],[1,2,b+' см'],[0,2,'?']]:[[0,1,a+' см'],[1,2,'?'],[0,2,ac+' см']]),ans:ask==='AC'?ac:b,
+ short:ask==='AC'?`${a} + ${b} = ${ac}`:`${ac} − ${a} = ${b}`,explain:`B лежит между A и C, значит AB + BC = AC. ${ask==='AC'?`AC = ${a} + ${b} = <b>${ac} см</b>.`:`BC = AC − AB = ${ac} − ${a} = <b>${b} см</b>.`}`,
+ explain2:`Посмотри на рисунок: короткие кусочки ${ask==='AC'?`${a} и ${b} вместе составляют весь отрезок`:`AB и BC вместе дают ${ac}; один кусок ${a}, значит другой — сколько не хватает до ${ac}`}.`};});
+G(1,()=>{const ac=R(8,30),d=R(1,ac-2);if((ac+d)%2)return null;const ab=(ac+d)/2,bc=ac-ab;if(bc<1)return null;
+ return {type:'num',q:`Точка B лежит на отрезке AC длиной ${ac} см. Отрезок AB на ${d} см длиннее BC. Найди AB (в см).`,ans:ab,hint:'Обозначь BC = x, тогда AB = x + '+d+'.',
+ short:`x + (x + ${d}) = ${ac} → x = ${bc}, AB = ${ab}.`,explain:`Пусть BC = x, тогда AB = x + ${d}. AB + BC = AC:<br>x + ${d} + x = ${ac}<br>2x = ${ac-d}, x = ${bc}.<br>AB = ${bc} + ${d} = <b>${ab} см</b>.`,
+ explain2:`Убери «лишние» ${d} см: остаётся ${ac} − ${d} = ${ac-d} см — это два одинаковых куска по ${bc}. Длинному куску AB возвращаем ${d}: ${bc} + ${d} = ${ab}. Проверка: ${ab} + ${bc} = ${ac} ✅.`};});
+G(1,()=>{const k=R(2,5),x=R(2,8);const ac=(k+1)*x;
+ return {type:'num',q:`Точка B лежит на отрезке AC, AC = ${ac}. Отрезок AB в ${k} раза больше BC. Найди BC.`,ans:x,hint:'BC = x, AB = '+k+'x.',short:`${k}x + x = ${ac} → x = ${x}`,
+ explain:`Пусть BC = x, тогда AB = ${k}x. Вместе: ${k}x + x = ${k+1}x = ${ac}, x = ${ac} : ${k+1} = <b>${x}</b>.`,
+ explain2:`Весь отрезок — это ${k+1} одинаковых «кусочка»: ${k} в AB и 1 в BC. Один кусочек: ${ac} : ${k+1} = ${x}.`};});
+G(1,()=>{const a=R(3,12),b=R(1,a-1);
+ return {type:'set',q:`Точки A, B, C лежат на одной прямой, AB = ${a}, BC = ${b}. Найди <b>все</b> возможные значения AC (через запятую).`,ans:[a+b,a-b],hint:'Порядок точек не сказан. Где может быть C относительно B?',
+ short:`C по другую сторону от A: ${a+b}; C между A и B: ${a-b}.`,explain:`Есть два случая.<br>1) B между A и C: AC = AB + BC = ${a} + ${b} = ${a+b}.<br>2) C между A и B (C по ту же сторону от B, что и A): AC = AB − BC = ${a} − ${b} = ${a-b}.<br>(Случай «A между B и C» невозможен: тогда BC = BA + AC > ${a}, а BC = ${b}.) Ответ: <b>${a+b} и ${a-b}</b>.`,
+ explain2:`Поставь A и B на расстоянии ${a}. Точку C ставим на расстоянии ${b} от B — либо вправо от B (подальше от A), либо влево (ближе к A). Получается AC = ${a+b} или ${a-b}.`,
+ pic:linePic([{n:'A',x:0},{n:'B',x:a},{n:'C',x:a+b}],[[0,1,String(a)],[1,2,String(b)]],{W:240})};});
+/* L2 — середина */
+G(2,()=>CH('Что такое середина отрезка AB?','Точка отрезка, которая делит его на два равных отрезка',['Половина длины отрезка AB','Любая точка между A и B','Точка, лежащая на прямой AB'],
+ {short:'Середина — точка M на AB с AM = MB.',explain:'Середина отрезка — это <b>точка</b> M этого отрезка, для которой AM = MB. «Половина длины» — это число, а не точка. «Любая точка между A и B» делит отрезок на части, но не обязательно равные.',
+ explain2:'Сложи полоску бумаги пополам — место сгиба и есть середина. До обоих концов от него одинаково.'}),{rule:true});
+G(2,()=>{const x=R(2,20);const ask=pick([0,1]);
+ return {type:'num',q:ask?`M — середина отрезка AB, AB = ${2*x}. Найди AM.`:`M — середина отрезка AB, AM = ${x}. Найди AB.`,ans:ask?x:2*x,short:ask?`${2*x} : 2 = ${x}`:`2 · ${x} = ${2*x}`,
+ explain:ask?`Середина делит отрезок пополам: AM = AB : 2 = ${2*x} : 2 = <b>${x}</b>.`:`AM = MB = ${x}, AB = AM + MB = ${x} + ${x} = <b>${2*x}</b>.`,explain2:`Середина — «точка сгиба» пополам. Две равные половинки по ${x} составляют целое ${2*x}.`};});
+G(2,()=>{const a=R(-10,10),b=R(-10,10);if(Math.abs(a-b)<2||(a+b)%2)return null;
+ return {type:'num',q:`На координатной прямой A(${N(a)}) и B(${N(b)}). Найди координату середины отрезка AB.`,ans:(a+b)/2,hint:'Среднее арифметическое координат.',short:`(${N(a)} + ${N(b)}) : 2 = ${N((a+b)/2)}`,
+ explain:`Координата середины — среднее арифметическое координат концов: (${N(a)} + ${N(b)}) : 2 = ${N(a+b)} : 2 = <b>${N((a+b)/2)}</b>.<br>Проверка: расстояние до A: |${N((a+b)/2)} − (${N(a)})| = ${Math.abs(b-a)/2}, до B: тоже ${Math.abs(b-a)/2} ✅.`,
+ explain2:`Длина AB = |${N(b)} − (${N(a)})| = ${Math.abs(b-a)}. Половина — ${Math.abs(b-a)/2}. От левого конца ${N(Math.min(a,b))} шагнём вправо на ${Math.abs(b-a)/2}: получаем ${N((a+b)/2)}.`};});
+G(2,()=>{const d=4*R(2,10);
+ return {type:'num',q:`AB = ${d}. C — середина AB, D — середина CB. Найди AD.`,ans:3*d/4,pic:linePic([{n:'A',x:0},{n:'C',x:2},{n:'D',x:3},{n:'B',x:4}],[[0,3,String(d)]],{W:260}),
+ short:`AC = ${d/2}, CD = ${d/4}, AD = ${3*d/4}.`,explain:`C — середина AB: AC = CB = ${d} : 2 = ${d/2}.<br>D — середина CB: CD = ${d/2} : 2 = ${d/4}.<br>AD = AC + CD = ${d/2} + ${d/4} = <b>${3*d/4}</b>.`,
+ explain2:`Раздели AB на 4 равных кусочка по ${d/4}. C стоит после 2-го кусочка, D — после 3-го. AD = 3 кусочка = ${3*d/4}.`};});
+G(2,()=>{const ac=2*R(4,15),ab=R(2,ac-2);
+ return {type:'num',q:`Точка B лежит на отрезке AC, AC = ${ac}, AB = ${ab}. M — середина AB, N — середина BC. Найди MN.`,ans:ac/2,
+ pic:linePic([{n:'A',x:0},{n:'M',x:ab/2},{n:'B',x:ab},{n:'N',x:(ab+ac)/2},{n:'C',x:ac}],[[0,2,String(ab)],[0,4,String(ac)]],{W:300}),
+ short:`MN = AB/2 + BC/2 = AC/2 = ${ac/2}`,explain:`BC = ${ac} − ${ab} = ${ac-ab}.<br>MB = ${ab} : 2 = ${N(ab/2)}, BN = ${ac-ab} : 2 = ${N((ac-ab)/2)}.<br>MN = MB + BN = ${N(ab/2)} + ${N((ac-ab)/2)} = <b>${ac/2}</b>.`,
+ explain2:`Хитрость: MN = AB/2 + BC/2 = (AB + BC)/2 = AC/2 = ${ac} : 2 = ${ac/2}. Длина AB вообще не нужна — ответ всегда половина AC!`};});
+/* L3 — угол */
+G(3,()=>CH('Чему равен развёрнутый угол?','180°',['90°','360°','100°'],
+ {short:'Стороны развёрнутого угла лежат на одной прямой: 180°.',explain:'Развёрнутый угол — это угол, стороны которого являются продолжениями друг друга (лежат на одной прямой). 1° — это 1/180 часть развёрнутого угла, поэтому развёрнутый угол равен <b>180°</b>. 90° — прямой угол (половина развёрнутого), 360° — полный оборот.',
+ explain2:'Открой книгу и положи её на стол плашмя — обложки образуют развёрнутый угол, «половину оборота». Полный оборот вокруг себя — 360°, половина — 180°.'}),{rule:true});
+G(3,()=>{const v=pick(['O','K','M','P','B']);const o=sample(['A','C','D','E','T','N','S'].filter(x=>x!==v),2);const nm=`∠${o[0]}${v}${o[1]}`;
+ return CH(`Какая точка — вершина угла ${nm}?`,v,[o[0],o[1]],{short:'Вершина — средняя буква.',explain:`В записи ${nm} вершина — <b>средняя</b> буква: ${v}. Крайние буквы ${o[0]} и ${o[1]} — точки на сторонах угла. Стороны угла: лучи ${v}${o[0]} и ${v}${o[1]}.`,
+ explain2:`Запиши угол как «путь»: идём от ${o[0]} к ${v} и поворачиваем к ${o[1]}. Поворачиваем мы в точке ${v} — это и есть вершина.`});},{rule:true});
+G(3,()=>{const a=10*R(0,8),b=a+10*R(3,12);if(b>180)return null;const d=b-a;
+ return {type:'num',q:'Найди градусную меру угла по транспортиру (в градусах).',pic:protractor(a,b),ans:d,hint:'Найди деления, через которые проходят обе стороны, и вычти.',
+ short:`${b}° − ${a}° = ${d}°`,explain:`Одна сторона угла проходит через деление ${a}°, другая — через ${b}°. Угол между ними: ${b} − ${a} = <b>${d}°</b>.${a?'':' (Одна сторона на нуле — читаем сразу.)'}`,
+ explain2:`Подписаны числа через 20°, крупные штрихи — через 10°. Посчитай крупные штрихи между сторонами: их ${d/10}, по 10° — это ${d}°. ${KIND(d)==='острый'?'Угол на глаз острый — меньше 90° ✅':KIND(d)==='тупой'?'Угол на глаз тупой — больше 90° ✅':''}`};});
+G(3,()=>{const d=5*R(3,33);if(d===90||d>=180)return null;const wrong=180-d;
+ return CH(`На глаз угол ${d<90?'острый':'тупой'}. Транспортир с двумя шкалами показывает у второй стороны числа ${d} и ${wrong}. Чему равен угол?`,`${d}°`,[`${wrong}°`,`${d+wrong}°`,`${Math.abs(d-wrong)}°`],
+ {pic:angPic(d,{W:200,maxH:120}),short:`Угол ${KIND(d)}, значит ${d}°.`,explain:`На транспортире две шкалы, и числа на них в сумме дают 180° (${d} + ${wrong} = 180). Какая из них «наша», решает вид угла: угол ${KIND(d)}, значит он ${d<90?'меньше':'больше'} 90°, и ответ <b>${d}°</b>.`,
+ explain2:`Правильная шкала та, на которой у <b>первой</b> стороны стоит 0. Без транспортира проверяй здравым смыслом: острый угол не может быть ${wrong>90?wrong+'°':'больше 90°'}.`});});
+/* L4 — виды углов */
+G(4,()=>{const k=pick(['острый','прямой','тупой','развёрнутый']);const def={'острый':'Угол меньше 90°','прямой':'Угол, равный 90°','тупой':'Угол больше 90°, но меньше 180°','развёрнутый':'Угол, равный 180°'};
+ const opts=shuffle(Object.values(def));
+ return {type:'choice',q:`Какой угол называется <b>${k}м</b>?`.replace('ыйм','ым').replace('ойм','ым'),opts,ans:opts.indexOf(def[k]),short:`${k[0].toUpperCase()+k.slice(1)}: ${def[k].toLowerCase()}.`,
+ explain:`Запомни все четыре: острый &lt; 90°, прямой = 90°, тупой — между 90° и 180°, развёрнутый = 180°. ${k[0].toUpperCase()+k.slice(1)} угол — ${def[k].toLowerCase()}.`,
+ explain2:'Прямой угол — угол клетки в тетради. Всё, что «уже» клетки, — острый. Всё, что «шире», но ещё не прямая линия, — тупой. Прямая линия — развёрнутый.'};},{rule:true});
+G(4,()=>{const d=pick([R(5,89),90,R(91,179),180]);const opts=['острый','прямой','тупой','развёрнутый'];
+ return {type:'choice',q:`Какой угол равен ${d}°?`,opts,ans:opts.indexOf(KIND(d)),short:`${d}° — ${KIND(d)}.`,
+ explain:`Сравни с 90° и 180°: ${d<90?`${d} &lt; 90 → <b>острый</b>`:d===90?'ровно 90 → <b>прямой</b>':d<180?`90 &lt; ${d} &lt; 180 → <b>тупой</b>`:'ровно 180 → <b>развёрнутый</b>'}.`,
+ explain2:`Граница — 90° (угол клетки). ${d}° ${d<90?'меньше':d===90?'ровно':d<180?'больше, но ещё не 180°':'— это уже прямая линия'}.`};});
+G(4,()=>{const want=pick(['острый','тупой','прямой']);const ds=shuffle([R(25,70),90,R(110,160),180]);const ans=ds.findIndex(d=>KIND(d)===want);
+ return {type:'choice',pics:true,q:`На каком рисунке <b>${want}</b> угол?`,opts:ds.map(d=>d===180?(()=>{const P={O:[0,0],A:[5,0],B:[-5,0]};return geo({P,seg:[['O','A'],['O','B']],dots:['O'],names:{A:'A',O:'O',B:'B'},maxH:90,W:140,pad:22,extra:[[0,1],[0,-0.5]]});})():angPic(d,{W:140,maxH:100,a0:R(0,1)*20})),ans,
+ short:`${want[0].toUpperCase()+want.slice(1)} — ${want==='острый'?'уже угла клетки':want==='тупой'?'шире угла клетки':'с квадратиком, 90°'}.`,
+ explain:`Острый угол уже, чем угол тетрадной клетки (&lt; 90°), тупой — шире (больше 90°), прямой отмечают квадратиком, а у развёрнутого стороны лежат на одной прямой. Нужный ${want} угол — на рисунке № ${ans+1}.`,
+ explain2:'Приложи мысленно уголок листа бумаги к вершине каждого угла: если угол помещается внутрь уголка — острый, если выходит за него — тупой, если совпал — прямой.'};});
+G(4,()=>{const h=R(1,11);const d=clockAng(h,0);
+ return {type:'num',q:`Какой угол (в градусах) образуют часовая и минутная стрелки ровно в ${h}:00?`,pic:clockPic(h,0),ans:d,hint:'Между соседними числами циферблата 360° : 12 = 30°.',
+ short:`${Math.min(h,12-h)} · 30° = ${d}° (${KIND(d)})`,explain:`Весь циферблат — 360°, между соседними числами 360 : 12 = 30°. Минутная стрелка на 12, часовая на ${h}. Между ними ${Math.min(h,12-h)} делений${h>6?` (если идти через 12 в другую сторону; 12 − ${h} = ${12-h})`:''}: ${Math.min(h,12-h)} · 30° = <b>${d}°</b>. Это ${KIND(d)} угол.`,
+ explain2:`Удобные опоры: в 3:00 — 90°, в 6:00 — 180°. ${h}:00 — это ${Math.min(h,12-h)} «часовых шага» по 30°.`};});
+/* L5 — сложение углов */
+G(5,()=>CH('Луч OC проходит внутри угла AOB. Какое равенство верно?','∠AOC + ∠COB = ∠AOB',['∠AOC + ∠AOB = ∠COB','∠AOC = ∠COB','∠AOC + ∠COB = 180°'],
+ {short:'Луч внутри угла делит его на два угла, сумма которых равна целому.',explain:'Луч OC внутри ∠AOB делит его на два угла: ∠AOC и ∠COB. Их сумма равна всему углу: <b>∠AOC + ∠COB = ∠AOB</b>. Равны эти части только если OC — биссектриса, а 180° в сумме — только если ∠AOB развёрнутый.',
+ explain2:'Это как с отрезками: AB + BC = AC. Тут вместо точки — луч, вместо длин — градусы. Кусок пиццы разрезали на два — вместе они дают целый кусок.'}),{rule:true});
+G(5,()=>{const a=R(2,10)*5,b=R(3,16)*5;if(a+b>175)return null;
+ return {type:'num',q:`Луч OC проходит внутри угла AOB. ∠AOB = ${a+b}°, ∠AOC = ${a}°. Найди ∠COB (в градусах).`,pic:fan([0,a,a+b],['A','C','B'],[['O','A','C',a+'°',{r:32}],['O','C','B','?',{r:24}]]),ans:b,
+ short:`${a+b}° − ${a}° = ${b}°`,explain:`∠AOC + ∠COB = ∠AOB, значит ∠COB = ${a+b}° − ${a}° = <b>${b}°</b>.`,explain2:`Из целого угла ${a+b}° «отрезали» кусок ${a}° — остался ${b}°.`};});
+G(5,()=>{const k=R(2,5),x=R(4,30)*(k===2?1:1);if((k+1)*x>175||x<8)return null;
+ return {type:'num',q:`Луч OC проходит внутри угла AOB, равного ${(k+1)*x}°. ∠AOC в ${k} раза больше ∠COB. Найди ∠AOC.`,ans:k*x,hint:'∠COB = x, ∠AOC = '+k+'x.',
+ short:`${k}x + x = ${(k+1)*x} → x = ${x}, ∠AOC = ${k*x}°.`,explain:`Пусть ∠COB = x, тогда ∠AOC = ${k}x. Вместе ${k+1}x = ${(k+1)*x}°, x = ${x}°. ∠AOC = ${k} · ${x}° = <b>${k*x}°</b>.`,
+ explain2:`Угол ${(k+1)*x}° состоит из ${k+1} равных частей (${k} в ∠AOC и 1 в ∠COB). Одна часть: ${(k+1)*x} : ${k+1} = ${x}°. Ловушка: в ответе спрашивают ∠AOC, а не x.`};});
+G(5,()=>{const a=R(8,30)*5,b=R(4,a/5-4)*5;if(a+b>180||a===b)return null;
+ return {type:'set',q:`∠AOB = ${a}°, ∠BOC = ${b}°. Найди <b>все</b> возможные значения ∠AOC (через запятую).`,ans:[a+b,a-b],hint:'Луч OC может лежать внутри ∠AOB, а может — снаружи.',
+ short:`${a} + ${b} = ${a+b} или ${a} − ${b} = ${a-b}.`,explain:`Два случая:<br>1) OC <b>внутри</b> ∠AOB: ∠AOC = ${a}° − ${b}° = ${a-b}°.<br>2) OC <b>вне</b> ∠AOB (по другую сторону от OB): ∠AOC = ${a}° + ${b}° = ${a+b}°${a+b===180?' (развёрнутый угол)':''}.<br>Ответ: <b>${a-b}, ${a+b}</b>.`,
+ explain2:`Нарисуй угол AOB = ${a}°. Отложи от луча OB угол ${b}° сначала «внутрь» (к OA), потом «наружу». Получатся два разных луча OC.`,
+ pic:`<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">${fan([0,a-b,a],['A','C','B'],[['O','C','B',b+'°',{r:22}]],{W:150,maxH:110})}${fan([0,a,a+b],['A','B','C'],[['O','B','C',b+'°',{r:22}]],{W:150,maxH:110})}</div>`};});
+G(5,()=>{const x=R(3,7)*5,y=R(3,8)*5,z=R(3,7)*5;if(x+y+z>175)return null;
+ return {type:'num',q:`Из точки O выходят лучи OA, OB, OC, OD (в таком порядке, все внутри ∠AOD). ∠AOC = ${x+y}°, ∠BOD = ${y+z}°, ∠AOD = ${x+y+z}°. Найди ∠BOC.`,
+ pic:fan([0,x,x+y,x+y+z],['A','B','C','D'],[['O','B','C','?',{r:30}]]),ans:y,hint:'Сложи ∠AOC и ∠BOD: какой угол посчитан дважды?',
+ short:`${x+y} + ${y+z} − ${x+y+z} = ${y}`,explain:`∠AOC = ∠AOB + ∠BOC, ∠BOD = ∠BOC + ∠COD. Сложим: ∠AOC + ∠BOD = (∠AOB + ∠BOC + ∠COD) + ∠BOC = ∠AOD + ∠BOC.<br>∠BOC = ${x+y} + ${y+z} − ${x+y+z} = <b>${y}°</b>.`,
+ explain2:`Два «перекрывающихся» угла накрыли весь ∠AOD, а их общая часть ∠BOC накрыта дважды. Лишнее и есть ответ: (${x+y} + ${y+z}) − ${x+y+z} = ${y}°. Как два куска скотча внахлёст.`};});
+/* L6 — аксиома/определение/теорема */
+G(6,()=>CH('Что такое <b>аксиома</b>?','Утверждение, которое принимают без доказательства',['Утверждение, которое доказывают','Объяснение смысла нового слова','Рисунок к задаче'],
+ {short:'Аксиома — стартовое правило, без доказательства.',explain:'<b>Аксиома</b> — утверждение, которое принимается без доказательства (основное правило). <b>Теорема</b> — утверждение, которое доказывают. <b>Определение</b> — объясняет смысл нового термина.',
+ explain2:'Правила шахмат («конь ходит буквой Г») никто не доказывает — так договорились. Это аксиомы игры. А «мат двумя конями поставить нельзя» — это уже теорема, её выводят из правил.'}),{rule:true});
+G(6,()=>CH('Что такое <b>теорема</b>?','Утверждение, справедливость которого устанавливают доказательством',['Утверждение, принимаемое без доказательства','Предложение, объясняющее значение термина','Любое верное равенство на рисунке'],
+ {short:'Теорему доказывают.',explain:'<b>Теорема</b> — утверждение, верность которого устанавливается рассуждением (доказательством), опираясь на аксиомы, определения и ранее доказанные теоремы. Принимаемое без доказательства — это аксиома.',
+ explain2:'Слово «теорема» от греческого «рассматриваю». Её нужно «рассмотреть» и обосновать. Пример: «вертикальные углы равны» — это не договорённость, это доказывается.'}),{rule:true});
+const STM=[['Через любые две точки проходит прямая, и притом только одна.','аксиома'],['Из трёх точек прямой одна и только одна лежит между двумя другими.','аксиома'],['Каждый отрезок имеет определённую длину, большую нуля.','аксиома'],['Через точку, не лежащую на прямой, проходит только одна прямая, параллельная данной.','аксиома'],
+ ['Серединой отрезка называется точка, делящая его на два равных отрезка.','определение'],['Угол называется прямым, если он равен 90°.','определение'],['Два угла называются вертикальными, если стороны одного являются продолжениями сторон другого.','определение'],['Биссектрисой угла называется луч, исходящий из вершины и делящий угол на два равных угла.','определение'],
+ ['Вертикальные углы равны.','теорема'],['Сумма смежных углов равна 180°.','теорема'],['Две прямые, перпендикулярные третьей, не пересекаются.','теорема'],['Сумма углов треугольника равна 180°.','теорема']];
+G(6,()=>{const [s,k]=pick(STM);const opts=['аксиома','определение','теорема'];
+ return {type:'choice',q:`«${s}» — что это: аксиома, определение или теорема (по учебнику Атанасяна)?`,opts,ans:opts.indexOf(k),short:`Это ${k}.`,
+ explain:`${k==='определение'?'Здесь объясняется смысл слова («называется…») — это <b>определение</b>.':k==='аксиома'?'Это одно из основных свойств, которые принимаются без доказательства, — <b>аксиома</b>.':'Это утверждение доказывают в учебнике, опираясь на аксиомы и определения, — <b>теорема</b>.'}`,
+ explain2:'Подсказка-лайфхак: слова «называется», «называют» — почти всегда определение. Самые простые «очевидные» свойства точек, прямых, длин — аксиомы. Утверждение, которое не очевидно и требует рассуждения, — теорема.'};});
+const IFT=[['Если углы вертикальные, то они равны.','углы вертикальные','они равны'],['Если два угла смежные, то их сумма равна 180°.','два угла смежные','их сумма 180°'],['Если точка M — середина отрезка AB, то AM = MB.','M — середина AB','AM = MB'],['Если две прямые перпендикулярны третьей, то они не пересекаются.','две прямые перпендикулярны третьей','они не пересекаются']];
+G(6,()=>{const [s,c,z]=pick(IFT);
+ return CH(`Теорема: «${s}» Что в ней является <b>условием</b>?`,c[0].toUpperCase()+c.slice(1),[z[0].toUpperCase()+z.slice(1),'Вся фраза целиком','В теореме нет условия'],
+ {short:'Условие — после «если», заключение — после «то».',explain:`Теорема записана в форме «Если …, то …». Условие (что <b>дано</b>) — после «если»: «${c}». Заключение (что нужно <b>доказать</b>) — после «то»: «${z}».`,
+ explain2:`В задаче это выглядит так: «Дано: ${c}. Доказать: ${z}». Условие — это то, что нам уже известно.`});});
+G(6,()=>{const pool=[['Если углы равны, то они вертикальные.',false,'Два угла по 40° в разных местах чертежа равны, но не вертикальные.'],['Если сумма двух углов 180°, то они смежные.',false,'Углы 100° и 80° в разных местах чертежа — сумма 180°, но общей стороны нет.'],['Если AM = MB, то M — середина отрезка AB.',false,'M может не лежать на отрезке: вершина «домика» над AB тоже равноудалена от A и B.'],['Если угол равен 90°, то он прямой.',true,'Это просто определение прямого угла.']];
+ const [s,tr,why]=pick(pool);
+ return CH(`Верно ли утверждение: «${s}»?`,tr?'Верно':'Неверно — есть контрпример',[tr?'Неверно — есть контрпример':'Верно'],
+ {short:why,explain:`${why} ${tr?'Утверждение верно.':'Значит, утверждение <b>неверно</b>. Это обратное к известной теореме — а обратные утверждения не обязаны быть верными.'}`,
+ explain2:'Чтобы опровергнуть утверждение «если…, то…», достаточно <b>одного</b> примера, где условие выполнено, а заключение нет (контрпример). Чтобы доказать — нужно рассуждение для всех случаев.'});});
+G(6,()=>{const ok=[R(46,80),0];ok[1]=R(91-ok[0],89);const bads=[];while(bads.length<3){const a=R(10,60),b=R(10,85-a);if(a+b<90&&!bads.some(p=>p[0]===a))bads.push([a,b]);}
+ const f=p=>`${p[0]}° и ${p[1]}°`;
+ return CH('Какая пара углов — <b>контрпример</b> к утверждению «сумма двух острых углов — всегда острый угол»?',f(ok),bads.map(f),
+ {short:`${ok[0]} + ${ok[1]} = ${ok[0]+ok[1]}° ≥ 90° — не острый.`,explain:`Контрпример — пример, где условие выполнено (оба угла острые), а заключение нарушено (сумма не острая). ${f(ok)}: оба меньше 90°, но сумма ${ok[0]+ok[1]}° ${ok[0]+ok[1]===90?'= 90° — прямой':'&gt; 90° — тупой'}. Остальные пары дают в сумме острый угол и утверждение не опровергают.`,
+ explain2:`Проверь каждую пару: сложи. ${bads.map(p=>`${p[0]} + ${p[1]} = ${p[0]+p[1]}`).join('; ')} — всё меньше 90. Только ${ok[0]} + ${ok[1]} = ${ok[0]+ok[1]} ломает утверждение.`});});
+/* L7 — подсчёты */
+G(7,()=>CH('Сколько отрезков с концами в n отмеченных точках прямой?','n(n − 1) : 2',['n(n − 1)','n²','2n − 1'],
+ {short:'Каждая пара точек — один отрезок; пар n(n − 1)/2.',explain:'Каждый отрезок задаётся парой точек. Из каждой точки идёт n − 1 отрезок, всего n(n − 1) «концов», но каждый отрезок посчитан дважды (AB и BA). Итого <b>n(n − 1) : 2</b>. Ответ n(n − 1) — забыли разделить на 2.',
+ explain2:'Проверь на 3 точках A, B, C: отрезки AB, AC, BC — их 3. Формула: 3 · 2 : 2 = 3 ✅. А n(n − 1) дал бы 6 — дважды больше.'}),{rule:true});
+G(7,()=>{const n=R(4,12);const ctx=pick([['На прямой отметили','точек. Сколько всего отрезков с концами в этих точках?'],['На плоскости отметили','точек, никакие три из которых не лежат на одной прямой. Сколько прямых можно провести через пары этих точек?'],['Из одной точки провели','лучей (никакие два не лежат на одной прямой). Сколько всего углов образуют пары этих лучей?']]);
+ return {type:'num',q:`${ctx[0]} ${n} ${ctx[1]}`,ans:C2(n),short:`${n} · ${n-1} : 2 = ${C2(n)}`,
+ explain:`Каждый объект задаётся <b>парой</b>. Пар из ${n}: ${n} · ${n-1} : 2 = <b>${C2(n)}</b>. Делим на 2, потому что пара (1, 2) и (2, 1) — одно и то же.`,
+ explain2:`Посчитай «по очереди»: первый образует пары с ${n-1} остальными, второй — ещё с ${n-2} новыми, … : ${range(n-1,1,-1).join(' + ')} = ${C2(n)}.`};});
+G(7,()=>{const n=R(3,9);
+ return {type:'num',q:`На прямой отмечены ${n} точек. Сколько существует различных лучей, начало которых — одна из отмеченных точек и которые проходят хотя бы через одну другую отмеченную точку?`,ans:2*n-2,hint:'Из крайней точки такой луч один, из внутренней — два.',
+ short:`2 + 2 · ${n-2} = ${2*n-2}`,explain:`Из каждой точки луч может идти только влево или вправо. У крайних точек «живая» только одна сторона (с другой стороны точек нет) → по 1 лучу, всего 2. У каждой из ${n-2} внутренних — обе стороны → по 2 луча. Итого 2 + 2 · ${n-2} = <b>${2*n-2}</b>.<div class="box err"><b>Ловушка</b>${n}·${n-1} = ${n*(n-1)} — неверно: лучи A₁A₃ и A₁A₂ совпадают, если A₂, A₃ по одну сторону от A₁.</div>`,
+ explain2:`Нарисуй ${Math.min(n,4)} точки и выпиши лучи. Для 3 точек A, B, C: AB, BA, BC, CB — 4 = 2 · 3 − 2 ✅.`};});
+/* L8 — ★ */
+G(8,()=>CH('На сколько градусов поворачивается <b>часовая</b> стрелка за 1 минуту?','На 0,5°',['На 6°','На 30°','На 1°'],
+ {short:'30° за час = 0,5° за минуту.',explain:'За 12 часов часовая стрелка делает полный оборот 360°, значит за час — 360 : 12 = 30°, а за минуту — 30 : 60 = <b>0,5°</b>. 6° в минуту — это скорость <b>минутной</b> стрелки (360° за 60 минут).',
+ explain2:'Между «3» и «4» на циферблате 30°. Часовая стрелка проползает этот промежуток целый час — 60 минут. Значит, за минуту — половинку градуса.'}),{rule:true,star:true});
+G(8,()=>{const n=R(5,10);let s=0;for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)s+=j-i;
+ return {type:'num',q:`На прямой отмечены ${n} точек, расстояние между любыми двумя соседними равно 1. Найди сумму расстояний между всеми парами отмеченных точек.`,ans:s,hint:'Сколько пар на расстоянии 1? на расстоянии 2? …',
+ short:`Σ d·(${n} − d) = ${s}`,explain:`Пар точек на расстоянии d ровно ${n} − d. Сумма: ${range(1,n-1).map(d=>`${d}·${n-d}`).join(' + ')} = <b>${s}</b>.`,
+ explain2:`Другой способ: посчитаем, сколько раз каждый единичный промежуток входит в отрезки. Промежуток между k-й и (k+1)-й точками покрывают все пары «левая из первых k, правая из остальных ${n}−k»: k·(${n} − k) раз. Сумма та же: ${range(1,n-1).map(k=>k*(n-k)).join(' + ')} = ${s}.`};},{star:true});
+G(8,()=>{let xs;for(;;){xs=sample(range(0,30),R(4,6)).sort((a,b)=>a-b);if(xs[xs.length-1]-xs[0]>12)break;}let best=1e9,bx=0;for(let x=-5;x<=35;x++){const v=xs.reduce((a,p)=>a+Math.abs(x-p),0);if(v<best){best=v;bx=x;}}
+ const n=xs.length;const pairs=[];for(let i=0;i<n/2;i++)if(i!==n-1-i)pairs.push(`(${xs[n-1-i]} − ${xs[i]})`);
+ return {type:'num',q:`Вдоль прямой улицы стоят дома с координатами ${xs.join(', ')} (в сотнях метров). Где-то на улице поставят киоск. Какой может быть <b>наименьшая</b> сумма расстояний от киоска до всех домов (в сотнях метров)?`,ans:best,hint:'Ставь киоск «посередине» по количеству домов: слева и справа поровну.',
+ short:`Киоск в точке ${n%2?xs[(n-1)/2]:`от ${xs[n/2-1]} до ${xs[n/2]}`}: сумма ${best}.`,explain:`Разобьём дома на пары «крайний слева — крайний справа»: ${pairs.join(', ')}. Для каждой пары сумма расстояний не меньше расстояния между домами пары и равна ему, если киоск между ними. Все эти отрезки вложены, общая точка — середина по количеству домов (${n%2?`дом ${xs[(n-1)/2]}`:`любая точка от ${xs[n/2-1]} до ${xs[n/2]}`}).<br>Минимум = ${pairs.join(' + ')} = <b>${best}</b>.`,
+ explain2:`Проверка перебором: при x = ${bx} сумма ${xs.map(p=>`|${bx} − ${p}|`).join(' + ')} = ${best}. Сдвинь киоск на 1 в сторону, где домов больше, — сумма уменьшится; когда слева и справа поровну — уменьшать некуда.`};},{star:true});
+G(8,()=>{const h=R(1,11),m=R(1,11)*5;const d=clockAng(h,m);const hd=30*h+0.5*m,md=6*m;
+ return {type:'num',q:`Какой угол (в градусах) между часовой и минутной стрелками в ${h}:${String(m).padStart(2,'0')}? Если нужно, ответ — десятичная дробь.`,pic:clockPic(h,m),ans:d,hint:'Часовая стрелка тоже движется: 0,5° в минуту.',
+ short:`|${N(hd)}° − ${md}°| → ${N(d)}°`,explain:`Отсчитываем от «12» по часовой стрелке.<br>Минутная: 6° в минуту → ${m} · 6 = ${md}°.<br>Часовая: 30° за час и ещё 0,5° за минуту → ${h} · 30 + ${m} · 0,5 = ${N(hd)}°.<br>Разность: |${N(hd)} − ${md}| = ${N(Math.abs(hd-md))}°${Math.abs(hd-md)>180?`, это больше 180°, поэтому угол 360 − ${N(Math.abs(hd-md))} = ${N(d)}°`:''}. Ответ: <b>${N(d)}°</b>.<div class="box err"><b>Ловушка</b>Считать, что часовая стоит ровно на «${h}». За ${m} мин она уехала на ${N(m*0.5)}°.</div>`,
+ explain2:`Посмотри на картинку: часовая стрелка уже не на ${h}, а сдвинулась к ${h%12+1} — на ${m}/60 пути. Один «час» на циферблате — 30°, значит сдвиг ${N(m*0.5)}°.`};},{star:true});
+G(8,()=>{const h=R(1,10);const m=60*h/11;
+ return {type:'num',q:`Ровно в ${h}:00 Артём засёк время. Через сколько минут часовая и минутная стрелки впервые совпадут? Ответ дай обыкновенной дробью (например, 100/11).`,ans:m,ph:'например: 100/11',hint:'За минуту минутная стрелка догоняет часовую на 6° − 0,5° = 5,5°.',
+ short:`${30*h} : 5,5 = ${60*h}/11 мин`,explain:`В ${h}:00 часовая стрелка впереди минутной на ${h} · 30° = ${30*h}°. Минутная проходит 6° в минуту, часовая 0,5° — минутная догоняет со скоростью 5,5° в минуту.<br>Время = ${30*h} : 5,5 = ${60*h}/11 = <b>${Math.floor(m)} ${60*h%11}/11 мин</b>.`,
+ explain2:`Это задача «на догонялки»: как бегун на круговой дорожке догоняет другого. Расстояние ${30*h}°, скорость сближения 11/2 ° в минуту. ${30*h} · 2/11 = ${60*h}/11. За 12 часов стрелки совпадают 11 раз — каждые 720/11 ≈ 65,45 мин.`};},{star:true});
+G(8,()=>{const n=R(4,10);const ask=pick(['p','r']);const p=C2(n),r=1+n+C2(n);
+ return {type:'num',q:`На плоскости провели ${n} прямых, никакие две из которых не параллельны и никакие три не проходят через одну точку. ${ask==='p'?'Сколько у них точек пересечения?':'На сколько частей они делят плоскость?'}`,ans:ask==='p'?p:r,
+ hint:ask==='p'?'Каждая пара прямых — одна точка.':'k-я прямая пересекает k − 1 старых, делится на k кусков, и каждый кусок разрезает одну часть надвое.',
+ short:ask==='p'?`${n}·${n-1}/2 = ${p}`:`1 + ${range(1,n).join(' + ')} = ${r}`,
+ explain:ask==='p'?`Каждые две прямые пересекаются ровно в одной точке, и все точки разные (никакие три прямые не проходят через одну). Пар прямых: ${n} · ${n-1} : 2 = <b>${p}</b>.`:`Без прямых — 1 часть. k-я прямая пересекает ${'k − 1'} предыдущих в разных точках, поэтому делится на k кусков, и каждый кусок разрезает одну старую часть на две: частей становится на k больше.<br>Итого: 1 + 1 + 2 + … + ${n} = 1 + ${n*(n+1)/2} = <b>${r}</b>.`,
+ explain2:ask==='p'?`Проверь на 3 прямых: «треугольник» — 3 точки, формула 3·2/2 = 3 ✅.`:`Проверь на маленьких: 1 прямая — 2 части, 2 прямые — 4, 3 прямые — 7. Добавки: +1, +2, +3, … Для ${n} прямых: ${r}.`};},{star:true});
+G(8,()=>{const n=R(6,10),k=R(3,n-2);const ans=C2(n)-C2(k)+1;
+ /* brute force: k collinear points on y=0, rest in general position (random) */
+ let pts=[];for(let i=0;i<k;i++)pts.push([i*7+1,0]);for(let i=k;i<n;i++)pts.push([R(-50,50)+i*0.013,R(5,60)+i*0.37]);const lines=new Set();
+ for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const [x1,y1]=pts[i],[x2,y2]=pts[j];let A=y2-y1,B=x1-x2,Cc=-(A*x1+B*y1);const s=Math.hypot(A,B)*(A<0||(A===0&&B<0)?-1:1);lines.add([A/s,B/s,Cc/s].map(v=>v.toFixed(5)).join(','));}
+ if(lines.size!==ans)return null;
+ return {type:'num',q:`Отмечено ${n} точек, из них ровно ${k} лежат на одной прямой, а других троек точек на одной прямой нет. Сколько различных прямых проходит хотя бы через две отмеченные точки?`,ans,hint:`Посчитай все пары, а потом учти, что пары из ${k} точек дают одну и ту же прямую.`,
+ short:`${C2(n)} − ${C2(k)} + 1 = ${ans}`,explain:`Если бы никакие три не лежали на одной прямой, прямых было бы ${n}·${n-1}/2 = ${C2(n)}. Но ${C2(k)} пар из ${k} «выстроенных» точек дают одну и ту же прямую. Вычитаем их и добавляем эту одну прямую обратно: ${C2(n)} − ${C2(k)} + 1 = <b>${ans}</b>.`,
+ explain2:`Посчитай по-другому: прямые, где обе точки из ${n-k} «свободных»: ${C2(n-k)}; где одна свободная и одна из ${k}: ${(n-k)*k}; и одна прямая через все ${k}. Итого ${C2(n-k)} + ${(n-k)*k} + 1 = ${ans}.`};},{star:true});
+G(8,()=>{const n=R(3,12),t=pick([2,3]);let m=n;for(let i=0;i<t;i++)m=2*m-1;
+ return {type:'num',q:`На прямой отметили несколько точек. Затем между каждыми двумя соседними точками отметили ещё по одной. Эту операцию повторили ещё ${t-1===1?'один раз':'дважды'} (всего ${t} раза). Стало ${m} точек. Сколько было сначала?`,ans:n,hint:'Если было k точек, то соседних пар k − 1. Сколько точек станет?',
+ short:`k → 2k − 1; обратно: (m + 1) : 2. ${m} → … → ${n}.`,explain:`Если точек k, промежутков между соседними k − 1, после операции точек k + (k − 1) = 2k − 1. Идём назад: k = (m + 1) : 2.<br>${(()=>{let s=[],x=m;for(let i=0;i<t;i++){const y=(x+1)/2;s.push(`(${x} + 1) : 2 = ${y}`);x=y;}return s.join('<br>');})()}<br>Сначала было <b>${n}</b>.`,
+ explain2:`Проверка «вперёд»: ${(()=>{let s=[n],x=n;for(let i=0;i<t;i++){x=2*x-1;s.push(x);}return s.join(' → ');})()}. Хитрость: m − 1 удваивается каждый раз, ведь (2k − 1) − 1 = 2(k − 1).`};},{star:true});
+
+/* =====================================================================
+   WIDGET
+   ===================================================================== */
+function onTheory(root){const w=root.querySelector('#w-ang');if(!w)return;
+  w.innerHTML=`<label>Угол: <output id="wav">60</output>°<input type="range" id="wa" min="0" max="180" step="1" value="60"></label>
+<div id="wsv" style="display:flex;justify-content:center;touch-action:none"></div><div id="wso" class="small" style="text-align:center;margin-top:4px"></div><div class="small" style="text-align:center;color:var(--muted)">Можно тянуть сторону OB мышкой или пальцем.</div>`;
+  const A=w.querySelector('#wa');const S=w.querySelector('#wsv');
+  const draw=()=>{const d=+A.value;w.querySelector('#wav').textContent=d;const W=280,H=168,cx=140,cy=140,r=95;
+    const bx=cx+r*Math.cos(d*D2R),by=cy-r*Math.sin(d*D2R);let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" style="font-family:system-ui,sans-serif">`;
+    s+=`<path d="M${cx-r},${cy} A${r},${r} 0 0 1 ${cx+r},${cy}" fill="none" stroke="var(--line)" stroke-dasharray="3 4"/>`;
+    for(let t=0;t<=180;t+=30){s+=`<text x="${r1(cx+(r+12)*Math.cos(t*D2R))}" y="${r1(cy-(r+12)*Math.sin(t*D2R)+4)}" text-anchor="middle" font-size="10" fill="var(--muted)">${t}</text>`;}
+    if(d===90)s+=`<path d="M${cx+14},${cy} L${cx+14},${cy-14} L${cx},${cy-14}" fill="none" stroke="var(--accent)" stroke-width="1.6"/>`;
+    else if(d>0)s+=`<path d="M${cx},${cy} L${cx+30},${cy} A30,30 0 0 0 ${r1(cx+30*Math.cos(d*D2R))},${r1(cy-30*Math.sin(d*D2R))} Z" fill="var(--hl)" fill-opacity=".35" stroke="var(--accent)" stroke-width="1.6"/>`;
+    s+=`<line x1="${cx}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="var(--fig)" stroke-width="2.2"/><line x1="${cx}" y1="${cy}" x2="${r1(bx)}" y2="${r1(by)}" stroke="var(--accent)" stroke-width="2.6"/>`;
+    s+=`<circle cx="${r1(bx)}" cy="${r1(by)}" r="7" fill="var(--accent)" fill-opacity=".35"/><circle cx="${cx}" cy="${cy}" r="3" fill="var(--fig)"/>`;
+    s+=`<text x="${cx}" y="${cy+18}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--accent-ink)">O</text><text x="${cx+r-4}" y="${cy+18}" font-size="14" font-weight="700" fill="var(--accent-ink)">A</text>`;
+    const lx=cx+(r+28)*Math.cos(d*D2R),ly=cy-(r+28)*Math.sin(d*D2R)+5;s+=`<text x="${r1(lx)}" y="${r1(ly)}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--accent-ink)">B</text></svg>`;
+    S.innerHTML=s;const k=d===0?'стороны совпали (нулевой угол)':KIND(d);
+    w.querySelector('#wso').innerHTML=`∠AOB = <span class="out">${d}°</span> — <b>${k}</b>${d>0&&d<180&&d!==90?` · до прямого ${d<90?'не хватает '+(90-d)+'°':'лишние '+(d-90)+'°'} · до развёрнутого ${180-d}°`:''}`;};
+  let drag=false;const mv=e=>{if(!drag)return;const sv=S.querySelector('svg');const b=sv.getBoundingClientRect();const k=280/b.width;const x=(e.clientX-b.left)*k-140,y=140-(e.clientY-b.top)*k;let d=Math.round(Math.atan2(y,x)/D2R);if(d<0)d=x<0?180:0;A.value=Math.max(0,Math.min(180,d));draw();};
+  S.addEventListener('pointerdown',e=>{drag=true;try{S.setPointerCapture(e.pointerId);}catch(_){}mv(e);});S.addEventListener('pointermove',mv);S.addEventListener('pointerup',()=>{drag=false;});
+  A.oninput=draw;draw();}
+
+window.TOPIC={id:'g7_basics',title:'Точки, прямые, отрезки, углы',subtitle:'Геометрия · 7 класс',
+intro:`<p>С чего начинается геометрия: точка, прямая, луч, отрезок и угол. Научимся складывать отрезки и углы, находить середину, отличать острый угол от тупого, понимать, чем аксиома отличается от теоремы, и считать отрезки и прямые без перебора. В конце — олимпиадные задачи про часы, прямые и суммы расстояний.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Точка, прямая, луч, отрезок','Длина отрезка','Середина отрезка','Угол и его мера','Виды углов','Сложение углов','Аксиома, определение, теорема','Сколько отрезков и прямых?','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

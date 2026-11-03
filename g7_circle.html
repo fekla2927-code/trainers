@@ -1,0 +1,1220 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Окружность и построения — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,num:N}=H;
+/* =====================================================================
+   Geometry SVG helper (math coords, y up → auto-fit into ≤ 320 px)
+   ===================================================================== */
+const D2R=Math.PI/180;
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(a,k)=>[a[0]*k,a[1]*k];
+const len=a=>Math.hypot(a[0],a[1]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
+const unit=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l];};
+const polar=(p,L,d)=>[p[0]+L*Math.cos(d*D2R),p[1]+L*Math.sin(d*D2R)];
+const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+const foot=(p,a,b)=>{const d=sub(b,a);const t=dot(sub(p,a),d)/dot(d,d);return lerp(a,b,t);};
+const inter=(a,b,c,d)=>{const r=sub(b,a),s=sub(d,c);const den=r[0]*s[1]-r[1]*s[0];const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den;return add(a,mul(r,t));};
+const angAt=(v,a,b)=>{const u=unit(sub(a,v)),w=unit(sub(b,v));return Math.acos(Math.max(-1,Math.min(1,dot(u,w))))/D2R;};
+const r1=x=>Math.round(x*10)/10;
+const tw=(t,fs)=>{t=String(t).replace(/<[^>]+>/g,'');let w=0;for(const ch of t)w+=/[°·,.\s₁₂₃₄]/.test(ch)?fs*0.36:/[0-9]/.test(ch)?fs*0.56:fs*0.64;return w;};
+const SUB={A1:'A₁',A2:'A₂',A3:'A₃',A4:'A₄',B1:'B₁',B2:'B₂',B3:'B₃',B4:'B₄'};
+
+function geo(o){
+  const P={};for(const k in o.P)if(Array.isArray(o.P[k]))P[k]=o.P[k];const W=o.W||300,MH=o.maxH||220,pad=o.pad==null?30:o.pad;
+  const all=Object.values(P).concat(o.extra||[]);const gp0=k=>Array.isArray(k)?k:P[k];
+  (o.circ||[]).concat(o.arc||[]).forEach(c=>{const C=gp0(c[0]);all.push([C[0]-c[1],C[1]-c[1]],[C[0]+c[1],C[1]+c[1]]);});
+  const x0=Math.min(...all.map(p=>p[0])),x1=Math.max(...all.map(p=>p[0]));
+  const y0=Math.min(...all.map(p=>p[1])),y1=Math.max(...all.map(p=>p[1]));
+  const bw=Math.max(x1-x0,1e-6),bh=Math.max(y1-y0,1e-6);
+  const s=Math.min((W-2*pad)/bw,(MH-2*pad)/bh);
+  const w=Math.round(bw*s+2*pad),h=Math.round(bh*s+2*pad);
+  const X=p=>[pad+(p[0]-x0)*s,pad+(y1-p[1])*s];
+  const Q={};for(const k in P)Q[k]=X(P[k]);
+  const g=k=>Array.isArray(k)?X(k):Q[k];
+  const polys=o.poly||[];
+  const cen=pts=>[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];
+  const allC=cen(Object.values(Q));
+  const pstr=pts=>pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ');
+  const T=(x,y,t,fs,col,wt,anc)=>`<text x="${r1(x)}" y="${r1(y+fs*0.36)}" text-anchor="${anc||'middle'}" font-size="${fs}" font-weight="${wt||600}" fill="${col||'var(--ink)'}">${t}</text>`;
+  const place=(p,d,t,fs,gap)=>{const ww=tw(t,fs),hh=fs*0.78;const k=gap+0.5*(ww*Math.abs(d[0])+hh*Math.abs(d[1]));return [p[0]+d[0]*k,p[1]+d[1]*k];};
+  let out=`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${o.aria||'Чертёж'}" style="font-family:system-ui,sans-serif">`;
+  const LS=[];const ln=(A,B,attr)=>{LS.push([A,B]);return `<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" ${attr}/>`;};
+  if(o.grid){const G=o.grid;for(let x=G[0];x<=G[2]+1e-9;x++){const a=X([x,G[1]]),b=X([x,G[3]]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}
+    for(let y=G[1];y<=G[3]+1e-9;y++){const a=X([G[0],y]),b=X([G[2],y]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}}
+  (o.circ||[]).forEach(c=>{const op=c[2]||{};const C=g(c[0]),r=c[1]*s;out+=`<circle cx="${r1(C[0])}" cy="${r1(C[1])}" r="${r1(r)}" fill="${op.fill||'none'}" fill-opacity="${op.op||0.18}" stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||2}" ${op.dash?'stroke-dasharray="5 4"':''}/>`;
+    let pr=[C[0]+r,C[1]];for(let j=1;j<=48;j++){const t=j/48*2*Math.PI;const q=[C[0]+r*Math.cos(t),C[1]+r*Math.sin(t)];LS.push([pr,q]);pr=q;}});
+  (o.arc||[]).forEach(c=>{const op=c[4]||{};const C=g(c[0]),r=c[1]*s;const n=24;let d='';let pr=null;for(let j=0;j<=n;j++){const t=(c[2]+(c[3]-c[2])*j/n)*D2R;const q=[C[0]+r*Math.cos(t),C[1]-r*Math.sin(t)];d+=(j?'L':'M')+r1(q[0])+','+r1(q[1]);if(pr)LS.push([pr,q]);pr=q;}
+    out+=`<path d="${d}" fill="none" stroke="${op.col||'var(--muted)'}" stroke-width="${op.sw||1.4}" ${op.dash?'stroke-dasharray="4 3"':''}/>`;});
+  (o.fill||[]).forEach(f=>{const pts=(f.pts||f).map(g);out+=`<polygon points="${pstr(pts)}" fill="${f.col||'var(--hl)'}" fill-opacity="${f.op||0.35}" stroke="none"/>`;});
+  polys.forEach(pl=>{out+=`<polygon points="${pstr(pl.map(g))}" fill="none" stroke="var(--fig)" stroke-width="2.2" stroke-linejoin="round"/>`;pl.forEach((k,i)=>LS.push([g(k),g(pl[(i+1)%pl.length])]));});
+  (o.seg||[]).forEach(sg=>{const op=sg[2]||{};let A=g(sg[0]),B=g(sg[1]);if(op.ext){const e=mul(sub(B,A),op.ext);A=sub(A,e);B=add(B,e);}
+    out+=ln(A,B,`stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||1.7}" ${op.dash?'stroke-dasharray="6 4"':''} stroke-linecap="round"`);});
+  (o.tick||[]).forEach(tk=>{const A=g(tk[0]),B=g(tk[1]),n=tk[2]||1;const e=unit(sub(B,A)),nn=[-e[1],e[0]],m=mid(A,B);
+    for(let i=0;i<n;i++){const c=add(m,mul(e,(i-(n-1)/2)*5));out+=ln(add(c,mul(nn,6)),sub(c,mul(nn,6)),'stroke="var(--fig)" stroke-width="1.7"');}});
+  (o.rt||[]).forEach(rt=>{const Vv=g(rt[0]),u=unit(sub(g(rt[1]),Vv)),ww=unit(sub(g(rt[2]),Vv)),k=10;const a=add(Vv,mul(u,k)),b=add(a,mul(ww,k)),c=add(Vv,mul(ww,k));LS.push([a,b],[b,c]);
+    out+=`<path d="M${r1(a[0])},${r1(a[1])} L${r1(b[0])},${r1(b[1])} L${r1(c[0])},${r1(c[1])}" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`;});
+  const angInfo=(o.ang||[]).map(an=>{const op=an[4]||{};const Vv=g(an[0]),A=g(an[1]),B=g(an[2]);
+    const a1=Math.atan2(A[1]-Vv[1],A[0]-Vv[0]);let dl=Math.atan2(B[1]-Vv[1],B[0]-Vv[0])-a1;while(dl>Math.PI)dl-=2*Math.PI;while(dl<=-Math.PI)dl+=2*Math.PI;
+    const th=Math.abs(dl);const rr=op.r||(th<0.75?26:19);const n=op.n||1;
+    for(let i=0;i<n;i++){const r=rr+i*4;const p=[Vv[0]+r*Math.cos(a1),Vv[1]+r*Math.sin(a1)],q=[Vv[0]+r*Math.cos(a1+dl),Vv[1]+r*Math.sin(a1+dl)];
+      out+=`<path d="M${r1(p[0])},${r1(p[1])} A${r},${r} 0 0 ${dl>0?1:0} ${r1(q[0])},${r1(q[1])}" fill="none" stroke="${op.col||'var(--accent)'}" stroke-width="1.6"/>`;
+      let prev=p;for(let j=1;j<=6;j++){const an2=a1+dl*j/6;const c=[Vv[0]+r*Math.cos(an2),Vv[1]+r*Math.sin(an2)];LS.push([prev,c]);prev=c;}}
+    return {an,op,Vv,a1,dl,th,rr,n};});
+  (o.dots||[]).forEach(k=>{const p=g(k);out+=`<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="2.8" fill="var(--fig)"/>`;});
+  /* ---- collision-aware label placement ---- */
+  const boxes=[];
+  const segRect=(a,b,c,hw,hh)=>{const xmin=c[0]-hw,xmax=c[0]+hw,ymin=c[1]-hh,ymax=c[1]+hh;let t0=0,t1=1,hit=true;const dx=b[0]-a[0],dy=b[1]-a[1];const pp=[-dx,dx,-dy,dy],qq=[a[0]-xmin,xmax-a[0],a[1]-ymin,ymax-a[1]];
+    for(let i=0;i<4;i++){if(Math.abs(pp[i])<1e-12){if(qq[i]<0){hit=false;break;}}else{const r=qq[i]/pp[i];if(pp[i]<0){if(r>t1){hit=false;break;}if(r>t0)t0=r;}else{if(r<t0){hit=false;break;}if(r<t1)t1=r;}}}
+    if(hit)return -1;const pr=p=>Math.hypot(Math.max(xmin-p[0],0,p[0]-xmax),Math.max(ymin-p[1],0,p[1]-ymax));
+    const ps=p=>{const d=sub(b,a);const t=Math.max(0,Math.min(1,dot(sub(p,a),d)/Math.max(dot(d,d),1e-9)));return len(sub(p,lerp(a,b,t)));};
+    return Math.min(pr(a),pr(b),ps([xmin,ymin]),ps([xmax,ymin]),ps([xmin,ymax]),ps([xmax,ymax]));};
+  const clr=(c,hw,hh)=>{let m=Math.min(c[0]-hw,w-c[0]-hw,c[1]-hh,h-c[1]-hh)+1;for(const L of LS)m=Math.min(m,segRect(L[0],L[1],c,hw,hh));for(const bx of boxes)m=Math.min(m,Math.max(Math.abs(c[0]-bx[0])-hw-bx[2],Math.abs(c[1]-bx[1])-hh-bx[3]));return m;};
+  const choose=(cands,t,fs,thr)=>{const hw=tw(t,fs)/2+1,hh=fs*0.4+1;let best=cands[0],bs=-1e9;for(const c of cands){const v=clr(c,hw,hh);if(v>=thr){best=c;break;}if(v>bs){bs=v;best=c;}}boxes.push([best[0],best[1],hw,hh]);return best;};
+  let labels='';
+  const vdir=k=>{
+    if(o.dir&&o.dir[k]!=null){const d=o.dir[k];return [Math.cos(d*D2R),-Math.sin(d*D2R)];}
+    const p=Q[k];
+    for(const pl of polys){const i=pl.indexOf(k);if(i<0)continue;const n=pl.length;const u1=unit(sub(g(pl[(i-1+n)%n]),p)),u2=unit(sub(g(pl[(i+1)%n]),p));let d=add(u1,u2);
+      if(len(d)>0.15)return mul(unit(d),-1);const c=cen(pl.map(g));d=[-u1[1],u1[0]];if(dot(d,sub(c,p))>0)d=mul(d,-1);return d;}
+    for(const pl of polys){for(let i=0;i<pl.length;i++){const A=g(pl[i]),B=g(pl[(i+1)%pl.length]);const f=foot(p,A,B);const t=dot(sub(p,A),sub(B,A))/dot(sub(B,A),sub(B,A));
+      if(len(sub(f,p))<1&&t>0.02&&t<0.98){const e=unit(sub(B,A));let d=[-e[1],e[0]];if(dot(d,sub(cen(pl.map(g)),p))>0)d=mul(d,-1);return d;}}}
+    let d=sub(p,allC);if(len(d)<4)d=[0.7,0.7];return unit(d);};
+  (o.txt||[]).forEach(tx=>{const arr=Array.isArray(tx[0]);const p=arr?X(tx[0]):X([tx[0],tx[1]]);const t=arr?tx[1]:tx[2];const op=(arr?tx[2]:tx[3])||{};const fs=op.fs||14;
+    boxes.push([p[0],p[1],tw(t,fs)/2+1,fs*0.4+1]);labels+=T(p[0],p[1],t,fs,op.col||'var(--ink)',op.wt||600,op.anc);});
+  const labs=o.lab||Object.keys(P);
+  labs.forEach(k=>{const t=(o.names&&o.names[k])||SUB[k]||k;const d0=vdir(k);const th0=Math.atan2(d0[1],d0[0]);const cands=[];
+    for(const gp of [5,9])for(let j=0;j<=12;j++)for(const sg of (j?[1,-1]:[1])){const th=th0+sg*j*15*D2R;cands.push(place(Q[k],[Math.cos(th),Math.sin(th)],t,15,gp));}
+    const p=choose(cands,t,15,2.5);labels+=T(p[0],p[1],t,15,'var(--accent-ink)',700);});
+  (o.side||[]).forEach(sd=>{const op=sd[3]||{};const A=g(sd[0]),B=g(sd[1]);const e=unit(sub(B,A));let n=[-e[1],e[0]];const t0=op.t==null?0.5:op.t;
+    let c=allC;for(const pl of polys){const i=pl.indexOf(sd[0]),j=pl.indexOf(sd[1]);if(i>=0&&j>=0&&(Math.abs(i-j)===1||Math.abs(i-j)===pl.length-1)){c=cen(pl.map(g));break;}}
+    if(dot(n,sub(c,lerp(A,B,t0)))>0)n=mul(n,-1);if(op.flip)n=mul(n,-1);const fs=op.fs||14;const gp=op.gap==null?4:op.gap;const cands=[];
+    for(const nn of [n,mul(n,-1)])for(const gg of [gp,gp+5])for(const dt of [0,0.1,-0.1,0.2,-0.2,0.3,-0.3])cands.push(place(lerp(A,B,Math.max(0.08,Math.min(0.92,t0+dt))),nn,sd[2],fs,gg));
+    const p=choose(cands,sd[2],fs,2);labels+=T(p[0],p[1],sd[2],fs,op.col||'var(--ink)',600);});
+  angInfo.forEach(({an,op,Vv,a1,dl,th,rr,n})=>{if(!an[3])return;const fs=op.fs||14;const rad=Math.max(tw(an[3],fs),fs)/2+2;const d=Math.max(rr+(n-1)*4+rad+3,(rad+3)/Math.sin(th/2));const cands=[];
+    if(th<0.7){const d0=rr+(n-1)*4+rad+3;const off=Math.asin(Math.min(1,(rad+2)/d0));const sg=dl>0?1:-1;for(const am of [a1+dl+sg*off,a1-sg*off])cands.push([Vv[0]+d0*Math.cos(am),Vv[1]+d0*Math.sin(am)]);}
+    for(const dd of [0,7,14,22,32])for(const f of [0,0.3,-0.3,0.6,-0.6]){const am=a1+dl/2+f*dl/2;cands.push([Vv[0]+(d+dd)*Math.cos(am),Vv[1]+(d+dd)*Math.sin(am)]);}
+    const p=choose(cands,an[3],fs,1.5);labels+=T(p[0],p[1],an[3],fs,'var(--accent-ink)',700);});
+  return out+labels+'</svg>';
+}
+
+/* ---------- shared utilities ---------- */
+const fig=s=>`<div class="fig">${s}</div>`;
+const sq=x=>x*x;
+const isInt=x=>Math.abs(x-Math.round(x))<1e-9;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<400;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+/* choice from correct + wrongs; null if not distinct */
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const mark=s=>`<b style="color:var(--accent-ink)">${s}</b>`;
+
+/* =====================================================================
+   g7_circle — окружность, касательная, ГМТ, построения
+   ===================================================================== */
+const dg=x=>x+'°';
+const TRI=[[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[7,24,25],[12,16,20],[20,21,29],[12,5,13],[4,3,5],[15,8,17],[24,7,25]];
+const onC=(r,deg)=>polar([0,0],r,deg);
+const reflect=(p,a,b)=>{const f=foot(p,a,b);return [2*f[0]-p[0],2*f[1]-p[1]];};
+const LET='АБВГД';
+const pt=p=>`(${N(Math.round(p[0]*10)/10)}; ${N(Math.round(p[1]*10)/10)})`;
+/* tangent points from P to circle (O=[0,0], r) */
+const tanPts=(P,r)=>{const d=len(P),th=Math.atan2(P[1],P[0])/D2R,al=Math.acos(r/d)/D2R;return [onC(r,th+al),onC(r,th-al)];};
+const incircle=T=>{const a=len(sub(T.B,T.C)),b=len(sub(T.A,T.C)),c=len(sub(T.A,T.B)),s=a+b+c;const I=[(a*T.A[0]+b*T.B[0]+c*T.C[0])/s,(a*T.A[1]+b*T.B[1]+c*T.C[1])/s];return {I,r:len(sub(I,foot(I,T.A,T.C)))};};
+const okTri3=(a,b,c)=>a+b>c+1&&a+c>b+1&&b+c>a+1;
+const dirDeg=(c,p)=>Math.atan2(p[1]-c[1],p[0]-c[0])/D2R;
+const tri3=(a,b,c)=>{const x=(c*c+b*b-a*a)/(2*b);return {A:[0,0],C:[b,0],B:[x,Math.sqrt(Math.max(0,c*c-x*x))]};};
+
+/* ---------- constructions (final drawings) ---------- */
+const CONS={
+ mid:{title:'Построение середины отрезка AB.',steps:['Раствори циркуль на длину, бо́льшую половины AB.','Этим раствором проведи окружности (дуги) с центрами A и B; отметь две точки их пересечения P и Q.','Проведи прямую PQ.','Отметь точку M пересечения прямой PQ с отрезком AB — это середина AB.'],
+  why:'Точки P и Q равноудалены от A и B (радиусы одинаковые), значит, они лежат на серединном перпендикуляре к AB. Прямая PQ и есть этот перпендикуляр, и он пересекает AB в середине.',
+  pic:()=>{const P={A:[0,0],B:[6,0],P:[3,Math.sqrt(16-9)],Q:[3,-Math.sqrt(16-9)],M:[3,0]};return geo({P,seg:[['A','B',{sw:2.2}],['P','Q',{col:'var(--accent)',dash:true}]],arc:[['A',4,-55,55],['B',4,125,235]],dots:['A','B','P','Q','M'],maxH:200,W:280});}},
+ perp:{title:'Построение перпендикуляра к прямой a через точку M, лежащую на ней.',steps:['Проведи окружность с центром M произвольного радиуса; отметь точки A и B её пересечения с прямой a.','Проведи окружности с центрами A и B радиусом AB; отметь точку P их пересечения.','Проведи прямую MP — это искомый перпендикуляр.'],
+  why:'MA = MB (радиусы первой окружности), а PA = PB (равные радиусы вторых окружностей). Значит, M и P лежат на серединном перпендикуляре к AB, то есть MP ⟂ a.',
+  pic:()=>{const P={A:[-2,0],B:[2,0],M:[0,0],P:[0,Math.sqrt(12)],L:[-4.5,0],R:[4.5,0]};return geo({P,seg:[['L','R',{sw:2}],['M','P',{col:'var(--accent)',dash:true}]],arc:[['M',2,165,195],['M',2,-15,15],['A',4,48,72],['B',4,108,132]],dots:['A','B','M','P'],lab:['A','B','M','P'],txt:[[[4.2,0.45],'a',{col:'var(--ink)'}]],maxH:180,W:260});}},
+ bis:{title:'Построение биссектрисы угла O.',steps:['Проведи окружность (дугу) с центром O; отметь точки A и B её пересечения со сторонами угла.','Проведи окружности с центрами A и B одним и тем же радиусом (например, AB); отметь точку C их пересечения внутри угла.','Проведи луч OC — это биссектриса.'],
+  why:'ΔOAC = ΔOBC по трём сторонам: OA = OB, AC = BC, OC — общая. Значит, ∠AOC = ∠BOC, и OC — биссектриса.',
+  pic:()=>{const P={O:[0,0],A:onC(3,0),B:onC(3,70)};const ab=len(sub(P.A,P.B));const m=mid(P.A,P.B),h=Math.sqrt(ab*ab-sq(ab/2));P.C=add(m,mul(unit(m),h));P.X=onC(6.5,0);P.Y=onC(6.5,70);
+   return geo({P,seg:[['O','X',{sw:2}],['O','Y',{sw:2}],['O','C',{col:'var(--accent)',dash:true,ext:0.3}]],arc:[['O',3,-8,78],['A',ab,dirDeg(P.A,P.C)-16,dirDeg(P.A,P.C)+16],['B',ab,dirDeg(P.B,P.C)-16,dirDeg(P.B,P.C)+16]],dots:['A','B','C'],lab:['O','A','B','C'],maxH:180,W:260});}},
+ copy:{title:'Откладывание угла, равного данному углу O, от луча с началом O₁.',steps:['Проведи окружность с центром O (вершина данного угла) радиусом r; отметь точки A и B на сторонах угла.','Проведи окружность с центром O₁ тем же радиусом r; отметь точку A₁ её пересечения с лучом.','Проведи окружность с центром A₁ радиусом AB; отметь точку B₁ её пересечения с первой окружностью.','Проведи луч O₁B₁ — угол A₁O₁B₁ равен данному.'],
+  why:'ΔOAB = ΔO₁A₁B₁ по трём сторонам (OA = O₁A₁ = r, OB = O₁B₁ = r, AB = A₁B₁). Поэтому ∠A₁O₁B₁ = ∠AOB.',
+  pic:()=>{const P={O:[0,0],A:onC(2.5,0),B:onC(2.5,50),O1:[6,0]};P.A1=add(P.O1,[2.5,0]);P.B1=add(P.O1,onC(2.5,50));P.X=onC(4.2,0);P.Y=onC(4.2,50);P.X1=add(P.O1,[4.5,0]);P.Y1=add(P.O1,onC(4.2,50));const ab=len(sub(P.A,P.B));
+   return geo({P,seg:[['O','X',{sw:2}],['O','Y',{sw:2}],['O1','X1',{sw:2}],['O1','Y1',{col:'var(--accent)',dash:true}]],arc:[['O',2.5,-8,60],['O1',2.5,-8,60],['A1',ab,dirDeg(P.A1,P.B1)-18,dirDeg(P.A1,P.B1)+18]],dots:['A','B','A1','B1'],lab:['O','A','B','O1','A1','B1'],names:{O1:'O₁',A1:'A₁',B1:'B₁'},maxH:170,W:320});}},
+ tri:{title:'Построение треугольника по трём сторонам a, b, c.',steps:['Проведи луч и отложи на нём отрезок AB = c.','Проведи окружность с центром A радиусом b и окружность с центром B радиусом a.','Отметь точку C пересечения этих окружностей.','Соедини точку C с точками A и B — треугольник ABC построен.'],
+  why:'По построению AB = c, AC = b (радиус окружности с центром A), BC = a (радиус окружности с центром B). Окружности пересекаются, только если выполнено неравенство треугольника.',
+  pic:()=>{const T=tri3(5,4,6);const P={A:T.A,B:T.C,C:T.B};P.X=[7.5,0];const ang1=Math.atan2(P.C[1],P.C[0])/D2R,ang2=Math.atan2(P.C[1],P.C[0]-P.B[0])/D2R;
+   return geo({P,seg:[['A','X',{sw:1.6,col:'var(--muted)'}],['A','B',{sw:2.4}],['A','C',{col:'var(--accent)',dash:true}],['B','C',{col:'var(--accent)',dash:true}]],arc:[['A',4,ang1-22,ang1+22],['B',5,ang2-18,ang2+18]],side:[['A','B','c']],dots:['A','B','C'],lab:['A','B','C'],extra:[[0,-0.5]],maxH:180,W:260});}}
+};
+function orderTask(key){const c=CONS[key];const n=c.steps.length;const lets=LET.slice(0,n).split('');const perm=shuffle([...Array(n).keys()]);/* perm[j] = step index shown under letter j */
+ const letterOf=[];perm.forEach((si,j)=>letterOf[si]=lets[j]);const correct=[...Array(n).keys()].map(i=>letterOf[i]).join(' → ');
+ const wr=new Set();const sw=[...Array(n).keys()];const i0=R(0,n-2);[sw[i0],sw[i0+1]]=[sw[i0+1],sw[i0]];wr.add(sw.map(i=>letterOf[i]).join(' → '));
+ let g=0;while(wr.size<3&&g++<200){const p=shuffle([...Array(n).keys()]).map(i=>letterOf[i]).join(' → ');if(p!==correct)wr.add(p);}
+ const t=CH(`${c.title} Расставь шаги в правильном порядке:<br>${perm.map((si,j)=>`<b>${lets[j]})</b> ${c.steps[si]}`).join('<br>')}`,correct,[...wr],
+ {pic:c.pic(),hint:'Каждый шаг пользуется точками, построенными на предыдущих шагах. Найди шаг, которому ничего не нужно, — он первый.',short:`Порядок: ${correct}.`,
+ explain:`Правильный порядок: <b>${correct}</b>.<ol class="steps">${c.steps.map(s=>`<li>${s}</li>`).join('')}</ol>Почему это работает: ${c.why}`,
+ explain2:`Проверка «по зависимостям»: ${c.steps.map((s,i)=>`шаг ${letterOf[i]} ${i===0?'ничего не требует — он первый':'использует то, что построено в шаге '+letterOf[i-1]}`).join('; ')}. Посмотри на рисунок: это итог построения, дуги — следы циркуля.`});return t;}
+
+/* ---------- theory figures ---------- */
+const fElems=(()=>{const P={O:[0,0],A:onC(4,120),C:onC(4,200),D:onC(4,-40),E:onC(4,160),F:onC(4,-20),T:onC(4,60)};P.K=add(P.T,mul([-Math.sin(60*D2R),Math.cos(60*D2R)],-3));
+ return geo({P,circ:[['O',4]],seg:[['O','A',{col:'var(--accent)',sw:2.2}],['C','D',{sw:2.2}],['E','F',{sw:2.2,col:'var(--hl)'}],['T','K',{sw:2}]],dots:['O','A','C','D','E','F','T'],maxH:210,W:280});})();
+const fChord=(()=>{const P={O:[0,0],A:onC(5,215),B:onC(5,-35)};P.K=mid(P.A,P.B);return geo({P,circ:[['O',5]],seg:[['A','B',{sw:2.2}],['O','K',{dash:true,col:'var(--accent)'}],['O','A'],['O','B']],rt:[['K','B','O']],tick:[['A','K'],['K','B']],side:[['O','K','d',{flip:true}],['O','A','r']],dots:['O'],maxH:190,W:240});})();
+const fTan=(()=>{const P={O:[0,0],A:onC(4,90)};P.L=add(P.A,[-5,0]);P.R=add(P.A,[5,0]);return geo({P,circ:[['O',4]],seg:[['L','R',{sw:2.2,col:'var(--accent)'}],['O','A',{sw:2}]],rt:[['A','R','O']],dots:['O','A'],lab:['O','A'],side:[['O','A','r']],maxH:180,W:260});})();
+const fTwo=(()=>{const P={O:[0,0],P:[8,0]};const [A,B]=tanPts(P.P,3.5);P.A=A;P.B=B;return geo({P,circ:[['O',3.5]],seg:[['P','A',{sw:2.2,col:'var(--accent)'}],['P','B',{sw:2.2,col:'var(--accent)'}],['O','A'],['O','B'],['O','P',{dash:true}]],rt:[['A','O','P'],['B','P','O']],tick:[['P','A',2],['P','B',2]],ang:[['P','A','O','',{n:1,r:30}],['P','O','B','',{n:1,r:36}]],dots:['O'],maxH:180,W:300});})();
+const fPerpB=(()=>{const P={A:[0,0],B:[6,0],M:[3,3.6],K:[3,0]};P.U=[3,4.8];P.V=[3,-1.2];return geo({P,seg:[['A','B',{sw:2.2}],['U','V',{col:'var(--accent)'}],['M','A',{dash:true}],['M','B',{dash:true}]],rt:[['K','B','U']],tick:[['A','K'],['K','B'],['M','A',2],['M','B',2]],lab:['A','B','M'],maxH:180,W:240});})();
+const fBisL=(()=>{const P={O:[0,0],X:onC(7,0),Y:onC(7,60),M:onC(5,30)};P.K=foot(P.M,P.O,P.X);P.L=foot(P.M,P.O,P.Y);return geo({P,seg:[['O','X',{sw:2}],['O','Y',{sw:2}],['O','M',{col:'var(--accent)',ext:0.25}],['M','K',{dash:true}],['M','L',{dash:true}]],rt:[['K','X','M'],['L','M','O']],tick:[['M','K'],['M','L']],ang:[['O','K','M','',{n:1,r:34}],['O','M','L','',{n:1,r:40}]],lab:['O','M','K','L'],maxH:170,W:260});})();
+const fPos=[[2.5,'d &lt; r: 2 точки'],[4,'d = r: 1 точка'],[5.4,'d &gt; r: нет точек']].map(([d,cap])=>{const P={O:[0,0],L:[-5,d],R:[5,d],H:[0,d]};
+ return `<div class="fig">${geo({P,circ:[['O',4]],seg:[['L','R',{col:'var(--accent)',sw:2}],['O','H',{dash:true}]],dots:['O'],lab:['O'],extra:[[0,5.6]],maxH:120,W:150,pad:12})}<div class="cap">${cap}</div></div>`;}).join('');
+const fInc=(()=>{const T=tri3(7,8,5);const P={A:T.A,B:T.B,C:T.C};const {I,r}=incircle(P);P.I=I;P.K=foot(I,P.A,P.B);P.L=foot(I,P.B,P.C);P.M=foot(I,P.A,P.C);
+ return geo({P,poly:[['A','B','C']],circ:[[I,r,{col:'var(--accent)'}]],tick:[['A','K'],['A','M'],['B','K',2],['B','L',2],['C','L',3],['C','M',3]],dots:['K','L','M'],lab:['A','B','C','K','L','M'],maxH:180,W:260});})();
+
+/* =====================================================================
+   THEORY
+   ===================================================================== */
+const theory=[
+{title:'Почему колёса круглые',lvl:0,html:`
+<p class="hook">Почему колесо — круг, а не квадрат или овал? Потому что у окружности есть суперсила: <b>все её точки на одном расстоянии от центра</b>. Ось колеса — центр, и она едет ровно на высоте радиуса, без тряски. А у квадратного колеса ось прыгала бы вверх-вниз на каждом углу.</p>
+<div class="box rule"><b>Определение</b><b>Окружность</b> — это множество всех точек плоскости, находящихся на данном расстоянии от данной точки. Точка — <b>центр</b> O, расстояние — <b>радиус</b> r.</div>
+<div class="fig">${fElems}</div>
+<ul class="steps"><li><b>Радиус</b> — отрезок от центра до точки окружности (OA).</li>
+<li><b>Хорда</b> — отрезок, соединяющий две точки окружности (CD).</li>
+<li><b>Диаметр</b> — хорда, проходящая через центр (EF). <span class="m">d = 2r</span>.</li>
+<li><b>Дуга</b> — часть окружности между двумя её точками. Любые две точки делят окружность на две дуги.</li>
+<li><b>Касательная</b> — прямая, у которой с окружностью ровно одна общая точка (TK касается в точке T).</li></ul>
+<div class="box err"><b>Окружность ≠ круг</b>Окружность — только «ободок», линия. Круг — ободок вместе со всей внутренней частью (как блин).</div>
+<div class="box tip"><b>Равнобедренные треугольники повсюду</b>Если A и B — точки окружности, то OA = OB = r. Значит, ΔOAB равнобедренный, и ∠OAB = ∠OBA. Это ключ к половине задач.</div>
+<div class="fact">Канализационные люки делают круглыми ещё и потому, что круглая крышка ни при каком повороте не провалится в круглый колодец: её ширина в любом направлении одна и та же — диаметр.</div>`},
+{title:'Хорды и расстояние до центра',lvl:1,html:`
+<div class="fig">${fChord}</div>
+<div class="box rule"><b>Перпендикуляр из центра делит хорду пополам</b>Если OK ⟂ AB (AB — хорда), то <span class="m">AK = KB</span>. И наоборот: прямая из центра в середину хорды (не диаметра) перпендикулярна ей.</div>
+<p><b>Почему:</b> ΔOAB равнобедренный (OA = OB = r), а в равнобедренном треугольнике высота к основанию является и медианой, и биссектрисой. Заодно OK делит угол AOB пополам.</p>
+<p>Длина OK = d — это <b>расстояние от центра до хорды</b>. В прямоугольном ΔOKA по теореме Пифагора (8 класс): <span class="m">r² = d² + (AB/2)²</span>.</p>
+<div class="box ex"><b>Пример</b>r = 13, d = 5. Половина хорды: √(169 − 25) = 12, хорда AB = 24.</div>
+<div class="box tip"><b>Чем ближе к центру — тем длиннее</b>Чем меньше d, тем длиннее хорда. Самая длинная хорда (d = 0) — <b>диаметр</b>. Равные хорды находятся на равных расстояниях от центра.</div>
+<div class="box err"><b>Ошибка</b>Найти половину хорды и забыть умножить на 2.</div>`},
+{title:'Касательная ⟂ радиусу',lvl:2,html:`
+<p class="hook">Почему искры от точильного круга летят ровной линией в сторону, а не по кругу? Каждая искра отрывается и летит по <b>касательной</b> к окружности — по прямой, перпендикулярной радиусу в точке отрыва.</p>
+<div class="fig">${fTan}</div>
+<div class="box rule"><b>Свойство касательной</b>Касательная к окружности <b>перпендикулярна радиусу</b>, проведённому в точку касания. Обратно: прямая через конец радиуса, перпендикулярная ему, — касательная.</div>
+<p><b>Почему:</b> перпендикуляр OA короче любой наклонной из O к прямой. Значит, все остальные точки прямой дальше r от центра и лежат <b>вне</b> окружности — общая точка только одна.</p>
+<div class="box ex"><b>Пример</b>OA = 5 — радиус, PA — касательная, OP = 13. ΔOAP прямоугольный (∠A = 90°): PA = √(169 − 25) = 12.</div>
+<div class="box tip"><b>Видишь касательную — ставь прямой угол</b>Соедини центр с точкой касания: получишь прямой угол и прямоугольный треугольник.</div>
+<div class="box err"><b>Ошибка</b>Касательная перпендикулярна радиусу <b>только в точке касания</b>, а не «любому радиусу».</div>`},
+{title:'Отрезки касательных из одной точки',lvl:3,html:`
+<div class="fig">${fTwo}</div>
+<div class="box rule"><b>Теорема об отрезках касательных</b>Отрезки касательных, проведённых к окружности из одной точки P, <b>равны</b>: <span class="m">PA = PB</span>. Центр O лежит на биссектрисе угла APB.</div>
+<p><b>Почему:</b> прямоугольные треугольники OAP и OBP равны по гипотенузе (OP — общая) и катету (OA = OB = r).</p>
+<div class="box ex"><b>Пример</b>∠APB = 50°. Тогда ∠AOB = 180° − 50° = 130° (в четырёхугольнике OAPB два прямых угла), ∠PAB = (180° − 50°) : 2 = 65°.</div>
+<div class="fig">${fInc}</div>
+<div class="box rule"><b>Вписанная окружность</b>Из каждой вершины треугольника — две равные касательные. Отрезок касательной из A равен <span class="m">(AB + AC − BC) / 2</span>. А в описанном четырёхугольнике <span class="m">AB + CD = BC + AD</span>.</div>
+<div class="fact">Мороженое в рожке — это шар, вписанный в конус. Все отрезки от вершины рожка до точек, где шарик касается вафли, равны — по той же теореме.</div>`},
+{title:'ГМТ: серединный перпендикуляр и биссектриса',lvl:4,html:`
+<p class="hook">Как GPS находит твой телефон? Спутник сообщает: «ты на расстоянии 20 200 км от меня». Значит, ты где-то на сфере вокруг спутника. Второй спутник — вторая сфера, третий — третья... Пересечение — твоя точка. Это и есть идея <b>геометрического места точек</b> (ГМТ): множество всех точек с нужным свойством.</p>
+<div class="box rule"><b>Окружность как ГМТ</b>Окружность — это ГМТ, находящихся на расстоянии r от точки O.</div>
+<div class="fig">${fPerpB}</div>
+<div class="box rule"><b>Серединный перпендикуляр</b>ГМТ, <b>равноудалённых от концов отрезка AB</b>, — серединный перпендикуляр к AB (прямая через середину AB, перпендикулярная ему). <span class="m">MA = MB</span> ⇔ M на серединном перпендикуляре.</div>
+<div class="fig">${fBisL}</div>
+<div class="box rule"><b>Биссектриса угла</b>ГМТ внутри угла, <b>равноудалённых от его сторон</b>, — биссектриса угла. Расстояние до стороны — длина перпендикуляра (MK, ML).</div>
+<div class="box tip"><b>Замечательные точки</b>Серединные перпендикуляры к сторонам треугольника пересекаются в одной точке — центре <b>описанной</b> окружности (равноудалена от вершин). Биссектрисы — в центре <b>вписанной</b> окружности (равноудалена от сторон).</div>
+<div class="widget" id="w-gps"></div>
+<div class="box err"><b>Ошибка</b>Расстояние от точки до прямой — по перпендикуляру, а не по любому отрезку.</div>`},
+{title:'Инструменты Евклида: построения',lvl:5,html:`
+<p class="hook">2300 лет назад Евклид поставил правило игры: строим только <b>циркулем и линейкой без делений</b>. Никаких транспортиров и измерений! Как будто проходишь игру на «хардкоре». И оказалось, что так можно построить очень много.</p>
+<div class="box rule"><b>Что разрешено</b>Линейкой — провести прямую через две построенные точки. Циркулем — провести окружность с построенным центром и радиусом, равным построенному отрезку. Новые точки — пересечения построенных линий.</div>
+<div class="figrow"><div class="fig">${CONS.mid.pic()}<div class="cap">Середина отрезка</div></div><div class="fig">${CONS.perp.pic()}<div class="cap">Перпендикуляр</div></div></div>
+<div class="box ex"><b>Середина отрезка AB</b><ol class="steps">${CONS.mid.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
+<div class="figrow"><div class="fig">${CONS.bis.pic()}<div class="cap">Биссектриса угла</div></div><div class="fig">${CONS.tri.pic()}<div class="cap">Треугольник по трём сторонам</div></div></div>
+<div class="box ex"><b>Биссектриса угла</b><ol class="steps">${CONS.bis.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
+<div class="box ex"><b>Треугольник по трём сторонам</b><ol class="steps">${CONS.tri.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
+<div class="box tip"><b>Секрет всех построений</b>Почти каждое построение — это «две окружности одинакового радиуса» → их точки пересечения лежат на серединном перпендикуляре. Доказательство — через равные треугольники по трём сторонам.</div>
+<div class="box err"><b>Ошибка</b>Для середины отрезка взять раствор циркуля <b>меньше</b> половины AB — окружности не пересекутся.</div>
+<div class="fact">Гаусс в 19 лет доказал, что циркулем и линейкой можно построить правильный 17-угольник, — и так обрадовался, что решил стать математиком. А вот трисекцию произвольного угла (деление на три равные части) этими инструментами выполнить невозможно — это доказали в 1837 году.</div>`},
+{title:'Прямая и окружность, две окружности',lvl:6,html:`
+<p>Пусть d — расстояние от центра до прямой. Подвигай прямую:</p>
+<div class="widget" id="w-line"></div>
+<div class="figrow">${fPos}</div>
+<div class="box rule"><b>Взаимное расположение прямой и окружности</b>d &lt; r — <b>две</b> общие точки (секущая); d = r — <b>одна</b> (касательная); d &gt; r — <b>нет</b> общих точек.</div>
+<div class="box rule"><b>Две окружности</b>Радиусы R и r, расстояние между центрами d. Касаются внешним образом: <span class="m">d = R + r</span>. Касаются внутренним образом: <span class="m">d = R − r</span>. Пересекаются в двух точках: R − r &lt; d &lt; R + r — то же неравенство треугольника!</div>
+<div class="box ex"><b>Пример</b>Монеты радиусами 12 мм и 9 мм лежат вплотную: центры на расстоянии 21 мм. Маленькая монета лежит внутри кольца радиуса 12 мм и касается его изнутри: 3 мм.</div>
+<div class="box err"><b>Ошибка</b>Сравнивать с r не расстояние до прямой, а расстояние до какой-нибудь точки прямой.</div>`},
+{title:'★ Идеи для олимпиадных задач',lvl:7,html:`
+<div class="box rule"><b>1. Диаметр — самая длинная хорда</b>Для любой хорды AB: AB ≤ OA + OB = 2r (неравенство треугольника для ΔOAB). Равенство — только когда O лежит на AB, то есть AB — диаметр.</div>
+<div class="box rule"><b>2. Периметр «отрезанного» треугольника</b>Из P проведены касательные PA = PB = a. Касательная к меньшей дуге AB пересекает их в M и N. Тогда <span class="m">P(PMN) = 2a</span> — где бы ни была точка касания! Потому что MX = MA и NX = NB.</div>
+<div class="box rule"><b>3. Две параллельные хорды</b>Найди расстояние от центра до каждой (через половину хорды и радиус). Если хорды по разные стороны от центра — сложи, по одну — вычти.</div>
+<div class="box rule"><b>4. Вписанная окружность прямоугольного треугольника</b><span class="m">r = (a + b − c) / 2</span> (a, b — катеты, c — гипотенуза): отрезки касательных из вершины прямого угла равны r.</div>
+<div class="fact">В 1672 году датчанин Георг Мор, а в 1797-м итальянец Лоренцо Маскерони доказали: всё, что строится циркулем и линейкой, можно построить <b>одним циркулем</b> (прямая считается построенной, если построены две её точки). Линейка, оказывается, не обязательна!</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps"><li>Радиус r, диаметр d = 2r. OA = OB → ΔOAB равнобедренный.</li>
+<li>Перпендикуляр из центра делит хорду пополам; r² = d² + (хорда/2)².</li>
+<li>Касательная ⟂ радиусу в точке касания.</li><li>Отрезки касательных из одной точки равны; центр — на биссектрисе.</li>
+<li>Серединный перпендикуляр — точки, равноудалённые от концов отрезка; биссектриса — от сторон угла.</li>
+<li>Построения: циркуль + линейка без делений; почти всё — через «две окружности одного радиуса».</li>
+<li>d &lt; r — 2 точки, d = r — касание, d &gt; r — нет точек. Окружности касаются: d = R ± r.</li></ul>`}
+];
+
+const NW=t=>`<span style="white-space:nowrap;font-size:17px">${t}</span>`;
+const symbols={tab:'Формулы',title:'Знаки и формулы темы',rows:[
+['O, r','Центр и радиус','Все точки окружности на расстоянии r от O.','r = 5'],
+[NW('d = 2r'),'Диаметр','Самая длинная хорда, проходит через центр.','r = 7 → d = 14'],
+[NW('r² = d² + (AB/2)²'),'Хорда и расстояние до центра','d — расстояние от центра до хорды AB.','13² = 5² + 12²'],
+['⟂','«перпендикулярно»','Касательная ⟂ радиусу в точке касания.','PA ⟂ OA'],
+[NW('PA = PB'),'Отрезки касательных','Из одной точки к окружности — равные отрезки касательных.','∠AOB = 180° − ∠APB'],
+[NW('MA = MB'),'Серединный перпендикуляр','ГМТ, равноудалённых от концов отрезка.','центр описанной окружности'],
+[NW('d = R ± r'),'Касание окружностей','Внешнее: R + r; внутреннее: R − r.','12 и 9 → 21 или 3'],
+[NW('AB + CD = BC + AD'),'Описанный четырёхугольник','Суммы противоположных сторон равны.','5 + 9 = 6 + 8']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Видишь центр и две точки окружности — ищи равнобедренный треугольник. Видишь касательную — проведи радиус в точку касания: там прямой угол.</div>`};
+
+/* =====================================================================
+   GENERATORS
+   ===================================================================== */
+/* ===== L0 ===== */
+G(0,()=>CH('Что такое окружность?','Множество всех точек плоскости, находящихся на данном расстоянии от данной точки',['Множество всех точек плоскости, находящихся не дальше данного расстояния от данной точки','Любая замкнутая кривая линия без углов','Множество всех точек, равноудалённых от двух данных точек'],
+ {short:'Окружность — все точки на расстоянии r от центра O.',
+ explain:'<b>Окружность</b> — множество всех точек плоскости на <b>данном</b> расстоянии r от точки O (центра). «Не дальше» — это <b>круг</b> (вместе с внутренностью). «Равноудалённые от двух точек» — серединный перпендикуляр. Овал — замкнутая кривая без углов, но не окружность.',
+ explain2:'Привяжи козу верёвкой длиной r к колышку O. Самый дальний край, до которого она может дойти, — окружность. А весь объеденный газон — круг.'}),{rule:true});
+G(0,()=>CH('Что такое хорда окружности?','Отрезок, соединяющий две точки окружности',['Отрезок, соединяющий центр с точкой окружности','Прямая, имеющая с окружностью ровно одну общую точку','Часть окружности между двумя её точками'],
+ {short:'Хорда — отрезок между двумя точками окружности. Диаметр — хорда через центр.',
+ explain:'<b>Хорда</b> — отрезок с концами на окружности. Отрезок от центра до окружности — <b>радиус</b>. Прямая с одной общей точкой — <b>касательная</b>. Часть самой окружности — <b>дуга</b>. Диаметр — частный случай хорды (проходит через центр).',
+ explain2:'Слово «хорда» — от греческого «струна». Натяни струну между двумя точками обода — это хорда. А дуга — кусок самого обода под струной.'}),{rule:true});
+G(0,()=>{const k=R(0,3);const rot=R(0,359);const P={O:[0,0],A:onC(4,rot+100),C:onC(4,rot+190),D:onC(4,rot+300),E:onC(4,rot+150),F:onC(4,rot+330),T:onC(4,rot+40)};
+ P.K=add(P.T,mul([-Math.sin((rot+40)*D2R),Math.cos((rot+40)*D2R)],3.2));const lettersPool=shuffle('ABCDEFKMNT'.split(''));
+ const nm={A:lettersPool[0],C:lettersPool[1],D:lettersPool[2],E:lettersPool[3],F:lettersPool[4],T:lettersPool[5],K:lettersPool[6]};
+ const segs=[`O${nm.A}`,`${nm.C}${nm.D}`,`${nm.E}${nm.F}`,`${nm.T}${nm.K}`];const what=['радиус','хорда, но не диаметр','диаметр','отрезок касательной'];
+ const pic=geo({P,circ:[['O',4]],seg:[['O','A',{sw:2.2}],['C','D',{sw:2.2}],['E','F',{sw:2.2}],['T','K',{sw:2.2}]],dots:['O','A','C','D','E','F','T'],names:nm,maxH:210,W:270});
+ return CH(`На рисунке O — центр окружности. Какой отрезок — ${what[k]}?`,segs[k],segs.filter((_,i)=>i!==k),
+ {pic,hint:'Радиус начинается в центре; хорда соединяет две точки окружности; диаметр — хорда через центр; касательная касается окружности в одной точке.',short:`${segs[k]} — ${what[k]}.`,
+ explain:`${segs[0]} — радиус (от центра до окружности). ${segs[1]} — хорда (концы на окружности, через центр не проходит). ${segs[2]} — диаметр (хорда через центр O). ${segs[3]} — отрезок касательной (с окружностью одна общая точка ${nm.T}). Ответ: <b>${segs[k]}</b>.`,
+ explain2:`Проверяй по концам отрезка: где они лежат? Центр + окружность → радиус. Окружность + окружность → хорда (а если O на ней — диаметр). Окружность + точка снаружи, без пересечения → касательная.`});});
+G(0,()=>{const r=R(3,40);const m=R(0,2);const q=[`Радиус колеса велосипеда ${r} см. Чему равен его диаметр (в см)?`,`AB — диаметр окружности с центром O, AB = ${2*r}. C — точка окружности. Найди OC.`,`Самая длинная хорда окружности равна ${2*r}. Найди радиус.`][m];const ans=m===0?2*r:r;
+ return {type:'num',q,ans,hint:'Диаметр = 2 радиуса. Все радиусы равны.',short:m===0?`d = 2r = ${2*r}.`:`r = ${2*r} : 2 = ${r}.`,
+ explain:m===0?`Диаметр состоит из двух радиусов: d = 2 · ${r} = <b>${2*r} см</b>.`:m===1?`OC — радиус, а все радиусы равны. OA = AB : 2 = ${2*r} : 2 = ${r}. Значит, OC = <b>${r}</b>.`:`Самая длинная хорда — диаметр. r = ${2*r} : 2 = <b>${r}</b>.`,
+ explain2:`Диаметр проходит через центр и состоит из двух радиусов «встык». ${m===2?'Почему диаметр самый длинный: любая хорда AB ≤ OA + OB = 2r.':''}`};});
+G(0,()=>{const mode=R(0,1);let x,ans;if(mode===0){x=2*R(10,80);ans=(180-x)/2;}else{x=R(15,80);ans=180-2*x;}
+ const half=(mode===0?x:ans)/2;const P={O:[0,0],A:onC(4,-90-half),B:onC(4,-90+half)};
+ return {type:'num',q:mode===0?`A и B — точки окружности с центром O, ∠AOB = ${x}°. Найди ∠OAB (в градусах).`:`AB — хорда окружности с центром O, ∠OAB = ${x}°. Найди ∠AOB (в градусах).`,ans,
+ pic:geo({P,circ:[['O',4]],poly:[['O','A','B']],ang:mode===0?[['O','A','B',dg(x)],['A','O','B','?',{col:'var(--hl)'}]]:[['A','O','B',dg(x)],['O','A','B','?',{col:'var(--hl)'}]],tick:[['O','A'],['O','B']],dots:['O'],maxH:240,W:280}),
+ hint:'OA = OB — это радиусы. Какой это треугольник?',short:mode===0?`ΔOAB равнобедренный: (180° − ${x}°) : 2 = ${ans}°.`:`ΔOAB равнобедренный: 180° − 2 · ${x}° = ${ans}°.`,
+ explain:`OA = OB = r, значит ΔOAB равнобедренный и ∠OAB = ∠OBA. ${mode===0?`∠OAB = (180° − ${x}°) : 2 = <b>${ans}°</b>.`:`∠AOB = 180° − ${x}° − ${x}° = <b>${ans}°</b>.`}`,
+ explain2:`Главный трюк темы: две точки окружности + центр = равнобедренный треугольник. Проверка: ${mode===0?`${x}° + ${ans}° + ${ans}°`:`${ans}° + ${x}° + ${x}°`} = 180° ✅.`};});
+
+/* ===== L1: хорды ===== */
+G(1,()=>CH('Какое утверждение о хорде верно?','Перпендикуляр, опущенный из центра на хорду, делит её пополам',['Любой радиус делит любую хорду пополам','Перпендикуляр из центра делит хорду в отношении 1 : 2','Хорда, перпендикулярная диаметру, равна радиусу'],
+ {short:'OK ⟂ AB → AK = KB.',
+ explain:'ΔOAB равнобедренный (OA = OB), а высота равнобедренного треугольника, проведённая к основанию, — ещё и медиана. Поэтому <b>перпендикуляр из центра делит хорду пополам</b>. Произвольный радиус хорду пополам не делит.',
+ explain2:'Посмотри на хорду как на основание «шатра» OAB с равными боковыми стенками. Отвес из вершины шатра падает точно в середину основания.'}),{rule:true});
+G(1,()=>{const t=pick(TRI);const k=R(1,2);const [d,h,r]=t.map(x=>x*(t[2]>13?1:k));const ask=R(0,2);
+ const P={O:[0,0],A:[-h,-d],B:[h,-d],K:[0,-d]};const L=[['O','A','r = '+r],['O','K','d = '+d],['A','B','AB = '+2*h]];L[ask][2]=L[ask][2].replace(/=.*/,'= ?');
+ const ans=[r,d,2*h][ask];const giv=[`AB = ${2*h}, расстояние от центра до хорды ${d}`,`радиус ${r}, хорда AB = ${2*h}`,`радиус ${r}, расстояние от центра до хорды ${d}`][ask];
+ const askT=['радиус окружности','расстояние от центра до хорды AB','длину хорды AB'][ask];
+ return {type:'num',q:`В окружности с центром O: ${giv}. Найди ${askT}.`,ans,
+ pic:geo({P,circ:[['O',r]],seg:[['A','B',{sw:2.2}],['O','A'],['O','K',{dash:true,col:'var(--accent)'}]],rt:[['K','B','O']],side:[L[0],L[2]].map(l=>[l[0],l[1],l[2].replace(/^(r|d|AB) = /,'')]),txt:[[[r*0.07,-d*0.45],L[1][2].replace(/^d = /,''),{anc:'start'}]],dots:['O'],lab:['O','A','B','K'],maxH:220,W:260}),
+ hint:'Опусти перпендикуляр OK на хорду: K — середина AB, ΔOKA прямоугольный.',short:ask===2?`AK = √(${r}² − ${d}²) = ${h}, AB = ${2*h}.`:ask===1?`d = √(${r}² − ${h}²) = ${d}.`:`r = √(${d}² + ${h}²) = ${r}.`,
+ explain:`OK ⟂ AB, поэтому K — середина хорды: AK = AB/2. В прямоугольном ΔOKA: OA² = OK² + AK².<br>${ask===2?`AK² = ${r}² − ${d}² = ${r*r} − ${d*d} = ${h*h}, AK = ${h}, AB = 2 · ${h} = <b>${2*h}</b>.<div class="box err"><b>Ошибка</b>Ответ ${h} — это половина хорды.</div>`:ask===1?`AK = ${2*h} : 2 = ${h}. OK² = ${r}² − ${h}² = ${r*r} − ${h*h} = ${d*d}, OK = <b>${d}</b>.<div class="box err"><b>Ошибка</b>Подставить всю хорду ${2*h} вместо половины.</div>`:`AK = ${2*h} : 2 = ${h}. OA² = ${d}² + ${h}² = ${d*d} + ${h*h} = ${r*r}, OA = <b>${r}</b>.`}`,
+ explain2:`Тут спрятан «пифагоров» треугольник ${d}, ${h}, ${r}: ${d}² + ${h}² = ${d*d} + ${h*h} = ${r*r} = ${r}². Гипотенуза — радиус OA, катеты — расстояние OK и половина хорды AK.`};});
+G(1,()=>{const y=2*R(20,80);const ask=R(0,1);const P={O:[0,0],A:onC(4,-90-y/2),B:onC(4,-90+y/2)};P.K=mid(P.A,P.B);const ans=ask?y/2:90-y/2;
+ return {type:'num',q:`AB — хорда окружности с центром O, ∠AOB = ${y}°. OK — перпендикуляр к хорде AB. Найди ∠${ask?'AOK':'OAK'} (в градусах).`,ans,
+ pic:geo({P,circ:[['O',4]],seg:[['A','B',{sw:2.2}],['O','A'],['O','B'],['O','K',{dash:true,col:'var(--accent)'}]],rt:[['K','B','O']],ang:[['O','A','B',dg(y),{r:18}],ask?['O','A','K','?',{col:'var(--hl)',r:30}]:['A','O','K','?',{col:'var(--hl)'}]],dots:['O'],maxH:240,W:280}),
+ hint:'В равнобедренном ΔOAB высота OK — ещё и биссектриса.',short:ask?`∠AOK = ${y}° : 2 = ${ans}°.`:`∠AOK = ${y/2}°, ∠OAK = 90° − ${y/2}° = ${ans}°.`,
+ explain:`ΔOAB равнобедренный (OA = OB), OK — высота к основанию, значит и биссектриса: ∠AOK = ${y}° : 2 = ${y/2}°. ${ask?`Ответ: <b>${ans}°</b>.`:`В прямоугольном ΔOKA: ∠OAK = 90° − ${y/2}° = <b>${ans}°</b>.`}`,
+ explain2:ask?`Перпендикуляр из центра делит пополам и хорду, и угол AOB — в равнобедренном треугольнике всё симметрично.`:`Другой путь: ∠OAB = (180° − ${y}°) : 2 = ${ans}° — углы при основании равнобедренного ΔOAB. Это и есть ∠OAK.`};});
+G(1,()=>{const r=R(4,15);const c=R(Math.ceil(r*0.6),2*r-1);const P={O:[0,0]};const half=Math.asin(Math.min(1,c/(2*r)))/D2R;P.A=onC(r,-90-half);P.B=onC(r,-90+half);
+ return {type:'num',q:`Радиус окружности с центром O равен ${r}, хорда AB = ${c}. Найди периметр треугольника AOB.`,ans:2*r+c,
+ pic:geo({P,circ:[['O',r]],poly:[['O','A','B']],side:[['A','B',String(c)],['O','A',String(r)]],dots:['O'],maxH:190,W:230}),
+ hint:'Какие стороны у треугольника AOB? Две из них — радиусы.',short:`${r} + ${r} + ${c} = ${2*r+c}.`,
+ explain:`OA и OB — радиусы, каждый ${r}. Периметр: OA + OB + AB = ${r} + ${r} + ${c} = <b>${2*r+c}</b>.${c===2*r?'':''}`,
+ explain2:`На рисунке подписан только один радиус, но второй — такой же: все радиусы окружности равны. Периметр = 2r + хорда.`};});
+
+/* ===== L2: касательная ===== */
+G(2,()=>CH('Каким свойством обладает касательная к окружности?','Она перпендикулярна радиусу, проведённому в точку касания',['Она параллельна радиусу, проведённому в точку касания','Она образует с радиусом угол 45°','Она проходит через центр окружности'],
+ {short:'Касательная ⟂ радиусу в точке касания.',
+ explain:'Свойство касательной: она <b>перпендикулярна радиусу</b>, проведённому в точку касания. Причина: если бы угол был не прямым, перпендикуляр из O к прямой был бы короче r, и прямая зашла бы внутрь окружности — общих точек стало бы две.',
+ explain2:'Колесо стоит на дороге. Дорога — касательная, точка касания — где шина касается асфальта. Спица от оси к этой точке вертикальна, дорога горизонтальна — прямой угол.'}),{rule:true});
+G(2,()=>CH('Какая прямая называется касательной к окружности?','Прямая, имеющая с окружностью ровно одну общую точку',['Прямая, пересекающая окружность в двух точках','Любая прямая, проходящая через точку окружности','Прямая, проходящая через центр окружности'],
+ {short:'Касательная — ровно одна общая точка.',
+ explain:'<b>Касательная</b> — прямая, у которой с окружностью ровно <b>одна</b> общая точка (точка касания). Прямая с двумя общими точками — <b>секущая</b>. Через точку окружности проходит много прямых, но касательная среди них одна — перпендикулярная радиусу.',
+ explain2:'Положи линейку на монету сбоку так, чтобы она только коснулась края. Одна точка — касательная. Сдвинешь внутрь — уже две точки, секущая.'}),{rule:true});
+G(2,()=>{const x=R(35,65);const P={O:[0,0],A:[0,-4]};P.P=[4*Math.tan(x*D2R),-4];
+ return {type:'num',q:`PA — касательная к окружности с центром O (A — точка касания). ∠AOP = ${x}°. Найди ∠APO (в градусах).`,ans:90-x,
+ pic:geo({P,circ:[['O',4]],seg:[['A','P',{sw:2.2,col:'var(--accent)',ext:0.25}],['O','A'],['O','P']],rt:[['A','P','O']],ang:[['O','A','P',dg(x)],['P','O','A','?',{col:'var(--hl)'}]],dots:['O'],maxH:200,W:260}),
+ hint:'Касательная ⟂ радиусу: ∠OAP = 90°.',short:`∠OAP = 90°, ∠APO = 90° − ${x}° = ${90-x}°.`,
+ explain:`OA — радиус в точку касания, поэтому OA ⟂ PA, ∠OAP = 90°. В прямоугольном ΔOAP острые углы в сумме 90°: ∠APO = 90° − ${x}° = <b>${90-x}°</b>.<div class="box err"><b>Ошибка</b>180° − ${x}° = ${180-x}° — забыт прямой угол при точке касания.</div>`,
+ explain2:`Как только видишь касательную, проведи радиус в точку касания — там прямой угол. Проверка: 90° + ${x}° + ${90-x}° = 180° ✅.`};});
+G(2,()=>{const t=pick(TRI);if(t[1]/t[0]<0.6||t[1]/t[0]>2.5)return null;const k=pick([1,1,2]);const [r,pa,op]=t.map(v=>v*k);const ask=R(0,2);const P={O:[0,0]};P.P=[op,0];const [A]=tanPts(P.P,r);P.A=A;
+ const lab=[['O','A',String(r)],['A','P',String(pa)],['O','P',String(op)]];lab[ask][2]='?';const ans=[r,pa,op][ask];
+ const giv=[`OP = ${op}, PA = ${pa}`,`радиус ${r}, OP = ${op}`,`радиус ${r}, PA = ${pa}`][ask];
+ return {type:'num',q:`Из точки P проведена касательная PA к окружности с центром O (A — точка касания). ${giv}. Найди ${['радиус','PA','OP'][ask]}.`,ans,
+ pic:geo({P,circ:[['O',r]],seg:[['A','P',{sw:2.2,col:'var(--accent)'}],['O','A'],['O','P']],rt:[['A','P','O']],side:lab,dots:['O'],maxH:190,W:300}),
+ hint:'ΔOAP прямоугольный с прямым углом A. Гипотенуза — OP.',short:`${r}² + ${pa}² = ${op}² → ${['r','PA','OP'][ask]} = ${ans}.`,
+ explain:`Касательная ⟂ радиусу: ∠OAP = 90°. По теореме Пифагора OP² = OA² + PA².<br>${ask===0?`OA² = ${op}² − ${pa}² = ${op*op} − ${pa*pa} = ${r*r}, OA = <b>${r}</b>.`:ask===1?`PA² = ${op}² − ${r}² = ${op*op} − ${r*r} = ${pa*pa}, PA = <b>${pa}</b>.`:`OP² = ${r}² + ${pa}² = ${r*r} + ${pa*pa} = ${op*op}, OP = <b>${op}</b>.`}`,
+ explain2:`Тройка ${r}, ${pa}, ${op} — пифагорова: ${r*r} + ${pa*pa} = ${op*op}. Гипотенуза — всегда отрезок от центра до внешней точки P (он напротив прямого угла).`};});
+G(2,()=>{const y=2*R(20,80);const P={O:[0,0],A:[0,-4]};P.B=onC(4,-90+y);P.T=[5,-4];P.S=[-5,-4];
+ return {type:'num',q:`AB — хорда окружности с центром O, ∠AOB = ${y}°. Через точку A проведена касательная AT (T — по ту же сторону от прямой OA, что и B). Найди угол TAB между касательной и хордой (в градусах).`,ans:y/2,
+ pic:geo({P,circ:[['O',4]],seg:[['S','T',{sw:2.2,col:'var(--accent)'}],['A','B',{sw:2.2}],['O','A'],['O','B']],rt:[['A','T','O']],ang:[['O','A','B',dg(y)],['A','T','B','?',{col:'var(--hl)',r:30}]],dots:['O'],lab:['O','A','B','T'],maxH:200,W:260}),
+ hint:'Найди ∠OAB из равнобедренного ΔOAB, а ∠OAT = 90°.',short:`∠OAB = ${90-y/2}°, ∠TAB = 90° − ${90-y/2}° = ${y/2}°.`,
+ explain:`1) ΔOAB равнобедренный: ∠OAB = (180° − ${y}°) : 2 = ${90-y/2}°.<br>2) Касательная ⟂ радиусу: ∠OAT = 90°.<br>3) ∠TAB = 90° − ${90-y/2}° = <b>${y/2}°</b>.`,
+ explain2:`Красивый факт: угол между касательной и хордой равен <b>половине</b> центрального угла AOB: ${y}° : 2 = ${y/2}°. Ты его ещё встретишь в 8 классе.`};});
+
+/* ===== L3: отрезки касательных ===== */
+G(3,()=>CH('Из точки P к окружности с центром O проведены касательные PA и PB. Что верно?','PA = PB, и луч PO — биссектриса угла APB',['PA = PB = радиусу окружности','PA ⟂ PB всегда','PA = PB, а центр O лежит на прямой PA'],
+ {short:'Отрезки касательных из одной точки равны; центр — на биссектрисе угла.',
+ explain:'Прямоугольные треугольники OAP и OBP равны (общая гипотенуза OP и катеты OA = OB = r). Отсюда <b>PA = PB</b> и ∠APO = ∠BPO — PO биссектриса. Перпендикулярны касательные только в особом случае, а радиусу равны — тоже лишь в особом случае.',
+ explain2:'Шарик мороженого в рожке: от вершины рожка до линии касания все расстояния одинаковы. Две касательные — это два «края рожка» на плоском рисунке.'}),{rule:true});
+G(3,()=>{const x=2*R(15,75);const d=4/Math.sin(x/2*D2R);const P={O:[0,0],P:[d,0]};const [A,B]=tanPts(P.P,4);P.A=A;P.B=B;const ask=R(0,2);const ans=[180-x,(180-x)/2,x/2][ask];const nm=['∠AOB','∠PAB','∠OAB'][ask];
+ const sg=[['P','A',{sw:2.2,col:'var(--accent)'}],['P','B',{sw:2.2,col:'var(--accent)'}],['O','A'],['O','B']];if(ask)sg.push(['A','B']);
+ const ang=[['P','A','B',dg(x)]];ang.push(ask===0?['O','A','B','?',{col:'var(--hl)'}]:ask===1?['A','P','B','?',{col:'var(--hl)'}]:['A','O','B','?',{col:'var(--hl)'}]);
+ return {type:'num',q:`PA и PB — касательные к окружности с центром O (A, B — точки касания), ∠APB = ${x}°. Найди ${nm} (в градусах).`,ans,
+ pic:geo({P,circ:[['O',4]],seg:sg,rt:[['A','P','O'],['B','O','P']],ang,dots:['O'],maxH:190,W:300}),
+ hint:ask===0?'В четырёхугольнике OAPB два прямых угла.':ask===1?'PA = PB — треугольник PAB равнобедренный.':'∠OAP = 90°, а ∠PAB найди из равнобедренного ΔPAB.',
+ short:[`360° − 90° − 90° − ${x}° = ${180-x}°.`,`(180° − ${x}°) : 2 = ${(180-x)/2}°.`,`90° − ${(180-x)/2}° = ${x/2}°.`][ask],
+ explain:ask===0?`∠OAP = ∠OBP = 90° (касательные ⟂ радиусам). Сумма углов четырёхугольника OAPB — 360°: ∠AOB = 360° − 90° − 90° − ${x}° = <b>${180-x}°</b>.<br>Или через треугольники: ∠APO = ${x/2}°, ∠AOP = 90° − ${x/2}° = ${90-x/2}°, ∠AOB = 2 · ${90-x/2}° = ${180-x}°.`:ask===1?`PA = PB (отрезки касательных), ΔPAB равнобедренный: ∠PAB = ∠PBA = (180° − ${x}°) : 2 = <b>${(180-x)/2}°</b>.`:`∠OAP = 90° (касательная ⟂ радиусу). ∠PAB = (180° − ${x}°) : 2 = ${(180-x)/2}° (ΔPAB равнобедренный). ∠OAB = 90° − ${(180-x)/2}° = <b>${x/2}°</b>.`,
+ explain2:`Полезная связка: ∠APB + ∠AOB = 180° (здесь ${x}° + ${180-x}°). А углы PAB и PBA равны, потому что PA = PB. ${ask===2?`Заметь: ∠OAB = ∠APB / 2 = ${x/2}°.`:''}`};});
+G(3,()=>{let a,b,c;for(;;){a=R(4,13);b=R(4,13);c=R(4,13);if(okTri3(a,b,c)&&(a+b+c)%2===0&&new Set([a,b,c]).size>=2)break;}const T=tri3(a,b,c);const P={A:T.A,B:T.B,C:T.C};const {I,r}=incircle(P);P.K=foot(I,P.A,P.B);P.L=foot(I,P.B,P.C);P.M=foot(I,P.A,P.C);
+ const v=R(0,2);const vn=['A','B','C'][v];const ans=[(b+c-a)/2,(a+c-b)/2,(a+b-c)/2][v];const tp=[['K','M'],['K','L'],['L','M']][v];
+ return {type:'num',q:`В треугольник ABC вписана окружность, она касается сторон AB, BC, AC в точках K, L, M. AB = ${c}, BC = ${a}, AC = ${b}. Найди длину отрезка касательной из вершины ${vn} (то есть ${vn}${tp[0]} = ${vn}${tp[1]}).`,ans,
+ pic:geo({P,poly:[['A','B','C']],circ:[[I,r,{col:'var(--accent)'}]],side:[['A','B',String(c)],['B','C',String(a)],['A','C',String(b)]],dots:['K','L','M'],lab:['A','B','C','K','L','M'],maxH:200,W:280}),
+ hint:'Обозначь отрезки касательных из A, B, C через x, y, z. Каждая сторона — сумма двух из них.',short:`${vn}: (${[`${b} + ${c} − ${a}`,`${a} + ${c} − ${b}`,`${a} + ${b} − ${c}`][v]}) : 2 = ${ans}.`,
+ explain:`Пусть AK = AM = x, BK = BL = y, CL = CM = z (равные отрезки касательных). Тогда x + y = ${c}, y + z = ${a}, x + z = ${b}. Сложим: 2(x + y + z) = ${a+b+c}, x + y + z = ${(a+b+c)/2}.<br>${v===0?`x = ${(a+b+c)/2} − (y + z) = ${(a+b+c)/2} − ${a}`:v===1?`y = ${(a+b+c)/2} − (x + z) = ${(a+b+c)/2} − ${b}`:`z = ${(a+b+c)/2} − (x + y) = ${(a+b+c)/2} − ${c}`} = <b>${ans}</b>.`,
+ explain2:`Формула: отрезок касательной из вершины = полупериметр − противолежащая сторона. Полупериметр ${(a+b+c)/2}, сторона против ${vn} равна ${[a,b,c][v]}: ${(a+b+c)/2} − ${[a,b,c][v]} = ${ans}. Проверка: ${(b+c-a)/2} + ${(a+c-b)/2} = ${c} = AB ✅.`};});
+G(3,()=>{const t=[R(2,7),R(2,7),R(2,7),R(2,7)];const f=r=>t.reduce((s,x)=>s+Math.atan(r/x),0)-Math.PI;let lo=0.01,hi=100;for(let i=0;i<80;i++){const m=(lo+hi)/2;if(f(m)>0)hi=m;else lo=m;}const r=(lo+hi)/2;
+ const phi=t.map(x=>Math.atan(r/x)/D2R);if(phi.some(p=>p<26||p>68))return null;let th=-90;const V=[];for(let i=0;i<4;i++){V.push(onC(Math.hypot(r,t[i]),th+90-phi[i]));th+=180-2*phi[i];}
+ const P={A:V[0],B:V[1],C:V[2],D:V[3]};const sides={AB:t[0]+t[1],BC:t[1]+t[2],CD:t[2]+t[3],AD:t[3]+t[0]};for(const [k,v] of Object.entries(sides)){const [p,q]=k.split('');if(Math.abs(len(sub(P[p],P[q]))-v)>1e-6)return null;}
+ const ask=pick(['AB','BC','CD','AD']);const lab=[['A','B',String(sides.AB)],['B','C',String(sides.BC)],['C','D',String(sides.CD)],['A','D',String(sides.AD)]].map(l=>l[0]+l[1]===ask?[l[0],l[1],'?']:l);
+ const opp={AB:'CD',CD:'AB',BC:'AD',AD:'BC'}[ask];const others=['AB','BC','CD','AD'].filter(k=>k!==ask&&k!==opp);
+ return {type:'num',q:`В четырёхугольник ABCD вписана окружность. ${['AB','BC','CD','AD'].filter(k=>k!==ask).map(k=>`${k} = ${sides[k]}`).join(', ')}. Найди ${ask}.`,ans:sides[ask],
+ pic:geo({P,poly:[['A','B','C','D']],circ:[[[0,0],r,{col:'var(--accent)'}]],side:lab,maxH:200,W:280}),
+ hint:'В описанном четырёхугольнике суммы противоположных сторон равны.',short:`${ask} = ${sides[others[0]]} + ${sides[others[1]]} − ${sides[opp]} = ${sides[ask]}.`,
+ explain:`Из каждой вершины — два равных отрезка касательных. Каждая сторона — сумма двух таких отрезков, и в суммах AB + CD и BC + AD участвуют все четыре отрезка по два раза. Поэтому <b>AB + CD = BC + AD</b>.<br>${ask} + ${opp} = ${others.join(' + ')}: ${ask} = ${sides[others[0]]} + ${sides[others[1]]} − ${sides[opp]} = <b>${sides[ask]}</b>.`,
+ explain2:`Отрезки касательных из вершин здесь: из A — ${t[0]}, из B — ${t[1]}, из C — ${t[2]}, из D — ${t[3]}. AB = ${t[0]} + ${t[1]}, BC = ${t[1]} + ${t[2]}, CD = ${t[2]} + ${t[3]}, AD = ${t[3]} + ${t[0]}. Проверка: ${sides.AB} + ${sides.CD} = ${sides.AB+sides.CD} = ${sides.BC} + ${sides.AD} ✅.`};});
+
+/* ===== L4: ГМТ ===== */
+G(4,()=>CH('Какое множество образуют все точки плоскости, равноудалённые от концов отрезка AB?','Серединный перпендикуляр к отрезку AB',['Окружность с центром в середине AB','Прямая, параллельная AB','Биссектриса угла, под которым виден отрезок'],
+ {short:'MA = MB ⇔ M лежит на серединном перпендикуляре к AB.',
+ explain:'Точка M равноудалена от A и B (MA = MB) тогда и только тогда, когда она лежит на <b>серединном перпендикуляре</b> к AB — прямой через середину AB, перпендикулярной AB. Почему: ΔMAB равнобедренный, а его медиана к основанию — это и высота.',
+ explain2:'Два друга живут в точках A и B и хотят встретиться так, чтобы идти поровну. Все такие места встречи — на одной прямой, перпендикулярной AB и проходящей через её середину.'}),{rule:true});
+G(4,()=>CH('Каким свойством обладают точки биссектрисы угла?','Они равноудалены от сторон угла',['Они равноудалены от вершины угла','Они лежат на окружности с центром в вершине угла','Расстояние до одной стороны вдвое больше, чем до другой'],
+ {short:'Точки биссектрисы равноудалены от сторон угла.',
+ explain:'Биссектриса угла — ГМТ (внутри угла), <b>равноудалённых от его сторон</b>. Расстояние до стороны — длина перпендикуляра. Для точки M на биссектрисе прямоугольные треугольники OMK и OML равны (общая гипотенуза OM, равные острые углы), поэтому MK = ML.',
+ explain2:'Шарик, зажатый в углу между двумя стенами так, что касается обеих, — его центр на биссектрисе: до каждой стены одно и то же расстояние — радиус шарика.'}),{rule:true});
+G(4,()=>{const v=R(0,1);
+ const q=v?'Три прямые дороги образуют треугольник. Где поставить вышку связи внутри треугольника, чтобы она была на одинаковом расстоянии от всех трёх дорог?':'Три деревни A, B, C стоят не на одной прямой. Где построить вышку связи, чтобы она была на одинаковом расстоянии от всех трёх деревень?';
+ const c=v?'В точке пересечения биссектрис углов треугольника':'В точке пересечения серединных перпендикуляров к сторонам треугольника ABC';const w=v?['В точке пересечения серединных перпендикуляров к сторонам','В точке пересечения медиан','В середине самой длинной стороны']:['В точке пересечения биссектрис треугольника ABC','В точке пересечения медиан треугольника ABC','В середине самой длинной стороны'];
+ return CH(q,c,w,{short:v?'Равноудалённость от прямых (сторон) → биссектрисы.':'Равноудалённость от точек → серединные перпендикуляры.',
+ explain:v?'Расстояние до дороги — до <b>прямой</b>. Точки, равноудалённые от двух сторон угла, лежат на <b>биссектрисе</b>. Точка, равноудалённая от всех трёх сторон, — пересечение биссектрис (центр вписанной окружности). Серединные перпендикуляры дают равноудалённость от <b>вершин</b>, а не от сторон.':'Точки, равноудалённые от A и B, — серединный перпендикуляр к AB; от B и C — серединный перпендикуляр к BC. Их пересечение равноудалено от всех трёх деревень: это центр <b>описанной</b> окружности. Биссектрисы дали бы равноудалённость от <b>сторон</b> (дорог между деревнями), а не от самих деревень.',
+ explain2:v?'Ключевое слово — «от дорог» (линий). Линии → биссектрисы. Если бы было «от деревень» (точек) → серединные перпендикуляры.':'Ключевое слово — «от деревень» (точек). Точки → серединные перпендикуляры. Если бы было «от дорог» (линий) → биссектрисы.'});});
+G(4,()=>{let a,b,c;for(;;){a=R(5,14);b=R(5,14);c=R(4,13);if(!okTri3(a,b,c))continue;const T=tri3(a,b,c);const M=mid(T.A,T.C);const D=inter(M,add(M,[0,1]),T.B,T.C);const tt=dot(sub(D,T.B),sub(T.C,T.B))/dot(sub(T.C,T.B),sub(T.C,T.B));if(tt>0.12&&tt<0.88)break;}
+ const T=tri3(a,b,c);const P={A:T.A,B:T.B,C:T.C};P.M=mid(P.A,P.C);P.D=inter(P.M,add(P.M,[0,1]),P.B,P.C);
+ return {type:'num',q:`В треугольнике ABC: AB = ${c}, BC = ${a}, AC = ${b}. Серединный перпендикуляр к стороне AC пересекает сторону BC в точке D. Найди периметр треугольника ABD.`,ans:a+c,
+ pic:geo({P,poly:[['A','B','C']],seg:[['M','D',{col:'var(--accent)'}],['A','D',{dash:true}]],rt:[['M','C','D']],tick:[['A','M'],['M','C'],['A','D',2],['D','C',2]],side:[['A','B',String(c)],['B','C',String(a)],['A','C',String(b)]],lab:['A','B','C','D'],maxH:200,W:280}),
+ hint:'D на серединном перпендикуляре к AC → DA = DC. Замени AD на DC.',short:`AB + BD + DA = AB + BD + DC = AB + BC = ${c} + ${a} = ${a+c}.`,
+ explain:`D лежит на серединном перпендикуляре к AC, поэтому DA = DC.<br>P(ABD) = AB + BD + DA = AB + BD + DC = AB + BC = ${c} + ${a} = <b>${a+c}</b>.<br>Сторона AC = ${b} в ответ не входит — она здесь «для отвлечения».`,
+ explain2:`Трюк «замены отрезка»: путь B → D → A равен пути B → D → C, потому что DA = DC. А B → D → C — это просто сторона BC = ${a}.`};});
+G(4,()=>{const d=R(2,9),e=R(3,12);const half=Math.atan(d/e)/D2R;if(half<16||half>38)return null;const ask=R(0,1);
+ const P={O:[0,0],K:[e,0],M:[e,d]};P.X=[e*1.45,0];P.Y=onC(e*1.45,2*half);P.L=foot(P.M,P.O,P.Y);if(Math.abs(len(sub(P.M,P.L))-d)>1e-9)return null;
+ return {type:'num',q:`Точка M лежит на биссектрисе угла XOY. MK ⟂ OX, ML ⟂ OY (K и L — на сторонах угла). MK = ${d}, OK = ${e}. Найди ${ask?'OL':'ML'}.`,ans:ask?e:d,
+ pic:geo({P,seg:[['O','X',{sw:2}],['O','Y',{sw:2}],['O','M',{col:'var(--accent)',ext:0.2}],['M','K',{dash:true}],['M','L',{dash:true}]],rt:[['K','X','M'],['L','M','O']],ang:[['O','K','M','',{n:1,r:36}],['O','M','L','',{n:1,r:42}]],side:[['M','K',String(d)],['O','K',String(e)]],lab:['O','M','K','L','X','Y'],maxH:190,W:280}),
+ hint:'Треугольники OMK и OML — прямоугольные, с общей гипотенузой OM и равными углами при O.',short:ask?`ΔOMK = ΔOML → OL = OK = ${e}.`:`M на биссектрисе → ML = MK = ${d}.`,
+ explain:`ΔOMK = ΔOML: оба прямоугольные, OM — общая гипотенуза, ∠MOK = ∠MOL (OM — биссектриса). Поэтому ML = MK и OL = OK. ${ask?`OL = OK = <b>${e}</b>.`:`ML = MK = <b>${d}</b> — точки биссектрисы равноудалены от сторон угла.`}`,
+ explain2:`Рисунок симметричен относительно биссектрисы: отрази его, и OX перейдёт в OY, K — в L. Значит, ${ask?'OL = OK':'ML = MK'}.`};});
+
+/* ===== L5: построения ===== */
+G(5,()=>CH('Что разрешено делать в классических построениях циркулем и линейкой?','Проводить прямую через две построенные точки и окружность с построенным центром и радиусом, равным построенному отрезку',['Измерять отрезки линейкой с делениями и откладывать нужную длину','Измерять углы транспортиром','Ставить точку «на глаз» примерно в нужном месте'],
+ {short:'Линейка без делений — прямые; циркуль — окружности. Никаких измерений.',
+ explain:'Правила Евклида: линейка <b>без делений</b> — только провести прямую через две точки; циркуль — провести окружность с данным центром и данным радиусом (равным построенному отрезку). Новые точки появляются только как пересечения линий. Измерять длины и углы нельзя.',
+ explain2:'Это как игра с ограниченным инвентарём: в руках только «рисовалка прямых» и «рисовалка кругов». Транспортир и рулетка в эту игру не входят.'}),{rule:true});
+G(5,()=>orderTask('mid'));
+G(5,()=>orderTask('perp'));
+G(5,()=>orderTask('bis'));
+G(5,()=>orderTask('copy'));
+G(5,()=>orderTask('tri'));
+G(5,()=>{const st=R(0,2);let a,b,c;for(;;){a=R(2,10);b=R(2,10);c=R(2,12);const s=[a,b,c].sort((x,y)=>x-y);const k=s[2]<s[0]+s[1]?2:s[2]===s[0]+s[1]?1:0;if(k===st)break;}
+ const ans=String(st);const lo=Math.abs(a-b),hi=a+b;
+ return CH(`Строим треугольник по сторонам a = ${a}, b = ${b}, c = ${c}: отрезок AB = ${c}, окружность с центром A радиусом ${b} и окружность с центром B радиусом ${a}. Сколько общих точек у этих окружностей?`,ans,['0','1','2'].filter(x=>x!==ans),
+ {hint:'Окружности пересекаются в двух точках, если |a − b| &lt; c &lt; a + b.',short:st===2?`${lo} &lt; ${c} &lt; ${hi} → 2 точки, треугольник строится.`:st===1?`Равенство → 1 точка, треугольник вырождается.`:`Неравенство треугольника нарушено → 0 точек.`,
+ explain:`Расстояние между центрами AB = ${c}, радиусы ${b} и ${a}. Две точки пересечения — при |${a} − ${b}| &lt; ${c} &lt; ${a} + ${b}, то есть ${lo} &lt; ${c} &lt; ${hi}. ${st===2?'Выполняется → <b>2</b> точки (C и её зеркальная копия), треугольник построить можно.':st===1?`Здесь наибольшая сторона равна сумме двух других — это граница: окружности <b>касаются</b> в одной точке, и она лежит на прямой AB. Треугольник сплющен.`:'Не выполняется → окружности не встречаются, <b>0</b> точек — треугольника с такими сторонами нет.'}`,
+ explain2:`Это неравенство треугольника «в действии». Наибольшая сторона ${Math.max(a,b,c)}, сумма двух других ${a+b+c-Math.max(a,b,c)}: ${Math.max(a,b,c)<a+b+c-Math.max(a,b,c)?'меньше':Math.max(a,b,c)===a+b+c-Math.max(a,b,c)?'равно':'больше'}. Меньше → 2 точки, равно → 1, больше → 0.`});});
+
+/* ===== L6: взаимное расположение ===== */
+G(6,()=>CH('Расстояние от центра окружности радиуса r до прямой равно d, причём d < r. Сколько общих точек у прямой и окружности?','Две',['Одна','Ни одной','Бесконечно много'],
+ {short:'d < r — секущая, 2 точки; d = r — касательная; d > r — нет точек.',
+ explain:'Сравниваем d и r: <b>d &lt; r</b> — прямая проходит ближе к центру, чем радиус, и пересекает окружность в <b>двух</b> точках (секущая). d = r — одна точка (касательная). d &gt; r — общих точек нет.',
+ explain2:'Опускай горизонтальную линейку на монету сверху. Пока линейка далеко (d &gt; r) — не касается. Коснулась (d = r) — одна точка. Опустил ниже (d &lt; r) — режет монету в двух точках.'}),{rule:true});
+G(6,()=>{const r=R(3,15);const st=R(0,2);const d=st===2?R(0,r-1):st===1?r:R(r+1,r+8);const ans=String(st);const v=R(0,1);
+ return CH(v?`Радиус окружности ${r} см, расстояние от её центра до прямой ${d} см. Сколько общих точек у прямой и окружности?`:`Диаметр окружности ${2*r} см, расстояние от её центра до прямой ${d} см. Сколько общих точек у прямой и окружности?`,ans,['0','1','2'].filter(x=>x!==ans),
+ {short:`d = ${d}, r = ${r}: ${st===2?'d &lt; r → 2':st===1?'d = r → 1':'d &gt; r → 0'}.`,hint:v?'Сравни d и r.':'Сначала найди радиус.',
+ explain:`${v?'':`Радиус = ${2*r} : 2 = ${r} см. `}Сравниваем расстояние d = ${d} с радиусом r = ${r}: ${st===2?`${d} &lt; ${r} → прямая — секущая, <b>2</b> общие точки.`:st===1?`${d} = ${r} → прямая — касательная, <b>1</b> общая точка.`:`${d} &gt; ${r} → прямая проходит мимо, <b>0</b> общих точек.`}${v?'':'<div class="box err"><b>Ловушка</b>Сравнить d с диаметром вместо радиуса.</div>'}`,
+ explain2:`Все точки окружности находятся на расстоянии ${r} от центра. Ближайшая к центру точка прямой — на расстоянии ${d}. ${st===2?'Она внутри круга — значит, прямая входит в круг и выходит: 2 пересечения.':st===1?'Ровно на окружности — касание.':'Даже ближайшая точка прямой снаружи — пересечений нет.'}`});});
+G(6,()=>{const R1=R(6,20),r=R(Math.ceil(R1/3),R1-2);const ext=R(0,1);const ans=ext?R1+r:R1-r;const P={O1:[0,0]};P.O2=ext?[R1+r,0]:[R1-r,0];P.T=[R1,0];
+ return {type:'num',q:`Две окружности радиусами ${R1} и ${r} касаются ${ext?'внешним':'внутренним'} образом. Найди расстояние между их центрами.`,ans,
+ pic:geo({P,circ:[['O1',R1],['O2',r,{col:'var(--accent)'}]],seg:[['O1','O2',{dash:true}]],dots:['O1','O2','T'],names:{O1:'O₁',O2:'O₂'},dir:ext?{O1:-90,O2:-90}:{O1:180,O2:90},lab:['O1','O2'],maxH:190,W:280}),
+ hint:'Точка касания лежит на прямой, соединяющей центры.',short:ext?`${R1} + ${r} = ${ans}.`:`${R1} − ${r} = ${ans}.`,
+ explain:`Точка касания T лежит на линии центров O₁O₂. ${ext?`При внешнем касании окружности по разные стороны от T: O₁O₂ = O₁T + TO₂ = ${R1} + ${r} = <b>${ans}</b>.`:`При внутреннем касании маленькая окружность внутри большой, центры по одну сторону от T: O₁O₂ = O₁T − O₂T = ${R1} − ${r} = <b>${ans}</b>.`}`,
+ explain2:ext?`Две монеты лежат вплотную бок о бок: от центра одной до центра другой — радиус первой плюс радиус второй.`:`Монета прижата изнутри к краю кольца: от центра кольца до края ${R1}, от центра монеты до того же края ${r}. Разность — ${ans}.`};});
+G(6,()=>{const a=R(3,20);const P={O:[0,0]};const d=2*3;P.P=[d,0];const [A,B]=tanPts(P.P,3);P.A=A;P.B=B;
+ return {type:'num',q:`Из точки P к окружности проведены касательные PA и PB (A, B — точки касания), ∠APB = 60°, PA = ${a}. Найди длину хорды AB.`,ans:a,
+ pic:geo({P,circ:[['O',3]],seg:[['P','A',{sw:2.2,col:'var(--accent)'}],['P','B',{sw:2.2,col:'var(--accent)'}],['A','B',{sw:2}]],ang:[['P','A','B','60°']],side:[['P','A',String(a)]],dots:['O'],maxH:180,W:280}),
+ hint:'PA = PB. Какой треугольник PAB?',short:`PA = PB, угол между ними 60° → ΔPAB равносторонний, AB = ${a}.`,
+ explain:`PA = PB = ${a} (отрезки касательных). ΔPAB равнобедренный с углом 60° при вершине: углы при основании (180° − 60°) : 2 = 60°. Все углы по 60° — треугольник <b>равносторонний</b>, AB = PA = <b>${a}</b>.`,
+ explain2:`Равнобедренный треугольник, у которого угол при вершине 60°, всегда равносторонний. Поэтому хорда AB равна отрезку касательной: ${a}.`};});
+G(6,()=>{const x=R(15,70);const P={O:[0,0],A:[-4,0],C:[4,0]};P.B=onC(4,2*x);
+ return {type:'num',q:`AC — диаметр окружности с центром O, AB — хорда, ∠BAC = ${x}°. Найди ∠BOC (в градусах).`,ans:2*x,
+ pic:geo({P,circ:[['O',4]],seg:[['A','C',{sw:2}],['A','B',{sw:2}],['O','B']],ang:[['A','B','C',dg(x)],['O','B','C','?',{col:'var(--hl)'}]],tick:[['O','A'],['O','B']],dots:['O'],lab:['O','A','B','C'],maxH:230,W:280}),
+ hint:'ΔAOB равнобедренный (OA = OB). ∠BOC — его внешний угол.',short:`∠ABO = ∠BAO = ${x}°, ∠BOC = ${x}° + ${x}° = ${2*x}°.`,
+ explain:`OA = OB — радиусы, ΔAOB равнобедренный: ∠ABO = ∠BAO = ${x}°. ∠BOC — внешний угол ΔAOB при вершине O (C лежит на продолжении AO): ∠BOC = ${x}° + ${x}° = <b>${2*x}°</b>.`,
+ explain2:`Через смежные углы: ∠AOB = 180° − 2 · ${x}° = ${180-2*x}°, а ∠BOC = 180° − ${180-2*x}° = ${2*x}° ✅. Запомни: центральный угол вдвое больше угла с вершиной на окружности, опирающегося на ту же дугу.`};});
+
+/* ===== L7: ★ ===== */
+G(7,()=>CH('Почему диаметр — самая длинная хорда окружности?','Для любой хорды AB: AB ≤ OA + OB = 2r по неравенству треугольника, а равенство только когда O лежит на AB',['Потому что все хорды проходят через центр','Потому что диаметр делит круг пополам, значит, он длиннее','Это неверно: хорда может быть длиннее диаметра'],
+ {short:'AB ≤ OA + OB = 2r = диаметр.',
+ explain:'Возьми любую хорду AB. В ΔOAB по неравенству треугольника AB &lt; OA + OB = r + r = 2r. Если O лежит на AB, получается равенство: AB = 2r — это диаметр. Значит, ни одна хорда не длиннее диаметра. «Делит круг пополам» — правда, но это не доказательство длины.',
+ explain2:'Путь из A в B напрямую (хорда) не длиннее пути через центр (A → O → B = 2r). А путь через центр «по прямой» — это и есть диаметр.'}),{rule:true,star:true});
+G(7,()=>{const t=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25],[9,12,15],[12,16,20],[6,8,10]]);const k=pick([1,1,2]);const [r,a,d]=t.map(v=>v*k);const P={O:[0,0]};P.P=[d,0];const [A,B]=tanPts(P.P,r);P.A=A;P.B=B;const al=Math.acos(r/d)/D2R;
+ const ph=(Math.random()*1.0-0.5)*al;P.X=onC(r,ph);const tg=[-Math.sin(ph*D2R),Math.cos(ph*D2R)];P.M=inter(P.X,add(P.X,tg),P.P,P.A);P.N=inter(P.X,add(P.X,tg),P.P,P.B);
+ const per=len(sub(P.P,P.M))+len(sub(P.M,P.N))+len(sub(P.N,P.P));if(Math.abs(per-2*a)>1e-6)return null;
+ return {type:'num',q:`Из точки P к окружности проведены касательные PA и PB, PA = ${a}. Через точку X меньшей дуги AB проведена касательная, пересекающая PA и PB в точках M и N. Найди периметр треугольника PMN.`,ans:2*a,
+ pic:geo({P,circ:[['O',r]],seg:[['P','A',{sw:2}],['P','B',{sw:2}],['M','N',{sw:2.2,col:'var(--accent)'}]],side:[['P','A',String(a)]],fill:[{pts:['P','M','N'],op:0.3}],dots:['X'],lab:['P','A','B','M','N','X'],maxH:220,W:310}),
+ hint:'Из M выходят две касательные: MA и MX. Из N — NB и NX.',short:`MN = MX + XN = MA + NB → P = PA + PB = ${2*a}.`,
+ explain:`Отрезки касательных из одной точки равны: MX = MA, NX = NB, PA = PB = ${a}.<br>P(PMN) = PM + MN + NP = PM + (MX + XN) + NP = (PM + MA) + (NB + NP) = PA + PB = ${a} + ${a} = <b>${2*a}</b>.`,
+ explain2:`Удивительно: ответ не зависит от того, где точка X! Двигай её по дуге — треугольник меняется, а периметр всегда ${2*a}. Причина одна: касательная MN «забирает» у сторон PA и PB ровно столько, сколько добавляет сама (MX = MA, XN = NB).`};},{star:true});
+G(7,()=>{const sets={5:[[8,3],[6,4]],10:[[16,6],[12,8]],13:[[24,5],[10,12]],15:[[24,9],[18,12]],17:[[30,8],[16,15]],25:[[48,7],[14,24],[40,15],[30,20]]};
+ const r=+pick(Object.keys(sets));const [c1,c2]=sample(sets[r],2);const opp=R(0,1);const ans=opp?c1[1]+c2[1]:Math.abs(c1[1]-c2[1]);if(ans===0)return null;
+ const P={O:[0,0],A:[-c1[0]/2,c1[1]],B:[c1[0]/2,c1[1]]};const y2=opp?-c2[1]:c2[1];P.C=[-c2[0]/2,y2];P.D=[c2[0]/2,y2];
+ return {type:'num',q:`В окружности радиуса ${r} проведены две параллельные хорды длиной ${c1[0]} и ${c2[0]}. Хорды лежат ${opp?'по разные стороны':'по одну сторону'} от центра. Найди расстояние между ними.`,ans,
+ pic:geo({P,circ:[['O',r]],seg:[['A','B',{sw:2.2}],['C','D',{sw:2.2,col:'var(--accent)'}]],txt:[[[c1[0]/2+r*0.08,c1[1]],String(c1[0]),{anc:'start'}],[[c2[0]/2+r*0.08,y2],String(c2[0]),{anc:'start',col:'var(--accent-ink)'}]],extra:[[r*1.35,0]],dots:['O'],lab:['O'],maxH:230,W:290}),
+ hint:'Найди расстояние от центра до каждой хорды: √(r² − (хорда/2)²).',short:`d₁ = ${c1[1]}, d₂ = ${c2[1]}; ${opp?`${c1[1]} + ${c2[1]}`:`${Math.max(c1[1],c2[1])} − ${Math.min(c1[1],c2[1])}`} = ${ans}.`,
+ explain:`Расстояние от центра до хорды: d = √(r² − (хорда/2)²).<br>Хорда ${c1[0]}: d₁ = √(${r*r} − ${sq(c1[0]/2)}) = ${c1[1]}.<br>Хорда ${c2[0]}: d₂ = √(${r*r} − ${sq(c2[0]/2)}) = ${c2[1]}.<br>${opp?`По разные стороны от центра — расстояния складываются: ${c1[1]} + ${c2[1]} = <b>${ans}</b>.`:`По одну сторону — вычитаются: ${Math.max(c1[1],c2[1])} − ${Math.min(c1[1],c2[1])} = <b>${ans}</b>.`}`,
+ explain2:`Если бы в условии не сказали, где хорды, у задачи было бы <b>два ответа</b>: ${c1[1]+c2[1]} и ${Math.abs(c1[1]-c2[1])}. Олимпиадники всегда проверяют оба случая расположения! Заметь: длиннее хорда — ближе к центру.`};},{star:true});
+G(7,()=>{const t=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[9,40,41],[12,35,37]]);const k=pick([1,1,2,3]);const [a,b,c]=t.map(v=>v*k);const ans=(a+b-c)/2;
+ const P={C:[0,0],A:[b,0],B:[0,a]};const {I,r}=incircle(P);if(Math.abs(r-ans)>1e-6)return null;
+ return {type:'num',q:`Катеты прямоугольного треугольника ${a} и ${b}, гипотенуза ${c}. Найди радиус вписанной окружности.`,ans,
+ pic:geo({P,poly:[['A','B','C']],circ:[[I,r,{col:'var(--accent)'}]],rt:[['C','A','B']],side:[['C','B',String(a)],['C','A',String(b)],['A','B',String(c)]],maxH:190,W:260}),
+ hint:'Из вершины прямого угла отрезки касательных равны r (там получается квадрат). Каждая сторона — сумма двух отрезков касательных.',short:`r = (${a} + ${b} − ${c}) : 2 = ${ans}.`,
+ explain:`Пусть окружность касается катетов в K и L. Радиусы IK и IL перпендикулярны катетам, поэтому CKIL — квадрат, и отрезки касательных из C равны r.<br>Тогда отрезки из A и B: ${b} − r и ${a} − r. Гипотенуза — их сумма: (${b} − r) + (${a} − r) = ${c} → 2r = ${a+b-c}, r = <b>${ans}</b>.`,
+ explain2:`Можно через площадь: S = ${a} · ${b} / 2 = ${a*b/2}, полупериметр p = ${(a+b+c)/2}, r = S / p = ${a*b/2} / ${(a+b+c)/2} = ${ans} ✅. Две разные дороги — один ответ.`};},{star:true});
+G(7,()=>{const V=[[3,4],[4,3],[-3,4],[-4,3],[3,-4],[4,-3],[-3,-4],[-4,-3],[5,0],[-5,0],[0,5],[0,-5],[6,8],[8,6],[-6,8],[8,-6],[0,10],[10,0],[-10,0],[0,-10]];
+ const S=[R(-3,3),R(-3,3)];const vs=sample(V,3);const Bc=vs.map(v=>add(S,v));const cross=(Bc[1][0]-Bc[0][0])*(Bc[2][1]-Bc[0][1])-(Bc[1][1]-Bc[0][1])*(Bc[2][0]-Bc[0][0]);if(Math.abs(cross)<20)return null;
+ if(Bc.some(b=>Math.abs(b[0])>11||Math.abs(b[1])>11))return null;const ds=vs.map(v=>len(v));
+ let cnt=0;for(let x=-40;x<=40;x++)for(let y=-40;y<=40;y++)if(Bc.every((b,i)=>Math.abs(Math.hypot(x-b[0],y-b[1])-ds[i])<1e-9))cnt++;if(cnt!==1)return null;
+ const wr=[reflect(S,Bc[0],Bc[1]),reflect(S,Bc[1],Bc[2]),reflect(S,Bc[0],Bc[2])];const opts=[pt(S),...wr.map(pt)];if(new Set(opts).size!==4)return null;
+ const nm=['A','B','C'];const P={A:Bc[0],B:Bc[1],C:Bc[2]};const xs=Bc.map(b=>b[0]).concat([S[0],-1,1]),ys=Bc.map(b=>b[1]).concat([S[1],-1,1]);
+ const G0=[Math.floor(Math.min(...xs))-1,Math.floor(Math.min(...ys))-1,Math.ceil(Math.max(...xs))+1,Math.ceil(Math.max(...ys))+1];
+ return CH(`«GPS на клетчатой бумаге». Три вышки стоят в точках A${pt(Bc[0])}, B${pt(Bc[1])}, C${pt(Bc[2])}. Телефон находится на расстоянии ${ds[0]} от A, ${ds[1]} от B и ${ds[2]} от C. Где телефон?`,opts[0],opts.slice(1),
+ {pic:geo({P,grid:G0,extra:[[G0[0],G0[1]],[G0[2],G0[3]]],seg:[[[G0[0],0],[G0[2],0],{col:'var(--muted)',sw:1.2}],[[0,G0[1]],[0,G0[3]],{col:'var(--muted)',sw:1.2}]],dots:['A','B','C'],maxH:230,W:300,pad:16}),
+ hint:'Телефон лежит на трёх окружностях сразу. Проверь каждый вариант: подходят ли все три расстояния?',short:`${pt(S)}: расстояния до A, B, C равны ${ds.join(', ')}.`,
+ explain:`Точка на расстоянии ${ds[0]} от A лежит на окружности с центром A радиуса ${ds[0]}; аналогично для B и C. Две окружности пересекаются в двух точках, третья выбирает одну из них.<br>Проверим ${pt(S)}: ${Bc.map((b,i)=>`до ${nm[i]}: √(${N(S[0]-b[0])}² + ${N(S[1]-b[1])}²) = ${ds[i]}`).join('; ')} — все три ✅. Ответ: <b>${pt(S)}</b>.<br>Остальные варианты — «вторые» точки пересечения двух окружностей: они подходят только для двух вышек из трёх.`,
+ explain2:`Именно поэтому GPS нужно минимум три спутника на плоскости (в пространстве — ещё и четвёртый, для поправки часов). Две окружности дают две точки-кандидата, зеркальные относительно прямой, соединяющей центры. Например, ${pt(wr[0])} — отражение ответа относительно прямой AB: до A и B расстояния те же, а до C — нет.`});},{star:true});
+G(7,()=>CH('Можно ли выполнить любое построение циркулем и линейкой, пользуясь <b>только циркулем</b>? (Прямая считается построенной, если построены две её точки.)','Да — это теорема Мора — Маскерони',['Нет, без линейки нельзя найти ни одной новой точки','Только если окружности имеют одинаковый радиус','Да, но только для правильных многоугольников'],
+ {short:'Мор (1672) и Маскерони (1797): одного циркуля достаточно.',
+ explain:'Георг Мор в 1672 году и Лоренцо Маскерони в 1797 году доказали: любую точку, которую можно построить циркулем и линейкой, можно построить <b>одним циркулем</b>. Прямые при этом не рисуются, но любые две их точки и все их пересечения находятся. Новые точки одним циркулем, конечно, получаются — как пересечения окружностей.',
+ explain2:'Например, правильный шестиугольник строится одним циркулем: радиус укладывается по окружности ровно 6 раз. Наполеон, по легенде, любил задачу Маскерони — найти центр данной окружности одним циркулем.'}),{star:true});
+G(7,()=>{const st=R(0,2);let d,Rr;for(;;){Rr=R(2,12);d=st===0?R(2*Rr+1,2*Rr+10):st===1?2*Rr:R(1,2*Rr-1);break;}const ans=String(st);
+ return CH(`Сколько существует окружностей радиуса ${Rr}, проходящих через две данные точки A и B, если AB = ${d}?`,ans,['0','1','2','бесконечно много'].filter(x=>x!==ans),
+ {hint:'Центр такой окружности равноудалён от A и B (на расстояние R). Где он лежит? И сколько там точек на расстоянии R от A?',short:st===2?`${d} &lt; 2 · ${Rr} → 2 окружности.`:st===1?`${d} = 2 · ${Rr} → AB — диаметр, 1 окружность.`:`${d} &gt; 2 · ${Rr} → ни одной.`,
+ explain:`Центр O должен быть на расстоянии ${Rr} и от A, и от B. Значит, O — точка пересечения двух окружностей радиуса ${Rr} с центрами A и B (и лежит на серединном перпендикуляре к AB). Такие окружности пересекаются, если AB &lt; ${Rr} + ${Rr} = ${2*Rr}.<br>AB = ${d}: ${st===2?`${d} &lt; ${2*Rr} → две точки O, значит, <b>2</b> окружности (симметричные относительно AB).`:st===1?`${d} = ${2*Rr} → одна точка (середина AB), AB — диаметр, <b>1</b> окружность.`:`${d} &gt; ${2*Rr} → ни одной точки. Хорда не может быть длиннее диаметра ${2*Rr}, поэтому <b>0</b>.`}`,
+ explain2:`Короткая проверка: AB будет хордой окружности радиуса ${Rr}, а самая длинная хорда — диаметр ${2*Rr}. ${st===0?`${d} больше — невозможно.`:st===1?'Ровно диаметр — центр в середине AB, вариант один.':'Короче диаметра — центр может быть по любую сторону от AB: два варианта.'}`});},{star:true});
+
+/* =====================================================================
+   WIDGETS
+   ===================================================================== */
+function onTheory(root){
+  const w=root.querySelector('#w-line');
+  if(w){w.innerHTML=`<label>d = <output id="wld">3</output><input type="range" id="wlD" min="0" max="7" step="0.5" value="3"></label><div id="wlS" style="display:flex;justify-content:center"></div><div id="wlO" class="small" style="text-align:center"></div>`;
+    const D=w.querySelector('#wlD');const draw=()=>{const d=+D.value,r=5,u=20,cx=160,cy=118;w.querySelector('#wld').textContent=N(d);const y=cy-d*u;
+      let s=`<svg viewBox="0 0 320 236" width="320" role="img" aria-label="Прямая и окружность" style="font-family:system-ui,sans-serif;max-width:100%"><circle cx="${cx}" cy="${cy}" r="${r*u}" fill="var(--hl)" fill-opacity=".12" stroke="var(--fig)" stroke-width="2"/>`;
+      s+=`<line x1="8" y1="${y}" x2="312" y2="${y}" stroke="var(--accent)" stroke-width="2.4"/><line x1="${cx}" y1="${cy}" x2="${cx}" y2="${y}" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="5 4"/><circle cx="${cx}" cy="${cy}" r="3" fill="var(--fig)"/><text x="${cx+8}" y="${cy+16}" font-size="14" font-weight="700" fill="var(--accent-ink)">O</text>`;
+      let txt;if(d<r){const h=Math.sqrt(r*r-d*d);s+=`<circle cx="${cx-h*u}" cy="${y}" r="5" fill="var(--accent)"/><circle cx="${cx+h*u}" cy="${y}" r="5" fill="var(--accent)"/>`;txt=`d = ${N(d)} &lt; r = 5 → <span class="out">2 точки</span> (секущая). Хорда = 2√(25 − ${N(d*d)}) ≈ <span class="out">${N(Math.round(2*h*100)/100)}</span>`;}
+      else if(d===r){s+=`<circle cx="${cx}" cy="${y}" r="5" fill="var(--accent)"/>`;txt=`d = r = 5 → <span class="out">1 точка</span> — касательная, она ⟂ радиусу`;}else txt=`d = ${N(d)} &gt; r = 5 → <span class="out">общих точек нет</span>`;
+      w.querySelector('#wlS').innerHTML=s+'</svg>';w.querySelector('#wlO').innerHTML=txt;};D.oninput=draw;draw();}
+  const g=root.querySelector('#w-gps');
+  if(g){g.innerHTML=`<div class="small">Телефон спрятан. Вышки знают только расстояния до него. Включай окружности по одной:</div><label><input type="checkbox" id="wg0"> вышка A: расстояние 5</label><label><input type="checkbox" id="wg1"> вышка B: расстояние 5</label><label><input type="checkbox" id="wg2"> вышка C: расстояние 4</label><div id="wgS" style="display:flex;justify-content:center"></div><div id="wgO" class="small" style="text-align:center"></div>`;
+    const T=[[0,0],[8,0],[4,7]],dd=[5,5,4],S=[4,3];const u=18,ox=24,oy=168;const X=p=>[ox+p[0]*u,oy-p[1]*u];
+    const draw=()=>{const on=[0,1,2].map(i=>g.querySelector('#wg'+i).checked);let s=`<svg viewBox="0 0 300 250" width="300" role="img" aria-label="Трилатерация" style="font-family:system-ui,sans-serif;max-width:100%">`;
+      for(let x=-1;x<=14;x++){const a=X([x,-4.5]),b=X([x,8.5]);s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="var(--line)"/>`;}for(let y=-4;y<=8;y++){const a=X([-1.3,y]),b=X([14.3,y]);s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="var(--line)"/>`;}
+      T.forEach((t,i)=>{const p=X(t);if(on[i])s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${dd[i]*u}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;s+=`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="var(--fig)"/><text x="${p[0]+7}" y="${p[1]-7}" font-size="14" font-weight="700" fill="var(--accent-ink)">${'ABC'[i]}</text>`;});
+      const n=on.filter(Boolean).length;const cands=[];for(let x=-3;x<=14;x++)for(let y=-3;y<=12;y++)if([0,1,2].every(i=>!on[i]||Math.abs(Math.hypot(x-T[i][0],y-T[i][1])-dd[i])<1e-9))cands.push([x,y]);
+      if(n>=2)cands.forEach(c=>{const p=X(c);s+=`<circle cx="${p[0]}" cy="${p[1]}" r="6" fill="var(--hl)" stroke="var(--fig)" stroke-width="1.5"/>`;});
+      g.querySelector('#wgS').innerHTML=s+'</svg>';g.querySelector('#wgO').innerHTML=n===0?'Пока ничего не известно — телефон может быть где угодно.':n===1?'Одна окружность: телефон где-то на ней — бесконечно много вариантов.':n===2?`Две окружности: <span class="out">${cands.length} ${plural(cands.length,'точка','точки','точек')}-кандидата</span>. Ещё не ясно!`:`Три окружности: <span class="out">одна точка (${S[0]}; ${S[1]})</span> — телефон найден!`;};
+    [0,1,2].forEach(i=>g.querySelector('#wg'+i).onchange=draw);draw();}
+}
+
+window.TOPIC={id:'g7_circle',title:'Окружность и построения',subtitle:'Геометрия · 7 класс',
+intro:`<p>Почему колёса круглые и как GPS находит телефон с помощью окружностей? Здесь: радиус, хорда, диаметр, касательная и её свойства, отрезки касательных, геометрическое место точек (серединный перпендикуляр и биссектриса), построения циркулем и линейкой по правилам Евклида. В конце — олимпиадные задачи.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Окружность, радиус, хорда, диаметр','Хорды и расстояние до центра','Касательная ⟂ радиусу','Отрезки касательных','ГМТ: серединный перпендикуляр и биссектриса','Построения циркулем и линейкой','Прямая и окружность, две окружности','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

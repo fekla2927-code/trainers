@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Смежные и вертикальные углы — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,num:N}=H;
+/* =====================================================================
+   Geometry SVG helper (math coords, y up → auto-fit into ≤ 320 px)
+   ===================================================================== */
+const D2R=Math.PI/180;
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(a,k)=>[a[0]*k,a[1]*k];
+const len=a=>Math.hypot(a[0],a[1]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
+const unit=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l];};
+const polar=(p,L,d)=>[p[0]+L*Math.cos(d*D2R),p[1]+L*Math.sin(d*D2R)];
+const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+const foot=(p,a,b)=>{const d=sub(b,a);const t=dot(sub(p,a),d)/dot(d,d);return lerp(a,b,t);};
+const inter=(a,b,c,d)=>{const r=sub(b,a),s=sub(d,c);const den=r[0]*s[1]-r[1]*s[0];const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den;return add(a,mul(r,t));};
+const angAt=(v,a,b)=>{const u=unit(sub(a,v)),w=unit(sub(b,v));return Math.acos(Math.max(-1,Math.min(1,dot(u,w))))/D2R;};
+const r1=x=>Math.round(x*10)/10;
+const tw=(t,fs)=>{t=String(t).replace(/<[^>]+>/g,'');let w=0;for(const ch of t)w+=/[°·,.\s₁₂₃₄]/.test(ch)?fs*0.36:/[0-9]/.test(ch)?fs*0.56:fs*0.64;return w;};
+const SUB={A1:'A₁',A2:'A₂',A3:'A₃',A4:'A₄',B1:'B₁',B2:'B₂',B3:'B₃',B4:'B₄'};
+
+function geo(o){
+  const P={};for(const k in o.P)if(Array.isArray(o.P[k]))P[k]=o.P[k];const W=o.W||300,MH=o.maxH||220,pad=o.pad==null?30:o.pad;
+  const all=Object.values(P).concat(o.extra||[]);
+  const x0=Math.min(...all.map(p=>p[0])),x1=Math.max(...all.map(p=>p[0]));
+  const y0=Math.min(...all.map(p=>p[1])),y1=Math.max(...all.map(p=>p[1]));
+  const bw=Math.max(x1-x0,1e-6),bh=Math.max(y1-y0,1e-6);
+  const s=Math.min((W-2*pad)/bw,(MH-2*pad)/bh);
+  const w=Math.round(bw*s+2*pad),h=Math.round(bh*s+2*pad);
+  const X=p=>[pad+(p[0]-x0)*s,pad+(y1-p[1])*s];
+  const Q={};for(const k in P)Q[k]=X(P[k]);
+  const g=k=>Array.isArray(k)?X(k):Q[k];
+  const polys=o.poly||[];
+  const cen=pts=>[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];
+  const allC=cen(Object.values(Q));
+  const pstr=pts=>pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ');
+  const T=(x,y,t,fs,col,wt,anc)=>`<text x="${r1(x)}" y="${r1(y+fs*0.36)}" text-anchor="${anc||'middle'}" font-size="${fs}" font-weight="${wt||600}" fill="${col||'var(--ink)'}">${t}</text>`;
+  const place=(p,d,t,fs,gap)=>{const ww=tw(t,fs),hh=fs*0.78;const k=gap+0.5*(ww*Math.abs(d[0])+hh*Math.abs(d[1]));return [p[0]+d[0]*k,p[1]+d[1]*k];};
+  let out=`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${o.aria||'Чертёж'}" style="font-family:system-ui,sans-serif">`;
+  const LS=[];const ln=(A,B,attr)=>{LS.push([A,B]);return `<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" ${attr}/>`;};
+  if(o.grid){const G=o.grid;for(let x=G[0];x<=G[2]+1e-9;x++){const a=X([x,G[1]]),b=X([x,G[3]]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}
+    for(let y=G[1];y<=G[3]+1e-9;y++){const a=X([G[0],y]),b=X([G[2],y]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}}
+  (o.fill||[]).forEach(f=>{const pts=(f.pts||f).map(g);out+=`<polygon points="${pstr(pts)}" fill="${f.col||'var(--hl)'}" fill-opacity="${f.op||0.35}" stroke="none"/>`;});
+  polys.forEach(pl=>{out+=`<polygon points="${pstr(pl.map(g))}" fill="none" stroke="var(--fig)" stroke-width="2.2" stroke-linejoin="round"/>`;pl.forEach((k,i)=>LS.push([g(k),g(pl[(i+1)%pl.length])]));});
+  (o.seg||[]).forEach(sg=>{const op=sg[2]||{};let A=g(sg[0]),B=g(sg[1]);if(op.ext){const e=mul(sub(B,A),op.ext);A=sub(A,e);B=add(B,e);}
+    out+=ln(A,B,`stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||1.7}" ${op.dash?'stroke-dasharray="6 4"':''} stroke-linecap="round"`);});
+  (o.tick||[]).forEach(tk=>{const A=g(tk[0]),B=g(tk[1]),n=tk[2]||1;const e=unit(sub(B,A)),nn=[-e[1],e[0]],m=mid(A,B);
+    for(let i=0;i<n;i++){const c=add(m,mul(e,(i-(n-1)/2)*5));out+=ln(add(c,mul(nn,6)),sub(c,mul(nn,6)),'stroke="var(--fig)" stroke-width="1.7"');}});
+  (o.rt||[]).forEach(rt=>{const Vv=g(rt[0]),u=unit(sub(g(rt[1]),Vv)),ww=unit(sub(g(rt[2]),Vv)),k=10;const a=add(Vv,mul(u,k)),b=add(a,mul(ww,k)),c=add(Vv,mul(ww,k));LS.push([a,b],[b,c]);
+    out+=`<path d="M${r1(a[0])},${r1(a[1])} L${r1(b[0])},${r1(b[1])} L${r1(c[0])},${r1(c[1])}" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`;});
+  const angInfo=(o.ang||[]).map(an=>{const op=an[4]||{};const Vv=g(an[0]),A=g(an[1]),B=g(an[2]);
+    const a1=Math.atan2(A[1]-Vv[1],A[0]-Vv[0]);let dl=Math.atan2(B[1]-Vv[1],B[0]-Vv[0])-a1;while(dl>Math.PI)dl-=2*Math.PI;while(dl<=-Math.PI)dl+=2*Math.PI;
+    const th=Math.abs(dl);const rr=op.r||(th<0.75?26:19);const n=op.n||1;
+    for(let i=0;i<n;i++){const r=rr+i*4;const p=[Vv[0]+r*Math.cos(a1),Vv[1]+r*Math.sin(a1)],q=[Vv[0]+r*Math.cos(a1+dl),Vv[1]+r*Math.sin(a1+dl)];
+      out+=`<path d="M${r1(p[0])},${r1(p[1])} A${r},${r} 0 0 ${dl>0?1:0} ${r1(q[0])},${r1(q[1])}" fill="none" stroke="${op.col||'var(--accent)'}" stroke-width="1.6"/>`;
+      let prev=p;for(let j=1;j<=6;j++){const an2=a1+dl*j/6;const c=[Vv[0]+r*Math.cos(an2),Vv[1]+r*Math.sin(an2)];LS.push([prev,c]);prev=c;}}
+    return {an,op,Vv,a1,dl,th,rr,n};});
+  (o.dots||[]).forEach(k=>{const p=g(k);out+=`<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="2.8" fill="var(--fig)"/>`;});
+  /* ---- collision-aware label placement ---- */
+  const boxes=[];
+  const segRect=(a,b,c,hw,hh)=>{const xmin=c[0]-hw,xmax=c[0]+hw,ymin=c[1]-hh,ymax=c[1]+hh;let t0=0,t1=1,hit=true;const dx=b[0]-a[0],dy=b[1]-a[1];const pp=[-dx,dx,-dy,dy],qq=[a[0]-xmin,xmax-a[0],a[1]-ymin,ymax-a[1]];
+    for(let i=0;i<4;i++){if(Math.abs(pp[i])<1e-12){if(qq[i]<0){hit=false;break;}}else{const r=qq[i]/pp[i];if(pp[i]<0){if(r>t1){hit=false;break;}if(r>t0)t0=r;}else{if(r<t0){hit=false;break;}if(r<t1)t1=r;}}}
+    if(hit)return -1;const pr=p=>Math.hypot(Math.max(xmin-p[0],0,p[0]-xmax),Math.max(ymin-p[1],0,p[1]-ymax));
+    const ps=p=>{const d=sub(b,a);const t=Math.max(0,Math.min(1,dot(sub(p,a),d)/Math.max(dot(d,d),1e-9)));return len(sub(p,lerp(a,b,t)));};
+    return Math.min(pr(a),pr(b),ps([xmin,ymin]),ps([xmax,ymin]),ps([xmin,ymax]),ps([xmax,ymax]));};
+  const clr=(c,hw,hh)=>{let m=Math.min(c[0]-hw,w-c[0]-hw,c[1]-hh,h-c[1]-hh)+1;for(const L of LS)m=Math.min(m,segRect(L[0],L[1],c,hw,hh));for(const bx of boxes)m=Math.min(m,Math.max(Math.abs(c[0]-bx[0])-hw-bx[2],Math.abs(c[1]-bx[1])-hh-bx[3]));return m;};
+  const choose=(cands,t,fs,thr)=>{const hw=tw(t,fs)/2+1,hh=fs*0.4+1;let best=cands[0],bs=-1e9;for(const c of cands){const v=clr(c,hw,hh);if(v>=thr){best=c;break;}if(v>bs){bs=v;best=c;}}boxes.push([best[0],best[1],hw,hh]);return best;};
+  let labels='';
+  const vdir=k=>{
+    if(o.dir&&o.dir[k]!=null){const d=o.dir[k];return [Math.cos(d*D2R),-Math.sin(d*D2R)];}
+    const p=Q[k];
+    for(const pl of polys){const i=pl.indexOf(k);if(i<0)continue;const n=pl.length;const u1=unit(sub(g(pl[(i-1+n)%n]),p)),u2=unit(sub(g(pl[(i+1)%n]),p));let d=add(u1,u2);
+      if(len(d)>0.15)return mul(unit(d),-1);const c=cen(pl.map(g));d=[-u1[1],u1[0]];if(dot(d,sub(c,p))>0)d=mul(d,-1);return d;}
+    for(const pl of polys){for(let i=0;i<pl.length;i++){const A=g(pl[i]),B=g(pl[(i+1)%pl.length]);const f=foot(p,A,B);const t=dot(sub(p,A),sub(B,A))/dot(sub(B,A),sub(B,A));
+      if(len(sub(f,p))<1&&t>0.02&&t<0.98){const e=unit(sub(B,A));let d=[-e[1],e[0]];if(dot(d,sub(cen(pl.map(g)),p))>0)d=mul(d,-1);return d;}}}
+    let d=sub(p,allC);if(len(d)<4)d=[0.7,0.7];return unit(d);};
+  (o.txt||[]).forEach(tx=>{const arr=Array.isArray(tx[0]);const p=arr?X(tx[0]):X([tx[0],tx[1]]);const t=arr?tx[1]:tx[2];const op=(arr?tx[2]:tx[3])||{};const fs=op.fs||14;
+    boxes.push([p[0],p[1],tw(t,fs)/2+1,fs*0.4+1]);labels+=T(p[0],p[1],t,fs,op.col||'var(--ink)',op.wt||600,op.anc);});
+  const labs=o.lab||Object.keys(P);
+  labs.forEach(k=>{const t=(o.names&&o.names[k])||SUB[k]||k;const d0=vdir(k);const th0=Math.atan2(d0[1],d0[0]);const cands=[];
+    for(const gp of [5,9])for(let j=0;j<=12;j++)for(const sg of (j?[1,-1]:[1])){const th=th0+sg*j*15*D2R;cands.push(place(Q[k],[Math.cos(th),Math.sin(th)],t,15,gp));}
+    const p=choose(cands,t,15,2.5);labels+=T(p[0],p[1],t,15,'var(--accent-ink)',700);});
+  (o.side||[]).forEach(sd=>{const op=sd[3]||{};const A=g(sd[0]),B=g(sd[1]);const e=unit(sub(B,A));let n=[-e[1],e[0]];const t0=op.t==null?0.5:op.t;
+    let c=allC;for(const pl of polys){const i=pl.indexOf(sd[0]),j=pl.indexOf(sd[1]);if(i>=0&&j>=0&&(Math.abs(i-j)===1||Math.abs(i-j)===pl.length-1)){c=cen(pl.map(g));break;}}
+    if(dot(n,sub(c,lerp(A,B,t0)))>0)n=mul(n,-1);if(op.flip)n=mul(n,-1);const fs=op.fs||14;const gp=op.gap==null?4:op.gap;const cands=[];
+    for(const nn of [n,mul(n,-1)])for(const gg of [gp,gp+5])for(const dt of [0,0.1,-0.1,0.2,-0.2,0.3,-0.3])cands.push(place(lerp(A,B,Math.max(0.08,Math.min(0.92,t0+dt))),nn,sd[2],fs,gg));
+    const p=choose(cands,sd[2],fs,2);labels+=T(p[0],p[1],sd[2],fs,op.col||'var(--ink)',600);});
+  angInfo.forEach(({an,op,Vv,a1,dl,th,rr,n})=>{if(!an[3])return;const fs=op.fs||14;const rad=Math.max(tw(an[3],fs),fs)/2+2;const d=Math.max(rr+(n-1)*4+rad+3,(rad+3)/Math.sin(th/2));const cands=[];
+    for(const dd of [0,7,14,22,32])for(const f of [0,0.3,-0.3,0.6,-0.6]){const am=a1+dl/2+f*dl/2;cands.push([Vv[0]+(d+dd)*Math.cos(am),Vv[1]+(d+dd)*Math.sin(am)]);}
+    const p=choose(cands,an[3],fs,1.5);labels+=T(p[0],p[1],an[3],fs,'var(--accent-ink)',700);});
+  return out+labels+'</svg>';
+}
+
+/* ---------- shared utilities ---------- */
+const fig=s=>`<div class="fig">${s}</div>`;
+const sq=x=>x*x;
+const isInt=x=>Math.abs(x-Math.round(x))<1e-9;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<400;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+/* choice from correct + wrongs; null if not distinct */
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const mark=s=>`<b style="color:var(--accent-ink)">${s}</b>`;
+
+/* =====================================================================
+   g7_angles — смежные и вертикальные углы
+   ===================================================================== */
+const NUM=['1','2','3','4','5','6','7','8'];
+/* rays from O at degrees dirs; angs: [i,j,label] between ray i and ray j (ccw from i to j) */
+function rays(dirs,angs,o){o=o||{};const P={O:[0,0]};const nm=o.names||dirs.map((_,i)=>'R'+i);dirs.forEach((d,i)=>P[nm[i]]=polar([0,0],5,d));
+  const ext=o.ext||[];const seg=nm.map(n=>['O',n,{}]);(o.hl||[]).forEach(i=>seg[i][2]={col:'var(--accent)',sw:2.4,dash:o.dashHl});
+  return geo({P,seg,ang:(angs||[]).map(a=>['O',nm[a[0]],nm[a[1]],a[2]||'',Object.assign({r:a[3]||24},a[4]||{})]),rt:o.rt||[],dots:['O'],lab:o.lab||[],names:o.nmap,dir:o.dir,maxH:o.maxH||180,W:o.W||260,pad:24,extra:o.extra||[[-5.3,-5.3],[5.3,5.3]]});}
+/* two lines through O: line1 horizontal, line2 at phi; angles 1..4: 1 = (0,phi), 2 = (phi,180), 3 = (180,180+phi), 4 = (180+phi,360) */
+const twoVal=(phi,k)=>k%2?phi:180-phi;
+function two(phi,labs,o){o=o||{};const a0=o.rot||0;const d=[a0,a0+phi,a0+180,a0+180+phi];const angs=[];[1,2,3,4].forEach(k=>{if(labs[k]!=null)angs.push([k-1,k%4,labs[k],k%2?(phi<50?32:24):(180-phi<50?32:24)]);});
+  if(o.plain){const P={O:[0,0]};d.forEach((t,i)=>P['R'+i]=polar([0,0],5,t));const vals=[phi,180-phi,phi,180-phi];
+    return geo({P,seg:[0,1,2,3].map(i=>['O','R'+i]),dots:['O'],lab:[],txt:[1,2,3,4].filter(k=>labs[k]!=null).map(k=>[polar([0,0],Math.max(1.3,0.9/Math.sin(vals[k-1]*D2R/2)),d[k-1]+vals[k-1]/2),labs[k],{fs:15,col:'var(--accent-ink)',wt:700}]),maxH:190,W:260,pad:24,extra:[[-5.3,-5.3],[5.3,5.3]]});}
+  return rays(d,angs,Object.assign({maxH:190,W:260},o));}
+const ADJ=(a)=>CH('Какие два угла называются <b>смежными</b>?','У которых одна сторона общая, а две другие являются продолжениями друг друга',['У которых общая вершина','Сумма которых равна 180°','Стороны одного являются продолжениями сторон другого'],a);
+/* proof-order helper: steps (array of strings in correct order) → choice of orders */
+function orderTask(q,steps,o){const L='АБВГД'.split('');const n=steps.length;const perm=shuffle(range(0,n-1));/* letter i labels steps[perm[i]] */
+  const lab=i=>L[perm.indexOf(i)];const correct=range(0,n-1).map(lab).join(' → ');const wr=new Set();let guard=0;
+  while(wr.size<3&&guard++<200){const p=shuffle(range(0,n-1));const s=p.map(lab).join(' → ');if(s!==correct)wr.add(s);}
+  const list=perm.map((k,i)=>`<b>${L[i]}.</b> ${steps[k]}`).join('<br>');
+  return CH(q+`<div class="box ex" style="margin-top:8px">${list}</div>В каком порядке их нужно записать?`,correct,[...wr],o);}
+
+/* ---------- theory figures ---------- */
+const fAdj=rays([0,60,180],[[0,1,'60°',30],[1,2,'120°',24]],{names:['A','C','B'],lab:['A','B','C','O'],W:260,maxH:130,extra:[[0,-1]]});
+const fVert=two(40,{1:'1',2:'2',3:'3',4:'4'},{plain:true});
+const fBis=rays([0,50,100,180],[[0,1,'',30,{n:1}],[1,2,'',30,{n:1}],[2,3,'',22,{n:2}]],{names:['A','M','C','B'],lab:['A','M','C','B','O'],hl:[1],W:270,maxH:140,extra:[[0,-1]]});
+const fPerp=rays([0,90,180,270],[],{names:['A','C','B','D'],lab:['A','B','C','D','O'],rt:[['O','A','C']],W:200,maxH:170});
+
+const theory=[
+{title:'Смежные углы',lvl:0,html:`
+<p class="hook">Открой ноутбук. Крышка и клавиатура образуют угол — скажем, 110°. А крышка и стол позади ноутбука? Угол тоже есть, и он равен 70°, сколько бы ты ни крутил крышку: два угла вместе всегда «съедают» ровно развёрнутый угол стола. Это и есть смежные углы.</p>
+<div class="box rule"><b>Определение</b>Два угла называются <b>смежными</b>, если у них одна сторона общая, а две другие являются продолжениями друг друга (лежат на одной прямой).</div>
+${fig(fAdj)}
+<div class="box rule"><b>Свойство</b>Сумма смежных углов равна <span class="m">180°</span>.</div>
+<p><b>Почему:</b> вместе смежные углы составляют развёрнутый угол AOB, а он равен 180°. Луч OC просто делит его на две части: ∠AOC + ∠COB = 180°.</p>
+<div class="box ex"><b>Пример</b>Один из смежных углов 47°. Другой: 180° − 47° = 133°.</div>
+<div class="box err"><b>Ошибка</b>«Сумма двух углов 180° — значит, они смежные». Нет! Углы 100° и 80° в разных концах тетради дают 180°, но у них нет общей стороны. Сумма 180° — свойство смежных, а не определение.</div>
+<div class="box tip"><b>Следствия</b>Если один из смежных углов острый, другой тупой. Если один прямой — другой тоже прямой. Два тупых (или два острых) смежных угла не бывает.</div>`},
+{title:'Вертикальные углы',lvl:1,html:`
+<div class="box rule"><b>Определение</b>Два угла называются <b>вертикальными</b>, если стороны одного угла являются продолжениями сторон другого.</div>
+${fig(fVert)}
+<p>Когда пересекаются две прямые, получаются 4 угла. ∠1 и ∠3 — вертикальные, ∠2 и ∠4 — тоже. А ∠1 и ∠2 — смежные.</p>
+<div class="box rule"><b>Теорема</b>Вертикальные углы равны.</div>
+<p><b>Доказательство (3 строчки):</b> ∠1 + ∠2 = 180° (смежные). ∠3 + ∠2 = 180° (тоже смежные). Значит, ∠1 = 180° − ∠2 = ∠3.</p>
+<div class="widget" id="w-vert"></div>
+<div class="box ex"><b>Пример</b>Две прямые пересекаются, ∠1 = 35°. Тогда ∠3 = 35° (вертикальный), ∠2 = ∠4 = 180° − 35° = 145°.</div>
+<div class="box err"><b>Ловушка с названием</b>«Вертикальные» не значит «стоящие вертикально»! Слово от латинского vertex — «вершина»: у этих углов общая вершина. Они могут лежать хоть горизонтально.</div>
+<div class="fact">Ножницы — это две прямые, пересекающиеся в винте. Раскрываешь лезвия на угол 30° — ручки тоже раскрыты ровно на 30°: это вертикальные углы.</div>`},
+{title:'Задачи с отношениями: x и kx',lvl:2,html:`
+<div class="box rule"><b>Метод</b>Обозначь меньший угол буквой x, выраз другой через x, составь уравнение по свойству (смежные → сумма 180°).</div>
+<ul class="steps"><li>«Один в 4 раза больше другого»: x + 4x = 180 → x = 36°, второй 144°.</li>
+<li>«Один на 40° больше другого»: x + (x + 40) = 180 → x = 70°, второй 110°.</li>
+<li>«Углы относятся как 2 : 7»: 2x + 7x = 180 → x = 20°, углы 40° и 140°.</li></ul>
+<div class="box tip"><b>При пересечении двух прямых</b>Если сказано «один из углов в 3 раза больше другого», эти углы не могут быть вертикальными (вертикальные равны) — значит, они смежные: x + 3x = 180°.</div>
+<div class="box err"><b>Ошибка</b>Найти x и забыть, о каком угле спрашивают. Всегда перечитывай вопрос: «найди больший угол» — это 4x, а не x.</div>`},
+{title:'Биссектриса угла',lvl:3,html:`
+<div class="box rule"><b>Определение</b><b>Биссектриса</b> угла — луч, который выходит из вершины угла и делит его на два равных угла.</div>
+<p>Как «сложить угол пополам». Если OM — биссектриса ∠AOC, то <span class="m">∠AOM = ∠MOC = ∠AOC : 2</span>.</p>
+${fig(fBis)}
+<div class="box rule"><b>Теорема</b>Биссектрисы двух смежных углов перпендикулярны (угол между ними 90°).</div>
+<p><b>Почему:</b> пусть смежные углы 2x и 2y, тогда 2x + 2y = 180°. Угол между биссектрисами состоит из половинок: x + y = 90°.</p>
+<div class="box ex"><b>Пример</b>Смежные углы 100° и 80°. Половинки: 50° и 40°. 50° + 40° = 90° ✅.</div>
+<div class="box err"><b>Ошибка</b>Биссектриса — это <b>луч</b>, а не отрезок и не прямая (в треугольнике биссектрисой называют отрезок — это другое, позже).</div>
+<div class="fact">Плотник находит биссектрису угла без транспортира: откладывает от вершины на обеих сторонах одинаковые отрезки, а потом прикладывает два одинаковых угольника. Мы научимся этому, когда пройдём равенство треугольников.</div>`},
+{title:'Перпендикулярные прямые',lvl:4,html:`
+<div class="box rule"><b>Определение</b>Две прямые называются <b>перпендикулярными</b>, если они пересекаются под прямым углом. Пишут: <span class="m">AB ⊥ CD</span>.</div>
+${fig(fPerp)}
+<p>Если один из четырёх углов при пересечении прямой, то и остальные три прямые: вертикальный ему равен (90°), а смежные 180° − 90° = 90°.</p>
+<div class="box rule"><b>Теорема</b>Через каждую точку прямой можно провести перпендикулярную ей прямую, и притом только одну.</div>
+<div class="box ex"><b>Пример</b>AB ⊥ CD в точке O, луч OE внутри ∠BOD, ∠EOD = 25°. Тогда ∠BOE = 90° − 25° = 65°, а ∠AOE = 180° − 65° = 115°.</div>
+<div class="fact">Как столяр проверяет свой угольник: прикладывает его к ровному краю доски, проводит линию, а потом переворачивает угольник «на другую сторону» и проводит ещё одну. Если угольник ровно 90°, линии совпадут. Если в нём 91°, линии разойдутся на 2° — ошибка удваивается и становится заметной.</div>`},
+{title:'Несколько прямых через одну точку',lvl:5,html:`
+<div class="box rule"><b>Полный угол</b>Сумма всех углов вокруг точки (без наложений) равна <span class="m">360°</span>.</div>
+<p>Три прямые через одну точку дают 6 лучей и 6 углов «по кругу». Противоположные углы — вертикальные, поэтому значений всего три: a, b, c, и <span class="m">a + b + c = 180°</span> (половина круга).</p>
+<div class="fig">${rays([0,50,120,180,230,300],[[0,1,'a',30],[1,2,'b',26],[2,3,'c',28],[3,4,'a',30],[4,5,'b',26],[5,0,'c',28]],{W:240})}</div>
+<div class="box ex"><b>Пример</b>Через точку проходят три прямые, два соседних угла 50° и 70°. Третий: 180° − 50° − 70° = 60°. Все шесть углов: 50°, 70°, 60°, 50°, 70°, 60°.</div>
+<div class="box tip"><b>Сумма трёх углов</b>При пересечении двух прямых сумма любых трёх из четырёх углов = 360° − (четвёртый угол).</div>`},
+{title:'Как устроено доказательство',lvl:6,html:`
+<p class="hook">Почему нельзя «просто посмотреть на рисунок»? Знаменитый пример: посмотри на две одинаковые стрелки — одну с «хвостиками» наружу, другую внутрь (иллюзия Мюллера-Лайера). Глаз уверен, что одна длиннее. А линейка говорит — равны. Глаз обманывает, рассуждение — нет.</p>
+<div class="box rule"><b>Каждый шаг — с причиной</b>В доказательстве каждый шаг опирается на: условие (дано), определение, аксиому или уже доказанную теорему. Причину пишут в скобках.</div>
+<div class="box ex"><b>Пример: вертикальные углы равны</b><ol class="steps"><li>∠1 + ∠2 = 180° (∠1 и ∠2 смежные).</li><li>∠3 + ∠2 = 180° (∠3 и ∠2 смежные).</li><li>Значит, ∠1 = 180° − ∠2 и ∠3 = 180° − ∠2.</li><li>Отсюда ∠1 = ∠3, что и требовалось доказать.</li></ol></div>
+<div class="box ex"><b>Пример: биссектрисы смежных углов перпендикулярны</b><ol class="steps"><li>∠AOC + ∠COB = 180° (смежные).</li><li>∠MOC = ½∠AOC, ∠CON = ½∠COB (OM, ON — биссектрисы).</li><li>∠MON = ∠MOC + ∠CON = ½(∠AOC + ∠COB) = ½ · 180° = 90°.</li></ol></div>
+<div class="box err"><b>Ошибка</b>Ссылаться на то, что надо доказать («углы равны, потому что они равны»). Это порочный круг.</div>`},
+{title:'★ Олимпиадные идеи',lvl:7,html:`
+<div class="box rule"><b>Принцип «среднего»</b>Если n чисел в сумме дают S, то хотя бы одно из них не больше S/n (иначе сумма была бы больше S).</div>
+<p>Пример: 5 прямых через одну точку делят полный угол на 10 углов, сумма 360°. Значит, есть угол не больше 36°. А если провести прямые через каждые 36°, все углы ровно 36° — лучше нельзя.</p>
+<div class="box rule"><b>Угол между биссектрисами</b>Если ∠AOB = α и ∠BOC = β с общей стороной OB, то угол между их биссектрисами равен (α + β)/2, когда углы не перекрываются, и |α − β|/2, когда один внутри другого.</div>
+<div class="box tip"><b>Подсчёт вертикальных пар</b>n прямых через точку дают 2n лучей. Каждая пара лучей, не лежащих на одной прямой, образует угол, и у каждого такого угла есть ровно один вертикальный «двойник».</div>`}
+];
+
+const symbols={tab:'Знаки',title:'Обозначения и правила',rows:[
+['∠1 + ∠2 = 180°','смежные углы','Общая сторона, две другие — на одной прямой.','47° и 133°'],
+['∠1 = ∠3','вертикальные углы','Стороны — продолжения друг друга; равны.','35° и 35°'],
+['OM — биссектриса','биссектриса угла','Луч из вершины, делит угол пополам.','∠AOM = ∠MOB'],
+['a ⊥ b','перпендикулярны','Пересекаются под прямым углом.','все 4 угла по 90°'],
+['x + kx = 180°','уравнение для смежных','Один угол в k раз больше.','x + 4x = 180 → 36°'],
+['a + b + c = 180°','три прямые через точку','Три соседних угла — половина круга.','50 + 70 + 60'],
+['360°','полный угол','Все углы вокруг точки.','4 · 90° = 360°'],
+['½(α + β)','угол между биссектрисами','Для смежных: ½ · 180° = 90°.','биссектрисы ⊥']
+],after:`<div class="box tip" style="margin-top:14px"><b>Главный совет</b>Видишь пересечение двух прямых — сразу отмечай: вертикальные равны, соседние (смежные) в сумме 180°.</div>`};
+
+/* =====================================================================
+   GENERATORS
+   ===================================================================== */
+/* L0 — смежные */
+G(0,()=>ADJ({short:'Общая сторона + две другие стороны на одной прямой.',explain:'Смежные углы: <b>одна сторона общая</b>, а две другие — продолжения друг друга (образуют прямую). «Общая вершина» есть и у вертикальных углов. «Сумма 180°» — это свойство смежных углов, а не определение: углы 100° и 80° в разных местах дают 180°, но смежными не являются. «Стороны одного — продолжения сторон другого» — это определение вертикальных углов.',
+ explain2:'Положи линейку на стол — это прямая. Поставь карандаш одним концом в точку на линейке. Карандаш делит развёрнутый угол на два смежных: у них общая сторона — карандаш.'}),{rule:true});
+G(0,()=>CH('Чему равна сумма смежных углов?','180°',['90°','360°','Зависит от углов'],{short:'Смежные углы вместе составляют развёрнутый угол.',
+ explain:'Две «внешние» стороны смежных углов лежат на одной прямой, поэтому вместе углы образуют <b>развёрнутый угол — 180°</b>. Это верно для любых смежных углов.',explain2:'Крышка ноутбука: сколько бы ты её ни открывал, угол «спереди» + угол «сзади» = плоскость стола = 180°.'}),{rule:true});
+G(0,()=>{const x=R(15,165);if(x===90)return null;
+ return {type:'num',q:`Один из смежных углов равен ${x}°. Найди другой угол (в градусах).`,pic:rays([0,180-x,180],[[0,1,'?',x>140?34:24],[1,2,x+'°',x<40?34:24]],{names:['A','C','B'],lab:['A','B','C','O'],W:240,maxH:120,extra:[[0,-1]]}),ans:180-x,
+ short:`180° − ${x}° = ${180-x}°`,explain:`Сумма смежных углов 180°: другой угол = 180° − ${x}° = <b>${180-x}°</b>. ${x<90?'Один острый — другой тупой ✅':'Один тупой — другой острый ✅'}`,
+ explain2:`Вместе два угла образуют развёрнутый угол (прямую AB). Сколько не хватает от ${x}° до 180°? ${180-x}°.`};});
+G(0,()=>{const pool=[['Могут ли оба смежных угла быть острыми?','Нет',['Да','Только если они равны'],'Если оба меньше 90°, их сумма меньше 180°, а у смежных она ровно 180°.'],
+ ['Могут ли оба смежных угла быть тупыми?','Нет',['Да','Только если они равны'],'Если оба больше 90°, их сумма больше 180°.'],
+ ['Смежные углы равны. Чему равен каждый?','90°',['45°','180°','60°'],'x + x = 180°, x = 90° — оба прямые.'],
+ ['Один из смежных углов прямой. Каким будет другой?','Прямым',['Острым','Тупым','Развёрнутым'],'180° − 90° = 90°.']];const [q,c,w,why]=pick(pool);
+ return CH(q,c,w,{short:why,explain:`Сумма смежных углов всегда 180°. ${why}`,explain2:'Представь развёрнутый угол 180° и луч внутри него. Если луч наклонён — один угол больше 90°, другой меньше. Если луч стоит «вертикально» — оба по 90°.'});});
+G(0,()=>{const d=R(5,60);
+ return {type:'num',q:`Найди угол, смежный с углом, который на ${d}° больше прямого.`,ans:90-d,hint:'Сначала найди сам угол: прямой — это 90°.',short:`(90 + ${d}) = ${90+d}°, смежный: 180 − ${90+d} = ${90-d}°.`,
+ explain:`Угол на ${d}° больше прямого: 90° + ${d}° = ${90+d}°. Смежный с ним: 180° − ${90+d}° = <b>${90-d}°</b>.`,explain2:`Короче: смежный с «прямой + ${d}°» — это «прямой − ${d}°», ведь вместе они 180° = 90° + 90°. 90 − ${d} = ${90-d}.`};});
+/* L1 — вертикальные */
+G(1,()=>CH('Какие два угла называются <b>вертикальными</b>?','Если стороны одного угла являются продолжениями сторон другого',['Если у них одна сторона общая, а две другие — продолжения друг друга','Если они расположены друг над другом','Если они равны'],
+ {short:'Обе стороны одного — продолжения обеих сторон другого.',explain:'Вертикальные углы: каждая сторона одного угла — продолжение стороны другого (обе прямые проходят через общую вершину). Вариант «одна сторона общая…» — это смежные углы. «Друг над другом» — путаница со словом «вертикальный». «Если они равны» — это свойство, а не определение (равные углы не обязательно вертикальные).',
+ explain2:'Скрести два карандаша — получится «X». Углы напротив друг друга (верхний и нижний, левый и правый) — вертикальные. Название от латинского vertex — «вершина».'}),{rule:true});
+G(1,()=>CH('Какое свойство у вертикальных углов?','Они равны',['Их сумма 180°','Их сумма 90°','Один всегда острый, другой тупой'],{short:'Вертикальные углы равны.',
+ explain:'Теорема: <b>вертикальные углы равны</b>. Доказательство: каждый из них смежен с одним и тем же углом, поэтому каждый равен 180° минус этот угол. Сумма 180° — у смежных углов.',explain2:'Ножницы: раскрыл лезвия на 30° — ручки раскрыты тоже на 30°. Лезвия и ручки образуют вертикальные углы.'}),{rule:true});
+G(1,()=>{const phi=R(25,155);if(Math.abs(phi-90)<8)return null;const k=R(1,4),m=pick([1,2,3,4].filter(t=>t!==k));const labs={};labs[k]=twoVal(phi,k)+'°';labs[m]='?';
+ const ans=twoVal(phi,m);const rel=(k-m)%2===0?'вертикальные':'смежные';
+ return {type:'num',q:`Две прямые пересекаются. Один из углов равен ${twoVal(phi,k)}° (см. рисунок). Найди угол, отмеченный знаком «?».`,pic:two(phi,labs),ans,
+ short:`Углы ${rel}: ${rel==='вертикальные'?`равны, ${ans}°`:`180° − ${twoVal(phi,k)}° = ${ans}°`}.`,
+ explain:`Отмеченные углы — <b>${rel}</b>${rel==='вертикальные'?' (лежат напротив друг друга)':' (соседние, общая сторона)'}. ${rel==='вертикальные'?`Вертикальные углы равны: <b>${ans}°</b>.`:`Сумма смежных 180°: 180° − ${twoVal(phi,k)}° = <b>${ans}°</b>.`}`,
+ explain2:`Правило «X»: напротив — равны, рядом — дополняют до 180°. ${twoVal(phi,k)<90?'Известный угол острый':'Известный угол тупой'}, а искомый на рисунке ${ans<90?'острый':'тупой'} — ответ ${ans}° с этим согласуется.`};});
+G(1,()=>{const s=2*R(15,85);if(s===180)return null;const ask=pick(['max','min']);const a=s/2,b=180-a;
+ return {type:'num',q:`При пересечении двух прямых образовались четыре угла. Сумма двух из них равна ${s}°. Найди ${ask==='max'?'больший':'меньший'} из четырёх углов.`,ans:ask==='max'?Math.max(a,b):Math.min(a,b),
+ hint:'Сумма двух смежных углов была бы 180°. Значит, эти два угла — какие?',short:`Это вертикальные углы: по ${a}°; смежный ${b}°.`,
+ explain:`Если бы углы были смежными, их сумма была бы 180°, а она ${s}°. Значит, это <b>вертикальные</b> углы, они равны: ${s} : 2 = ${a}°. Два других угла: 180° − ${a}° = ${b}°.<br>${ask==='max'?'Больший':'Меньший'} угол: <b>${ask==='max'?Math.max(a,b):Math.min(a,b)}°</b>.`,
+ explain2:`Четыре угла бывают только двух размеров: x и 180° − x. Пара с суммой ≠ 180° — это два одинаковых угла x: 2x = ${s}, x = ${a}. Второй размер — ${b}.`};});
+G(1,()=>{const phi=R(30,150);if(Math.abs(phi-90)<10)return null;const k=R(1,4);const vert=((k+1)%4)+1;const opts=['∠1','∠2','∠3','∠4'].filter(t=>t!==`∠${k}`);
+ return {type:'choice',q:`Какой угол вертикален углу ∠${k}?`,pic:two(phi,{1:'1',2:'2',3:'3',4:'4'},{plain:true}),opts,ans:opts.indexOf(`∠${vert}`),short:`∠${k} и ∠${vert} — напротив друг друга.`,
+ explain:`Вертикальный угол лежит <b>напротив</b>: его стороны — продолжения сторон ∠${k}. Это ∠${vert}. Остальные два угла — соседние с ∠${k}, то есть смежные с ним.`,
+ explain2:`Продолжи обе стороны угла ∠${k} за вершину — они ограничат ∠${vert}.`};});
+/* L2 — отношения */
+G(2,()=>{const k=R(2,8);return CH(`Один из смежных углов в ${k} раза больше другого. Меньший обозначили x. Какое уравнение верно?`,`x + ${k}x = 180`,[`x + ${k}x = 90`,`${k}x = 180`,`x + ${k}x = 360`],
+ {short:'Смежные углы в сумме 180°.',explain:`Меньший угол x, больший ${k}x. По свойству смежных углов их сумма 180°: <b>x + ${k}x = 180</b>. 90 — это не сумма смежных, 360 — полный угол.`,
+ explain2:`Проверь «на числах»: x = ${N(180/(k+1))}, ${k}x = ${N(180*k/(k+1))}; вместе 180 ✅.`});},{rule:true});
+G(2,()=>{const k=R(2,8);const x=180/(k+1);if(!isInt(x))return null;const ask=pick(['б','м']);
+ return {type:'num',q:`Один из смежных углов в ${k} раза больше другого. Найди ${ask==='б'?'больший':'меньший'} угол.`,ans:ask==='б'?k*x:x,short:`x + ${k}x = 180 → x = ${x}; ${k}x = ${k*x}`,
+ explain:`Пусть меньший угол x, больший ${k}x. x + ${k}x = 180°, ${k+1}x = 180°, x = ${x}°. Больший: ${k} · ${x}° = ${k*x}°.<br>Ответ: <b>${ask==='б'?k*x:x}°</b>.`,explain2:`180° делим на ${k+1} равных «долей» (1 доля + ${k} доли). Одна доля ${x}°. ${ask==='б'?`Больший угол — ${k} доли: ${k*x}°.`:'Меньший — одна доля.'}`};});
+G(2,()=>{const d=2*R(5,70);const x=(180-d)/2;if(x<5)return null;const ask=pick(['б','м']);
+ return {type:'num',q:`Один из смежных углов на ${d}° больше другого. Найди ${ask==='б'?'больший':'меньший'} угол.`,ans:ask==='б'?x+d:x,short:`x + x + ${d} = 180 → x = ${x}`,
+ explain:`Меньший x, больший x + ${d}. x + x + ${d} = 180, 2x = ${180-d}, x = ${x}°. Больший ${x+d}°. Ответ: <b>${ask==='б'?x+d:x}°</b>.`,
+ explain2:`Отними разницу: 180 − ${d} = ${180-d} — это два одинаковых угла по ${x}°. Больший получит ещё ${d}°: ${x+d}°. Проверка: ${x} + ${x+d} = 180 ✅.`};});
+G(2,()=>{let p=R(1,9),q=R(2,11);if(p>=q||H.gcd(p,q)!==1||180%(p+q))return null;const x=180/(p+q);
+ return {type:'num',q:`Смежные углы относятся как ${p} : ${q}. Найди больший из них.`,ans:q*x,short:`${p}x + ${q}x = 180 → x = ${x}; ${q}x = ${q*x}`,
+ explain:`Углы ${p}x и ${q}x. ${p}x + ${q}x = 180°, ${p+q}x = 180°, x = ${x}°. Углы ${p*x}° и ${q*x}°. Больший: <b>${q*x}°</b>.`,explain2:`Всего ${p+q} равных частей на 180°: одна часть ${x}°. Больший угол — ${q} частей = ${q*x}°.`};});
+G(2,()=>{const k=R(2,8);const x=180/(k+1);if(!isInt(x))return null;
+ return {type:'num',q:`При пересечении двух прямых один из углов в ${k} раза больше другого. Найди наибольший из четырёх углов.`,ans:k*x,hint:'Могут ли эти два угла быть вертикальными?',short:`Углы смежные: x + ${k}x = 180 → ${k*x}°.`,
+ explain:`Вертикальные углы равны, а здесь углы разные — значит, они <b>смежные</b>: x + ${k}x = 180°, x = ${x}°, ${k}x = ${k*x}°. Остальные два угла вертикальны этим, поэтому углы: ${x}°, ${k*x}°, ${x}°, ${k*x}°. Наибольший: <b>${k*x}°</b>.`,
+ explain2:`При пересечении двух прямых есть только два разных значения угла, и они в сумме 180°. Значит, x + ${k}x = 180.`};});
+G(2,()=>{const x=R(20,80),k=R(2,3),d=k*x-(180-x);/* bigger = k*x - d */const big=180-x;if(Math.abs(d)<5||Math.abs(d)>60)return null;
+ return {type:'num',q:`Один из смежных углов на ${Math.abs(d)}° ${d>0?'меньше':'больше'}, чем ${k===2?'удвоенный':'утроенный'} другой. Найди эти углы и в ответ запиши больший.`,ans:big,hint:`Пусть один угол x, другой ${k}x ${d>0?'−':'+'} ${Math.abs(d)}.`,
+ short:`x + ${k}x ${d>0?'−':'+'} ${Math.abs(d)} = 180 → x = ${x}; углы ${x}° и ${big}°.`,explain:`Пусть второй угол x, тогда первый ${k}x ${d>0?'−':'+'} ${Math.abs(d)}. Сумма смежных:<br>x + ${k}x ${d>0?'−':'+'} ${Math.abs(d)} = 180<br>${k+1}x = ${180+d}, x = ${x}°.<br>Первый: ${k} · ${x} ${d>0?'−':'+'} ${Math.abs(d)} = ${big}°. Больший: <b>${big}°</b>.`,
+ explain2:`Проверка: ${x} + ${big} = 180 ✅, и ${k} · ${x} = ${k*x}, ${k*x} ${d>0?'−':'+'} ${Math.abs(d)} = ${big} ✅.`};});
+/* L3 — биссектриса */
+G(3,()=>CH('Что такое <b>биссектриса</b> угла?','Луч из вершины угла, делящий его на два равных угла',['Отрезок, соединяющий стороны угла','Прямая, перпендикулярная стороне угла','Луч, делящий угол на два смежных угла'],
+ {short:'Биссектриса делит угол пополам.',explain:'Биссектриса угла — <b>луч</b>, который выходит из вершины и делит угол на два <b>равных</b> угла. Она не обязана быть перпендикулярной стороне. «Два смежных угла» — неверно: части угла не смежные (их внешние стороны не на одной прямой, если угол не развёрнутый).',
+ explain2:'Слово от латинского bis (дважды) + sectio (резать): «разрезающая надвое». Сложи бумажный угол так, чтобы стороны совпали, — линия сгиба и есть биссектриса.'}),{rule:true});
+G(3,()=>CH('Чему равен угол между биссектрисами двух смежных углов?','90°',['180°','Половине большего угла','Зависит от углов'],
+ {short:'½ · 180° = 90° всегда.',explain:'Смежные углы 2x и 2y: 2x + 2y = 180°. Угол между биссектрисами = x + y = 180° : 2 = <b>90°</b> — для любых смежных углов. Биссектрисы смежных углов перпендикулярны.',
+ explain2:'Пример: смежные углы 120° и 60°. Половинки 60° и 30°, вместе 90°. Другой пример: 150° и 30° → 75° + 15° = 90°. Всегда 90°!'}),{rule:true});
+G(3,()=>{const x=2*R(15,85);const ask=pick([0,1]);
+ return {type:'num',q:ask?`OM — биссектриса угла AOB, ∠AOB = ${x}°. Найди ∠AOM.`:`OM — биссектриса угла AOB, ∠AOM = ${x/2}°. Найди ∠AOB.`,pic:rays([0,x/2,x],[[0,1,ask?'?':x/2+'°',30,{n:1}],[1,2,'',30,{n:1}]],{names:['A','M','B'],lab:['A','M','B','O'],hl:[1],W:240,maxH:150,extra:[[-1,0]]}),ans:ask?x/2:x,
+ short:ask?`${x} : 2 = ${x/2}`:`2 · ${x/2} = ${x}`,explain:`Биссектриса делит угол пополам: ∠AOM = ∠MOB = ∠AOB : 2. ${ask?`∠AOM = ${x} : 2 = <b>${x/2}°</b>.`:`∠AOB = 2 · ${x/2}° = <b>${x}°</b>.`}`,
+ explain2:`Две равные половинки по ${x/2}° вместе дают ${x}°.`};});
+G(3,()=>{const x=2*R(20,80);const ans=180-x/2;
+ return {type:'num',q:`∠AOB = ${x}°, OM — его биссектриса. Луч OK — продолжение луча OA за точку O. Найди ∠MOK.`,pic:rays([0,x/2,x,180],[[1,3,'?',22]],{names:['A','M','B','K'],lab:['A','M','B','K','O'],hl:[1],W:260,maxH:150,extra:[[0,-1]]}),ans,
+ hint:'∠AOM и ∠MOK — смежные.',short:`∠AOM = ${x/2}, ∠MOK = 180 − ${x/2} = ${ans}`,explain:`∠AOM = ${x} : 2 = ${x/2}° (OM — биссектриса). Лучи OA и OK образуют прямую, поэтому ∠AOM и ∠MOK — смежные: ∠MOK = 180° − ${x/2}° = <b>${ans}°</b>.`,
+ explain2:`На рисунке развёрнутый угол AOK = 180° разбит лучом OM на ${x/2}° (до OA) и искомый угол. ${180} − ${x/2} = ${ans}.`};});
+G(3,()=>{const y=R(10,80);const ans=180-2*y;
+ return {type:'num',q:`∠AOC и ∠COB — смежные. OM — биссектриса ∠AOC, ∠MOC = ${y}°. Найди ∠COB.`,pic:rays([0,y,2*y,180],[[0,1,'',30,{n:1}],[1,2,y+'°',30,{n:1}],[2,3,'?',22]],{names:['A','M','C','B'],lab:['A','M','C','B','O'],hl:[1],W:260,maxH:150,extra:[[0,-1]]}),ans,
+ short:`∠AOC = ${2*y}, ∠COB = 180 − ${2*y} = ${ans}`,explain:`OM — биссектриса, значит ∠AOC = 2 · ∠MOC = ${2*y}°. ∠AOC и ∠COB смежные: ∠COB = 180° − ${2*y}° = <b>${ans}°</b>.`,
+ explain2:`Два шага: «удвой половинку», потом «дополни до 180°». ${y} → ${2*y} → ${ans}.`};});
+/* L4 — перпендикуляр */
+G(4,()=>CH('Какие прямые называются <b>перпендикулярными</b>?','Пересекающиеся под прямым углом',['Не пересекающиеся','Пересекающиеся под любым углом','Пересекающиеся под углом 180°'],
+ {short:'Перпендикулярные: угол 90°.',explain:'Две прямые <b>перпендикулярны</b>, если они пересекаются под прямым углом (90°). Тогда все четыре угла по 90°. Непересекающиеся прямые на плоскости — параллельные.',explain2:'Как линии тетрадной клетки: вертикальная и горизонтальная пересекаются под прямым углом. Знак ⊥ — маленький рисунок перпендикуляра.'}),{rule:true});
+G(4,()=>CH('Сколько прямых, перпендикулярных прямой a, можно провести через точку, лежащую на прямой a?','Ровно одну',['Две','Ни одной','Бесконечно много'],
+ {short:'Теорема: через точку прямой — только один перпендикуляр.',explain:'По теореме: через каждую точку прямой можно провести перпендикулярную ей прямую, и притом <b>только одну</b>. Если бы их было две, они образовали бы с прямой a два прямых угла «внутри» развёрнутого: 90° + 90° + (угол между ними) > 180° — противоречие.',
+ explain2:'Поставь угольник прямым углом к линейке в отмеченной точке. Подвинуть его, не сдвинув точку и не испортив прямой угол, нельзя — линия одна.'}),{rule:true});
+G(4,()=>{const y=R(10,80);const ask=pick(['AOE','BOE']);const ans=ask==='AOE'?90+y:90-y;
+ return {type:'num',q:`Прямые AB и CD перпендикулярны и пересекаются в точке O. Луч OE лежит внутри угла BOD, ∠EOD = ${y}°. Найди ∠${ask}.`,
+ pic:rays([0,90,180,270,270+y],[[3,4,y+'°',28]],{names:['B','C','A','D','E'],lab:['A','B','C','D','E','O'],rt:[['O','B','C']],W:220,maxH:180}),ans,
+ short:ask==='AOE'?`∠BOE = 90 − ${y} = ${90-y}, ∠AOE = 180 − ${90-y} = ${ans}`:`90 − ${y} = ${ans}`,
+ explain:`∠BOD = 90° (прямые перпендикулярны). OE внутри него: ∠BOE = 90° − ${y}° = ${90-y}°.${ask==='AOE'?` ∠AOE и ∠BOE — смежные (OA и OB — одна прямая): ∠AOE = 180° − ${90-y}° = <b>${ans}°</b>.`:` Ответ: <b>${ans}°</b>.`}`,
+ explain2:ask==='AOE'?`Другой путь: ∠AOE = ∠AOD + ∠DOE = 90° + ${y}° = ${ans}°.`:`Прямой угол BOD луч OE делит на ${y}° и ${90-y}°.`};});
+G(4,()=>{let p=R(1,8),q=R(2,9);if(p>=q||H.gcd(p,q)>1||90%(p+q))return null;const x=90/(p+q);
+ return {type:'num',q:`Луч внутри прямого угла делит его на два угла в отношении ${p} : ${q}. Найди больший из них.`,ans:q*x,short:`${p+q} частей = 90°, часть ${x}°, больший ${q*x}°`,
+ explain:`Углы ${p}x и ${q}x, вместе 90°: ${p+q}x = 90°, x = ${x}°. Больший угол ${q} · ${x}° = <b>${q*x}°</b>.`,explain2:`Прямой угол — 90°. Делим на ${p+q} равных частей по ${x}°. Больший берёт ${q} частей.`};});
+G(4,()=>{const e=pick([0.5,1,1.5,2,2.5,3]);const gap=2*e;
+ return {type:'num',q:`Столяр проверяет свой угольник: приложил его к прямому краю доски и провёл линию вдоль второй стороны. Потом перевернул угольник другой стороной и провёл линию ещё раз из той же точки. Линии разошлись на угол ${N(gap)}°. Угол угольника явно тупой (чуть больше прямого). Чему он равен (в градусах)?`,ans:90+e,
+ hint:'Первая линия отклонена от перпендикуляра на ошибку e в одну сторону, вторая — на e в другую.',short:`2e = ${N(gap)}° → e = ${N(e)}°, угол ${N(90+e)}°.`,
+ explain:`Пусть угол угольника 90° + e. Первая линия образует с правой частью края угол 90° + e — она отклонена от настоящего перпендикуляра на e в одну сторону. После переворота угольник откладывает 90° + e уже от левой части края — линия отклонена на e в другую сторону. Между линиями 2e = ${N(gap)}°, значит e = ${N(e)}°. Угол угольника: <b>${N(90+e)}°</b>.`,
+ explain2:`Проверь: угольник ${N(90+e)}°. Первая линия образует с правой частью края ${N(90+e)}°, значит с левой ${N(90-e)}°. Вторая (после переворота) образует ${N(90+e)}° с левой частью. Разница ${N(90+e)} − ${N(90-e)} = ${N(gap)}° ✅. Ошибка удвоилась — потому способ и точный.`};});
+/* L5 — несколько прямых */
+G(5,()=>CH('Чему равна сумма всех углов, на которые несколько лучей с общим началом делят плоскость вокруг этой точки?','360°',['180°','90° · число лучей','Зависит от числа лучей'],
+ {short:'Полный оборот — 360°.',explain:'Все углы вокруг точки вместе составляют полный оборот — <b>360°</b>, сколько бы лучей ни было (если углы не перекрываются). Например, 4 прямых угла: 4 · 90° = 360°.',explain2:'Повернись на месте, пока снова не посмотришь вперёд, — это 360°. Лучи лишь разрезают этот оборот на кусочки.'}),{rule:true});
+G(5,()=>{const a=5*R(5,14),b=5*R(5,14);const c=180-a-b;if(c<25)return null;const pos=R(0,5);const val=[a,b,c,a,b,c];const d=[0,a,a+b,180,180+a,180+a+b];
+ const labs=[];labs.push([0,1,a+'°',30]);labs.push([1,2,b+'°',28]);if(pos>1)labs.push([pos,(pos+1)%6,'?',28]);else labs.push([pos===0?3:4,pos===0?4:5,'?',28]);const ans=pos>1?val[pos]:val[pos===0?3:4];
+ return {type:'num',q:`Через точку O проходят три прямые. Два угла равны ${a}° и ${b}° (см. рисунок). Найди угол, отмеченный «?».`,pic:rays(d,labs,{W:250,maxH:200}),ans,
+ short:`Три соседних угла = 180°; противоположные равны → ${ans}°`,explain:`Противоположные (вертикальные) углы равны, поэтому шесть углов — это a, b, c, a, b, c, где a + b + c = 180° (три соседних угла составляют развёрнутый). c = 180° − ${a}° − ${b}° = ${c}°.<br>Угол «?» ${ans===c?'— это c':`вертикален углу ${ans}°`}: <b>${ans}°</b>.`,
+ explain2:`Найди угол, вертикальный «?» (напротив через точку O). ${ans===c?`Это «оставшийся» угол развёрнутого: 180 − ${a} − ${b} = ${c}`:`Он отмечен числом ${ans}°`}.`};});
+G(5,()=>{const a=5*R(5,14),b=5*R(5,14);const c=180-a-b;if(c<25)return null;
+ return {type:'num',q:`Через одну точку проходят три прямые, образуя шесть углов. Найди сумму трёх углов, взятых «через один» (∠1 + ∠2 + ∠3 на рисунке).`,pic:rays([0,a,a+b,180,180+a,180+a+b],[[0,1,'1',30],[2,3,'2',28],[4,5,'3',28]],{W:240,maxH:190}),ans:180,
+ hint:'Замени один из углов вертикальным ему.',short:'Через один = три разных значения a, b, c → 180°.',
+ explain:`Шесть углов по кругу: a, b, c, a, b, c (вертикальные равны). Углы «через один» — это a, c и b (каждый из трёх значений по разу). a + b + c = 180° (три соседних угла образуют развёрнутый). Ответ: <b>180°</b> — какими бы ни были прямые.`,
+ explain2:`Сейчас углы, например, ${a}°, ${c}° и ${b}°: ${a} + ${c} + ${b} = 180 ✅. Повращай прямые — сумма не изменится.`};});
+G(5,()=>{const x=R(20,160);if(x===90)return null;const s=360-x;
+ return {type:'num',q:`Две прямые пересекаются. Сумма трёх из четырёх образовавшихся углов равна ${s}°. Найди четвёртый угол.`,ans:x,short:`360 − ${s} = ${x}`,
+ explain:`Все четыре угла вокруг точки в сумме дают 360°. Четвёртый: 360° − ${s}° = <b>${x}°</b>. (Проверим: углы ${x}°, ${180-x}°, ${x}°, ${180-x}°; без одного ${x}° сумма ${s}° ✅.)`,
+ explain2:`Другой путь: среди трёх углов есть пара смежных (180°), значит третий = ${s} − 180 = ${s-180}°, а четвёртый смежен с ним: 180 − ${s-180} = ${x}°.`};});
+/* L6 — доказательства */
+G(6,()=>CH('В доказательстве каждый шаг должен опираться на…','условие, определение, аксиому или уже доказанную теорему',['то, что видно на рисунке','измерение транспортиром','утверждение, которое нужно доказать'],
+ {short:'Только на «законные» основания.',explain:'Шаг доказательства обосновывают <b>условием</b>, <b>определением</b>, <b>аксиомой</b> или <b>ранее доказанной теоремой</b>. Рисунок может обмануть, измерение неточно, а ссылаться на доказываемое — порочный круг.',
+ explain2:'Как в суде: «потому что мне так кажется» — не довод. Нужна ссылка на закон (аксиому, теорему) или на факты дела (условие).'}),{rule:true});
+G(6,()=>{const pool=[
+ ['Доказываем, что вертикальные углы ∠1 и ∠3 равны. ∠2 — угол, смежный с каждым из них. Шаг: «∠1 + ∠2 = 180°». Почему?','∠1 и ∠2 смежные, а сумма смежных углов 180°',['∠1 и ∠2 вертикальные','∠1 = ∠2','Так видно на рисунке']],
+ ['Доказываем, что биссектрисы OM и ON смежных углов AOC и COB перпендикулярны. Шаг: «∠MOC = ½∠AOC». Почему?','OM — биссектриса угла AOC',['∠MOC и ∠AOC смежные','∠MOC и ∠AOC вертикальные','Сумма смежных углов 180°']],
+ ['Доказываем: если один из четырёх углов при пересечении двух прямых прямой, то и остальные прямые. Шаг: «Угол, вертикальный прямому, тоже 90°». Почему?','Вертикальные углы равны',['Сумма смежных углов 180°','Все углы на рисунке одинаковые','По определению биссектрисы']],
+ ['Тот же факт: угол, смежный с прямым углом, равен 180° − 90° = 90°. На что опирается этот шаг?','На свойство смежных углов (сумма 180°)',['На свойство вертикальных углов','На определение биссектрисы','На аксиому о двух точках']]];
+ const [q,c,w]=pick(pool);
+ return CH(q,c,w,{short:c+'.',explain:`Обоснование: <b>${c}</b>. Остальные варианты либо неверны, либо не относятся к этому шагу. «Видно на рисунке» никогда не является обоснованием.`,explain2:'Задай вопрос: «Что связывает эти углы?» Смежные → сумма 180°. Вертикальные → равны. Биссектриса → половина угла.'});});
+G(6,()=>orderTask('Нужно доказать: вертикальные углы ∠1 и ∠3 равны (∠2 смежен с каждым из них). Шаги перепутаны:',
+ ['∠1 + ∠2 = 180°, так как эти углы смежные','∠3 + ∠2 = 180°, так как эти углы смежные','Значит, ∠1 = 180° − ∠2 и ∠3 = 180° − ∠2','Следовательно, ∠1 = ∠3'],
+ {short:'Сначала два свойства смежных, потом выражаем, потом вывод.',explain:'Логика: сначала факты (две суммы по 180°), потом выражаем ∠1 и ∠3 через ∠2, и только в конце — вывод ∠1 = ∠3. Вывод не может стоять раньше фактов, из которых он следует.',
+ explain2:'Как рецепт: сначала достаём ингредиенты (два равенства), потом смешиваем (выражаем), потом подаём (вывод).'}));
+G(6,()=>orderTask('Нужно доказать: биссектрисы OM и ON смежных углов AOC и COB перпендикулярны. Шаги перепутаны:',
+ ['∠AOC + ∠COB = 180°, так как углы смежные','∠MOC = ½∠AOC и ∠CON = ½∠COB, так как OM и ON — биссектрисы','∠MON = ∠MOC + ∠CON = ½(∠AOC + ∠COB)','∠MON = ½ · 180° = 90°, значит OM ⊥ ON'],
+ {short:'Сумма смежных → половинки → сложение → 90°.',explain:'Сначала свойство смежных углов (180°), затем по определению биссектрисы берём половинки, складываем их (луч OC лежит между OM и ON) и получаем ½ · 180° = 90°.',
+ explain2:'Проверь на числах: ∠AOC = 130°, ∠COB = 50°. Половинки 65° и 25°, вместе 90°. Порядок шагов повторяет этот расчёт.'}));
+G(6,()=>{const a=R(20,80);
+ return CH(`Петя утверждает: «Если два угла равны, то они вертикальные». Какой пример это опровергает?`,`Два угла по ${a}° в разных местах чертежа, без общей вершины`,[`Два вертикальных угла по ${a}°`,`Смежные углы ${a}° и ${180-a}°`,`Два прямых угла при пересечении двух перпендикулярных прямых`],
+ {short:'Равные, но не вертикальные — контрпример.',explain:`Чтобы опровергнуть «если равны, то вертикальные», нужны углы, которые <b>равны</b>, но <b>не вертикальные</b>. Два угла по ${a}° в разных местах — ровно такой пример. Вертикальные углы или вертикальные прямые углы утверждение не опровергают, а смежные ${a}° и ${180-a}° не равны — условие не выполнено.`,
+ explain2:'Утверждение Пети — обратное к теореме «вертикальные углы равны». Обратное может быть неверным: из «все кошки — животные» не следует «все животные — кошки».'});});
+/* L7 — ★ */
+G(7,()=>CH('Как расположены биссектрисы двух вертикальных углов?','Лежат на одной прямой (образуют развёрнутый угол)',['Перпендикулярны','Параллельны','Совпадают'],
+ {short:'Угол между ними = x/2 + (180° − x) + x/2 = 180°.',explain:'Пусть вертикальные углы по x. Между биссектрисами: половинка x/2, затем смежный угол 180° − x, затем ещё половинка x/2. Итого x/2 + 180° − x + x/2 = <b>180°</b> — биссектрисы образуют развёрнутый угол, то есть лежат на одной прямой.',
+ explain2:'Вертикальные углы симметричны относительно вершины (поворот на 180°). При таком повороте биссектриса одного переходит в биссектрису другого — луч поворачивается на 180° и становится продолжением самого себя.'}),{rule:true,star:true});
+G(7,()=>{const n=R(2,7);/* brute force */const dirs=range(0,2*n-1).map(i=>i*180/n+((i%n)*7%11)*0.9);let cnt=0;const ang=(a,b)=>{let d=Math.abs(a-b)%360;return Math.min(d,360-d);};
+ const L=dirs.map(d=>d%360);const angles=[];for(let i=0;i<2*n;i++)for(let j=i+1;j<2*n;j++){if(Math.abs(ang(L[i],L[j])-180)<1e-6)continue;angles.push([i,j]);}
+ for(const [i,j] of angles){const vi=(i+n)%(2*n),vj=(j+n)%(2*n);const a=Math.min(vi,vj),b=Math.max(vi,vj);if(a<i||(a===i&&b<j))continue;if(angles.some(p=>p[0]===a&&p[1]===b))cnt++;}
+ const ans=n*(n-1);if(cnt!==ans)return null;
+ return {type:'num',q:`Через одну точку проведены ${n} различных прямых. Сколько пар вертикальных углов при этом образовалось? (Считаем углы, образованные любыми двумя лучами, кроме развёрнутых.)`,ans,hint:`${n} прямых — это ${2*n} лучей. Сколько углов (пар лучей) не развёрнутые?`,
+ short:`(${2*n}·${2*n-1}/2 − ${n}) : 2 = ${ans}`,explain:`${n} прямых дают ${2*n} лучей. Пар лучей: ${2*n} · ${2*n-1} : 2 = ${n*(2*n-1)}. Из них ${n} пар образуют развёрнутые углы (лучи одной прямой). Остаётся ${n*(2*n-1)-n} углов. Каждый имеет ровно один вертикальный «двойник», поэтому пар вдвое меньше: <b>${ans}</b>.`,
+ explain2:`Другой способ: каждая пара прямых пересекается и даёт 2 пары вертикальных углов («X»). Пар прямых ${n}·${n-1}/2, умножаем на 2: ${ans}. (Проверено перебором.)`};},{star:true});
+G(7,()=>{const n=R(3,9);const v=180/n;
+ return {type:'num',q:`Через точку проведены ${n} прямых. Какое наибольшее значение может иметь <b>наименьший</b> из образовавшихся углов между соседними лучами? Если нужно, ответ — дробью.`,ans:v,ph:'число или дробь',hint:`Сколько углов вокруг точки и какова их сумма?`,
+ short:`${2*n} углов, сумма 360° → наименьший ≤ 360/${2*n} = ${N(Math.round(v*1000)/1000)}${isInt(v)?'':'…'}`,
+ explain:`${n} прямых дают ${2*n} лучей и ${2*n} углов между соседними лучами, их сумма 360°. Если бы все углы были больше 360/${2*n} = 180/${n}, сумма превысила бы 360°. Значит, наименьший угол ≤ 180/${n}°. Равенство достигается, если провести прямые через каждые 180/${n}°. Ответ: <b>${isInt(v)?v:`180/${n}`}</b>${isInt(v)?'°':` ≈ ${N(Math.round(v*100)/100)}°`}.`,
+ explain2:`Как поделить пиццу на ${2*n} кусков, чтобы самый маленький был как можно больше? Резать поровну! Каждый кусок 360 : ${2*n} = ${isInt(v)?v:N(Math.round(v*100)/100)}°.`};},{star:true});
+G(7,()=>{const k=R(2,4);const x=pick([64,96,128,160,32*R(1,5)]);const v=x/2**k;if(!isInt(v*4))return null;const nm=['C','D','E','F','K'];const chain=nm.slice(0,k);
+ const steps=chain.map((c,i)=>`O${c} — биссектриса ∠${i?nm[i-1]:'A'}OB`).join(', ');
+ return {type:'num',q:`∠AOB = ${x}°. ${steps}. Найди ∠${chain[k-1]}OB.`,ans:v,short:`${k} раза пополам: ${x} : ${2**k} = ${N(v)}`,
+ explain:`Каждая биссектриса делит угол пополам:<br>${chain.map((c,i)=>`∠${c}OB = ${N(x/2**i)} : 2 = ${N(x/2**(i+1))}°`).join('<br>')}<br>Ответ: <b>${N(v)}°</b>.`,explain2:`${k} раз делим пополам — это деление на ${2**k}: ${x} : ${2**k} = ${N(v)}°.`};},{star:true});
+G(7,()=>{const a=2*R(15,60),b=2*R(10,a/2-5);if(a+b>=180||a===b)return null;
+ return {type:'set',q:`∠AOB = ${a}°, ∠BOC = ${b}°. Найди <b>все</b> возможные значения угла между биссектрисами этих углов.`,ans:[(a+b)/2,(a-b)/2],hint:'Луч OC может лежать внутри ∠AOB, а может — вне.',
+ short:`(${a} + ${b})/2 = ${(a+b)/2} или (${a} − ${b})/2 = ${(a-b)/2}`,explain:`Пусть OM — биссектриса ∠AOB, ON — ∠BOC. ∠MOB = ${a/2}°, ∠BON = ${b/2}°.<br>1) OC вне ∠AOB: OM и ON по разные стороны от OB, ∠MON = ${a/2} + ${b/2} = ${(a+b)/2}°.<br>2) OC внутри ∠AOB: OM и ON по одну сторону от OB, ∠MON = ${a/2} − ${b/2} = ${(a-b)/2}°.<br>Ответ: <b>${(a+b)/2}, ${(a-b)/2}</b>.`,
+ explain2:`Нарисуй оба случая. Важно, что половинки отсчитываются от общего луча OB: в одном случае они складываются, в другом — вычитаются.`};},{star:true});
+G(7,()=>{const x=R(10,40),y=R(5,x-3);const p=x+y,q=x-y;/* OC bisector of AOB, OD inside BOC with ∠COD = y; ∠AOD = x + y, ∠DOB = x − y */
+ return {type:'num',q:`OC — биссектриса угла AOB. Луч OD лежит внутри угла BOC. ∠AOD = ${p}°, ∠DOB = ${q}°. Найди ∠COD.`,pic:rays([0,x-y,x,2*x],[[0,1,q+'°',34],[2,3,'',22]],{names:['B','D','C','A'],lab:['A','B','C','D','O'],hl:[2],W:260,maxH:170,extra:[[-1,-1]]}),ans:y,
+ hint:'Пусть ∠AOC = ∠COB = x. Вырази ∠AOD и ∠DOB через x и ∠COD.',short:`∠COD = (${p} − ${q}) : 2 = ${y}`,
+ explain:`Пусть ∠AOC = ∠COB = x, ∠COD = y. Тогда ∠AOD = x + y, ∠DOB = x − y. Вычтем: ∠AOD − ∠DOB = 2y.<br>y = (${p} − ${q}) : 2 = <b>${y}°</b>.`,
+ explain2:`Проверка: весь угол ${p} + ${q} = ${p+q}°, половина ${x}° — это ∠COB. ∠COD = ∠COB − ∠DOB = ${x} − ${q} = ${y}° ✅.`};},{star:true});
+G(7,()=>{let r;for(;;){r=[R(1,5),R(1,5),R(1,5),R(1,5)];const s=r.reduce((a,b)=>a+b,0);if(360%s===0&&new Set(r).size>=3)break;}const s=r.reduce((a,b)=>a+b,0),u=360/s;const A=r.map(t=>t*u);
+ let m=A[0]/2+A[1]+A[2]/2;if(m>180)m=360-m;
+ return {type:'num',q:`Лучи OA, OB, OC, OD (по кругу) делят полный угол на четыре угла: ∠AOB : ∠BOC : ∠COD : ∠DOA = ${r.join(' : ')}. Найди угол между биссектрисами углов AOB и COD.`,ans:m,hint:'Сначала найди сами углы: их сумма 360°.',
+ short:`Углы ${A.join('°, ')}°; ${A[0]/2} + ${A[1]} + ${A[2]/2} = ${A[0]/2+A[1]+A[2]/2}${A[0]/2+A[1]+A[2]/2>180?' > 180 → '+m:''}`,
+ explain:`${s} частей = 360°, одна часть ${u}°. Углы: ∠AOB = ${A[0]}°, ∠BOC = ${A[1]}°, ∠COD = ${A[2]}°, ∠DOA = ${A[3]}°.<br>Идём от биссектрисы ∠AOB через OB и OC к биссектрисе ∠COD: ${A[0]/2} + ${A[1]} + ${A[2]/2} = ${A[0]/2+A[1]+A[2]/2}°.${A[0]/2+A[1]+A[2]/2>180?` Это больше 180°, поэтому угол между лучами — с другой стороны: 360 − ${A[0]/2+A[1]+A[2]/2} = ${m}°.`:''}<br>Ответ: <b>${m}°</b>.`,
+ explain2:`С другой стороны путь: ${A[2]/2} + ${A[3]} + ${A[0]/2} = ${A[2]/2+A[3]+A[0]/2}°. Две дуги в сумме 360°, угол между лучами — меньшая из них: ${m}°.`};},{star:true});
+
+/* =====================================================================
+   WIDGET: two crossing lines + bisectors
+   ===================================================================== */
+function onTheory(root){const w=root.querySelector('#w-vert');if(!w)return;
+  w.innerHTML=`<label>∠1 = <output id="wvv">40</output>°<input type="range" id="wv" min="5" max="175" step="1" value="40"></label>
+<label style="font-size:14px"><input type="checkbox" id="wvb"> показать биссектрисы</label>
+<div id="wvs" style="display:flex;justify-content:center"></div><div id="wvo" class="small" style="text-align:center;margin-top:4px"></div>`;
+  const A=w.querySelector('#wv'),B=w.querySelector('#wvb');
+  const draw=()=>{const p=+A.value;w.querySelector('#wvv').textContent=p;const W=260,H=200,cx=130,cy=100,r=95;let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" style="font-family:system-ui,sans-serif">`;
+    const dirs=[0,p,180,180+p];const pt=(d,rr)=>[cx+rr*Math.cos(d*D2R),cy-rr*Math.sin(d*D2R)];
+    const vals=[p,180-p,p,180-p];const cols=['var(--accent)','var(--fig)','var(--accent)','var(--fig)'];
+    for(let k=0;k<4;k++){const a=dirs[k],b=dirs[k]+vals[k];const rr=k%2?26:34;const P1=pt(a,rr),P2=pt(b,rr);s+=`<path d="M${cx},${cy} L${r1(P1[0])},${r1(P1[1])} A${rr},${rr} 0 0 0 ${r1(P2[0])},${r1(P2[1])} Z" fill="${k%2?'var(--line)':'var(--hl)'}" fill-opacity="${k%2?0.5:0.4}" stroke="none"/>`;}
+    [0,1].forEach(i=>{const P1=pt(dirs[i],r),P2=pt(dirs[i]+180,r);s+=`<line x1="${r1(P1[0])}" y1="${r1(P1[1])}" x2="${r1(P2[0])}" y2="${r1(P2[1])}" stroke="var(--fig)" stroke-width="2"/>`;});
+    if(B.checked)for(let k=0;k<4;k++){const P=pt(dirs[k]+vals[k]/2,r*0.9);s+=`<line x1="${cx}" y1="${cy}" x2="${r1(P[0])}" y2="${r1(P[1])}" stroke="${k%2?'var(--muted)':'var(--accent)'}" stroke-width="1.6" stroke-dasharray="5 4"/>`;}
+    for(let k=0;k<4;k++){const m=dirs[k]+vals[k]/2;const rr=Math.max(48,24/Math.sin(Math.max(vals[k],8)*D2R/2));const P=pt(m,Math.min(rr,80));s+=`<text x="${r1(P[0])}" y="${r1(P[1]+5)}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-ink)" stroke="var(--bg)" stroke-width="3" paint-order="stroke">∠${k+1}=${vals[k]}°</text>`;}
+    s+=`<circle cx="${cx}" cy="${cy}" r="3" fill="var(--fig)"/></svg>`;w.querySelector('#wvs').innerHTML=s;
+    w.querySelector('#wvo').innerHTML=`Вертикальные: ∠1 = ∠3 = <span class="out">${p}°</span>, ∠2 = ∠4 = <span class="out">${180-p}°</span>. Смежные: ∠1 + ∠2 = ${p} + ${180-p} = <b>180°</b>.${B.checked?' Биссектрисы соседних углов перпендикулярны (90°), а биссектрисы вертикальных лежат на одной прямой.':''}`;};
+  A.oninput=draw;B.onchange=draw;draw();}
+
+window.TOPIC={id:'g7_angles',title:'Смежные и вертикальные углы',subtitle:'Геометрия · 7 класс',
+intro:`<p>Когда пересекаются две прямые, возникают четыре угла — и между ними есть строгие связи. Разберём смежные и вертикальные углы, биссектрису и перпендикулярные прямые, научимся решать задачи «один угол в 3 раза больше другого» и строить доказательства по шагам. В конце — олимпиадные задачи про пучки прямых и цепочки биссектрис.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Смежные углы','Вертикальные углы','Задачи с отношениями','Биссектриса','Перпендикулярные прямые','Несколько прямых через точку','Доказательства по шагам','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

@@ -1,0 +1,1223 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Сумма углов треугольника — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,num:N}=H;
+/* =====================================================================
+   Geometry SVG helper (math coords, y up → auto-fit into ≤ 320 px)
+   ===================================================================== */
+const D2R=Math.PI/180;
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(a,k)=>[a[0]*k,a[1]*k];
+const len=a=>Math.hypot(a[0],a[1]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
+const unit=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l];};
+const polar=(p,L,d)=>[p[0]+L*Math.cos(d*D2R),p[1]+L*Math.sin(d*D2R)];
+const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+const foot=(p,a,b)=>{const d=sub(b,a);const t=dot(sub(p,a),d)/dot(d,d);return lerp(a,b,t);};
+const inter=(a,b,c,d)=>{const r=sub(b,a),s=sub(d,c);const den=r[0]*s[1]-r[1]*s[0];const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den;return add(a,mul(r,t));};
+const angAt=(v,a,b)=>{const u=unit(sub(a,v)),w=unit(sub(b,v));return Math.acos(Math.max(-1,Math.min(1,dot(u,w))))/D2R;};
+const r1=x=>Math.round(x*10)/10;
+const tw=(t,fs)=>{t=String(t).replace(/<[^>]+>/g,'');let w=0;for(const ch of t)w+=/[°·,.\s₁₂₃₄]/.test(ch)?fs*0.36:/[0-9]/.test(ch)?fs*0.56:fs*0.64;return w;};
+const SUB={A1:'A₁',A2:'A₂',A3:'A₃',A4:'A₄',B1:'B₁',B2:'B₂',B3:'B₃',B4:'B₄'};
+
+function geo(o){
+  const P={};for(const k in o.P)if(Array.isArray(o.P[k]))P[k]=o.P[k];const W=o.W||300,MH=o.maxH||220,pad=o.pad==null?30:o.pad;
+  const all=Object.values(P).concat(o.extra||[]);const gp0=k=>Array.isArray(k)?k:P[k];
+  (o.circ||[]).concat(o.arc||[]).forEach(c=>{const C=gp0(c[0]);all.push([C[0]-c[1],C[1]-c[1]],[C[0]+c[1],C[1]+c[1]]);});
+  const x0=Math.min(...all.map(p=>p[0])),x1=Math.max(...all.map(p=>p[0]));
+  const y0=Math.min(...all.map(p=>p[1])),y1=Math.max(...all.map(p=>p[1]));
+  const bw=Math.max(x1-x0,1e-6),bh=Math.max(y1-y0,1e-6);
+  const s=Math.min((W-2*pad)/bw,(MH-2*pad)/bh);
+  const w=Math.round(bw*s+2*pad),h=Math.round(bh*s+2*pad);
+  const X=p=>[pad+(p[0]-x0)*s,pad+(y1-p[1])*s];
+  const Q={};for(const k in P)Q[k]=X(P[k]);
+  const g=k=>Array.isArray(k)?X(k):Q[k];
+  const polys=o.poly||[];
+  const cen=pts=>[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];
+  const allC=cen(Object.values(Q));
+  const pstr=pts=>pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ');
+  const T=(x,y,t,fs,col,wt,anc)=>`<text x="${r1(x)}" y="${r1(y+fs*0.36)}" text-anchor="${anc||'middle'}" font-size="${fs}" font-weight="${wt||600}" fill="${col||'var(--ink)'}">${t}</text>`;
+  const place=(p,d,t,fs,gap)=>{const ww=tw(t,fs),hh=fs*0.78;const k=gap+0.5*(ww*Math.abs(d[0])+hh*Math.abs(d[1]));return [p[0]+d[0]*k,p[1]+d[1]*k];};
+  let out=`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${o.aria||'Чертёж'}" style="font-family:system-ui,sans-serif">`;
+  const LS=[];const ln=(A,B,attr)=>{LS.push([A,B]);return `<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" ${attr}/>`;};
+  if(o.grid){const G=o.grid;for(let x=G[0];x<=G[2]+1e-9;x++){const a=X([x,G[1]]),b=X([x,G[3]]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}
+    for(let y=G[1];y<=G[3]+1e-9;y++){const a=X([G[0],y]),b=X([G[2],y]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}}
+  (o.circ||[]).forEach(c=>{const op=c[2]||{};const C=g(c[0]),r=c[1]*s;out+=`<circle cx="${r1(C[0])}" cy="${r1(C[1])}" r="${r1(r)}" fill="${op.fill||'none'}" fill-opacity="${op.op||0.18}" stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||2}" ${op.dash?'stroke-dasharray="5 4"':''}/>`;
+    let pr=[C[0]+r,C[1]];for(let j=1;j<=48;j++){const t=j/48*2*Math.PI;const q=[C[0]+r*Math.cos(t),C[1]+r*Math.sin(t)];LS.push([pr,q]);pr=q;}});
+  (o.arc||[]).forEach(c=>{const op=c[4]||{};const C=g(c[0]),r=c[1]*s;const n=24;let d='';let pr=null;for(let j=0;j<=n;j++){const t=(c[2]+(c[3]-c[2])*j/n)*D2R;const q=[C[0]+r*Math.cos(t),C[1]-r*Math.sin(t)];d+=(j?'L':'M')+r1(q[0])+','+r1(q[1]);if(pr)LS.push([pr,q]);pr=q;}
+    out+=`<path d="${d}" fill="none" stroke="${op.col||'var(--muted)'}" stroke-width="${op.sw||1.4}" ${op.dash?'stroke-dasharray="4 3"':''}/>`;});
+  (o.fill||[]).forEach(f=>{const pts=(f.pts||f).map(g);out+=`<polygon points="${pstr(pts)}" fill="${f.col||'var(--hl)'}" fill-opacity="${f.op||0.35}" stroke="none"/>`;});
+  polys.forEach(pl=>{out+=`<polygon points="${pstr(pl.map(g))}" fill="none" stroke="var(--fig)" stroke-width="2.2" stroke-linejoin="round"/>`;pl.forEach((k,i)=>LS.push([g(k),g(pl[(i+1)%pl.length])]));});
+  (o.seg||[]).forEach(sg=>{const op=sg[2]||{};let A=g(sg[0]),B=g(sg[1]);if(op.ext){const e=mul(sub(B,A),op.ext);A=sub(A,e);B=add(B,e);}
+    out+=ln(A,B,`stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||1.7}" ${op.dash?'stroke-dasharray="6 4"':''} stroke-linecap="round"`);});
+  (o.tick||[]).forEach(tk=>{const A=g(tk[0]),B=g(tk[1]),n=tk[2]||1;const e=unit(sub(B,A)),nn=[-e[1],e[0]],m=mid(A,B);
+    for(let i=0;i<n;i++){const c=add(m,mul(e,(i-(n-1)/2)*5));out+=ln(add(c,mul(nn,6)),sub(c,mul(nn,6)),'stroke="var(--fig)" stroke-width="1.7"');}});
+  (o.rt||[]).forEach(rt=>{const Vv=g(rt[0]),u=unit(sub(g(rt[1]),Vv)),ww=unit(sub(g(rt[2]),Vv)),k=10;const a=add(Vv,mul(u,k)),b=add(a,mul(ww,k)),c=add(Vv,mul(ww,k));LS.push([a,b],[b,c]);
+    out+=`<path d="M${r1(a[0])},${r1(a[1])} L${r1(b[0])},${r1(b[1])} L${r1(c[0])},${r1(c[1])}" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`;});
+  const angInfo=(o.ang||[]).map(an=>{const op=an[4]||{};const Vv=g(an[0]),A=g(an[1]),B=g(an[2]);
+    const a1=Math.atan2(A[1]-Vv[1],A[0]-Vv[0]);let dl=Math.atan2(B[1]-Vv[1],B[0]-Vv[0])-a1;while(dl>Math.PI)dl-=2*Math.PI;while(dl<=-Math.PI)dl+=2*Math.PI;
+    const th=Math.abs(dl);const rr=op.r||(th<0.75?26:19);const n=op.n||1;
+    for(let i=0;i<n;i++){const r=rr+i*4;const p=[Vv[0]+r*Math.cos(a1),Vv[1]+r*Math.sin(a1)],q=[Vv[0]+r*Math.cos(a1+dl),Vv[1]+r*Math.sin(a1+dl)];
+      out+=`<path d="M${r1(p[0])},${r1(p[1])} A${r},${r} 0 0 ${dl>0?1:0} ${r1(q[0])},${r1(q[1])}" fill="none" stroke="${op.col||'var(--accent)'}" stroke-width="1.6"/>`;
+      let prev=p;for(let j=1;j<=6;j++){const an2=a1+dl*j/6;const c=[Vv[0]+r*Math.cos(an2),Vv[1]+r*Math.sin(an2)];LS.push([prev,c]);prev=c;}}
+    return {an,op,Vv,a1,dl,th,rr,n};});
+  (o.dots||[]).forEach(k=>{const p=g(k);out+=`<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="2.8" fill="var(--fig)"/>`;});
+  /* ---- collision-aware label placement ---- */
+  const boxes=[];
+  const segRect=(a,b,c,hw,hh)=>{const xmin=c[0]-hw,xmax=c[0]+hw,ymin=c[1]-hh,ymax=c[1]+hh;let t0=0,t1=1,hit=true;const dx=b[0]-a[0],dy=b[1]-a[1];const pp=[-dx,dx,-dy,dy],qq=[a[0]-xmin,xmax-a[0],a[1]-ymin,ymax-a[1]];
+    for(let i=0;i<4;i++){if(Math.abs(pp[i])<1e-12){if(qq[i]<0){hit=false;break;}}else{const r=qq[i]/pp[i];if(pp[i]<0){if(r>t1){hit=false;break;}if(r>t0)t0=r;}else{if(r<t0){hit=false;break;}if(r<t1)t1=r;}}}
+    if(hit)return -1;const pr=p=>Math.hypot(Math.max(xmin-p[0],0,p[0]-xmax),Math.max(ymin-p[1],0,p[1]-ymax));
+    const ps=p=>{const d=sub(b,a);const t=Math.max(0,Math.min(1,dot(sub(p,a),d)/Math.max(dot(d,d),1e-9)));return len(sub(p,lerp(a,b,t)));};
+    return Math.min(pr(a),pr(b),ps([xmin,ymin]),ps([xmax,ymin]),ps([xmin,ymax]),ps([xmax,ymax]));};
+  const clr=(c,hw,hh)=>{let m=Math.min(c[0]-hw,w-c[0]-hw,c[1]-hh,h-c[1]-hh)+1;for(const L of LS)m=Math.min(m,segRect(L[0],L[1],c,hw,hh));for(const bx of boxes)m=Math.min(m,Math.max(Math.abs(c[0]-bx[0])-hw-bx[2],Math.abs(c[1]-bx[1])-hh-bx[3]));return m;};
+  const choose=(cands,t,fs,thr)=>{const hw=tw(t,fs)/2+1,hh=fs*0.4+1;let best=cands[0],bs=-1e9;for(const c of cands){const v=clr(c,hw,hh);if(v>=thr){best=c;break;}if(v>bs){bs=v;best=c;}}boxes.push([best[0],best[1],hw,hh]);return best;};
+  let labels='';
+  const vdir=k=>{
+    if(o.dir&&o.dir[k]!=null){const d=o.dir[k];return [Math.cos(d*D2R),-Math.sin(d*D2R)];}
+    const p=Q[k];
+    for(const pl of polys){const i=pl.indexOf(k);if(i<0)continue;const n=pl.length;const u1=unit(sub(g(pl[(i-1+n)%n]),p)),u2=unit(sub(g(pl[(i+1)%n]),p));let d=add(u1,u2);
+      if(len(d)>0.15)return mul(unit(d),-1);const c=cen(pl.map(g));d=[-u1[1],u1[0]];if(dot(d,sub(c,p))>0)d=mul(d,-1);return d;}
+    for(const pl of polys){for(let i=0;i<pl.length;i++){const A=g(pl[i]),B=g(pl[(i+1)%pl.length]);const f=foot(p,A,B);const t=dot(sub(p,A),sub(B,A))/dot(sub(B,A),sub(B,A));
+      if(len(sub(f,p))<1&&t>0.02&&t<0.98){const e=unit(sub(B,A));let d=[-e[1],e[0]];if(dot(d,sub(cen(pl.map(g)),p))>0)d=mul(d,-1);return d;}}}
+    let d=sub(p,allC);if(len(d)<4)d=[0.7,0.7];return unit(d);};
+  (o.txt||[]).forEach(tx=>{const arr=Array.isArray(tx[0]);const p=arr?X(tx[0]):X([tx[0],tx[1]]);const t=arr?tx[1]:tx[2];const op=(arr?tx[2]:tx[3])||{};const fs=op.fs||14;
+    boxes.push([p[0],p[1],tw(t,fs)/2+1,fs*0.4+1]);labels+=T(p[0],p[1],t,fs,op.col||'var(--ink)',op.wt||600,op.anc);});
+  const labs=o.lab||Object.keys(P);
+  labs.forEach(k=>{const t=(o.names&&o.names[k])||SUB[k]||k;const d0=vdir(k);const th0=Math.atan2(d0[1],d0[0]);const cands=[];
+    for(const gp of [5,9])for(let j=0;j<=12;j++)for(const sg of (j?[1,-1]:[1])){const th=th0+sg*j*15*D2R;cands.push(place(Q[k],[Math.cos(th),Math.sin(th)],t,15,gp));}
+    const p=choose(cands,t,15,2.5);labels+=T(p[0],p[1],t,15,'var(--accent-ink)',700);});
+  (o.side||[]).forEach(sd=>{const op=sd[3]||{};const A=g(sd[0]),B=g(sd[1]);const e=unit(sub(B,A));let n=[-e[1],e[0]];const t0=op.t==null?0.5:op.t;
+    let c=allC;for(const pl of polys){const i=pl.indexOf(sd[0]),j=pl.indexOf(sd[1]);if(i>=0&&j>=0&&(Math.abs(i-j)===1||Math.abs(i-j)===pl.length-1)){c=cen(pl.map(g));break;}}
+    if(dot(n,sub(c,lerp(A,B,t0)))>0)n=mul(n,-1);if(op.flip)n=mul(n,-1);const fs=op.fs||14;const gp=op.gap==null?4:op.gap;const cands=[];
+    for(const nn of [n,mul(n,-1)])for(const gg of [gp,gp+5])for(const dt of [0,0.1,-0.1,0.2,-0.2,0.3,-0.3])cands.push(place(lerp(A,B,Math.max(0.08,Math.min(0.92,t0+dt))),nn,sd[2],fs,gg));
+    const p=choose(cands,sd[2],fs,2);labels+=T(p[0],p[1],sd[2],fs,op.col||'var(--ink)',600);});
+  angInfo.forEach(({an,op,Vv,a1,dl,th,rr,n})=>{if(!an[3])return;const fs=op.fs||14;const rad=Math.max(tw(an[3],fs),fs)/2+2;const d=Math.max(rr+(n-1)*4+rad+3,(rad+3)/Math.sin(th/2));const cands=[];
+    if(th<0.7){const d0=rr+(n-1)*4+rad+3;const off=Math.asin(Math.min(1,(rad+2)/d0));const sg=dl>0?1:-1;for(const am of [a1+dl+sg*off,a1-sg*off])cands.push([Vv[0]+d0*Math.cos(am),Vv[1]+d0*Math.sin(am)]);}
+    for(const dd of [0,7,14,22,32])for(const f of [0,0.3,-0.3,0.6,-0.6]){const am=a1+dl/2+f*dl/2;cands.push([Vv[0]+(d+dd)*Math.cos(am),Vv[1]+(d+dd)*Math.sin(am)]);}
+    const p=choose(cands,an[3],fs,1.5);labels+=T(p[0],p[1],an[3],fs,'var(--accent-ink)',700);});
+  return out+labels+'</svg>';
+}
+
+/* ---------- shared utilities ---------- */
+const fig=s=>`<div class="fig">${s}</div>`;
+const sq=x=>x*x;
+const isInt=x=>Math.abs(x-Math.round(x))<1e-9;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<400;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+/* choice from correct + wrongs; null if not distinct */
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const mark=s=>`<b style="color:var(--accent-ink)">${s}</b>`;
+
+/* =====================================================================
+   g7_angle_sum — сумма углов треугольника, внешний угол, неравенство треугольника
+   ===================================================================== */
+const dg=x=>x+'°';
+/* triangle with angle A at A=(0,0), angle B at B, AC = b on x-axis */
+const triAng=(A,B,b)=>{b=b||10;const C=180-A-B;const c=b*Math.sin(C*D2R)/Math.sin(B*D2R);return {A:[0,0],C:[b,0],B:polar([0,0],c,A)};};
+const tri3=(a,b,c)=>{const x=(c*c+b*b-a*a)/(2*b);return {A:[0,0],C:[b,0],B:[x,Math.sqrt(Math.max(0,c*c-x*x))]};};
+const okTri=(a,b,c)=>a+b>c&&a+c>b&&b+c>a;
+const randAng=(lo,mx)=>{for(;;){const A=R(lo,mx),B=R(lo,mx),C=180-A-B;if(C>=lo&&C<=mx)return [A,B,C];}};
+const typeOf=(A,B,C)=>{const m=Math.max(A,B,C);return m<90?0:m===90?1:2;};
+const TYPES=['остроугольный','прямоугольный','тупоугольный'];
+const incenter=(P)=>{const a=len(sub(P.B,P.C)),b=len(sub(P.A,P.C)),c=len(sub(P.A,P.B)),s=a+b+c;return [(a*P.A[0]+b*P.B[0]+c*P.C[0])/s,(a*P.A[1]+b*P.B[1]+c*P.C[1])/s];};
+const orthocenter=P=>inter(P.B,foot(P.B,P.A,P.C),P.C,foot(P.C,P.A,P.B));
+const triPic=(A,B,o)=>{o=o||{};const T=triAng(A,B);const P=Object.assign({},T,o.P||{});return geo(Object.assign({P,poly:[['A','B','C']],maxH:o.maxH||210,W:o.W||300},o.g||{}));};
+/* star pentagon: tips[k] at P_k equals arc(P_{k+2},P_{k+3})/2 */
+function starPts(tips){const arcs=[0,0,0,0,0];for(let k=0;k<5;k++)arcs[(k+2)%5]=2*tips[k];const P={};let th=90;for(let k=0;k<5;k++){P['P'+k]=polar([0,0],5,th);th-=arcs[k];}return P;}
+const NMS={P0:'A',P1:'B',P2:'C',P3:'D',P4:'E'};
+
+/* ---------- theory figures ---------- */
+const fProof=(()=>{const T=triAng(52,58);const P=Object.assign({},T);P.M=add(P.B,[-4.2,0]);P.N=add(P.B,[4.2,0]);
+  return geo({P,poly:[['A','B','C']],seg:[['M','N',{col:'var(--accent)',sw:2}]],ang:[['A','C','B','1'],['B','M','A','1'],['C','A','B','3',{n:2}],['B','C','N','3',{n:2}],['B','A','C','2',{col:'var(--hl)',r:16}]],
+    lab:['A','B','C','M','N'],maxH:200,W:320});})();
+const fExt=(()=>{const T=triAng(55,70);const P=Object.assign({},T);P.D=add(P.C,[4,0]);
+  return geo({P,poly:[['A','B','C']],seg:[['C','D']],ang:[['A','C','B','∠A',{n:1}],['B','A','C','∠B',{n:2}],['C','B','D','∠A + ∠B',{col:'var(--hl)',r:24}]],lab:['A','B','C','D'],maxH:160,W:300});})();
+const fTypes=[[60,70],[90,35],[115,35]].map((v,i)=>{const T=triAng(v[0],v[1],8);const P={A:T.A,B:T.B,C:T.C};const big=i===0?[]:[['B','A','C',i===1?'90°':'115°',{col:'var(--hl)'}]];
+  return `<div class="fig">${geo({P,poly:[['A','B','C']],fill:[{pts:['A','B','C'],op:0.18}],ang:big,rt:[],lab:[],maxH:110,W:150,pad:16})}<div class="cap">${['остроугольный','прямоугольный','тупоугольный'][i]}</div></div>`;}).join('');
+const fIneq=(()=>{const P={A:[0,0],B:[4,3],C:[9,0]};return geo({P,poly:[['A','B','C']],side:[['A','B','5'],['B','C','5,8'],['A','C','9']],maxH:150,W:280});})();
+const fStar=(()=>{const P=starPts([36,36,36,36,36]);const seg=[];for(let k=0;k<5;k++)seg.push(['P'+k,'P'+((k+2)%5),{sw:2}]);
+  return geo({P,seg,ang:[0,1,2,3,4].map(k=>['P'+k,'P'+((k+2)%5),'P'+((k+3)%5),'',{col:'var(--accent)'}]),names:NMS,maxH:190,W:220});})();
+const fBis=(()=>{const T=triAng(70,64);const P=Object.assign({},T);P.I=incenter(P);return geo({P,poly:[['A','B','C']],seg:[['B','I',{col:'var(--accent)'}],['C','I',{col:'var(--accent)'}],['A','I',{dash:true,col:'var(--muted)'}]],ang:[['B','A','I','',{n:1}],['B','I','C','',{n:1,r:24}],['C','B','I','',{n:2}],['C','I','A','',{n:2,r:24}],['I','B','C','',{col:'var(--hl)'}]],lab:['A','B','C','I'],maxH:180,W:280});})();
+
+/* =====================================================================
+   THEORY
+   ===================================================================== */
+const theory=[
+{title:'Фокус с бумажным треугольником',lvl:0,html:`
+<p class="hook">Вырежи из бумаги <b>любой</b> треугольник — хоть узкий, хоть «толстый». Оторви у него три уголка и приложи их вершинами друг к другу. Они всегда сложатся в <b>ровную линию</b> — развёрнутый угол 180°. Всегда! Даже если треугольник нарисовал первоклассник криво. Почему так? Сейчас разберёмся — и докажем, а не просто «проверим на бумажке».</p>
+<div class="box rule"><b>Теорема о сумме углов треугольника</b>Сумма углов любого треугольника равна <b>180°</b>: <span class="m">∠A + ∠B + ∠C = 180°</span>.</div>
+<p>Подвигай вершины треугольника мышкой или пальцем. Углы меняются, а сумма — нет:</p>
+<div class="widget" id="w-tri"></div>
+<div class="box ex"><b>Пример</b>∠A = 50°, ∠B = 70°. Тогда ∠C = 180° − 50° − 70° = 60°.</div>
+<div class="box err"><b>Не путай с 360°</b>360° — это полный оборот и сумма углов <b>четырёхугольника</b>. У треугольника — 180°, ровно половина.</div>
+<div class="fact">На поверхности шара треугольники «неправильные»: из Северного полюса спустись по меридиану до экватора, пройди по экватору четверть Земли и вернись на полюс. Получится треугольник с <b>тремя прямыми углами</b> — 270°! Теорема про 180° верна только на плоскости.</div>`},
+{title:'Доказательство: параллельная прямая',lvl:0,html:`
+<p>Бумажный фокус — это проверка, а не доказательство: вдруг найдётся треугольник, где не сложится? Математики доказывают так, чтобы сработало для <b>любого</b> треугольника.</p>
+<div class="fig">${fProof}</div>
+<ol class="steps"><li>Через вершину B проведём прямую MN, <b>параллельную</b> стороне AC.</li>
+<li>∠MBA = ∠A — это накрест лежащие углы при параллельных MN, AC и секущей AB (на рисунке оба помечены «1»).</li>
+<li>∠NBC = ∠C — накрест лежащие при секущей BC (помечены «3»).</li>
+<li>Три угла при вершине B — ∠MBA, ∠ABC и ∠NBC — вместе составляют развёрнутый угол MBN, то есть 180°.</li>
+<li>Значит, ∠A + ∠B + ∠C = 180°. ∎</li></ol>
+<div class="box tip"><b>Как запомнить</b>Это и есть бумажный фокус: прямая MN — та самая «ровная линия», на которую «переехали» уголки A и C.</div>
+<p><b>Следствия</b> (пригодятся постоянно):</p>
+<ul class="steps"><li>В равностороннем треугольнике каждый угол 180° : 3 = <b>60°</b>.</li>
+<li>В прямоугольном треугольнике сумма острых углов <b>90°</b>.</li>
+<li>В равнобедренном углы при основании равны: если угол при вершине v, то каждый угол при основании (180° − v) : 2.</li></ul>`},
+{title:'Виды треугольников по углам',lvl:1,html:`
+<div class="figrow">${fTypes}</div>
+<div class="box rule"><b>Классификация</b><b>Остроугольный</b> — все три угла острые (меньше 90°).<br><b>Прямоугольный</b> — один угол прямой (90°).<br><b>Тупоугольный</b> — один угол тупой (больше 90°).</div>
+<p><b>Почему тупой угол может быть только один?</b> Два тупых угла уже дают больше 180°, а на третий ничего не останется. Так же и прямой: два прямых угла — это уже 180°, третий был бы 0°.</p>
+<div class="box tip"><b>Как определить вид</b>Найди <b>самый большой</b> угол (если его нет в условии — вычисли третий). Меньше 90° → остроугольный, ровно 90° → прямоугольный, больше 90° → тупоугольный.</div>
+<div class="box err"><b>Ловушка</b>«Даны углы 40° и 45° — оба острые, значит треугольник остроугольный». Нет! Третий угол 180° − 85° = 95° — тупой.</div>`},
+{title:'Внешний угол',lvl:2,html:`
+<p>Продолжи сторону AC за вершину C. Угол между продолжением и стороной CB называется <b>внешним углом</b> при вершине C. Он смежный с внутренним углом C.</p>
+<div class="fig">${fExt}</div>
+<div class="box rule"><b>Теорема о внешнем угле</b>Внешний угол треугольника равен <b>сумме двух внутренних углов, не смежных с ним</b>: <span class="m">∠BCD = ∠A + ∠B</span>.</div>
+<p><b>Почему:</b> ∠BCD = 180° − ∠C (смежные углы), и ∠A + ∠B = 180° − ∠C (сумма углов треугольника). Правые части равны — значит, равны и левые.</p>
+<div class="box ex"><b>Пример</b>∠A = 40°, ∠B = 75° → внешний угол при C = 40° + 75° = 115°. Проверка: ∠C = 65°, 180° − 65° = 115° ✅.</div>
+<div class="box tip"><b>Следствие</b>Внешний угол больше каждого внутреннего угла, не смежного с ним. А сумма внешних углов, взятых по одному при каждой вершине, — <b>360°</b> (как будто ты обошёл треугольник и повернулся на полный оборот).</div>
+<div class="box err"><b>Типичная ошибка</b>Складывать с <b>соседним</b> углом. Внешний угол при C и угол C в сумме дают 180°, а не «внешний угол».</div>`},
+{title:'Против большей стороны — больший угол',lvl:3,html:`
+<p>Представь ворота для мини-футбола: чем шире ворота (сторона), тем шире угол, под которым их видно из противоположной вершины. Это работает и в треугольнике.</p>
+<div class="box rule"><b>Соотношения между сторонами и углами</b>В треугольнике <b>против большей стороны лежит больший угол</b>, и наоборот: <b>против большего угла лежит большая сторона</b>. Против равных сторон — равные углы.</div>
+<p><b>Кто против кого:</b> против угла A лежит сторона BC, против B — сторона AC, против C — сторона AB. Сторона «напротив» — та, в названии которой <b>нет</b> буквы этой вершины.</p>
+<div class="box ex"><b>Пример</b>∠A = 50°, ∠B = 60°, ∠C = 70°. Самый большой угол — C, значит, самая длинная сторона — AB (против C). Самая короткая — BC (против A).</div>
+<div class="box tip"><b>Следствие</b>В прямоугольном треугольнике гипотенуза — самая длинная сторона (против самого большого угла, 90°). В тупоугольном — сторона против тупого угла.</div>
+<div class="box err"><b>Ошибка</b>Сторона AB — «сторона угла A», но лежит она <b>не против</b> A, а против C.</div>`},
+{title:'Неравенство треугольника',lvl:4,html:`
+<p class="hook">Почему люди протаптывают тропинки наискосок через газон? Потому что прямой путь из A в C <b>всегда короче</b>, чем через угол B. Это и есть неравенство треугольника — его «знают» даже кошки.</p>
+<div class="fig">${fIneq}</div>
+<div class="box rule"><b>Неравенство треугольника</b>Каждая сторона треугольника <b>меньше суммы двух других</b>: <span class="m">AC &lt; AB + BC</span>, <span class="m">AB &lt; AC + BC</span>, <span class="m">BC &lt; AB + AC</span>.</div>
+<p><b>Почему (идея):</b> против большей стороны лежит больший угол. Продлим AB за B на отрезок BD = BC. Треугольник BCD равнобедренный, и в треугольнике ACD угол при C больше угла D, значит AD = AB + BC больше AC.</p>
+<div class="box tip"><b>Быстрая проверка</b>Расположи стороны по возрастанию a ≤ b ≤ c. Треугольник существует, если <b>c &lt; a + b</b>. Остальные два неравенства тогда выполняются сами.</div>
+<div class="box ex"><b>Пример</b>3, 4, 8: 8 &lt; 3 + 4? Нет, 8 &gt; 7 — треугольника нет (палочки 3 и 4 не дотянутся). 3, 4, 6: 6 &lt; 7 — есть.</div>
+<div class="box err"><b>Равенство не годится</b>2, 3, 5: 5 = 2 + 3 — палочки лягут в одну линию, «треугольник» сплющится в отрезок. Нужно строго меньше.</div>`},
+{title:'Какой может быть третья сторона',lvl:5,html:`
+<div class="box rule"><b>Границы для третьей стороны</b>Если две стороны a и b, то третья сторона c удовлетворяет двойному неравенству <span class="m">|a − b| &lt; c &lt; a + b</span>.</div>
+<p>Правая часть — неравенство треугольника для c. Левая — для большей из a и b: например, если a ≥ b, то a &lt; b + c, то есть c &gt; a − b.</p>
+<div class="box ex"><b>Пример</b>Стороны 7 и 3. Третья: 4 &lt; c &lt; 10. Целых значений: 5, 6, 7, 8, 9 — пять штук. Формула для целых: 2 · (меньшая сторона) − 1 = 2 · 3 − 1 = 5.</div>
+<div class="box ex"><b>Равнобедренный треугольник</b>Стороны 4 и 9. Если боковые по 4: 4 + 4 = 8 &lt; 9 — не существует. Значит, боковые по 9: периметр 9 + 9 + 4 = 22.</div>
+<div class="box err"><b>Забыть нижнюю границу</b>«c &lt; 10, значит c может быть 1». Нет: при c = 1 стороны 7, 3, 1 — 7 &gt; 3 + 1.</div>
+<div class="fact">Неравенство треугольника — основа «метрики» во многих науках. Навигатор, ищущий кратчайший маршрут, и алгоритм рекомендаций в YouTube, который ищет «близкие» видео, опираются на то, что расстояние «напрямик» не больше, чем через промежуточную точку.</div>`},
+{title:'Цепочки углов: приёмы',lvl:6,html:`
+<p>Многие задачи — это «угловой квест»: от известных углов шаг за шагом добираемся до нужного. Главные инструменты:</p>
+<ol class="steps"><li><b>Сумма углов треугольника</b> 180° — в каждом маленьком треугольнике на рисунке.</li>
+<li><b>Смежные углы</b> в сумме 180°, <b>вертикальные</b> равны.</li>
+<li><b>Внешний угол</b> = сумма двух не смежных с ним.</li>
+<li><b>Биссектриса</b> делит угол пополам; <b>высота</b> даёт прямой угол.</li>
+<li><b>Равнобедренный</b> треугольник: равные стороны → равные углы при основании.</li>
+<li><b>Параллельные прямые</b>: накрест лежащие и соответственные углы равны.</li></ol>
+<div class="box ex"><b>Пример</b>В ΔABC ∠B = 60°, ∠C = 40°, AD — биссектриса. ∠A = 80°, ∠BAD = 40°. Угол ADC — внешний для ΔABD: ∠ADC = ∠B + ∠BAD = 60° + 40° = 100°.</div>
+<div class="box tip"><b>Совет</b>Подписывай найденные углы прямо на рисунке. Чаще всего ответ появляется сам, когда рисунок «заполнен».</div>
+<div class="box err"><b>Ошибка</b>Считать треугольник равнобедренным «на глаз». Равенство сторон должно следовать из условия.</div>`},
+{title:'★ Идеи для олимпиадных задач',lvl:7,html:`
+<div class="fig">${fBis}</div>
+<div class="box rule"><b>1. Угол между биссектрисами</b>Биссектрисы углов B и C пересекаются в I. Тогда <span class="m">∠BIC = 90° + ∠A / 2</span>.<br>Почему: в ΔBIC углы при B и C равны ∠B/2 и ∠C/2, и ∠BIC = 180° − (∠B + ∠C)/2 = 180° − (180° − ∠A)/2 = 90° + ∠A/2.</div>
+<div class="box rule"><b>2. Угол между высотами</b>В остроугольном треугольнике высоты из B и C пересекаются в H. Тогда <span class="m">∠BHC = 180° − ∠A</span>.<br>Почему: в четырёхугольнике A, основания высот и H два прямых угла, а сумма его углов 360°.</div>
+<div class="box rule"><b>3. Внешние биссектрисы</b>Биссектрисы внешних углов при B и C пересекаются под углом <span class="m">90° − ∠A / 2</span>.</div>
+<div class="box tip"><b>4. Цепочка равнобедренных</b>Если AB = BD = DC (D на AC) и ∠C = x, то ∠DBC = x, внешний угол ∠ADB = 2x, а ∠A = 2x. Значит ∠ABC = 180° − 3x.</div>`},
+{title:'★ Звезда и подсчёты',lvl:8,html:`
+<div class="fig">${fStar}</div>
+<div class="box rule"><b>Пятиконечная звезда</b>Сумма углов при пяти вершинах <b>любой</b> пятиконечной звезды (даже кривой) равна <b>180°</b>.</div>
+<p><b>Почему:</b> возьми одну вершину звезды, например A, и треугольник, в котором она лежит вместе с двумя «внутренними» точками пересечения. Углы этого треугольника при внутренних точках — внешние углы двух маленьких треугольников, каждый равен сумме двух других вершин звезды. Получается: ∠A + (∠C + ∠E) + (∠B + ∠D) = 180°.</p>
+<div class="fact">Пентаграмма была тайным знаком пифагорейцев — учеников Пифагора. В правильной звезде каждый угол при вершине 180° : 5 = 36°.</div>
+<div class="box rule"><b>Подсчёт треугольников</b>Сколько треугольников с целыми сторонами и периметром P? Перебирай стороны a ≤ b ≤ c с a + b + c = P и проверяй одно условие c &lt; a + b. Наибольшая сторона c всегда меньше P/2.</div>
+<div class="box ex"><b>Пример</b>P = 9: тройки (1, 4, 4), (2, 3, 4), (3, 3, 3) — 3 треугольника. (1, 3, 5) и (2, 2, 5) не подходят: 5 ≥ 9/2.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps"><li>∠A + ∠B + ∠C = 180°. Равносторонний — по 60°. Острые углы прямоугольного — в сумме 90°.</li>
+<li>Тупой (или прямой) угол в треугольнике — не больше одного.</li>
+<li>Внешний угол = сумма двух внутренних, не смежных с ним. Сумма внешних углов — 360°.</li>
+<li>Против большей стороны — больший угол, и наоборот.</li><li>Неравенство треугольника: c &lt; a + b (для наибольшей стороны c).</li>
+<li>Третья сторона: |a − b| &lt; c &lt; a + b.</li><li>★ ∠BIC = 90° + A/2, ∠BHC = 180° − A, звезда — 180°.</li></ul>`}
+];
+
+const NW=t=>`<span style="white-space:nowrap;font-size:17px">${t}</span>`;
+const symbols={tab:'Формулы',title:'Знаки и формулы темы',rows:[
+['∠A','«угол A»','Угол треугольника при вершине A.','∠A = 50°'],
+[NW('∠A + ∠B + ∠C = 180°'),'Сумма углов','В любом треугольнике на плоскости.','50° + 60° + 70°'],
+[NW('∠внеш = ∠A + ∠B'),'Внешний угол при C','Равен сумме двух внутренних, не смежных с ним.','40° + 75° = 115°'],
+[NW('c &lt; a + b'),'Неравенство треугольника','Сторона меньше суммы двух других.','3, 4, 8 — нет'],
+[NW('|a − b| &lt; c &lt; a + b'),'Третья сторона','Границы для третьей стороны.','7 и 3 → 4 &lt; c &lt; 10'],
+[NW('a &gt; b ⇔ ∠A &gt; ∠B'),'Стороны и углы','Против большей стороны — больший угол.','гипотенуза — наибольшая'],
+[NW('90° + A/2'),'★ Угол BIC','Угол между биссектрисами углов B и C.','A = 60° → 120°'],
+[NW('180° − A'),'★ Угол BHC','Угол между высотами из B и C (остроугольный треугольник).','A = 70° → 110°']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Видишь треугольник — вспоминай 180°. Видишь угол «снаружи» — это внешний угол, сумма двух дальних. Даны три отрезка — сравни наибольший с суммой двух других.</div>`};
+
+/* =====================================================================
+   GENERATORS
+   ===================================================================== */
+/* ===== L0 ===== */
+G(0,()=>CH('Чему равна сумма углов любого треугольника на плоскости?','180°',['360°','90°','Зависит от формы треугольника'],
+ {short:'∠A + ∠B + ∠C = 180° для любого треугольника.',
+ explain:'Теорема: сумма углов <b>любого</b> треугольника равна <b>180°</b> — у узкого, широкого, прямоугольного, какого угодно. 360° — это сумма углов четырёхугольника (и полный оборот), 90° — сумма только двух острых углов прямоугольного треугольника.',
+ explain2:'Вспомни фокус с бумагой: оторви три уголка треугольника и приложи вершинами друг к другу — получится ровная линия, развёрнутый угол. А развёрнутый угол — это 180°.'}),{rule:true});
+G(0,()=>CH('Как доказывают теорему о сумме углов треугольника?','Через вершину проводят прямую, параллельную противолежащей стороне, и замечают равные накрест лежащие углы',['Измеряют транспортиром углы у нескольких треугольников и складывают','Проводят медиану и доказывают равенство двух получившихся треугольников','Через вершину проводят перпендикуляр к стороне и складывают два прямых угла'],
+ {short:'Прямая MN ∥ AC через B: ∠MBA = ∠A, ∠NBC = ∠C, а вместе с ∠B это развёрнутый угол.',
+ explain:'Через вершину B проводим прямую MN ∥ AC. Накрест лежащие углы равны: ∠MBA = ∠A и ∠NBC = ∠C. Углы MBA, ABC и NBC вместе образуют развёрнутый угол 180°. Значит, ∠A + ∠B + ∠C = 180°. Измерения транспортиром — это проверка, а не доказательство: нельзя измерить все треугольники на свете.',
+ explain2:'Параллельная прямая — это «линейка», к которой мы приложили оторванные уголки A и C из бумажного фокуса. Накрест лежащие углы при параллельных — та причина, по которой уголки ложатся ровно.'}),{rule:true});
+G(0,()=>{const [A,B,C]=randAng(25,110);
+ return {type:'num',q:`В треугольнике ABC ∠A = ${A}°, ∠B = ${B}°. Найди ∠C (в градусах).`,ans:C,
+ pic:triPic(A,B,{g:{ang:[['A','C','B',dg(A)],['B','A','C',dg(B),{n:2}],['C','B','A','?',{col:'var(--hl)'}]]}}),
+ hint:'Сумма всех трёх углов — 180°.',short:`180° − ${A}° − ${B}° = ${C}°.`,
+ explain:`∠A + ∠B + ∠C = 180°, поэтому ∠C = 180° − ${A}° − ${B}° = 180° − ${A+B}° = <b>${C}°</b>.<div class="box err"><b>Ловушка</b>360° − ${A}° − ${B}° = ${360-A-B}° — это если перепутать с четырёхугольником.</div>`,
+ explain2:`Сначала сложи известные: ${A}° + ${B}° = ${A+B}°. До 180° не хватает 180 − ${A+B} = ${C}. Проверка: ${A} + ${B} + ${C} = 180 ✅.`};});
+G(0,()=>{const p=R(1,6),q=R(1,6),r=R(1,7);const s=p+q+r;if(180%s||new Set([p,q,r]).size<2)return null;const k=180/s;const big=R(0,1);const ans=big?k*Math.max(p,q,r):k*Math.min(p,q,r);
+ return {type:'num',q:`Углы треугольника относятся как ${p} : ${q} : ${r}. Найди ${big?'наибольший':'наименьший'} угол (в градусах).`,ans,
+ hint:`Обозначь углы ${p}x, ${q}x, ${r}x и сложи их.`,short:`${s}x = 180°, x = ${k}°, ${big?'наибольший':'наименьший'}: ${big?Math.max(p,q,r):Math.min(p,q,r)} · ${k}° = ${ans}°.`,
+ explain:`Пусть углы равны ${p}x, ${q}x и ${r}x. Их сумма ${p}x + ${q}x + ${r}x = ${s}x = 180°, откуда x = ${k}°.<br>Углы: ${p*k}°, ${q*k}°, ${r*k}°. ${big?'Наибольший':'Наименьший'} — <b>${ans}°</b>.`,
+ explain2:`Представь, что 180° разрезали на ${s} равных кусочков (${p} + ${q} + ${r} = ${s}). Каждый кусочек — 180 : ${s} = ${k}°. ${big?'Самому большому углу':'Самому маленькому углу'} досталось ${big?Math.max(p,q,r):Math.min(p,q,r)} кусочков: ${ans}°.`};});
+G(0,()=>{const mode=R(0,1);let v,b;if(mode===0){v=2*R(10,70);b=(180-v)/2;}else{b=R(20,85);v=180-2*b;}
+ const P={A:[0,0],C:[10,0],B:[5,5*Math.tan(b*D2R)]};
+ const pic=geo({P,poly:[['A','B','C']],tick:[['A','B'],['B','C']],ang:mode===0?[['B','A','C',dg(v)],['A','C','B','?',{col:'var(--hl)'}]]:[['A','C','B',dg(b)],['B','A','C','?',{col:'var(--hl)'}]],maxH:170,W:260});
+ const ans=mode===0?b:v;
+ return {type:'num',q:mode===0?`В равнобедренном треугольнике ABC (AB = BC) угол при вершине B равен ${v}°. Найди угол при основании (в градусах).`:`В равнобедренном треугольнике ABC (AB = BC) угол при основании A равен ${b}°. Найди угол B при вершине (в градусах).`,ans,pic,
+ hint:'Углы при основании равнобедренного треугольника равны.',short:mode===0?`(180° − ${v}°) : 2 = ${b}°.`:`180° − 2 · ${b}° = ${v}°.`,
+ explain:mode===0?`Углы при основании равны: ∠A = ∠C = x. Тогда x + x + ${v}° = 180°, 2x = ${180-v}°, x = <b>${b}°</b>.<div class="box err"><b>Ошибка</b>180° − ${v}° = ${180-v}° — это сумма <b>двух</b> углов при основании, её ещё нужно разделить пополам.</div>`:`∠A = ∠C = ${b}° (углы при основании равны). ∠B = 180° − ${b}° − ${b}° = <b>${v}°</b>.<div class="box err"><b>Ошибка</b>180° − ${b}° = ${180-b}° — забыт второй угол при основании.</div>`,
+ explain2:mode===0?`Проверка ответом: ${b}° + ${b}° + ${v}° = ${2*b+v}° ✅. Равнобедренный треугольник симметричен, поэтому «остаток» 180° − ${v}° делится между двумя углами поровну.`:`Сложи два одинаковых угла: ${b}° · 2 = ${2*b}°. До 180° остаётся ${v}° — это угол при вершине.`};});
+
+/* ===== L1: виды треугольников ===== */
+G(1,()=>CH('Какой треугольник называют тупоугольным?','У которого один из углов тупой (больше 90°)',['У которого все углы тупые','У которого один угол больше 60°','У которого две стороны разной длины'],
+ {short:'Тупоугольный = есть тупой угол (> 90°). Он всегда один.',
+ explain:'По углам треугольники делят на три вида: <b>остроугольный</b> (все углы &lt; 90°), <b>прямоугольный</b> (есть угол 90°), <b>тупоугольный</b> (есть угол &gt; 90°). Все углы тупыми быть не могут: 3 · 91° = 273° &gt; 180°. Длины сторон к виду «по углам» отношения не имеют.',
+ explain2:'Тупой угол — «раскрытый» больше прямого, как раскрытая книга, лежащая почти плоско. Если в треугольнике есть такой угол — он тупоугольный.'}),{rule:true});
+G(1,()=>CH('Сколько тупых углов может быть в треугольнике?','Не больше одного',['Не больше двух','Всегда ровно один','Сколько угодно'],
+ {short:'Два тупых угла уже больше 180°.',
+ explain:'Если бы было два тупых угла, их сумма была бы больше 90° + 90° = 180°, и на третий угол не осталось бы ничего. Поэтому тупой угол — <b>не больше одного</b>. «Всегда ровно один» — неверно: у остроугольного треугольника тупых углов нет вовсе.',
+ explain2:'Попробуй придумать: 100° + 100° = 200° — уже больше всей «зарплаты» треугольника в 180°. Не получится.'}),{rule:true});
+G(1,()=>{const t=R(0,2);let A,B,C;for(;;){A=R(20,120);B=R(15,120);C=180-A-B;if(C>=10&&typeOf(A,B,C)===t)break;if(t===1&&Math.random()<0.4){const x=R(20,70);[A,B,C]=shuffle([90,x,90-x]);if(C>0)break;}}
+ return CH(`В треугольнике два угла равны ${A}° и ${B}°. Какой это треугольник?`,TYPES[t],TYPES.filter((_,i)=>i!==t),
+ {hint:'Сначала найди третий угол, потом посмотри на самый большой.',short:`Третий угол ${C}°, наибольший ${Math.max(A,B,C)}° → ${TYPES[t]}.`,
+ explain:`Третий угол: 180° − ${A}° − ${B}° = ${C}°. Углы: ${A}°, ${B}°, ${C}°. Наибольший — ${Math.max(A,B,C)}°, он ${t===0?'меньше 90° (острый), значит, треугольник <b>остроугольный</b>':t===1?'равен 90°, значит, треугольник <b>прямоугольный</b>':'больше 90° (тупой), значит, треугольник <b>тупоугольный</b>'}.${t===2&&A<90&&B<90?'<div class="box err"><b>Ловушка</b>Оба данных угла острые, но третий получился тупым!</div>':''}`,
+ explain2:`Вид треугольника определяет самый большой угол. Не забудь посчитать тот, которого нет в условии: ${C}°. Сравни ${Math.max(A,B,C)}° с 90°.`});});
+G(1,()=>{const x=R(15,75);
+ return {type:'num',q:`В прямоугольном треугольнике один из острых углов равен ${x}°. Найди второй острый угол (в градусах).`,ans:90-x,
+ pic:(()=>{const P={C:[0,0],A:[6,0],B:[0,6*Math.tan(x*D2R)]};return geo({P,poly:[['A','B','C']],rt:[['C','A','B']],ang:[['A','C','B',dg(x)],['B','A','C','?',{col:'var(--hl)'}]],maxH:170,W:260});})(),
+ hint:'Прямой угол «забирает» 90° из 180°.',short:`90° − ${x}° = ${90-x}°.`,
+ explain:`Сумма углов 180°, прямой угол 90°, значит, на два острых остаётся 90°. Второй острый угол: 90° − ${x}° = <b>${90-x}°</b>.<div class="box err"><b>Ошибка</b>180° − ${x}° = ${180-x}° — забыт прямой угол.</div>`,
+ explain2:`Проверка: 90° + ${x}° + ${90-x}° = 180° ✅. Запомни: острые углы прямоугольного треугольника в сумме 90°.`};});
+G(1,()=>{const ok=Math.random()<0.5;let a,b,c;for(;;){a=R(20,110);b=R(15,100);c=ok?180-a-b:180-a-b+pick([-20,-10,10,20]);if(c>=10&&c<=150)break;}
+ const s=a+b+c;
+ return CH(`Может ли треугольник иметь углы ${a}°, ${b}° и ${c}°?`,ok?'Да':'Нет',[ok?'Нет':'Да'],
+ {short:`${a} + ${b} + ${c} = ${s}${ok?' — ровно 180°.':' ≠ 180.'}`,
+ explain:`Сложим: ${a}° + ${b}° + ${c}° = ${s}°. ${ok?'Это ровно 180°, и все углы положительные — такой треугольник <b>существует</b>.':`Это не 180°, поэтому такого треугольника <b>не существует</b> (${s>180?'слишком много':'не хватает'} ${Math.abs(s-180)}°).`}`,
+ explain2:`Главная проверка для набора углов: сумма должна быть ровно 180°, и каждый угол больше 0°. ${ok?'Обе проверки пройдены ✅.':'Первая проверка не пройдена ❌.'}`});});
+
+/* ===== L2: внешний угол ===== */
+G(2,()=>CH('Чему равен внешний угол треугольника?','Сумме двух внутренних углов, не смежных с ним',['Сумме всех трёх внутренних углов','Внутреннему углу, смежному с ним','Разности двух внутренних углов, не смежных с ним'],
+ {short:'Внешний угол = сумма двух «дальних» внутренних углов.',
+ explain:'Внешний угол при C смежный с ∠C, поэтому он равен 180° − ∠C. А ∠A + ∠B = 180° − ∠C. Получается: <b>внешний угол = ∠A + ∠B</b> — сумма двух внутренних углов, не смежных с ним. С «соседним» углом C внешний угол в сумме даёт 180°, а не равен ему.',
+ explain2:'Пример: углы 50°, 60°, 70°. Внешний угол при вершине с углом 70° равен 180° − 70° = 110° = 50° + 60°. Два «дальних» угла в сумме.'}),{rule:true});
+G(2,()=>CH('Что называют внешним углом треугольника при вершине C?','Угол, смежный с внутренним углом C (между стороной и продолжением другой стороны)',['Угол, вертикальный углу C','Любой угол при вершине C, больший 90°','Угол между двумя продолжениями сторон за вершину C'],
+ {short:'Внешний угол — смежный с внутренним: продолжи одну сторону за вершину.',
+ explain:'Чтобы получить внешний угол при C, продолжи сторону AC за точку C. Угол между этим продолжением и стороной CB — <b>внешний</b>. Он <b>смежный</b> с ∠C (вместе 180°). Вертикальный угол (между двумя продолжениями) равен самому ∠C — это не внешний угол.',
+ explain2:'Представь, что идёшь по стороне AC и в точке C поворачиваешь на сторону CB. Угол, на который ты повернул, и есть внешний угол.'}),{rule:true});
+G(2,()=>{const [A,B,C]=randAng(25,100);const T=triAng(A,B);const P=Object.assign({},T);P.D=add(P.C,[3.5,0]);
+ return {type:'num',q:`В треугольнике ABC ∠A = ${A}°, ∠B = ${B}°. Сторону AC продолжили за точку C до точки D. Найди внешний угол BCD (в градусах).`,ans:A+B,
+ pic:geo({P,poly:[['A','B','C']],seg:[['C','D']],ang:[['A','C','B',dg(A)],['B','A','C',dg(B),{n:2}],['C','B','D','?',{col:'var(--hl)'}]],maxH:170,W:300}),
+ hint:'Внешний угол = сумма двух внутренних, не смежных с ним.',short:`${A}° + ${B}° = ${A+B}°.`,
+ explain:`∠BCD — внешний угол при вершине C. Не смежные с ним внутренние углы — A и B. ∠BCD = ${A}° + ${B}° = <b>${A+B}°</b>.<div class="box err"><b>Ошибка</b>Ответ ${C}° — это внутренний угол C, а не внешний.</div>`,
+ explain2:`Длинный путь: ∠C = 180° − ${A}° − ${B}° = ${C}°, ∠BCD = 180° − ${C}° = ${A+B}° (смежные). Тот же ответ, но теорема о внешнем угле даёт его за один шаг.`};});
+G(2,()=>{const [A,B,C]=randAng(25,100);const e=A+B;const T=triAng(A,B);const P=Object.assign({},T);P.D=add(P.C,[3.5,0]);
+ return {type:'num',q:`Внешний угол BCD треугольника ABC равен ${e}°, ∠A = ${A}°. Найди ∠B (в градусах).`,ans:B,
+ pic:geo({P,poly:[['A','B','C']],seg:[['C','D']],ang:[['A','C','B',dg(A)],['B','A','C','?',{n:2,col:'var(--hl)'}],['C','B','D',dg(e)]],maxH:170,W:300}),
+ hint:'Внешний угол = ∠A + ∠B. Одно слагаемое известно.',short:`${e}° − ${A}° = ${B}°.`,
+ explain:`По теореме о внешнем угле ∠BCD = ∠A + ∠B, то есть ${e}° = ${A}° + ∠B. Отсюда ∠B = ${e}° − ${A}° = <b>${B}°</b>.<div class="box err"><b>Ошибка</b>180° − ${e}° = ${C}° — это угол C, а спрашивали B.</div>`,
+ explain2:`Можно в два шага: ∠C = 180° − ${e}° = ${C}° (смежный), потом ∠B = 180° − ${A}° − ${C}° = ${B}°.`};});
+G(2,()=>{const e=2*R(20,80);const base=e/2,top=180-e;if(top<20)return null;const P={A:[0,0],C:[10,0],B:[5,5*Math.tan(base*D2R)]};P.D=add(P.B,mul(unit(sub(P.B,P.A)),3));
+ return {type:'num',q:`В равнобедренном треугольнике ABC (AB = BC) внешний угол при вершине B равен ${e}°. Найди угол при основании (в градусах).`,ans:base,
+ pic:geo({P,poly:[['A','B','C']],seg:[['B','D']],tick:[['A','B'],['B','C']],ang:[['B','C','D',dg(e),{col:'var(--accent)'}],['A','B','C','?',{col:'var(--hl)'}]],maxH:190,W:260}),
+ hint:'Внешний угол при B = ∠A + ∠C, а эти углы равны.',short:`${e}° : 2 = ${base}°.`,
+ explain:`Внешний угол при B равен ∠A + ∠C. В равнобедренном треугольнике ∠A = ∠C, поэтому ${e}° = 2∠A и ∠A = <b>${base}°</b>.`,
+ explain2:`Через смежный угол: ∠B = 180° − ${e}° = ${top}°, тогда ∠A = (180° − ${top}°) : 2 = ${base}°. Тот же ответ.`};});
+G(2,()=>{const [A,B,C]=randAng(30,100);const x=180-A,y=180-B;const T=triAng(A,B);const P=Object.assign({},T);
+ P.D=add(P.A,mul(unit(sub(P.A,P.C)),2.6));P.E=add(P.B,mul(unit(sub(P.B,P.A)),2.6));P.F=add(P.C,mul(unit(sub(P.C,P.B)),2.6));
+ return {type:'num',q:`Внешние углы треугольника при вершинах A и B (по одному при каждой вершине) равны ${x}° и ${y}°. Найди внешний угол при вершине C (в градусах).`,ans:360-x-y,
+ pic:geo({P,poly:[['A','B','C']],seg:[['A','D'],['B','E'],['C','F']],ang:[['A','B','D',dg(x)],['B','C','E',dg(y)],['C','A','F','?',{col:'var(--hl)'}]],lab:['A','B','C'],maxH:190,W:300}),
+ hint:'Сумма внешних углов, взятых по одному при каждой вершине, — 360°.',short:`360° − ${x}° − ${y}° = ${360-x-y}°.`,
+ explain:`Каждый внешний угол = 180° − внутренний. Сумма трёх внешних: 3 · 180° − (∠A + ∠B + ∠C) = 540° − 180° = 360°. Поэтому внешний угол при C = 360° − ${x}° − ${y}° = <b>${360-x-y}°</b>.`,
+ explain2:`Через внутренние углы: ∠A = 180° − ${x}° = ${A}°, ∠B = 180° − ${y}° = ${B}°, ∠C = ${C}°, внешний при C = 180° − ${C}° = ${180-C}° ✅. Обойди треугольник по периметру — повернёшься ровно на полный оборот 360°.`};});
+
+/* ===== L3: стороны и углы ===== */
+G(3,()=>CH('Какое утверждение верно для любого треугольника?','Против большей стороны лежит больший угол',['Против большей стороны лежит меньший угол','Больший угол всегда прилежит к большей стороне','Стороны пропорциональны противолежащим углам'],
+ {short:'Больше сторона — больше угол напротив, и наоборот.',
+ explain:'Теорема: в треугольнике <b>против большей стороны лежит больший угол</b>, и обратно, против большего угла — большая сторона. «Пропорциональны» — неверно: в треугольнике 30°, 60°, 90° углы 1 : 2 : 3, а стороны примерно 1 : 1,73 : 2.',
+ explain2:'Футбольные ворота: чем они шире, тем больше угол, под которым их видно. Сторона — «ворота», противолежащий угол — «угол обзора».'}),{rule:true});
+G(3,()=>CH('В треугольнике два угла равны. Что можно сказать о его сторонах?','Стороны, лежащие против этих углов, равны — треугольник равнобедренный',['Все три стороны равны','Сторона между этими углами равна каждой из двух других','Ничего определённого сказать нельзя'],
+ {short:'Равные углы → равные противолежащие стороны.',
+ explain:'Против равных углов лежат равные стороны (признак равнобедренного треугольника). Например, ∠A = ∠C → BC = AB. Все три стороны равны только если равны все три угла (по 60°).',
+ explain2:'Это «обратная сторона» свойства равнобедренного треугольника: там равные стороны давали равные углы при основании, здесь — наоборот.'}),{rule:true});
+G(3,()=>{let A,B,C;for(;;){[A,B,C]=randAng(25,110);if(Math.min(Math.abs(A-B),Math.abs(B-C),Math.abs(A-C))>=6)break;}const big=R(0,1);const ang=[A,B,C],opp=['BC','AC','AB'],vn=['A','B','C'];
+ const idx=big?ang.indexOf(Math.max(...ang)):ang.indexOf(Math.min(...ang));
+ return CH(`В треугольнике ABC ∠A = ${A}°, ∠B = ${B}°, ∠C = ${C}°. Какая сторона ${big?'самая длинная':'самая короткая'}?`,opp[idx],opp.filter((_,i)=>i!==idx),
+ {pic:triPic(A,B,{g:{ang:[['A','C','B',dg(A)],['B','A','C',dg(B),{n:2}],['C','B','A',dg(C),{n:3}]]}}),
+ hint:'Найди самый '+(big?'большой':'маленький')+' угол. Сторона напротив него — та, в названии которой нет этой буквы.',short:`${big?'Наибольший':'Наименьший'} угол ${vn[idx]} = ${ang[idx]}° → напротив сторона ${opp[idx]}.`,
+ explain:`${big?'Наибольший':'Наименьший'} угол — ∠${vn[idx]} = ${ang[idx]}°. Против ${big?'большего':'меньшего'} угла лежит ${big?'бо́льшая':'меньшая'} сторона. Против вершины ${vn[idx]} лежит сторона без буквы ${vn[idx]}: <b>${opp[idx]}</b>.<div class="box err"><b>Ошибка</b>Стороны, в названии которых есть буква ${vn[idx]}, — это стороны угла ${vn[idx]} (они к нему прилежат), а нам нужна сторона <b>напротив</b>.</div>`,
+ explain2:`Табличка «кто против кого»: A ↔ BC, B ↔ AC, C ↔ AB. Упорядочим углы: ${[...ang].sort((x,y)=>x-y).map(v=>v+'°').join(' &lt; ')} — и стороны в том же порядке: ${[...ang.map((v,i)=>[v,opp[i]])].sort((x,y)=>x[0]-y[0]).map(x=>x[1]).join(' &lt; ')}.`});});
+G(3,()=>{let a,b,c;for(;;){a=R(3,12);b=R(3,12);c=R(3,12);if(okTri(a,b,c)&&a+b>c+1&&a+c>b+1&&b+c>a+1&&new Set([a,b,c]).size===3)break;}const big=R(0,1);const s=[a,b,c],an=['∠A','∠B','∠C'];const idx=big?s.indexOf(Math.max(a,b,c)):s.indexOf(Math.min(a,b,c));
+ const T=tri3(a,b,c);
+ return CH(`В треугольнике ABC: AB = ${c}, BC = ${a}, AC = ${b}. Какой угол ${big?'наибольший':'наименьший'}?`,an[idx],an.filter((_,i)=>i!==idx),
+ {pic:geo({P:T,poly:[['A','B','C']],side:[['B','C',String(a)],['A','C',String(b)],['A','B',String(c)]],maxH:170,W:280}),
+ hint:`Найди ${big?'самую длинную':'самую короткую'} сторону и посмотри, какая вершина напротив.`,short:`${big?'Наибольшая':'Наименьшая'} сторона ${['BC','AC','AB'][idx]} = ${s[idx]} → напротив ${an[idx]}.`,
+ explain:`${big?'Самая длинная':'Самая короткая'} сторона — ${['BC','AC','AB'][idx]} = ${s[idx]}. Против неё лежит угол при вершине, которой нет в её названии: <b>${an[idx]}</b>.`,
+ explain2:`Порядок сторон: ${[...s.map((v,i)=>[v,['BC','AC','AB'][i],an[i]])].sort((x,y)=>x[0]-y[0]).map(x=>x[1]+' = '+x[0]).join(' &lt; ')}. Углы напротив идут в том же порядке: ${[...s.map((v,i)=>[v,an[i]])].sort((x,y)=>x[0]-y[0]).map(x=>x[1]).join(' &lt; ')}.`});});
+G(3,()=>{const eq=Math.random()<0.25;let A,B;for(;;){A=R(25,100);B=eq?A:R(25,100);if(A+B<=160&&(eq||Math.abs(A-B)>=5))break;}const C=180-A-B;
+ const correct=A===B?'AC = BC':B>A?'AC > BC':'AC < BC';
+ return CH(`В треугольнике ABC ∠A = ${A}°, ∠B = ${B}°. Сравни стороны AC и BC.`,correct,['AC > BC','AC < BC','AC = BC'].filter(x=>x!==correct),
+ {pic:triPic(A,B,{g:{ang:[['A','C','B',dg(A)],['B','A','C',dg(B),{n:2}]],side:[['A','C','AC'],['B','C','BC']]}}),
+ hint:'AC лежит против угла B, BC — против угла A.',short:`AC против ∠B = ${B}°, BC против ∠A = ${A}° → ${correct}.`,
+ explain:`Сторона AC лежит против ∠B = ${B}°, сторона BC — против ∠A = ${A}°. ${A===B?'Углы равны, поэтому и стороны равны: <b>AC = BC</b> (треугольник равнобедренный).':`Против большего угла — большая сторона: <b>${correct}</b>.`}`,
+ explain2:`Частая ошибка — думать, что AC «принадлежит» углу A. Но AC — сторона угла A, а лежит она напротив B. ${A===B?'Здесь ∠A = ∠B, значит, AC = BC.':`∠${B>A?'B':'A'} больше, значит, сторона напротив него длиннее.`}`});});
+
+/* ===== L4: неравенство треугольника ===== */
+G(4,()=>CH('Как звучит неравенство треугольника?','Каждая сторона треугольника меньше суммы двух других сторон',['Каждая сторона треугольника меньше разности двух других','Сумма двух сторон треугольника равна третьей стороне','Каждая сторона треугольника больше суммы двух других'],
+ {short:'a < b + c, b < a + c, c < a + b.',
+ explain:'Неравенство треугольника: <b>каждая сторона меньше суммы двух других</b>. Смысл: путь напрямую короче, чем через третью точку. Если сумма двух сторон равна третьей, точки лежат на одной прямой — треугольника нет.',
+ explain2:'Из A в C можно пройти напрямую или через B. Через B — длиннее: AC &lt; AB + BC. И так для каждой стороны.'}),{rule:true});
+G(4,()=>CH('Как быстрее всего проверить, существует ли треугольник со сторонами a ≤ b ≤ c?','Проверить одно неравенство: c < a + b',['Проверить одно неравенство: a < b + c','Проверить, что c > a + b','Проверить, что a + b + c больше 0'],
+ {short:'Достаточно сравнить наибольшую сторону с суммой двух других.',
+ explain:'Если c — наибольшая, то неравенства a &lt; b + c и b &lt; a + c выполняются автоматически (там справа стоит c, а c ≥ a, c ≥ b). Проверять нужно только <b>c &lt; a + b</b>. Неравенство a &lt; b + c для самой маленькой стороны верно почти всегда, поэтому оно ничего не доказывает: 1, 2, 10 — 1 &lt; 12, но треугольника нет.',
+ explain2:'Самая опасная сторона — самая длинная: только ей может «не хватить» двух других. Проверь именно её.'}),{rule:true});
+G(4,()=>{const ok=R(0,2);let a,b,c;for(;;){a=R(2,12);b=R(2,12);c=R(2,15);const s=[a,b,c].sort((x,y)=>x-y);const st=s[2]<s[0]+s[1]?0:s[2]===s[0]+s[1]?1:2;if(ok===0?st===0:ok===1?st===1:st===2)break;}
+ const s=[a,b,c].sort((x,y)=>x-y);const yes=s[2]<s[0]+s[1];
+ return CH(`Существует ли треугольник со сторонами ${a}, ${b} и ${c}?`,yes?'Да':'Нет',[yes?'Нет':'Да'],
+ {short:`Наибольшая ${s[2]} ${yes?'&lt;':s[2]===s[0]+s[1]?'=':'&gt;'} ${s[0]} + ${s[1]} = ${s[0]+s[1]}.`,
+ explain:`Наибольшая сторона ${s[2]}, сумма двух других ${s[0]} + ${s[1]} = ${s[0]+s[1]}. ${yes?`${s[2]} &lt; ${s[0]+s[1]} — неравенство выполняется, треугольник <b>существует</b>.`:s[2]===s[0]+s[1]?`${s[2]} = ${s[0]+s[1]} — равенство! Отрезки лягут на одну прямую, треугольника <b>нет</b>.`:`${s[2]} &gt; ${s[0]+s[1]} — двум коротким сторонам «не дотянуться», треугольника <b>нет</b>.`}`,
+ explain2:`Представь палочки длиной ${s[0]} и ${s[1]}, прикреплённые к концам палочки ${s[2]}. ${yes?'Их общей длины хватает, чтобы встретиться над длинной палочкой — получится вершина.':'Даже если вытянуть их в одну линию, вместе они '+(s[2]===s[0]+s[1]?'ровно равны длинной — вершина ляжет на неё, треугольник сплющен.':'короче длинной палочки — не встретятся.')}`});});
+G(4,()=>{const tr=[];const wantOk=R(1,3);let tries=0;while(tr.length<4&&tries++<500){const a=R(1,10),b=R(1,10),c=R(1,14);const s=[a,b,c].sort((x,y)=>x-y);const ok=s[2]<s[0]+s[1];const need=tr.filter(t=>t.ok).length<wantOk;if(ok!==need)continue;const k=s.join(',');if(tr.some(t=>t.k===k))continue;tr.push({s:[a,b,c],ok,k,ss:s});}
+ if(tr.length<4)return null;const opts=tr.map(t=>t.s.join(', '));if(new Set(opts).size<4)return null;const order=shuffle([0,1,2,3]);const o2=order.map(i=>tr[i]);
+ return {type:'multi',q:'Из каких троек отрезков можно составить треугольник? Выбери все подходящие.',opts:o2.map(t=>t.s.join(', ')),ans:o2.map((t,i)=>t.ok?i:-1).filter(i=>i>=0),
+ hint:'В каждой тройке сравни наибольший отрезок с суммой двух других.',short:'Подходят тройки, где наибольший отрезок меньше суммы двух других.',
+ explain:o2.map(t=>`${t.s.join(', ')}: ${t.ss[2]} ${t.ok?'&lt;':t.ss[2]===t.ss[0]+t.ss[1]?'=':'&gt;'} ${t.ss[0]} + ${t.ss[1]} = ${t.ss[0]+t.ss[1]} → ${t.ok?'<b>можно</b>':'нельзя'}`).join('<br>'),
+ explain2:'Правило одно: <b>наибольшая сторона &lt; суммы двух других</b>. Равенство не годится — отрезки лягут в одну линию. Проверь каждую тройку отдельно, начиная с самого длинного отрезка.'};});
+
+/* ===== L5: третья сторона ===== */
+G(5,()=>CH('Две стороны треугольника равны a и b. Какой может быть третья сторона c?','|a − b| < c < a + b',['c < a + b, и больше никаких ограничений','|a − b| ≤ c ≤ a + b','c > a + b'],
+ {short:'Третья сторона больше разности и меньше суммы двух других.',
+ explain:'Из неравенства треугольника: c &lt; a + b (для самой c) и, например, при a ≥ b: a &lt; b + c, откуда c &gt; a − b. Вместе: <b>|a − b| &lt; c &lt; a + b</b>. Неравенства строгие: при равенстве треугольник сплющивается в отрезок.',
+ explain2:'Стороны 7 и 3 — как две палки на шарнире. Сложены вместе — расстояние между концами 7 − 3 = 4, разогнуты в линию — 7 + 3 = 10. Треугольник получается при всём, что строго между: 4 &lt; c &lt; 10.'}),{rule:true});
+G(5,()=>{const a=R(3,15),b=R(2,15);if(a===b)return null;const lo=Math.abs(a-b),hi=a+b;const ans=hi-lo-1;
+ return {type:'num',q:`Две стороны треугольника равны ${a} и ${b}. Сколько целых значений может принимать длина третьей стороны?`,ans,
+ hint:`${lo} &lt; c &lt; ${hi}. Посчитай целые числа строго между.`,short:`${lo} &lt; c &lt; ${hi}: от ${lo+1} до ${hi-1} — ${ans} ${plural(ans,'значение','значения','значений')}.`,
+ explain:`Третья сторона: |${a} − ${b}| &lt; c &lt; ${a} + ${b}, то есть ${lo} &lt; c &lt; ${hi}. Целые значения: ${lo+1}, ${lo+2}, …, ${hi-1}. Их количество ${hi-1} − ${lo+1} + 1 = <b>${ans}</b>.<div class="box err"><b>Ошибка</b>${hi} − ${lo} = ${hi-lo} — так считают, если включить один из концов. Но c ≠ ${lo} и c ≠ ${hi}.</div>`,
+ explain2:`Короткая формула: 2 · (меньшая сторона) − 1 = 2 · ${Math.min(a,b)} − 1 = ${ans}. Проверь на маленьком примере: стороны 2 и 5 → 3 &lt; c &lt; 7 → 4, 5, 6 — три значения = 2 · 2 − 1 ✅.`};});
+G(5,()=>{const p=R(2,12),q=R(2,25);if(2*p>q-0||p===q)return null;const ans=2*q+p;
+ return {type:'num',q:`Две стороны равнобедренного треугольника равны ${p} и ${q}. Найди его периметр.`,ans,
+ hint:`Попробуй оба варианта: боковые стороны по ${p} или по ${q}. Один из них нарушает неравенство треугольника.`,short:`${p}, ${p}, ${q} — нет (${p} + ${p} ≤ ${q}); ${q}, ${q}, ${p} — да. P = ${ans}.`,
+ explain:`Вариант 1: стороны ${p}, ${p}, ${q}. Проверка: ${p} + ${p} = ${2*p} ${2*p===q?'=':'&lt;'} ${q} — треугольника <b>нет</b>.<br>Вариант 2: стороны ${q}, ${q}, ${p}. ${q} &lt; ${q} + ${p} — существует.<br>Периметр: ${q} + ${q} + ${p} = <b>${ans}</b>.<div class="box err"><b>Ловушка</b>Ответ ${2*p+q} — это несуществующий треугольник ${p}, ${p}, ${q}.</div>`,
+ explain2:`Две боковые стороны по ${p} вместе дают ${2*p} — это ${2*p===q?'ровно столько же, сколько':'меньше, чем'} основание ${q}: они «не дотянутся» друг до друга. Значит, боковые — длинные, по ${q}.`};});
+G(5,()=>{const a=R(4,18),b=R(2,17);if(a===b)return null;const mx=R(0,1);const ans=mx?a+b-1:Math.abs(a-b)+1;
+ return {type:'num',q:`Две стороны треугольника ${a} см и ${b} см, третья сторона — целое число сантиметров. Какой может быть ${mx?'наибольшая':'наименьшая'} длина третьей стороны (в см)?`,ans,
+ hint:`${Math.abs(a-b)} &lt; c &lt; ${a+b}.`,short:`${Math.abs(a-b)} &lt; c &lt; ${a+b} → ${mx?'наибольшее':'наименьшее'} целое ${ans}.`,
+ explain:`Третья сторона c удовлетворяет |${a} − ${b}| &lt; c &lt; ${a} + ${b}, то есть ${Math.abs(a-b)} &lt; c &lt; ${a+b}. ${mx?`Наибольшее целое, меньшее ${a+b}, — <b>${ans}</b>.`:`Наименьшее целое, большее ${Math.abs(a-b)}, — <b>${ans}</b>.`}<div class="box err"><b>Ошибка</b>Ответ ${mx?a+b:Math.abs(a-b)} — неравенство строгое, при c = ${mx?a+b:Math.abs(a-b)} треугольник сплющивается.</div>`,
+ explain2:`Проверка: стороны ${a}, ${b}, ${ans}. Наибольшая ${Math.max(a,b,ans)} &lt; сумма двух других ${a+b+ans-Math.max(a,b,ans)} ✅. А ${mx?ans+1:ans-1} уже не подходит: ${mx?`${ans+1} = ${a} + ${b}`:`${Math.max(a,b)} = ${Math.min(a,b)} + ${ans-1}`}.`};});
+
+/* ===== L6: цепочки углов ===== */
+G(6,()=>CH('Что такое биссектриса треугольника?','Отрезок, который делит угол треугольника пополам и соединяет вершину с точкой противоположной стороны',['Отрезок, соединяющий вершину с серединой противоположной стороны','Перпендикуляр, опущенный из вершины на прямую, содержащую противоположную сторону','Прямая, перпендикулярная стороне и проходящая через её середину'],
+ {short:'Биссектриса делит угол пополам. Середина стороны — медиана, перпендикуляр — высота.',
+ explain:'<b>Биссектриса</b> — делит угол пополам. Не путай: отрезок в середину стороны — <b>медиана</b>, перпендикуляр к стороне из вершины — <b>высота</b>, перпендикуляр через середину стороны — <b>серединный перпендикуляр</b>.',
+ explain2:'«Биссектриса — это крыса, которая бегает по углам и делит угол пополам». А медиана — «обезьяна», которая прыгает в середину стороны.'}),{rule:true});
+G(6,()=>CH('Какое утверждение помогает в задачах с высотой треугольника?','Высота образует с прямой, на которую опущена, прямой угол, поэтому острые углы получившегося прямоугольного треугольника дают в сумме 90°',['Высота делит противолежащую сторону пополам','Высота делит угол, из которого проведена, пополам','Высота всегда лежит внутри треугольника'],
+ {short:'Высота → прямой угол → острые углы в сумме 90°.',
+ explain:'Высота перпендикулярна стороне (прямой угол 90°). В каждом из получившихся прямоугольных треугольников острые углы в сумме <b>90°</b>. Делить сторону или угол пополам высота <b>не обязана</b> (это делают только в равнобедренном треугольнике высота к основанию). А в тупоугольном треугольнике две высоты лежат вне его.',
+ explain2:'Пример: высота BH, ∠A = 50°. В прямоугольном ΔABH ∠ABH = 90° − 50° = 40°.'}),{rule:true});
+G(6,()=>{let A,B,C;for(;;){[A,B,C]=randAng(30,100);if(A%2===0)break;}const ans=B+A/2;const T=triAng(A,B);const P=Object.assign({},T);P.D=inter(P.A,polar(P.A,1,A/2),P.B,P.C);
+ return {type:'num',q:`В треугольнике ABC ∠B = ${B}°, ∠C = ${C}°, AD — биссектриса. Найди ∠ADC (в градусах).`,ans,
+ pic:geo({P,poly:[['A','B','C']],seg:[['A','D',{col:'var(--accent)'}]],ang:[['A','B','D','',{n:1,r:30}],['A','D','C','',{n:1,r:36}],['B','A','C',dg(B),{n:2}],['D','A','C','?',{col:'var(--hl)'}],['C','A','B',dg(C),{n:3}]],maxH:190,W:300}),
+ hint:'Найди ∠A, потом ∠BAD. ∠ADC — внешний угол треугольника ABD.',short:`∠A = ${A}°, ∠BAD = ${A/2}°, ∠ADC = ${B}° + ${A/2}° = ${ans}°.`,
+ explain:`1) ∠A = 180° − ${B}° − ${C}° = ${A}°.<br>2) AD — биссектриса: ∠BAD = ∠DAC = ${A}° : 2 = ${A/2}°.<br>3) ∠ADC — внешний угол треугольника ABD, он равен сумме двух не смежных: ∠ADC = ∠B + ∠BAD = ${B}° + ${A/2}° = <b>${ans}°</b>.`,
+ explain2:`Через треугольник ADC: ∠DAC = ${A/2}°, ∠C = ${C}°, тогда ∠ADC = 180° − ${A/2}° − ${C}° = ${ans}° ✅.`};});
+G(6,()=>{let A,B,C;for(;;){[A,B,C]=randAng(30,85);break;}const T=triAng(A,B);const P=Object.assign({},T);P.H=foot(P.B,P.A,P.C);const ask=R(0,1);
+ const ans=ask?90-C:90-A;
+ return {type:'num',q:`В треугольнике ABC ∠A = ${A}°, ∠C = ${C}°, BH — высота. Найди ∠${ask?'CBH':'ABH'} (в градусах).`,ans,
+ pic:geo({P,poly:[['A','B','C']],seg:[['B','H',{dash:true}]],rt:[['H','C','B']],ang:[['A','B','C',dg(A)],['C','A','B',dg(C),{n:2}],ask?['B','C','H','?',{col:'var(--hl)'}]:['B','H','A','?',{col:'var(--hl)'}]],maxH:190,W:300}),
+ hint:`Посмотри на прямоугольный треугольник ${ask?'CBH':'ABH'}: в нём один угол 90°.`,short:`В ΔB${ask?'C':'A'}H: 90° − ${ask?C:A}° = ${ans}°.`,
+ explain:`BH ⟂ AC, поэтому ΔB${ask?'C':'A'}H прямоугольный (∠BH${ask?'C':'A'} = 90°). Острые углы в сумме 90°: ∠${ask?'CBH':'ABH'} = 90° − ∠${ask?'C':'A'} = 90° − ${ask?C:A}° = <b>${ans}°</b>.${ask?'':` (Угол C для ответа не нужен!)`}`,
+ explain2:`Проверка суммой углов ΔB${ask?'C':'A'}H: ${ask?C:A}° + 90° + ${ans}° = 180° ✅. Высота всегда даёт прямоугольные треугольники — это главный «ключ».`};});
+G(6,()=>{let A,B,C;for(;;){[A,B,C]=randAng(35,85);if(Math.abs(A-C)>=8&&(A-C)%2===0&&B>=46)break;}const T=triAng(A,B);const P=Object.assign({},T);P.H=foot(P.B,P.A,P.C);
+ P.L=inter(P.B,add(P.B,add(unit(sub(P.A,P.B)),unit(sub(P.C,P.B)))),P.A,P.C);const ans=Math.abs(A-C)/2;
+ return {type:'num',q:`В треугольнике ABC ∠A = ${A}°, ∠C = ${C}°. BH — высота, BL — биссектриса. Найди угол HBL между ними (в градусах).`,ans,
+ pic:geo({P,poly:[['A','B','C']],seg:[['B','H',{dash:true}],['B','L',{col:'var(--accent)'}]],rt:[['H','C','B']],ang:[['A','B','C',dg(A)],['C','A','B',dg(C),{n:2}]],maxH:200,W:300}),
+ hint:`Найди ∠B и половину его. Потом найди угол ${A>C?'ABH':'CBH'} из прямоугольного треугольника.`,short:`∠B/2 = ${B/2}°, ∠${A>C?'ABH':'CBH'} = ${90-Math.max(A,C)}°, ∠HBL = ${ans}°.`,
+ explain:`1) ∠B = 180° − ${A}° − ${C}° = ${B}°, биссектриса: ∠${A>C?'ABL':'CBL'} = ${B/2}°.<br>2) Из прямоугольного ΔB${A>C?'A':'C'}H: ∠${A>C?'ABH':'CBH'} = 90° − ${Math.max(A,C)}° = ${90-Math.max(A,C)}°.<br>3) ∠HBL = ${B/2}° − ${90-Math.max(A,C)}° = <b>${ans}°</b>.`,
+ explain2:`Есть красивая формула: угол между высотой и биссектрисой из одной вершины равен половине разности двух других углов: |${A}° − ${C}°| : 2 = ${ans}°. Проверь её на равнобедренном треугольнике: там высота и биссектриса совпадают, разность 0 ✅.`};});
+G(6,()=>{let A,B,C;for(;;){[A,B,C]=randAng(30,95);if(A%2===0&&B>C+8)break;}const T=triAng(A,B);const P=Object.assign({},T);const ab=len(P.B);P.D=[ab,0];const ans=90+A/2;
+ if(ab>9.2)return null;
+ return {type:'num',q:`В треугольнике ABC ∠A = ${A}°. На стороне AC отметили точку D так, что AD = AB. Найди ∠BDC (в градусах).`,ans,
+ pic:geo({P,poly:[['A','B','C']],seg:[['B','D']],tick:[['A','B'],['A','D']],ang:[['A','B','C',dg(A)],['D','B','C','?',{col:'var(--hl)'}]],maxH:180,W:300}),
+ hint:'ΔABD равнобедренный. Найди его углы при основании BD.',short:`∠ADB = (180° − ${A}°)/2 = ${90-A/2}°, ∠BDC = 180° − ${90-A/2}° = ${ans}°.`,
+ explain:`AB = AD, значит ΔABD равнобедренный с основанием BD: ∠ABD = ∠ADB = (180° − ${A}°) : 2 = ${90-A/2}°.<br>∠BDC смежный с ∠ADB: ∠BDC = 180° − ${90-A/2}° = <b>${ans}°</b>.`,
+ explain2:`Можно через внешний угол: ∠BDC — внешний для ΔABD при вершине D, он равен ∠A + ∠ABD = ${A}° + ${90-A/2}° = ${ans}° ✅. Заметь: углы B и C треугольника не понадобились.`};});
+G(6,()=>{const [A,B,C]=randAng(30,100);const T=triAng(A,B);const P=Object.assign({},T);P.M=add(P.B,[-3.5,0]);P.N=add(P.B,[3.5,0]);
+ return {type:'num',q:`Через вершину B треугольника ABC провели прямую MN, параллельную AC. ∠MBA = ${A}°, ∠NBC = ${C}°. Найди ∠ABC (в градусах).`,ans:B,
+ pic:geo({P,poly:[['A','B','C']],seg:[['M','N',{col:'var(--accent)'}]],ang:[['B','M','A',dg(A)],['B','C','N',dg(C),{n:2}],['B','A','C','?',{col:'var(--hl)'}]],maxH:180,W:300}),
+ hint:'Три угла при вершине B вместе образуют развёрнутый угол MBN.',short:`180° − ${A}° − ${C}° = ${B}°.`,
+ explain:`Углы MBA, ABC и CBN вместе составляют развёрнутый угол MBN = 180°. ∠ABC = 180° − ${A}° − ${C}° = <b>${B}°</b>.<br>Заодно: ∠A = ∠MBA = ${A}° и ∠C = ∠NBC = ${C}° (накрест лежащие) — это и есть доказательство теоремы о сумме углов.`,
+ explain2:`Проверь: ${A}° + ${B}° + ${C}° = 180° ✅. Прямая MN — «линейка», к которой приложены три угла.`};});
+
+/* ===== L7: ★ биссектрисы, высоты, цепочки ===== */
+G(7,()=>CH('Биссектрисы углов B и C треугольника ABC пересекаются в точке I. Чему равен ∠BIC?','90° + ∠A / 2',['90° − ∠A / 2','180° − ∠A','2 · ∠A'],
+ {short:'∠BIC = 180° − (B + C)/2 = 90° + A/2.',
+ explain:'В ΔBIC: ∠IBC = ∠B/2, ∠ICB = ∠C/2. ∠BIC = 180° − (∠B + ∠C)/2 = 180° − (180° − ∠A)/2 = <b>90° + ∠A/2</b>. 180° − ∠A — это угол между <b>высотами</b>, а 90° − ∠A/2 — между <b>внешними</b> биссектрисами.',
+ explain2:'Проверка на равностороннем треугольнике: все углы 60°, биссектрисы пересекаются в центре, и угол между ними 120° = 90° + 30° ✅.'}),{rule:true,star:true});
+G(7,()=>{const inv=R(0,1);let A,B,C;for(;;){[A,B,C]=randAng(36,90);if(A%2===0)break;}const bic=90+A/2;const T=triAng(A,B);const P=Object.assign({},T);P.I=incenter(P);
+ const chk=angAt(P.I,P.B,P.C);if(Math.abs(chk-bic)>1e-6)return null;
+ return {type:'num',q:inv?`Биссектрисы углов B и C треугольника ABC пересекаются в точке I, ∠BIC = ${bic}°. Найди ∠A (в градусах).`:`В треугольнике ABC ∠A = ${A}°. Биссектрисы углов B и C пересекаются в точке I. Найди ∠BIC (в градусах).`,ans:inv?A:bic,
+ pic:geo({P,poly:[['A','B','C']],seg:[['B','I',{col:'var(--accent)'}],['C','I',{col:'var(--accent)'}]],ang:[['A','B','C',inv?'?':dg(A),inv?{col:'var(--hl)'}:{}],['I','B','C',inv?dg(bic):'?',inv?{}:{col:'var(--hl)'}],['C','B','I','',{n:1,r:22}],['C','I','A','',{n:1,r:28}],['B','A','I','',{n:2,r:22}],['B','I','C','',{n:2,r:28}]],lab:['A','B','C','I'],maxH:200,W:300}),
+ hint:'∠IBC + ∠ICB = (∠B + ∠C)/2, а ∠B + ∠C = 180° − ∠A.',short:inv?`${bic}° = 90° + A/2 → A = 2 · ${bic-90}° = ${A}°.`:`90° + ${A}°/2 = ${bic}°.`,
+ explain:inv?`∠BIC = 90° + ∠A/2 (в ΔBIC: 180° − (∠B + ∠C)/2 = 180° − (180° − ∠A)/2). Значит ${bic}° = 90° + ∠A/2, ∠A/2 = ${bic-90}°, ∠A = <b>${A}°</b>.`:`∠B + ∠C = 180° − ${A}° = ${180-A}°. В ΔBIC углы при B и C — половинки: (∠B + ∠C)/2 = ${(180-A)/2}°. ∠BIC = 180° − ${(180-A)/2}° = <b>${bic}°</b> = 90° + ${A}°/2.`,
+ explain2:`Обрати внимание: сами углы B и C не нужны, важна только их сумма. Например, при ∠B = ${B}°, ∠C = ${C}°: половинки ${N(B/2)}° и ${N(C/2)}°, ∠BIC = 180° − ${N(B/2)}° − ${N(C/2)}° = ${bic}° ✅.`};},{star:true});
+G(7,()=>{const [A,B,C]=randAng(40,85);const T=triAng(A,B);const P=Object.assign({},T);P.B1=foot(P.B,P.A,P.C);P.C1=foot(P.C,P.A,P.B);P.H=orthocenter(P);
+ const chk=angAt(P.H,P.B,P.C);if(Math.abs(chk-(180-A))>1e-6)return null;
+ return {type:'num',q:`В остроугольном треугольнике ABC ∠A = ${A}°. Высоты BB₁ и CC₁ пересекаются в точке H. Найди ∠BHC (в градусах).`,ans:180-A,
+ pic:geo({P,poly:[['A','B','C']],seg:[['B','B1',{dash:true}],['C','C1',{dash:true}]],rt:[['B1','C','B'],['C1','B','C']],ang:[['A','B','C',dg(A)],['H','B','C','?',{col:'var(--hl)'}]],names:{B1:'B₁',C1:'C₁'},maxH:200,W:300}),
+ hint:'Посмотри на четырёхугольник AC₁HB₁: в нём два прямых угла.',short:`∠BHC = ∠C₁HB₁ = 360° − 90° − 90° − ${A}° = ${180-A}°.`,
+ explain:`В четырёхугольнике AC₁HB₁ углы при C₁ и B₁ прямые, ∠A = ${A}°. Сумма углов четырёхугольника 360°, значит ∠C₁HB₁ = 360° − 90° − 90° − ${A}° = ${180-A}°. ∠BHC = ∠C₁HB₁ (вертикальные) = <b>${180-A}°</b>.`,
+ explain2:`Без четырёхугольника: в прямоугольном ΔABB₁ ∠ABB₁ = 90° − ${A}° = ${90-A}°, значит ∠HBC = ∠B − ${90-A}° = ${B}° − ${90-A}° = ${B-90+A}°. Аналогично ∠HCB = ${C}° − ${90-A}° = ${C-90+A}°. ∠BHC = 180° − ${B-90+A}° − ${C-90+A}° = ${180-A}° ✅.`};},{star:true});
+G(7,()=>{const x=R(12,40);const A=2*x,B=180-3*x;const T=triAng(A,B);const P=Object.assign({},T);const Mbc=mid(P.B,P.C);const dbc=sub(P.C,P.B);P.D=inter(Mbc,add(Mbc,[-dbc[1],dbc[0]]),P.A,P.C);
+ const l1=len(sub(P.A,P.B)),l2=len(sub(P.B,P.D)),l3=len(sub(P.D,P.C));if(Math.abs(l1-l2)>1e-6||Math.abs(l2-l3)>1e-6)return null;const ask=R(0,1);const ans=ask?180-4*x:180-3*x;
+ return {type:'num',q:`На стороне AC треугольника ABC взята точка D так, что AB = BD = DC. ∠C = ${x}°. Найди ∠${ask?'ABD':'ABC'} (в градусах).`,ans,
+ pic:geo({P,poly:[['A','B','C']],seg:[['B','D']],tick:[['A','B'],['B','D'],['D','C']],ang:[['C','A','B',dg(x)],ask?['B','A','D','?',{col:'var(--hl)'}]:['B','A','C','?',{col:'var(--hl)'}]],maxH:190,W:300}),
+ hint:'BD = DC → ΔBDC равнобедренный. ∠ADB — внешний угол ΔBDC. Потом ΔABD тоже равнобедренный.',short:`∠DBC = ${x}°, ∠ADB = ∠A = ${2*x}°, ∠ABD = ${180-4*x}°, ∠ABC = ${180-3*x}°.`,
+ explain:`1) BD = DC → ∠DBC = ∠C = ${x}°.<br>2) ∠ADB — внешний угол ΔBDC: ∠ADB = ${x}° + ${x}° = ${2*x}°.<br>3) AB = BD → ΔABD равнобедренный, ∠A = ∠ADB = ${2*x}°, ∠ABD = 180° − 2 · ${2*x}° = ${180-4*x}°.<br>4) ∠ABC = ∠ABD + ∠DBC = ${180-4*x}° + ${x}° = ${180-3*x}°.<br>Ответ: <b>${ans}°</b>.`,
+ explain2:`Проверка суммой углов ΔABC: ∠A + ∠B + ∠C = ${2*x}° + ${180-3*x}° + ${x}° = 180° ✅. Цепочка равнобедренных треугольников «удваивает» угол на каждом шаге — частый олимпиадный сюжет.`};},{star:true});
+
+/* ===== L8: ★ звезда и подсчёты ===== */
+G(8,()=>CH('Чему равна сумма углов при пяти вершинах любой пятиконечной звезды?','180°',['360°','540°','Зависит от формы звезды'],
+ {short:'Любая пятиконечная звезда: сумма углов при вершинах 180°.',
+ explain:'Возьми треугольник с вершиной A звезды и двумя внутренними точками пересечения. Его углы при этих точках — внешние углы маленьких треугольников, они равны ∠C + ∠E и ∠B + ∠D. Сумма углов этого треугольника: ∠A + ∠B + ∠C + ∠D + ∠E = <b>180°</b>. 540° — это сумма углов пятиугольника, а не звезды.',
+ explain2:'Проверка на правильной звезде: каждый угол 36°, 5 · 36° = 180° ✅. И это верно для любой, даже кривой звезды.'}),{rule:true,star:true});
+G(8,()=>{const n=[10,10,10,10,10];let rest=40;while(rest>0){const i=R(0,4);if(n[i]<26){n[i]++;rest--;}}const tips=n.map(v=>2*v);const P=starPts(tips);
+ for(let k=0;k<5;k++){const t=angAt(P['P'+k],P['P'+((k+2)%5)],P['P'+((k+3)%5)]);if(Math.abs(t-tips[k])>1e-6)return null;}
+ const u=R(0,4);const seg=[];for(let k=0;k<5;k++)seg.push(['P'+k,'P'+((k+2)%5),{sw:2}]);const nm='ABCDE';
+ const ang=[0,1,2,3,4].map(k=>['P'+k,'P'+((k+2)%5),'P'+((k+3)%5),'',k===u?{col:'var(--hl)'}:{}]);const names={};for(let k=0;k<5;k++)names['P'+k]=nm[k]+' '+(k===u?'?':dg(tips[k]));
+ const known=tips.filter((_,k)=>k!==u);const sk=known.reduce((a,b)=>a+b,0);
+ return {type:'num',q:`Углы при вершинах пятиконечной звезды ABCDE: ${[0,1,2,3,4].filter(k=>k!==u).map(k=>`∠${nm[k]} = ${tips[k]}°`).join(', ')}. Найди ∠${nm[u]} (в градусах).`,ans:tips[u],
+ pic:geo({P,seg,ang,names,maxH:230,W:300}),
+ hint:'Сумма углов при вершинах любой пятиконечной звезды — 180°.',short:`180° − (${known.join(' + ')})° = ${tips[u]}°.`,
+ explain:`Сумма углов при вершинах звезды равна 180° (через внешние углы маленьких треугольников). Известные: ${known.join('° + ')}° = ${sk}°. ∠${nm[u]} = 180° − ${sk}° = <b>${tips[u]}°</b>.<div class="box err"><b>Ловушка</b>360° − ${sk}° = ${360-sk}° — у звезды не 360°.</div>`,
+ explain2:`Почему 180°: рассмотри треугольник, образованный вершиной ${nm[0]} и двумя ближайшими к ней точками пересечения внутри звезды. Его углы при этих точках — внешние углы маленьких треугольников: один равен ∠${nm[2]} + ∠${nm[4]}, другой ∠${nm[1]} + ∠${nm[3]}. Значит, все пять углов звезды «собираются» в одном треугольнике — 180°.`};},{star:true});
+G(8,()=>{const Pm=R(9,24);let cnt=0;const L=[];for(let a=1;a<=Pm;a++)for(let b=a;b<=Pm;b++){const c=Pm-a-b;if(c<b)continue;if(c<a+b){cnt++;L.push(`(${a}, ${b}, ${c})`);}}
+ return {type:'num',q:`Сколько существует различных треугольников с целыми сторонами и периметром ${Pm}? (Треугольники, отличающиеся только порядком сторон, считаем одинаковыми.)`,ans:cnt,
+ hint:`Перебирай тройки a ≤ b ≤ c с a + b + c = ${Pm}. Наибольшая сторона c должна быть меньше ${Pm}/2.`,short:`${cnt}: ${L.join(', ')}.`,
+ explain:`Пусть a ≤ b ≤ c и a + b + c = ${Pm}. Условие треугольника c &lt; a + b = ${Pm} − c даёт c &lt; ${N(Pm/2)}, а из c ≥ b ≥ a — c ≥ ${N(Math.ceil(Pm/3))}. Перебираем c от ${Math.ceil(Pm/3)} до ${Math.ceil(Pm/2)-1} и для каждого — пары a ≤ b ≤ c:<br>${L.join(', ')}.<br>Всего <b>${cnt}</b>.`,
+ explain2:`Удобно идти по наибольшей стороне c. ${(()=>{let s='';for(let c=Math.ceil(Pm/3);c<Pm/2;c++){const r=Pm-c;const pr=[];for(let a=1;a<=r/2;a++){const b=r-a;if(b<=c&&a<=b)pr.push(a+'+'+b);}s+=`c = ${c}: a + b = ${r} → ${pr.join(', ')} (${pr.length})<br>`;}return s;})()}Сумма: ${cnt}.`};},{star:true});
+G(8,()=>{const n=R(5,9);let cnt=0;const L=[];for(let i=1;i<=n;i++)for(let j=i+1;j<=n;j++)for(let k=j+1;k<=n;k++)if(i+j>k){cnt++;L.push(`${i}-${j}-${k}`);}
+ return {type:'num',q:`У Артёма есть ${n} палочек длиной 1, 2, 3, …, ${n} см (по одной каждой длины). Сколькими способами можно выбрать три палочки, чтобы из них сложился треугольник?`,ans:cnt,
+ hint:'Для тройки a &lt; b &lt; c нужно a + b &gt; c. Перебирай по наибольшей палочке c.',short:`${cnt} ${plural(cnt,'способ','способа','способов')}: ${L.join(', ')}.`,
+ explain:`Тройка a &lt; b &lt; c подходит, если a + b &gt; c. Переберём наибольшую палочку c:<br>${(()=>{let s='';for(let c=3;c<=n;c++){const pr=[];for(let a=1;a<c;a++)for(let b=a+1;b<c;b++)if(a+b>c)pr.push(a+'-'+b);s+=`c = ${c}: ${pr.length?pr.join(', '):'нет'} (${pr.length})<br>`;}return s;})()}Всего <b>${cnt}</b>.`,
+ explain2:`Типичная ошибка — забыть, что равенство не годится: 1, 2, 3 — «треугольник» сплющен (1 + 2 = 3). Самая короткая палочка 1 вообще ни с кем не работает: для 1 &lt; b &lt; c нужно 1 + b &gt; c, а c ≥ b + 1. Подходящие тройки: ${L.join(', ')}.`};},{star:true});
+
+/* =====================================================================
+   WIDGET: draggable triangle
+   ===================================================================== */
+function onTheory(root){const w=root.querySelector('#w-tri');if(!w)return;
+  w.innerHTML=`<div id="wtS" style="display:flex;justify-content:center;touch-action:none"></div><label><input type="checkbox" id="wtP"> показать доказательство (прямая через B параллельно AC)</label><div id="wtO" class="small" style="text-align:center"></div>`;
+  const W=320,Hh=230;let pts=[[50,190],[150,50],[280,190]];let drag=-1;const P=w.querySelector('#wtP');
+  const ang=(v,a,b)=>{const u=[a[0]-v[0],a[1]-v[1]],q=[b[0]-v[0],b[1]-v[1]];return Math.acos(Math.max(-1,Math.min(1,(u[0]*q[0]+u[1]*q[1])/(Math.hypot(...u)*Math.hypot(...q)))))/D2R;};
+  const arc=(v,a,b,r,col,op)=>{const a1=Math.atan2(a[1]-v[1],a[0]-v[0]);let d=Math.atan2(b[1]-v[1],b[0]-v[0])-a1;while(d>Math.PI)d-=2*Math.PI;while(d<=-Math.PI)d+=2*Math.PI;const p=[v[0]+r*Math.cos(a1),v[1]+r*Math.sin(a1)],q=[v[0]+r*Math.cos(a1+d),v[1]+r*Math.sin(a1+d)];
+    return `<path d="M${v[0].toFixed(1)},${v[1].toFixed(1)} L${p[0].toFixed(1)},${p[1].toFixed(1)} A${r},${r} 0 0 ${d>0?1:0} ${q[0].toFixed(1)},${q[1].toFixed(1)} Z" fill="${col}" fill-opacity="${op}" stroke="${col}" stroke-width="1.5"/>`;};
+  const round3=a=>{const f=a.map(Math.floor);let rest=180-f.reduce((s,x)=>s+x,0);const ord=a.map((x,i)=>[x-Math.floor(x),i]).sort((x,y)=>y[0]-x[0]);for(let k=0;k<rest;k++)f[ord[k][1]]++;return f;};
+  const cols=['var(--accent)','var(--hl)','var(--ok)'];
+  const draw=()=>{const [A,B,C]=pts;const raw=[ang(A,B,C),ang(B,A,C),ang(C,A,B)];const r=round3(raw);
+    let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="Треугольник с подвижными вершинами" style="font-family:system-ui,sans-serif;max-width:100%">`;
+    s+=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="var(--hl)" fill-opacity=".12" stroke="var(--fig)" stroke-width="2.2" stroke-linejoin="round"/>`;
+    s+=arc(A,B,C,22,cols[0],.35)+arc(B,A,C,22,cols[1],.35)+arc(C,A,B,22,cols[2],.35);
+    if(P.checked){const d=[C[0]-A[0],C[1]-A[1]];const L=Math.hypot(...d);const e=[d[0]/L,d[1]/L];const M=[B[0]-e[0]*400,B[1]-e[1]*400],Nn=[B[0]+e[0]*400,B[1]+e[1]*400];
+      s+=`<line x1="${M[0]}" y1="${M[1]}" x2="${Nn[0]}" y2="${Nn[1]}" stroke="var(--accent)" stroke-width="1.8" stroke-dasharray="6 4"/>`;
+      const Mp=[B[0]-e[0]*40,B[1]-e[1]*40],Np=[B[0]+e[0]*40,B[1]+e[1]*40];s+=arc(B,Mp,A,26,cols[0],.35)+arc(B,Np,C,26,cols[2],.35);}
+    const cen=[(A[0]+B[0]+C[0])/3,(A[1]+B[1]+C[1])/3];['A','B','C'].forEach((n,i)=>{const p=pts[i];const d=[p[0]-cen[0],p[1]-cen[1]];const l=Math.hypot(...d)||1;const q=[p[0]+d[0]/l*20,p[1]+d[1]/l*20];
+      s+=`<text x="${q[0].toFixed(1)}" y="${(q[1]+5).toFixed(1)}" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent-ink)">${n}</text>`;});
+    pts.forEach((p,i)=>{s+=`<circle data-i="${i}" cx="${p[0]}" cy="${p[1]}" r="10" fill="var(--accent)" fill-opacity=".35" stroke="var(--accent)" stroke-width="2" style="cursor:grab"/>`;});
+    s+='</svg>';w.querySelector('#wtS').innerHTML=s;const m=Math.max(...r);
+    w.querySelector('#wtO').innerHTML=`∠A + ∠B + ∠C = <span class="out">${r[0]}° + ${r[1]}° + ${r[2]}° = 180°</span> · треугольник <b>${m<90?'остроугольный':m===90?'прямоугольный':'тупоугольный'}</b>${P.checked?'<br>Уголки A и C «переехали» к вершине B и вместе с ∠B легли на прямую.':''}`;};
+  const host=w.querySelector('#wtS');
+  const loc=e=>{const svg=host.querySelector('svg');const r=svg.getBoundingClientRect();return [(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*Hh/r.height];};
+  host.addEventListener('pointerdown',e=>{const p=loc(e);let best=-1,bd=30;pts.forEach((q,i)=>{const d=Math.hypot(q[0]-p[0],q[1]-p[1]);if(d<bd){bd=d;best=i;}});if(best>=0){drag=best;try{host.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();}});
+  host.addEventListener('pointermove',e=>{if(drag<0)return;const p=loc(e);p[0]=Math.max(14,Math.min(W-14,p[0]));p[1]=Math.max(14,Math.min(Hh-14,p[1]));const old=pts[drag];pts[drag]=p;
+    const [A,B,C]=pts;const area=Math.abs((B[0]-A[0])*(C[1]-A[1])-(C[0]-A[0])*(B[1]-A[1]));if(area<600||Math.min(Math.hypot(A[0]-B[0],A[1]-B[1]),Math.hypot(B[0]-C[0],B[1]-C[1]),Math.hypot(A[0]-C[0],A[1]-C[1]))<30)pts[drag]=old;draw();});
+  const up=()=>{drag=-1;};host.addEventListener('pointerup',up);host.addEventListener('pointercancel',up);P.onchange=draw;draw();}
+
+window.TOPIC={id:'g7_angle_sum',title:'Сумма углов треугольника',subtitle:'Геометрия · 7 класс',
+intro:`<p>Почему у любого треугольника углы в сумме дают ровно 180°? Здесь: доказательство через параллельную прямую (и живой треугольник, который можно тянуть за вершины), виды треугольников по углам, внешний угол, «против большей стороны — больший угол» и неравенство треугольника. В конце — олимпиадные задачи про биссектрисы, высоты и пятиконечную звезду.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Сумма углов треугольника','Виды треугольников по углам','Внешний угол','Против большей стороны — больший угол','Неравенство треугольника','Третья сторона: от и до','Цепочки углов','★ Биссектрисы, высоты, цепочки','★ Звезда и подсчёты'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
