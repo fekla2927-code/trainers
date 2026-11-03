@@ -163,6 +163,31 @@ b.fix{color:var(--ok);background:var(--ok-soft);border-radius:4px;padding:0 2px}
 .res-list li .btn{white-space:nowrap}
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
 <body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+</script>
 <script>/* Who is studying: separate progress for each child on the same device */
 (function(){
 const LIST=['Артём','Павел'];
@@ -176,7 +201,8 @@ const P=window.PROF={
   key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
   /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
   done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
-  record(id,d){try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
     if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
     localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
   mount(header,main){
@@ -8794,7 +8820,7 @@ function recordDone(){
   const tot=(S.runR||0)+(S.runW||0);if(!tot)return;
   const pct=Math.round((S.runR||0)/tot*100);
   const id=(window.CONF&&CONF.ls?'english':'russkiy')+':'+S.grade+(S.recallOnly?':rules':'');
-  if(S.recallOnly||S.title===gLabel(S.grade))PROF.record(id,{pct,total:tot,right:S.runR||0});
+  if(S.recallOnly||S.title===gLabel(S.grade))PROF.record(id,{pct,total:tot,right:S.runR||0},(window.CONF&&CONF.ls?'Английский, ':'Русский язык, ')+gLabel(S.grade)+(S.recallOnly?' — проверка правил':' — пройден целиком'));
 }
 function renderEnd(m){
   recordDone();
