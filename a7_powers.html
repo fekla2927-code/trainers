@@ -678,11 +678,11 @@ window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted
 </script>
 <script>(function(){
 const {R,pick,shuffle,sample,range,plural,gcd}=H;
-const SUPMAP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁺':'+','⁻':'−','ᵐ':'m','ⁿ':'n','ˣ':'x','ᵏ':'k'};
-const SUPRE=/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻ᵐⁿˣᵏ]+/g;
+const SUPMAP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁺':'+','⁻':'−','ᵐ':'m','ⁿ':'n','ˣ':'x','ᵏ':'k','ᵃ':'a'};
+const SUPRE=/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻ᵐⁿˣᵏᵃ]+/g;
 function sx(s){if(typeof s!=='string')return s;return s.split(/(<svg[\s\S]*?<\/svg>)/).map(p=>p.startsWith('<svg')?p:p.replace(SUPRE,m=>'<sup>'+[...m].map(c=>SUPMAP[c]).join('')+'</sup>')).join('');}
 function fixT(t){['q','explain','explain2','explain3','short','hint','ansText'].forEach(k=>{if(typeof t[k]==='string')t[k]=sx(t[k]);});if(t.opts&&!t.pics)t.opts=t.opts.map(sx);return t;}
-function fin(TP){TP.intro=sx(TP.intro);TP.theory.forEach(s=>{s.html=sx(s.html);});if(TP.symbols){TP.symbols.rows=TP.symbols.rows.map(r=>r.map(sx));TP.symbols.after=sx(TP.symbols.after);}
+function fin(TP){TP.intro=sx(TP.intro);TP.theory.forEach(s=>{s.html=sx(s.html);});if(TP.symbols){TP.symbols.rows=TP.symbols.rows.map(r=>r.map(sx).map((c,i)=>i===0?`<span style="white-space:nowrap">${c}</span>`:c));TP.symbols.after=sx(TP.symbols.after);}
   TP.gens=TP.gens.map(g=>Object.assign({},g,{make:()=>fixT(g.make())}));return TP;}
 const M=s=>`<span class="m">${sx(s)}</span>`;
 const n=x=>H.num(x);
@@ -717,6 +717,8 @@ function mstr(t,first){const a=Math.abs(t.c),vs=vstr(t.v);const body=vs?(a===1?'
   return first?(t.c<0?'−':'')+body:(t.c<0?' − ':' + ')+body;}
 function fmt(p){p=norm(p);if(!p.length)return '0';return p.map((t,i)=>mstr(t,i===0)).join('');}
 const fm=t=>mstr(t,true);
+const fmtRaw=l=>l.length?l.map((t,i)=>mstr(t,i===0)).join(''):'0';
+const X=(c,e)=>T(c,e?'x'+e:'');
 const par=p=>{p=norm(p);return p.length>1?`(${fmt(p)})`:fmt(p);};
 const parN=p=>{p=norm(p);return (p.length>1||(p.length&&p[0].c<0))?`(${fmt(p)})`:fmt(p);};
 const eqP=(a,b)=>fmt(a)===fmt(b);
