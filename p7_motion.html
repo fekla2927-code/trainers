@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Механическое движение — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const N=x=>H.num(x);
+const NS=x=>{let s=N(x);const neg=s[0]==='−';if(neg)s=s.slice(1);const [a,b]=s.split(',');const g=a.length>4?a.replace(/\B(?=(\d{3})+(?!\d))/g,' '):a;return (neg?'−':'')+g+(b?','+b:'');};
+const rd=(x,d)=>{const p=Math.pow(10,d);return Math.round(x*p)/p;};
+const TOL=a=>a===0?null:Math.min(0.01,0.4/Math.abs(a));
+const isInt=x=>Math.abs(x-Math.round(x))<1e-9;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<300;i++){const t=make();if(t){if(t.type==='num'){t.ans=Math.round(t.ans*1e9)/1e9;if(t.tol===undefined)t.tol=TOL(t.ans);if(t.tol==null)delete t.tol;}return t;}}return null;}});};
+const CH=(q,right,wrongs,o)=>{const opts=shuffle([right].concat(wrongs));if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(right)},o||{});};
+const NUM=(q,ans,o)=>Object.assign({type:'num',q,ans,ph:'число',keys:['−',',']},o||{});
+const BANK=(arr)=>()=>{const b=pick(arr);return CH(b.q,b.r,sample(b.w,Math.min(3,b.w.length)),{short:b.s||b.r+'.',explain:b.e,explain2:b.e2,pic:b.pic});};
+
+/* ---------- SVG: график s(t) или v(t) ---------- */
+function graph(c){
+  const W=320,Hh=240,L=44,B=34,T=26,Rr=18;const w=W-L-Rr,h=Hh-B-T;
+  const X=t=>L+t/c.tmax*w,Y=y=>Hh-B-y/c.ymax*h;const f=v=>Math.round(v*10)/10;
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="График" style="font-family:system-ui,sans-serif">`;
+  for(let t=0;t<=c.tmax+1e-9;t+=c.tstep){s+=`<line x1="${f(X(t))}" y1="${T}" x2="${f(X(t))}" y2="${Hh-B}" stroke="var(--line)"/>`;s+=`<text x="${f(X(t))}" y="${Hh-B+15}" text-anchor="middle" font-size="11" fill="var(--ink)">${N(rd(t,4))}</text>`;}
+  for(let y=0;y<=c.ymax+1e-9;y+=c.ystep){s+=`<line x1="${L}" y1="${f(Y(y))}" x2="${L+w}" y2="${f(Y(y))}" stroke="var(--line)"/>`;if(y>0)s+=`<text x="${L-5}" y="${f(Y(y))+4}" text-anchor="end" font-size="11" fill="var(--ink)">${N(rd(y,4))}</text>`;}
+  s+=`<path d="M${L},${T-6} L${L},${Hh-B} L${L+w+10},${Hh-B}" fill="none" stroke="var(--fig)" stroke-width="1.6"/>`;
+  s+=`<path d="M${L-4},${T} L${L},${T-8} L${L+4},${T}" fill="none" stroke="var(--fig)" stroke-width="1.6"/>`;
+  s+=`<text x="${L+8}" y="14" font-size="12" font-weight="700" fill="var(--accent-ink)">${c.kind}, ${c.yu}</text>`;
+  s+=`<text x="${W-4}" y="${Hh-6}" text-anchor="end" font-size="12" font-weight="700" fill="var(--accent-ink)">t, ${c.tu}</text>`;
+  const cols=['var(--accent-ink)','var(--hl)','var(--fig)'];
+  (c.lines||[]).forEach((ln,i)=>{const d=ln.pts.map((p,j)=>(j?'L':'M')+f(X(p[0]))+','+f(Y(p[1]))).join(' ');
+    if(ln.fill){s+=`<path d="${d} L${f(X(ln.pts[ln.pts.length-1][0]))},${Hh-B} L${f(X(ln.pts[0][0]))},${Hh-B} Z" fill="var(--hl)" fill-opacity=".35"/>`;}
+    s+=`<path d="${d}" fill="none" stroke="${cols[i]}" stroke-width="2.6" ${i===1?'stroke-dasharray="7 4"':''}/>`;
+    if(ln.lab){const p=ln.pts[ln.pts.length-1];s+=`<text x="${f(X(p[0]))-6}" y="${f(Y(p[1]))-7}" text-anchor="end" font-size="13" font-weight="700" fill="${cols[i]}" stroke="var(--card)" stroke-width="3" paint-order="stroke">${ln.lab}</text>`;}});
+  return s+'</svg>';
+}
+
+/* ===================== THEORY ===================== */
+const theory=[
+{title:'Механическое движение',lvl:0,html:`
+<p class="hook">Гонка мечты: гепард, Усэйн Болт и поезд «Сапсан». Кто первым пробежит 100 метров? А кто первым доберётся из Москвы в Петербург? Ответ зависит от того, что такое <b>скорость</b> и какая она бывает — мгновенная или <b>средняя</b>.</p>
+<div class="box rule"><b>Правило</b><b>Механическое движение</b> — изменение положения тела <b>относительно других тел</b> с течением времени. Тело, относительно которого рассматривают движение, — <b>тело отсчёта</b>.</div>
+<p>Ты сидишь в автобусе: относительно автобуса ты покоишься, относительно дороги — мчишься со скоростью 60 км/ч. Без тела отсчёта сказать «движется» или «стоит» нельзя.</p>
+<div class="box ex"><b>Материальная точка</b>Если размеры тела не важны в задаче, его считают точкой. Земля, летящая вокруг Солнца, — точка. Автомобиль на трассе Москва — Казань — точка. А автомобиль, который паркуется, — нет: тут важен каждый сантиметр.</div>`},
+{title:'Траектория и путь',lvl:0,html:`
+<div class="box rule"><b>Правило</b><b>Траектория</b> — линия, по которой движется тело. <b>Путь s</b> — длина траектории. Путь не может уменьшаться и не бывает отрицательным.</div>
+<div class="box ex"><b>Стадион</b>Пробежал 2 круга по дорожке 400 м — путь 800 м. При этом ты вернулся на старт: <b>перемещение</b> (отрезок от начала до конца) равно нулю!</div>
+<div class="box err"><b>Ловушка</b>Путь ≠ расстояние от старта. Пошёл 3 км на север и 4 км на восток: путь 7 км, а от дома ты в 5 км (по прямой).</div>
+<div class="fact">Траектория тоже зависит от тела отсчёта: точка на ободе колеса относительно оси велосипеда движется по окружности, а относительно дороги — по кривой из «арок», которая называется циклоидой.</div>`},
+{title:'Равномерное движение и скорость',lvl:[1,2],html:`
+<div class="box rule"><b>Правило</b>Движение <b>равномерное</b>, если тело за <b>любые равные</b> промежутки времени проходит равные пути. Скорость: <span class="m">v = s / t</span>. Единица в СИ — м/с.</div>
+<p>Почему так? Скорость — это «сколько метров за одну секунду». Проехал 100 м за 5 с — каждую секунду по 20 м: v = 20 м/с.</p>
+<div class="box tip"><b>Треугольник формул</b>Из v = s / t получаем <span class="m">s = v · t</span> и <span class="m">t = s / v</span>. Закрой пальцем то, что ищешь: s сверху, v и t снизу рядом.</div>
+<div class="box ex"><b>Гонка</b>Болт: 100 м за 9,58 с → 10,4 м/с. Гепард: до 30 м/с — пробежал бы 100 м за 3,3 с. «Сапсан»: Москва — Петербург (650 км) примерно за 4 ч → в среднем 162 км/ч ≈ 45 м/с. На стометровке гепард выиграл бы, но 650 км он не пробежит — устанет через несколько сотен метров!</div>
+<div class="box err"><b>Ловушка</b>Единицы! Путь в км, время в минутах → сначала переведи: в м и с (или в км и ч).</div>`},
+{title:'Графики движения',lvl:3,html:`
+<div class="box rule"><b>Правило</b><b>График s(t)</b> равномерного движения — наклонная прямая. Чем <b>круче</b> — тем больше скорость: <span class="m">v = s / t</span> по любой точке графика. Горизонтальный участок — тело стоит.<br><b>График v(t)</b> — горизонтальная прямая. <b>Путь = площадь под графиком v(t)</b>: прямоугольник v × t.</div>
+<div class="figrow">
+<div class="fig">${graph({kind:'s',yu:'м',tu:'с',tmax:10,ymax:60,tstep:2,ystep:10,lines:[{pts:[[0,0],[10,60]],lab:'I'},{pts:[[0,0],[10,30]],lab:'II'}]})}<div class="cap">I: 60/10 = 6 м/с, II: 30/10 = 3 м/с — I круче</div></div>
+<div class="fig">${graph({kind:'v',yu:'м/с',tu:'с',tmax:10,ymax:8,tstep:2,ystep:2,lines:[{pts:[[0,6],[4,6],[4,2],[10,2]],fill:true}]})}<div class="cap">Путь = 6·4 + 2·6 = 36 м (площадь)</div></div></div>
+<div class="box err"><b>Ловушка</b>График s(t) — это <b>не</b> траектория! Наклонная прямая на графике не значит, что тело едет «в горку».</div>
+<p>Двигай ползунки скоростей и жми «Старт» — график s(t) рисуется сам.</p>
+<div class="widget" id="w-run"></div>`},
+{title:'Средняя скорость',lvl:4,html:`
+<div class="box rule"><b>Правило</b><span class="m">v<sub>ср</sub> = весь путь / всё время</span> (включая остановки!).</div>
+<div class="box err"><b>Главная ловушка</b>Средняя скорость — <b>не</b> среднее арифметическое скоростей! Половину пути ехал 60 км/ч, половину — 40 км/ч. Ответ не 50.<br>Пусть весь путь 240 км: 120 км за 2 ч + 120 км за 3 ч = 240 км за 5 ч → <b>48 км/ч</b>.</div>
+<p>Почему меньше 50? На медленном участке ты проводишь <b>больше времени</b>, поэтому он «весит» сильнее.</p>
+<div class="box tip"><b>Когда всё-таки среднее арифметическое</b>Если <b>половину времени</b> ехал 60, а половину времени 40 — тогда v<sub>ср</sub> = 50. Читай условие: «половина пути» или «половина времени»?</div>
+<div class="box ex"><b>С остановкой</b>1 ч ехал 60 км/ч, полчаса стоял, полчаса ехал 80 км/ч: s = 60 + 40 = 100 км, t = 2 ч → 50 км/ч.</div>`},
+{title:'Относительность движения',lvl:5,html:`
+<div class="box rule"><b>Правило</b>Скорость, траектория и путь <b>зависят от тела отсчёта</b>. Если тела движутся <b>в одну сторону</b>, скорость одного относительно другого = <b>разность</b> скоростей; если <b>навстречу</b> — <b>сумма</b>.</div>
+<div class="box ex"><b>Примеры</b>Ты идёшь по вагону вперёд 1,5 м/с, поезд едет 20 м/с → относительно земли 21,5 м/с. Идёшь назад → 18,5 м/с.<br>Две машины навстречу: 60 и 80 км/ч → сближаются со скоростью 140 км/ч.</div>
+<div class="box err"><b>Ловушка</b>«Я сижу — значит, моя скорость ноль». Относительно стула — да. Относительно Солнца ты летишь вместе с Землёй ~30 км/с!</div>
+<div class="fact">Космонавты на МКС летят 7,7 км/с относительно Земли, но друг относительно друга почти неподвижны — поэтому могут передавать друг другу предметы.</div>`},
+{title:'Встречное движение и догонялки',lvl:6,html:`
+<div class="box rule"><b>Правило</b>Навстречу: время встречи <span class="m">t = s / (v₁ + v₂)</span>. Вдогонку (v₁ > v₂): <span class="m">t = d / (v₁ − v₂)</span>, где d — начальное расстояние.</div>
+<ol class="steps"><li>Перейди в систему отсчёта одного из тел — «остановишь» его.</li><li>Тогда второе тело приближается со скоростью сближения (сумма или разность).</li><li>Время = расстояние / скорость сближения.</li></ol>
+<div class="box ex"><b>Пример</b>Из городов, между которыми 210 км, навстречу выехали машины 60 и 80 км/ч. t = 210 / 140 = 1,5 ч. Первая проедет 60 · 1,5 = 90 км.</div>
+<div class="box err"><b>Ловушка</b>Поезд проходит тоннель: путь = длина тоннеля <b>+ длина поезда</b> (хвост тоже должен выйти!).</div>`},
+{title:'★ Эскалатор, река и плот',lvl:[7,8],html:`
+<p class="hook">Стоя на эскалаторе, поднимаешься за 1 минуту. Пешком по неподвижному — за 40 секунд. А если идти по движущемуся? Не 50 и не 20 секунд — а 24!</p>
+<div class="box rule"><b>Метод «доли за секунду»</b>Пусть длина эскалатора — 1 (одна «штука»). Эскалатор за 1 с везёт на 1/60 длины, ноги — на 1/40. Вместе — 1/60 + 1/40 = 5/120 = 1/24 длины в секунду → 24 с. Формула: <span class="m">t = t₁·t₂ / (t₁ + t₂)</span>.</div>
+<div class="box ex"><b>Пароход и плот</b>Пароход идёт вниз по реке 5 суток, вверх — 7. Сколько суток плывёт плот (скорость течения)? За сутки вниз: 1/5 пути = v + u, вверх: 1/7 = v − u. Вычитаем: 2u = 1/5 − 1/7 = 2/35, u = 1/35 → плот идёт <b>35 суток</b>.</div>
+<div class="box err"><b>Ловушка средней скорости</b>Первую половину пути машина ехала 30 км/ч. Можно ли проехать вторую половину так, чтобы средняя стала 60? Нет! Для этого весь путь надо пройти за то время, которое уже потрачено на половину, — вторая половина должна пройтись мгновенно.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>Движение относительно; тело отсчёта обязательно.</li>
+<li>Путь — длина траектории; перемещение может быть 0.</li>
+<li>v = s / t; s = v·t; t = s / v. Всё в одних единицах.</li>
+<li>s(t): круче — быстрее; горизонталь — стоит. v(t): путь = площадь.</li>
+<li>v<sub>ср</sub> = весь путь / всё время, а не среднее скоростей.</li>
+<li>Навстречу — скорости складываем, вдогонку — вычитаем.</li>
+<li>Эскалатор: t = t₁t₂/(t₁ + t₂). Тоннель: путь = L<sub>тоннеля</sub> + L<sub>поезда</sub>.</li></ul>`}
+];
+
+const symbols={tab:'Формулы',title:'Формулы движения',rows:[
+['s','Путь','Длина траектории, метр (м)','2 круга по 400 м = 800 м'],
+['t','Время','Секунда (с)','1 ч = 3600 с'],
+['v = s / t','Скорость','Путь за единицу времени, м/с','100 м / 5 с = 20 м/с'],
+['s = v·t','Путь','Скорость × время','20 м/с · 3 с = 60 м'],
+['t = s / v','Время','Путь / скорость','60 м / 20 м/с = 3 с'],
+['v<sub>ср</sub>','Средняя скорость','Весь путь / всё время','240 км / 5 ч = 48 км/ч'],
+['v₁ + v₂','Скорость сближения навстречу','Скорости складываются','60 + 80 = 140 км/ч'],
+['v₁ − v₂','Скорость сближения вдогонку','Скорости вычитаются','90 − 70 = 20 км/ч'],
+['t₁t₂/(t₁ + t₂)','Эскалатор + шаги','Время, если работают оба «двигателя»','60·40/100 = 24 с'],
+['1 м/с = 3,6 км/ч','Перевод скорости','км/ч : 3,6 = м/с','72 км/ч = 20 м/с']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Перед расчётом проверь единицы. Средняя скорость — только через весь путь и всё время.</div>`};
+
+/* ===================== GENERATORS ===================== */
+/* L0 */
+G(0,BANK([{q:'Что такое <b>механическое движение</b>?',r:'Изменение положения тела относительно других тел с течением времени',w:['Любое изменение тела, например нагревание','Движение только машин и механизмов','Движение молекул внутри тела'],
+ e:'Механическое движение — <b>изменение положения тела относительно других тел с течением времени</b>. Ключевые слова: «положение» и «относительно других тел». Нагревание — тепловое явление, движение молекул — тепловое движение, а механическим движением занимаются не только машины: летит мяч, бежит кот.',
+ e2:'Проверка: что изменилось — где тело находится? Если да (и есть, относительно чего), это механическое движение.'}]),{rule:true});
+G(0,BANK([{q:'Что такое <b>путь</b>?',r:'Длина траектории, по которой двигалось тело',w:['Расстояние по прямой от старта до финиша','Линия, по которой двигалось тело','Скорость, умноженная на массу'],
+ e:'<b>Путь</b> — длина траектории (сколько «намотал» спидометр). <b>Траектория</b> — сама линия. Отрезок от старта до финиша — это перемещение, оно может быть меньше пути и даже нулём.',
+ e2:'Пробежал круг по стадиону 400 м: путь 400 м, а от старта ты на расстоянии 0 м. Путь — «сколько шагов сделал», а не «где оказался».'}]),{rule:true});
+G(0,()=>{const L=pick([200,250,400]);const k=R(2,5);const extra=pick([0,L/2]);const s=L*k+extra;
+ return NUM(`Бегун пробежал <b>${k}${extra?' с половиной':''}</b> ${plural(k,'круг','круга','кругов')} по дорожке длиной <b>${L} м</b>. Какой путь он пробежал (в м)?`,s,{ph:'м',
+ short:`${L} · ${k}${extra?' + '+extra:''} = ${s} м.`,
+ explain:`Путь — длина траектории, всё, что пробежал: ${L} · ${k}${extra?` + ${L} / 2 = ${L*k} + ${extra}`:''} = <b>${s} м</b>. ${extra?'Где он оказался — на другой стороне стадиона — для пути не важно.':'И неважно, что он вернулся на старт: путь не «обнуляется».'}`,
+ explain2:`Представь шагомер: он считает каждый метр. Один круг — ${L} м, ${k} ${plural(k,'круг','круга','кругов')} — ${L*k} м${extra?`, плюс полкруга ${extra} м`:''}.`});});
+G(0,BANK([
+ {q:'В каком случае тело можно считать <b>материальной точкой</b>?',r:'Земля движется вокруг Солнца',w:['Земля вращается вокруг своей оси','Автомобиль паркуется в гараж','Гимнаст выполняет сальто'],e:'Материальная точка — когда размеры тела <b>несущественны</b> в задаче. Расстояние до Солнца (150 млн км) в 12 000 раз больше диаметра Земли — Землю можно считать точкой. При вращении вокруг оси, парковке, сальто важны размеры и форма тела.',e2:'Спроси себя: «Нужно ли знать, какая у тела форма и размер?» Если нет — тело можно считать точкой.'},
+ {q:'Пассажир сидит в едущем поезде. Относительно чего он <b>покоится</b>?',r:'Относительно вагона',w:['Относительно рельсов','Относительно встречного поезда','Относительно деревьев за окном'],e:'Положение пассажира не меняется относительно вагона — относительно него он покоится. Относительно рельсов, деревьев и встречного поезда — движется.',e2:'Покой тоже относителен: чтобы сказать «стоит», надо сказать «относительно чего».'},
+ {q:'Какова траектория точки на ободе колеса велосипеда <b>относительно оси колеса</b>?',r:'Окружность',w:['Прямая линия','Кривая из «арок» (циклоида)','Точка'],e:'Относительно оси колеса точка обода просто вращается — траектория <b>окружность</b>. Циклоида — это траектория относительно дороги. Траектория зависит от тела отсчёта!',e2:'Переверни велосипед и крути колесо: ось на месте, точка бегает по кругу. Вот и окружность.'}]));
+
+/* L1 speed */
+G(1,()=>CH('Как найти скорость равномерного движения?','v = s / t',['v = s · t','v = t / s','v = s + t'],{short:'Скорость — путь за единицу времени: v = s / t.',
+ explain:'Скорость показывает, какой путь тело проходит <b>за единицу времени</b>: <span class="m">v = s / t</span>. Например, 100 м за 5 с → 20 м/с. Проверка единицами: м / с = м/с ✅. А s · t дало бы «м·с» — не скорость.',
+ explain2:'Слово «в секунду» = «делить на секунды». «Метров в секунду» = метры / секунды = s / t.'}),{rule:true});
+G(1,()=>{const v=R(2,12);const tm=pick([2,4,5,10,15,20]);const s=v*tm*60;if(s%100)return null;
+ return NUM(`Велосипедист равномерно проехал <b>${N(s/1000)} км</b> за <b>${tm} мин</b>. Найди его скорость в <b>м/с</b>.`,v,{ph:'м/с',hint:'Переведи км в м и минуты в секунды.',
+ short:`${s} м / ${tm*60} с = ${v} м/с.`,
+ explain:`1) В СИ: s = ${N(s/1000)} км = ${s} м; t = ${tm} мин = ${tm*60} с.<br>2) v = s / t = ${s} / ${tm*60} = <b>${v} м/с</b>.<br>Если не перевести, получится ${N(rd(s/1000/tm,4))} «км/мин» — это другая единица.`,
+ explain2:`За минуту он проезжает ${s/tm} м, а в минуте 60 секунд: ${s/tm} / 60 = ${v} м/с. Проверка: ${v} · 3,6 = ${N(rd(v*3.6,2))} км/ч — нормальная скорость велосипеда.`});});
+G(1,()=>{const C=[['Гепард',pick([[150,5],[90,3],[120,4]])],['Усэйн Болт',[100,9.58]],['Страус',pick([[100,5],[200,10]])],['Заяц',pick([[160,10],[80,5]])],['Борзая',pick([[180,10],[90,5]])]];
+ const s3=sample(C,3);const sp=s3.map(c=>c[1][0]/c[1][1]);const mx=Math.max(...sp);if(sp.filter(x=>Math.abs(x-mx)<0.3).length>1)return null;const best=s3[sp.indexOf(mx)][0];
+ return CH(`Кто бежит быстрее всех? ${s3.map(c=>`<b>${c[0]}</b> — ${c[1][0]} м за ${N(c[1][1])} с`).join('; ')}.`,best,s3.filter(c=>c[0]!==best).map(c=>c[0]).concat(['Все одинаково']),{
+ short:s3.map((c,i)=>`${c[0]}: ${N(rd(sp[i],1))} м/с`).join(', ')+'.',
+ explain:`Сравнивать надо скорости, а не пути или время по отдельности. v = s / t:<br>${s3.map((c,i)=>`${c[0]}: ${c[1][0]} / ${N(c[1][1])} ≈ ${N(rd(sp[i],1))} м/с`).join('<br>')}<br>Быстрее всех — <b>${best}</b>.`,
+ explain2:'Кто пробежал больше — не обязательно быстрее: он мог бежать и дольше. Скорость — это путь за <b>одну</b> секунду, только её и сравниваем.'});});
+G(1,()=>{const v=pick([50,60,64,72,75,80,90,100]);const t=pick([1.5,2,2.5,3,4]);const s=v*t;
+ return NUM(`Автомобиль проехал <b>${N(s)} км</b> за <b>${N(t)} ч</b>. Найди скорость в <b>км/ч</b>.`,v,{ph:'км/ч',short:`${N(s)} / ${N(t)} = ${v} км/ч.`,
+ explain:`v = s / t = ${N(s)} км / ${N(t)} ч = <b>${v} км/ч</b>. Тут единицы уже согласованы (км и ч), переводить не нужно.`,explain2:`Проверка: ${v} км/ч · ${N(t)} ч = ${N(s)} км ✅.`});});
+
+/* L2 */
+G(2,()=>{const f=pick([['время','t = s / v',['t = s · v','t = v / s','t = s − v']],['путь','s = v · t',['s = v / t','s = t / v','s = v + t']]]);
+ return CH(`Как найти <b>${f[0]}</b> при равномерном движении?`,f[1],f[2],{short:`${f[1]} — из v = s / t.`,
+ explain:`Основная формула: v = s / t. Отсюда: <b>s = v · t</b> (умножаем обе части на t) и <b>t = s / v</b>. Проверь единицами: м/с · с = м ✅; м / (м/с) = с ✅.`,
+ explain2:'Пример на пальцах: 20 м/с, 3 с → путь 60 м (20 · 3). 60 м при 20 м/с → время 3 с (60 / 20). Ответ должен быть разумным!'});},{rule:true});
+G(2,()=>{const v=pick([36,54,72,90,108]);const tm=pick([5,10,15,20,30,40]);const s=rd(v*tm/60,6);if(!isInt(s*10))return null;
+ return NUM(`Поезд едет со скоростью <b>${v} км/ч</b>. Какой путь он пройдёт за <b>${tm} мин</b>? Ответ в <b>км</b>.`,s,{ph:'км',hint:'Переведи минуты в часы: делим на 60.',
+ short:`${tm} мин = ${N(rd(tm/60,4))} ч; ${v} · ${N(rd(tm/60,4))} = ${N(s)} км.`,
+ explain:`s = v · t. Время в часах: ${tm} мин = ${tm}/60 ч. s = ${v} · ${tm} / 60 = <b>${N(s)} км</b>.<br>Ошибка «${v} · ${tm} = ${v*tm}» — минуты нельзя умножать на км/ч.`,
+ explain2:`За 1 минуту поезд проходит ${v} / 60 = ${N(rd(v/60,4))} км. За ${tm} мин — в ${tm} раз больше: ${N(s)} км.`});});
+G(2,()=>{const o=pick([['до Луны',384000],['до Солнца',150000000],['до Марса (в момент противостояния)',60000000],['до спутника связи',36000]]);const t=rd(o[1]/300000,4);
+ return NUM(`Свет летит со скоростью <b>300 000 км/с</b>. Сколько <b>секунд</b> идёт свет ${o[0]}, если расстояние <b>${NS(o[1])} км</b>? Округли до сотых.`,rd(t,2),{ph:'с',
+ short:`t = ${NS(o[1])} / 300 000 = ${N(rd(t,2))} с.`,
+ explain:`t = s / v = ${NS(o[1])} км / 300 000 км/с = <b>${N(rd(t,2))} с</b>.${t>60?` Это ${N(rd(t/60,1))} мин! Мы видим Солнце таким, каким оно было ${N(rd(t/60,1))} минуты назад.`:''}`,
+ explain2:`Единицы уже согласованы (км и км/с). Сократи нули: ${NS(o[1])} / 300 000 = ${N(o[1]/1000)} / 300 = ${N(rd(t,2))}.`});});
+G(2,()=>{const t=R(3,12);const s=340*t;
+ return NUM(`Ты увидел молнию, а гром услышал через <b>${t} с</b>. Скорость звука <b>340 м/с</b>. На каком расстоянии ударила молния (в <b>м</b>)? Свет приходит практически мгновенно.`,s,{ph:'м',
+ short:`s = 340 · ${t} = ${NS(s)} м.`,
+ explain:`Свет долетает почти мгновенно, а звук идёт ${t} с. s = v · t = 340 · ${t} = <b>${NS(s)} м</b> (≈ ${N(rd(s/1000,1))} км).`,
+ explain2:`Лайфхак: раздели число секунд на 3 — получишь километры: ${t} / 3 ≈ ${N(rd(t/3,1))} км. Потому что звук проходит 1 км примерно за 3 с.`});});
+G(2,()=>{const v=pick([1,2,1.5]);const L=pick([1,2,3,0.5]);const t=L*1000/v;
+ return NUM(`Улитка ползёт со скоростью <b>${N(v)} мм/с</b>. За сколько <b>минут</b> она проползёт <b>${N(L)} м</b>? Округли до десятых.`,rd(t/60,4),{ph:'мин',tol:Math.min(0.01,0.4/(t/60)),
+ short:`${N(L)} м = ${NS(L*1000)} мм; ${NS(L*1000)} / ${N(v)} = ${NS(t)} с = ${N(rd(t/60,2))} мин.`,
+ explain:`1) Одинаковые единицы: ${N(L)} м = ${NS(L*1000)} мм.<br>2) t = s / v = ${NS(L*1000)} / ${N(v)} = ${NS(t)} с.<br>3) В минутах: ${NS(t)} / 60 ≈ <b>${N(rd(t/60,2))} мин</b>.`,
+ explain2:`За минуту улитка проползает ${N(v)} · 60 = ${N(v*60)} мм. Сколько таких минут в ${NS(L*1000)} мм? ${NS(L*1000)} / ${N(v*60)} ≈ ${N(rd(t/60,2))}.`});});
+
+/* L3 graphs */
+G(3,BANK([{q:'Что показывает <b>наклон</b> графика зависимости пути от времени s(t)?',r:'Скорость: чем круче график, тем больше скорость',w:['Траекторию тела: оно едет в горку','Время движения','Массу тела'],
+ e:'По графику s(t) скорость v = s / t: за одно и то же время у крутого графика путь больше — значит, скорость больше. Горизонтальная линия — путь не растёт, тело стоит. И главное: график — не траектория, тело не едет «в горку».',
+ e2:'Сравни два графика при t = 1 с: у крутого путь, скажем, 6 м, у пологого 3 м. За одну секунду первый прошёл больше — он быстрее.'},
+ {q:'Как по графику скорости v(t) найти <b>путь</b>?',r:'Путь равен площади фигуры под графиком',w:['Путь равен высоте графика','Путь равен наклону графика','Путь равен длине линии графика'],
+ e:'s = v · t, а на графике v(t) это <b>площадь прямоугольника</b>: высота v на ширину t. Если скорость менялась ступеньками — складываем площади всех прямоугольников.',
+ e2:'Пример: 6 м/с в течение 4 с → прямоугольник 6 × 4 = 24 — это и есть 24 м.'}]),{rule:true});
+G(3,()=>{const v=pick([1,2,3,4,5,6,8]);const tm=pick([5,10]);const S=v*tm;const ystep=S<=20?2:S<=50?10:20;const ymax=Math.ceil(S/ystep)*ystep;const t1=pick(range(1,tm).filter(t=>isInt(v*t/ystep)&&t%(tm===5?1:2)===0));if(!t1)return null;
+ return NUM('По графику найди скорость тела (в <b>м/с</b>).',v,{ph:'м/с',pic:graph({kind:'s',yu:'м',tu:'с',tmax:tm,ymax,tstep:tm===5?1:2,ystep,lines:[{pts:[[0,0],[tm,S]]}]}),hint:'Возьми точку на графике, где линия проходит через узел сетки.',
+ short:`v = ${v*t1} м / ${t1} с = ${v} м/с.`,
+ explain:`Берём удобную точку графика: t = ${t1} с, s = ${v*t1} м.<br>v = s / t = ${v*t1} / ${t1} = <b>${v} м/с</b>.<br>Можно взять и конец: ${S} / ${tm} = ${v} — то же самое, ведь движение равномерное.`,
+ explain2:`Посмотри, на сколько метров вырастает s за каждую секунду: на ${v} м. Это и есть скорость.`});});
+G(3,()=>{const a=pick([2,3,4,5,6]);let b=pick([2,3,4,5,6]);if(a===b)return null;const tm=10,ymax=Math.max(a,b)*tm;
+ const r=a>b?'Тело I':'Тело II';
+ return CH('На графике s(t) — два тела. Какое движется <b>быстрее</b>?',r,[a>b?'Тело II':'Тело I','Одинаково','Нельзя определить'],{pic:graph({kind:'s',yu:'м',tu:'с',tmax:tm,ymax,tstep:2,ystep:ymax/6>=10?10:5,lines:[{pts:[[0,0],[tm,a*tm]],lab:'I'},{pts:[[0,0],[tm,b*tm]],lab:'II'}]}),
+ short:`I: ${a} м/с, II: ${b} м/с.`,
+ explain:`Скорость = путь / время. За ${tm} с тело I прошло ${a*tm} м (v = ${a} м/с), тело II — ${b*tm} м (v = ${b} м/с). Быстрее — <b>${r.toLowerCase()}</b>, его график круче.`,
+ explain2:`Проведи мысленно вертикальную линию при t = ${tm} с: чей график выше, тот за то же время прошёл больше — тот и быстрее.`});});
+G(3,()=>{const v1=pick([2,4,6,8]),v2=pick([2,4,6,8]);if(v1===v2)return null;const t1=pick([2,4,6]),tm=10;const s=v1*t1+v2*(tm-t1);
+ return NUM('По графику скорости найди путь, пройденный телом за 10 с (в <b>м</b>).',s,{ph:'м',pic:graph({kind:'v',yu:'м/с',tu:'с',tmax:tm,ymax:10,tstep:2,ystep:2,lines:[{pts:[[0,v1],[t1,v1],[t1,v2],[tm,v2]],fill:true}]}),hint:'Путь — площадь под графиком. Тут два прямоугольника.',
+ short:`${v1}·${t1} + ${v2}·${tm-t1} = ${s} м.`,
+ explain:`Путь = площадь под графиком v(t).<br>1-й участок: ${v1} м/с · ${t1} с = ${v1*t1} м.<br>2-й участок: ${v2} м/с · ${tm-t1} с = ${v2*(tm-t1)} м.<br>Всего: <b>${s} м</b>.`,
+ explain2:`Без графика: первые ${t1} с тело ехало со скоростью ${v1}, проехало ${v1*t1} м; потом ${tm-t1} с со скоростью ${v2} — ещё ${v2*(tm-t1)} м. Сумма ${s} м.`});});
+G(3,()=>{const v1=pick([2,3,4,5]),t1=pick([2,4]),stop=pick([2,4]),v2=pick([2,3,4,5,6]);const t2=10-t1-stop;if(t2<2)return null;const s1=v1*t1,S=s1+v2*t2;const ystep=S<=40?5:10;
+ const ask=pick(['stop','v2']);if(ask==='v2'&&(s1%ystep||S%ystep))return null;
+ const pic=graph({kind:'s',yu:'м',tu:'с',tmax:10,ymax:Math.ceil(S/ystep)*ystep,tstep:2,ystep,lines:[{pts:[[0,0],[t1,s1],[t1+stop,s1],[10,S]]}]});
+ if(ask==='stop')return NUM('По графику s(t) определи, сколько <b>секунд</b> тело стояло.',stop,{ph:'с',pic,short:`Горизонтальный участок от ${t1} до ${t1+stop} с: ${stop} с.`,
+  explain:`Когда тело стоит, путь не растёт — график <b>горизонтальный</b>. Здесь это участок от t = ${t1} с до t = ${t1+stop} с: ${t1+stop} − ${t1} = <b>${stop} с</b>.`,explain2:`На этом участке s всё время равно ${s1} м — значит, тело никуда не двигалось.`});
+ return NUM('По графику s(t) найди скорость тела на <b>последнем</b> участке (в <b>м/с</b>).',v2,{ph:'м/с',pic,short:`(${S} − ${s1}) / (10 − ${t1+stop}) = ${v2} м/с.`,
+  explain:`Последний участок: от t = ${t1+stop} с (s = ${s1} м) до t = 10 с (s = ${S} м).<br>Путь на участке: ${S} − ${s1} = ${S-s1} м, время: 10 − ${t1+stop} = ${t2} с.<br>v = ${S-s1} / ${t2} = <b>${v2} м/с</b>.<br>Ошибка: делить ${S} на 10 — это средняя скорость за всё время, а не на участке.`,
+  explain2:`Смотри только на «приращения»: на сколько выросло s и за сколько секунд. ${S-s1} м за ${t2} с → ${v2} м/с.`});});
+
+/* L4 average */
+G(4,()=>CH('Как найти <b>среднюю скорость</b>?','Весь пройденный путь разделить на всё время движения (вместе с остановками)',['Сложить скорости на участках и разделить на число участков','Взять самую большую скорость','Сложить скорости на всех участках'],{short:'v_ср = весь путь / всё время.',
+ explain:'v<sub>ср</sub> = <b>весь путь / всё время</b>, включая остановки. Среднее арифметическое скоростей подходит, только если на каждом участке тело двигалось <b>одинаковое время</b>. Обычно это не так.',
+ explain2:'Пример: 1 км пешком со скоростью 5 км/ч (12 мин) и 1 км на машине 60 км/ч (1 мин). Среднее (5 + 60)/2 = 32,5 — бред: ты почти всё время шёл. Честно: 2 км / 13 мин ≈ 9,2 км/ч.'}),{rule:true});
+G(4,()=>{const s1=pick([20,30,40,60,90]),t1=pick([0.5,1,1.5]),s2=pick([10,30,50,70]),t2=pick([0.5,1,2]);const v=(s1+s2)/(t1+t2);if(!isInt(v*10)||t1===t2)return null;
+ return NUM(`Автобус проехал <b>${s1} км</b> за <b>${N(t1)} ч</b>, а затем <b>${s2} км</b> за <b>${N(t2)} ч</b>. Найди среднюю скорость на всём пути (км/ч).`,v,{ph:'км/ч',
+ short:`(${s1} + ${s2}) / (${N(t1)} + ${N(t2)}) = ${N(v)} км/ч.`,
+ explain:`v<sub>ср</sub> = весь путь / всё время = (${s1} + ${s2}) / (${N(t1)} + ${N(t2)}) = ${s1+s2} / ${N(t1+t2)} = <b>${N(v)} км/ч</b>.<br>Среднее скоростей (${N(rd(s1/t1,2))} + ${N(rd(s2/t2,2))}) / 2 = ${N(rd((s1/t1+s2/t2)/2,2))} — неверно.`,
+ explain2:`Представь, что весь путь ${s1+s2} км автобус ехал ровно за ${N(t1+t2)} ч без изменения скорости. Какой была бы скорость? ${N(v)} км/ч — это и есть средняя.`});});
+const HALF=[[60,40,48],[30,60,40],[20,30,24],[12,6,8],[10,15,12],[40,60,48],[36,72,48],[50,75,60],[45,90,60],[4,6,4.8],[3,6,4]];
+G(4,()=>{const h=pick(HALF);const [v1,v2,v]=Math.random()<0.5?h:[h[1],h[0],h[2]];const sh=H.lcm(v1,v2);const S=2*sh;
+ return NUM(`Первую <b>половину пути</b> велосипедист ехал со скоростью <b>${v1} км/ч</b>, вторую половину — <b>${v2} км/ч</b>. Найди среднюю скорость (км/ч).`,v,{ph:'км/ч',hint:'Придумай удобную длину пути, найди время каждой половины.',
+ short:`v_ср = 2·${v1}·${v2} / (${v1} + ${v2}) = ${N(v)} км/ч, а не ${N((v1+v2)/2)}.`,
+ explain:`Возьмём удобный путь — ${N(S)} км (по ${N(sh)} км на половину).<br>Время 1: ${N(sh)} / ${v1} = ${N(rd(sh/v1,4))} ч. Время 2: ${N(sh)} / ${v2} = ${N(rd(sh/v2,4))} ч.<br>v<sub>ср</sub> = ${N(S)} / ${N(rd(sh/v1+sh/v2,4))} = <b>${N(v)} км/ч</b>.<br>Ловушка: (${v1} + ${v2}) / 2 = ${N((v1+v2)/2)} — неверно! На медленной половине велосипедист ехал дольше.`,
+ explain2:`Формула для двух равных половин пути: v<sub>ср</sub> = 2v₁v₂ / (v₁ + v₂) = 2·${v1}·${v2} / ${v1+v2} = ${N(v)}. Она всегда меньше среднего арифметического.`});});
+G(4,()=>{const v1=pick([40,50,60,70,80,90]),v2=pick([20,30,40,60,100]);if(v1===v2)return null;
+ return NUM(`Первую <b>половину времени</b> машина ехала со скоростью <b>${v1} км/ч</b>, вторую половину времени — <b>${v2} км/ч</b>. Найди среднюю скорость (км/ч).`,(v1+v2)/2,{ph:'км/ч',
+ short:`Половины по времени: (${v1} + ${v2}) / 2 = ${N((v1+v2)/2)} км/ч.`,
+ explain:`Пусть всё время 2 ч: первый час — ${v1} км, второй — ${v2} км. Путь ${v1+v2} км за 2 ч → <b>${N((v1+v2)/2)} км/ч</b>.<br>Здесь среднее арифметическое работает, потому что участки <b>одинаковы по времени</b>. Не путай с «половиной пути»!`,
+ explain2:`Общая формула та же: весь путь / всё время = (${v1}·t + ${v2}·t) / 2t = (${v1} + ${v2})/2.`});});
+G(4,()=>{const v1=pick([40,60,80]),t1=pick([1,2]),st=pick([0.5,1]),v2=pick([60,80,90]),t2=pick([0.5,1]);const v=(v1*t1+v2*t2)/(t1+st+t2);if(!isInt(v*10))return null;
+ return NUM(`Машина ехала <b>${t1} ч</b> со скоростью <b>${v1} км/ч</b>, потом <b>${N(st)} ч</b> стояла в пробке, потом <b>${N(t2)} ч</b> ехала со скоростью <b>${v2} км/ч</b>. Найди среднюю скорость за всё время (км/ч).`,v,{ph:'км/ч',hint:'Остановка входит во время!',
+ short:`(${v1*t1} + ${N(v2*t2)}) / ${N(t1+st+t2)} = ${N(v)} км/ч.`,
+ explain:`Путь: ${v1}·${t1} + ${v2}·${N(t2)} = ${v1*t1} + ${N(v2*t2)} = ${N(v1*t1+v2*t2)} км.<br>Время <b>со стоянкой</b>: ${t1} + ${N(st)} + ${N(t2)} = ${N(t1+st+t2)} ч.<br>v<sub>ср</sub> = ${N(v1*t1+v2*t2)} / ${N(t1+st+t2)} = <b>${N(v)} км/ч</b>.<br>Без стоянки вышло бы ${N(rd((v1*t1+v2*t2)/(t1+t2),2))} — это ошибка.`,
+ explain2:'Средняя скорость отвечает на вопрос «за сколько я в итоге доехал». Пробка съела время — средняя скорость упала.'});});
+
+/* L5 relativity */
+G(5,BANK([{q:'Как найти скорость одной машины относительно другой, если они едут <b>в одну сторону</b>?',r:'Вычесть из большей скорости меньшую',w:['Сложить скорости','Перемножить скорости','Она всегда равна нулю'],
+ e:'В одну сторону: скорость относительно друг друга = <b>разность</b> скоростей. Навстречу: <b>сумма</b>. Это следует из относительности движения: «садимся» в одну машину и смотрим на другую.',
+ e2:'Обгоняешь грузовик, едущий 80 км/ч, на 90 км/ч: из окна кажется, что он еле ползёт назад — всего 10 км/ч. А встречный поезд со скоростью 80 пролетает мимо со скоростью 90 + 80 = 170 км/ч.'}]),{rule:true});
+G(5,()=>{const a=pick([60,70,80,90,100,110]),b=pick([40,50,60,70,80,90]);if(a===b)return null;const same=Math.random()<0.5;const r=same?Math.abs(a-b):a+b;
+ return NUM(`Две машины едут ${same?'<b>в одну сторону</b>':'<b>навстречу</b> друг другу'} со скоростями <b>${a}</b> и <b>${b} км/ч</b>. Найди скорость первой машины относительно второй (км/ч).`,r,{ph:'км/ч',
+ short:same?`${Math.max(a,b)} − ${Math.min(a,b)} = ${r} км/ч.`:`${a} + ${b} = ${r} км/ч.`,
+ explain:same?`В одну сторону — скорости <b>вычитаем</b>: |${a} − ${b}| = <b>${r} км/ч</b>. Из второй машины первая ${a>b?'уходит вперёд':'отстаёт'} со скоростью ${r} км/ч.`:`Навстречу — <b>складываем</b>: ${a} + ${b} = <b>${r} км/ч</b>. Из второй машины кажется, что первая несётся на ${r} км/ч.`,
+ explain2:same?`Через час первая будет в ${a} км от старта, вторая — в ${b} км. Расстояние между ними изменилось на ${r} км за час — это и есть относительная скорость.`:`Через час они сблизятся на ${a} + ${b} = ${r} км. Значит, скорость сближения ${r} км/ч.`});});
+G(5,()=>{const v=pick([15,20,25]);const u=pick([1,1.5,2]);const fwd=Math.random()<0.5;const r=fwd?v+u:v-u;
+ return NUM(`Поезд едет со скоростью <b>${v} м/с</b>. Пассажир идёт по вагону ${fwd?'<b>по ходу</b>':'<b>против хода</b>'} поезда со скоростью <b>${N(u)} м/с</b> относительно вагона. Какова его скорость относительно земли (м/с)?`,r,{ph:'м/с',
+ short:`${v} ${fwd?'+':'−'} ${N(u)} = ${N(r)} м/с.`,
+ explain:`Скорость относительно земли = скорость поезда ${fwd?'+':'−'} скорость пассажира в вагоне (${fwd?'направления совпадают':'направления противоположны'}): ${v} ${fwd?'+':'−'} ${N(u)} = <b>${N(r)} м/с</b>.`,
+ explain2:`За 1 секунду поезд увозит пассажира на ${v} м вперёд, а сам он ${fwd?'добавляет':'отходит назад на'} ${N(u)} м. Итого ${N(r)} м за секунду.`});});
+G(5,BANK([
+ {q:'Какова траектория точки обода колеса велосипеда <b>относительно дороги</b>?',r:'Кривая из «арок» (циклоида)',w:['Окружность','Прямая линия','Точка'],e:'Относительно дороги точка обода одновременно крутится и едет вперёд вместе с велосипедом. Получается кривая из «арок» — <b>циклоида</b>. Относительно оси — окружность. Траектория зависит от тела отсчёта.',e2:'Прикрепи светоотражатель на спицу и сними велосипед ночью сбоку на длинной выдержке — увидишь арки.'},
+ {q:'Дождь идёт отвесно. Почему из окна едущего автобуса капли летят наискосок?',r:'Относительно автобуса капли имеют ещё и горизонтальную скорость, направленную назад',w:['Ветер дует только около автобуса','Стекло преломляет капли','Капли притягиваются к автобусу'],e:'Относительно земли капли падают вертикально. Но относительно автобуса к их скорости добавляется скорость «назад», равная скорости автобуса. Сумма — наклонная траектория.',e2:'Чем быстрее едет автобус, тем сильнее наклон следов капель. На стоящем автобусе — ровно вертикально.'},
+ {q:'Ты сидишь за партой. Движешься ли ты?',r:'Относительно парты — нет, относительно Солнца — да',w:['Нет, ни относительно чего','Да, относительно парты','Движение не зависит от тела отсчёта'],e:'Покой и движение относительны. Относительно парты ты покоишься, а вместе с Землёй летишь вокруг Солнца ~30 км/с и вращаешься с Землёй.',e2:'Вопрос «движется ли тело?» без «относительно чего» не имеет ответа.'}]));
+
+/* L6 meeting / chase */
+G(6,()=>CH('Две машины выехали <b>навстречу</b> друг другу. Как найти время до встречи?','Расстояние между ними разделить на сумму скоростей',['Расстояние разделить на разность скоростей','Расстояние умножить на сумму скоростей','Сложить время каждой машины'],{short:'t = s / (v₁ + v₂).',
+ explain:'Навстречу каждый час расстояние сокращается на v₁ + v₂ (скорость сближения). Значит, <span class="m">t = s / (v₁ + v₂)</span>. Разность скоростей — для догонялок (в одну сторону).',
+ explain2:'Перейди в систему отсчёта первой машины: она «стоит», а вторая летит к ней со скоростью v₁ + v₂. Время = расстояние / эта скорость.'}),{rule:true});
+G(6,()=>{const v1=pick([40,50,60,70,80]),v2=pick([50,60,70,80,90]);const t=pick([1,1.5,2,2.5,3]);const s=(v1+v2)*t;const ask=pick(['t','x']);
+ return ask==='t'?NUM(`Расстояние между городами <b>${N(s)} км</b>. Навстречу друг другу одновременно выехали машины со скоростями <b>${v1}</b> и <b>${v2} км/ч</b>. Через сколько <b>часов</b> они встретятся?`,t,{ph:'ч',
+  short:`${N(s)} / (${v1} + ${v2}) = ${N(t)} ч.`,explain:`Скорость сближения: ${v1} + ${v2} = ${v1+v2} км/ч. t = ${N(s)} / ${v1+v2} = <b>${N(t)} ч</b>.`,explain2:`Проверка: за ${N(t)} ч первая проедет ${N(v1*t)} км, вторая ${N(v2*t)} км, вместе ${N(s)} км ✅.`})
+ :NUM(`Расстояние между городами <b>${N(s)} км</b>. Навстречу друг другу одновременно выехали машины: из города A — <b>${v1} км/ч</b>, из города B — <b>${v2} км/ч</b>. На каком расстоянии от A они встретятся (км)?`,v1*t,{ph:'км',
+  short:`t = ${N(s)} / ${v1+v2} = ${N(t)} ч; ${v1} · ${N(t)} = ${N(v1*t)} км.`,explain:`1) Время встречи: t = ${N(s)} / (${v1} + ${v2}) = ${N(t)} ч.<br>2) Машина из A проедет ${v1} · ${N(t)} = <b>${N(v1*t)} км</b>.`,explain2:`Расстояние делится пропорционально скоростям: ${N(s)} · ${v1}/${v1+v2} = ${N(v1*t)} км.`});});
+G(6,()=>{const v1=pick([12,15,18,20]),v2=pick([4,5,6,8]);const d=pick([2,3,4,6]);const t=d/(v1-v2);if(!isInt(t*60))return null;
+ return NUM(`Пешеход вышел из деревни со скоростью <b>${v2} км/ч</b>. Когда он ушёл на <b>${d} км</b>, за ним выехал велосипедист со скоростью <b>${v1} км/ч</b>. Через сколько <b>минут</b> велосипедист догонит пешехода?`,t*60,{ph:'мин',
+ short:`${d} / (${v1} − ${v2}) = ${N(rd(t,4))} ч = ${N(t*60)} мин.`,
+ explain:`Вдогонку скорость сближения — <b>разность</b>: ${v1} − ${v2} = ${v1-v2} км/ч.<br>t = ${d} / ${v1-v2} = ${N(rd(t,4))} ч = <b>${N(t*60)} мин</b>.<br>Ошибка «${d} / (${v1} + ${v2})» — сумма только для встречного движения.`,
+ explain2:`Каждый час расстояние между ними сокращается на ${v1-v2} км (велосипедист проезжает ${v1}, пешеход уходит на ${v2}). Начальные ${d} км исчезнут через ${d}/${v1-v2} ч.`});});
+G(6,()=>{const L=pick([100,150,200,250]);const T=pick([300,400,500,650,800]);const v=pick([10,15,20,25]);const t=(L+T)/v;if(!isInt(t))return null;
+ return NUM(`Поезд длиной <b>${L} м</b> едет со скоростью <b>${v} м/с</b> через тоннель длиной <b>${T} м</b>. Сколько <b>секунд</b> пройдёт от момента, когда локомотив въехал в тоннель, до момента, когда последний вагон из него выехал?`,t,{ph:'с',hint:'Хвост поезда тоже должен выехать!',
+ short:`(${T} + ${L}) / ${v} = ${t} с.`,
+ explain:`Следим за <b>хвостом</b> поезда. Когда нос въезжает, хвост ещё в ${L} м до тоннеля. Чтобы выехать, хвосту надо проехать ${L} + ${T} = ${L+T} м.<br>t = ${L+T} / ${v} = <b>${t} с</b>.<br>Ошибка: ${T} / ${v} = ${N(rd(T/v,2))} с — так считают, забыв про длину поезда.`,
+ explain2:`Нарисуй: момент 1 — нос у входа; момент 2 — хвост у выхода. Нос за это время уехал на длину тоннеля плюс длину поезда.`});});
+
+/* L7 ★ average speed */
+G(7,()=>CH('Первую половину <b>пути</b> тело шло со скоростью v₁, вторую — v₂. Какая формула даёт среднюю скорость?','v<sub>ср</sub> = 2v₁v₂ / (v₁ + v₂)',['v<sub>ср</sub> = (v₁ + v₂) / 2','v<sub>ср</sub> = v₁ + v₂','v<sub>ср</sub> = v₁v₂ / 2'],{short:'Весь путь 2S / всё время (S/v₁ + S/v₂).',
+ explain:'v<sub>ср</sub> = 2S / (S/v₁ + S/v₂) = 2 / (1/v₁ + 1/v₂) = <b>2v₁v₂ / (v₁ + v₂)</b>. Среднее арифметическое (v₁ + v₂)/2 — для половин <b>времени</b>, а не пути.',
+ explain2:'Проверь на 60 и 40: 2·60·40/100 = 48 ✅ (а не 50). Путь 240 км: 120/60 = 2 ч, 120/40 = 3 ч, 240/5 = 48.'}),{rule:true});
+G(7,()=>{const P=[[60,80,120],[40,48,60],[30,40,60],[60,72,90],[20,30,60],[12,15,20],[45,60,90],[36,45,60]];const p=pick(P);const [v1,va,v2]=p;
+ return NUM(`Первую половину пути машина ехала со скоростью <b>${v1} км/ч</b>. С какой скоростью (км/ч) ей надо ехать вторую половину, чтобы средняя скорость на всём пути была <b>${va} км/ч</b>?`,v2,{ph:'км/ч',hint:'Пусть путь 2S. Найди, сколько всего времени можно потратить и сколько уже потрачено.',
+ short:`v₂ = v₁·v_ср / (2v₁ − v_ср) = ${v1}·${va} / ${2*v1-va} = ${v2} км/ч.`,
+ explain:`Возьмём путь ${2*v1*va/H.gcd(v1,va)} км (половина — ${v1*va/H.gcd(v1,va)} км).<br>Всё время: ${2*v1*va/H.gcd(v1,va)} / ${va} = ${N(2*v1/H.gcd(v1,va))} ч.<br>На первую половину: ${v1*va/H.gcd(v1,va)} / ${v1} = ${N(va/H.gcd(v1,va))} ч.<br>На вторую остаётся ${N(2*v1/H.gcd(v1,va)-va/H.gcd(v1,va))} ч → v₂ = ${v1*va/H.gcd(v1,va)} / ${N(2*v1/H.gcd(v1,va)-va/H.gcd(v1,va))} = <b>${v2} км/ч</b>.<br>Ответ «${2*va-v1}» (из среднего арифметического) — ловушка.`,
+ explain2:`Проверка формулой половин пути: 2·${v1}·${v2} / (${v1} + ${v2}) = ${2*v1*v2} / ${v1+v2} = ${N(2*v1*v2/(v1+v2))} ✅.`});},{star:true});
+G(7,()=>{const v1=pick([20,30,40,50]);const va=2*v1;
+ return CH(`Первую половину пути машина ехала со скоростью <b>${v1} км/ч</b>. С какой скоростью надо ехать вторую половину, чтобы средняя скорость на всём пути стала <b>${va} км/ч</b>?`,'Это невозможно ни при какой скорости',[`${va+v1} км/ч`,`${2*va} км/ч`,`${va} км/ч`],{
+ short:'Всё отведённое время уже потрачено на первую половину.',
+ explain:`Пусть весь путь 2S. Чтобы средняя была ${va}, всё время должно быть 2S / ${va} = S / ${v1}. Но ровно столько (S / ${v1}) уже ушло на первую половину! На вторую остаётся <b>0</b> времени — нужна бесконечная скорость. Ответ: <b>невозможно</b>.<br>«${va+v1} км/ч» получается из ошибочного среднего арифметического.`,
+ explain2:`Числа: путь 2·${v1} = ${2*v1} км, половина ${v1} км проехана за 1 ч. Средняя ${va} км/ч на ${2*v1} км означает всего 1 ч на весь путь. Час уже потрачен!`});},{star:true});
+G(7,()=>{const T=[[60,30,40],[40,60,48],[30,60,40],[60,20,30]];const third=pick(T);const [v1,v2]=third;const v=3/(1/v1+2/v2);
+ return NUM(`Первую <b>треть пути</b> турист ехал на велосипеде со скоростью <b>${v1} км/ч</b>, а оставшиеся две трети — со скоростью <b>${v2} км/ч</b>. Найди среднюю скорость (км/ч).`,v,{ph:'км/ч',
+ short:`3 / (1/${v1} + 2/${v2}) = ${N(rd(v,3))} км/ч.`,
+ explain:`Пусть весь путь 3S. Время: S/${v1} + 2S/${v2} = S·(1/${v1} + 2/${v2}) = S·${N(rd(1/v1+2/v2,6))}.<br>v<sub>ср</sub> = 3S / (S·(1/${v1} + 2/${v2})) = <b>${N(rd(v,3))} км/ч</b>.`,
+ explain2:`Удобный путь: ${3*v1*v2/H.gcd(v1,v2)} км. Первая треть ${v1*v2/H.gcd(v1,v2)} км за ${N(v2/H.gcd(v1,v2))} ч, остальные ${2*v1*v2/H.gcd(v1,v2)} км за ${N(2*v1/H.gcd(v1,v2))} ч. Итого ${3*v1*v2/H.gcd(v1,v2)} / ${N((v2+2*v1)/H.gcd(v1,v2))} = ${N(rd(v,3))}.`});},{star:true});
+
+/* L8 ★ escalator, river */
+G(8,()=>CH('Эскалатор поднимает стоящего человека за t₁, пешком по неподвижному он поднимается за t₂. Как найти время подъёма пешком по движущемуся эскалатору?','t = t₁t₂ / (t₁ + t₂)',['t = (t₁ + t₂) / 2','t = t₁ + t₂','t = t₁ − t₂'],{short:'Доли длины за 1 с складываются: 1/t = 1/t₁ + 1/t₂.',
+ explain:'За 1 с эскалатор везёт на 1/t₁ длины, ноги — на 1/t₂. Вместе — 1/t₁ + 1/t₂ = (t₁ + t₂)/(t₁t₂). Время = 1 / это = <b>t₁t₂ / (t₁ + t₂)</b>. Оно меньше и t₁, и t₂ — так и должно быть, ведь помогают оба.',
+ explain2:'Проверка на 60 с и 40 с: 2400/100 = 24 с. Среднее 50 с — больше, чем пешком по неподвижному, абсурд!'}),{rule:true});
+G(8,()=>{const P=[[60,40],[90,60],[120,40],[60,30],[72,24],[60,20],[150,100]];const [t1,t2]=pick(P);const t=t1*t2/(t1+t2);
+ return NUM(`Стоя на движущемся эскалаторе, Артём поднимается за <b>${t1} с</b>. Поднимаясь пешком по <b>неподвижному</b> эскалатору — за <b>${t2} с</b>. За сколько секунд он поднимется, если пойдёт по <b>движущемуся</b> эскалатору с той же скоростью?`,t,{ph:'с',hint:'Какую долю длины эскалатора проходит Артём за 1 секунду в каждом случае?',
+ short:`1/${t1} + 1/${t2} = 1/${N(t)} → ${N(t)} с.`,
+ explain:`Длина эскалатора — L. Скорость эскалатора L/${t1}, скорость Артёма L/${t2}. Вместе: L/${t1} + L/${t2} = L·(${t1}+${t2})/${t1*t2}.<br>t = L / (L·${t1+t2}/${t1*t2}) = ${t1*t2}/${t1+t2} = <b>${N(t)} с</b>.<br>Ответы «(${t1}+${t2})/2 = ${N((t1+t2)/2)}» и «${t1}−${t2}» — ловушки: время не усредняют и не вычитают.`,
+ explain2:`Пусть длина эскалатора ${t1*t2/H.gcd(t1,t2)} «шагов». Эскалатор везёт ${t2/H.gcd(t1,t2)} шага/с, ноги — ${t1/H.gcd(t1,t2)} шага/с, вместе ${(t1+t2)/H.gcd(t1,t2)} шага/с. ${t1*t2/H.gcd(t1,t2)} / ${(t1+t2)/H.gcd(t1,t2)} = ${N(t)} с.`});},{star:true});
+G(8,()=>{const P=[[60,40],[90,60],[120,40],[60,30],[72,24],[60,20]];const [t1,t2]=pick(P);const t=t1*t2/(t1-t2);
+ return NUM(`Эскалатор едет <b>вниз</b> и спускает стоящего человека за <b>${t1} с</b>. По неподвижному эскалатору Павел поднимается пешком за <b>${t2} с</b>. За сколько секунд Павел поднимется <b>вверх по движущемуся вниз</b> эскалатору?`,t,{ph:'с',
+ short:`1/${t2} − 1/${t1} = 1/${N(t)} → ${N(t)} с.`,
+ explain:`За 1 с ноги поднимают на 1/${t2} длины, а эскалатор опускает на 1/${t1}. Итог: 1/${t2} − 1/${t1} = (${t1} − ${t2})/${t1*t2} = 1/${N(t)} длины в секунду.<br>t = <b>${N(t)} с</b>. Намного дольше, чем ${t2} с!`,
+ explain2:`t = t₁t₂/(t₁ − t₂) = ${t1}·${t2}/(${t1} − ${t2}) = ${t1*t2}/${t1-t2} = ${N(t)}. Если бы Павел шёл медленнее эскалатора, он бы никогда не поднялся.`});},{star:true});
+G(8,()=>{const P=[[5,7],[3,5],[2,3],[4,6],[6,10],[3,4],[2,4]];const [a,b]=pick(P);const t=2*a*b/(b-a);
+ return NUM(`Пароход идёт от Нижнего Новгорода до Астрахани (вниз по Волге) <b>${a} суток</b>, а обратно — <b>${b} суток</b>. Сколько суток будет плыть от Нижнего до Астрахани плот (со скоростью течения)?`,t,{ph:'суток',hint:'Обозначь путь за 1. Вниз за сутки: v + u = 1/'+a+', вверх: v − u = 1/'+b+'.',
+ short:`u = (1/${a} − 1/${b}) / 2 = 1/${N(t)} → ${N(t)} суток.`,
+ explain:`Путь — 1. Скорость парохода v, течения u.<br>Вниз: v + u = 1/${a}; вверх: v − u = 1/${b}.<br>Вычитаем: 2u = 1/${a} − 1/${b} = ${b-a}/${a*b} → u = ${b-a}/${2*a*b} = 1/${N(t)}.<br>Плот плывёт со скоростью течения: t = 1/u = <b>${N(t)} суток</b>.<br>Ловушка «${b} − ${a} = ${b-a}» или «${N((a+b)/2)}» — неверно.`,
+ explain2:`Формула: t<sub>плота</sub> = 2t₁t₂/(t₂ − t₁) = 2·${a}·${b}/${b-a} = ${N(t)}. Плот всегда медленнее парохода «вниз», и его время больше, чем ${b} суток вверх (если течение слабее парохода).`});},{star:true});
+G(8,()=>{const L=pick([400,300]);const v1=pick([5,6,7,8]),v2=pick([3,4,5]);if(v1<=v2)return null;const same=Math.random()<0.5;const t=same?L/(v1-v2):L/(v1+v2);if(!isInt(t))return null;
+ return NUM(`Два бегуна стартовали из одной точки круговой дорожки длиной <b>${L} м</b> ${same?'<b>в одну сторону</b>':'<b>в противоположные стороны</b>'} со скоростями <b>${v1}</b> и <b>${v2} м/с</b>. Через сколько секунд они впервые встретятся?`,t,{ph:'с',
+ short:same?`${L} / (${v1} − ${v2}) = ${t} с.`:`${L} / (${v1} + ${v2}) = ${t} с.`,
+ explain:same?`В одну сторону быстрый догоняет медленного «по кругу»: встретятся, когда быстрый пробежит на <b>целый круг</b> больше. Скорость сближения ${v1} − ${v2} = ${v1-v2} м/с. t = ${L} / ${v1-v2} = <b>${t} с</b>.`:`В противоположные стороны вместе они должны пробежать один круг. Скорость сближения ${v1} + ${v2} = ${v1+v2} м/с. t = ${L} / ${v1+v2} = <b>${t} с</b>.`,
+ explain2:same?`Проверка: за ${t} с первый пробежит ${v1*t} м, второй ${v2*t} м. Разница ${v1*t-v2*t} = ${L} м — ровно круг ✅.`:`Проверка: ${v1*t} + ${v2*t} = ${L} м — вместе ровно круг ✅.`});},{star:true});
+
+/* ===================== WIDGET: забег ===================== */
+function onTheory(root){const w=root.querySelector('#w-run');if(!w)return;
+ w.innerHTML=`<label>Скорость I: <output id="wrA">6</output> м/с<input type="range" id="wrAi" min="0" max="10" step="0.5" value="6"></label>
+<label>Скорость II: <output id="wrB">3</output> м/с<input type="range" id="wrBi" min="0" max="10" step="0.5" value="3"></label>
+<div class="row" style="margin:6px 0"><button class="btn" id="wrGo">▶ Старт</button></div>
+<div id="wrT" style="display:flex;justify-content:center"></div><div id="wrG" style="display:flex;justify-content:center"></div><div id="wrO" class="small" style="text-align:center;margin-top:6px"></div>`;
+ const q=s=>w.querySelector(s);let t=0,run=false,last=0;
+ const track=(sa,sb)=>{const X=s=>20+s/100*290;return `<svg viewBox="0 0 330 70" width="330" style="max-width:100%;font-family:system-ui,sans-serif"><rect x="1" y="1" width="328" height="68" rx="8" fill="var(--card)" stroke="var(--line)"/><line x1="20" y1="24" x2="310" y2="24" stroke="var(--line)"/><line x1="20" y1="50" x2="310" y2="50" stroke="var(--line)"/><line x1="310" y1="12" x2="310" y2="62" stroke="var(--fig)" stroke-width="2" stroke-dasharray="4 3"/><text x="306" y="10" text-anchor="end" font-size="10" fill="var(--ink)">100 м</text><circle cx="${X(Math.min(sa,100))}" cy="24" r="8" fill="var(--accent-ink)"/><text x="${X(Math.min(sa,100))}" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="var(--card)">I</text><circle cx="${X(Math.min(sb,100))}" cy="50" r="8" fill="var(--hl)" stroke="var(--fig)"/><text x="${X(Math.min(sb,100))}" y="54" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)">II</text></svg>`;};
+ const draw=()=>{const a=+q('#wrAi').value,b=+q('#wrBi').value;q('#wrA').textContent=N(a);q('#wrB').textContent=N(b);
+  q('#wrT').innerHTML=track(a*t,b*t);
+  q('#wrG').innerHTML=graph({kind:'s',yu:'м',tu:'с',tmax:10,ymax:100,tstep:2,ystep:20,lines:[{pts:[[0,0],[t,a*t]],lab:t>1.5?'I':''},{pts:[[0,0],[t,b*t]],lab:t>1.5?'II':''}]});
+  q('#wrO').innerHTML=`t = <span class="out">${N(rd(t,1))} с</span> · s<sub>I</sub> = ${N(a)}·${N(rd(t,1))} = <span class="out">${N(rd(a*t,1))} м</span> · s<sub>II</sub> = <span class="out">${N(rd(b*t,1))} м</span>. Чем больше скорость, тем круче прямая.`;};
+ const loop=ts=>{if(!run||!document.body.contains(w))return;if(last)t=Math.min(10,t+(ts-last)/500);last=ts;draw();if(t>=10){run=false;q('#wrGo').textContent='▶ Ещё раз';return;}requestAnimationFrame(loop);};
+ q('#wrGo').onclick=()=>{t=0;last=0;run=true;q('#wrGo').textContent='… бегут';requestAnimationFrame(loop);};
+ q('#wrAi').oninput=q('#wrBi').oninput=()=>{if(!run)t=10;draw();};t=10;draw();}
+
+window.TOPIC={id:'p7_motion',title:'Механическое движение',subtitle:'Физика · 7 класс',
+intro:`<p>Гепард против Болта и «Сапсана»! Здесь — движение и тело отсчёта, путь и траектория, скорость, графики s(t) и v(t), коварная средняя скорость, относительность движения, встречное движение и олимпиадная классика: эскалатор, река и плот.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Движение, траектория, путь','Скорость v = s / t','Путь и время: s = v·t, t = s / v','Графики s(t) и v(t)','Средняя скорость','Относительность движения','Встречное движение и догонялки','★ Олимпиада: средняя скорость','★ Олимпиада: эскалатор, река, круг'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

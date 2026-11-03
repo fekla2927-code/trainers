@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Электрический заряд — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range}=H;
+const N=H.num;
+const rd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+const NUM=(q,v,d,extra)=>{const a=rd(v,d);if(!isFinite(a))return null;const exact=Math.abs(a-v)<1e-9;
+  return Object.assign({type:'num',q:q+(exact?'':[' Округли до целых.',' Округли до десятых.',' Округли до сотых.'][d]),ans:a},a===0?{}:{tol:0.6*Math.pow(10,-d)/Math.abs(a)},extra||{});};
+const SV=(w,h,inner,lab)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${lab||'Рисунок'}" style="font-family:system-ui,sans-serif;max-width:100%">${inner}</svg>`;
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.fs||14}" font-weight="${o.fw||600}" fill="${o.c||'var(--ink)'}">${s}</text>`;};
+const SG=x=>x>0?'+'+N(x):N(x);
+const P=x=>x<0?`(${N(x)})`:N(x);
+
+/* ---------- pictures ---------- */
+/* two hanging balls; s1,s2: labels; mode: 'rep' | 'att' | 'none' */
+function balls(s1,s2,mode,o){o=o||{};const W=260,Hh=150;const d=mode==='rep'?22:mode==='att'?-14:0;
+  const x1=100-d,x2=160+d;let s=`<line x1="40" y1="14" x2="220" y2="14" stroke="var(--fig)" stroke-width="3"/>`;
+  s+=`<line x1="100" y1="14" x2="${x1}" y2="110" stroke="var(--fig)" stroke-width="1.4"/><line x1="160" y1="14" x2="${x2}" y2="110" stroke="var(--fig)" stroke-width="1.4"/>`;
+  s+=`<circle cx="${x1}" cy="118" r="15" fill="var(--hl)" fill-opacity=".35" stroke="var(--fig)" stroke-width="1.6"/>`+T(x1,123,s1,{fs:15,fw:700,c:'var(--accent-ink)'});
+  s+=`<circle cx="${x2}" cy="118" r="15" fill="var(--accent)" fill-opacity=".25" stroke="var(--fig)" stroke-width="1.6"/>`+T(x2,123,s2,{fs:15,fw:700,c:'var(--accent-ink)'});
+  if(o.l1)s+=T(x1-24,123,o.l1,{a:'end',fs:13});if(o.l2)s+=T(x2+24,123,o.l2,{a:'start',fs:13});
+  return SV(W,Hh,s,'Два подвешенных шарика');}
+/* electroscope: n = leaf spread 0..3 */
+function scope(n,sign,o){o=o||{};const W=200,Hh=190;let s=`<circle cx="100" cy="22" r="12" fill="var(--card)" stroke="var(--fig)" stroke-width="2"/>`;
+  s+=`<rect x="58" y="56" width="84" height="110" rx="10" fill="none" stroke="var(--fig)" stroke-width="2"/>`;
+  s+=`<rect x="92" y="48" width="16" height="12" fill="var(--fig)" fill-opacity=".45"/>`;
+  s+=`<line x1="100" y1="34" x2="100" y2="100" stroke="var(--fig)" stroke-width="3"/>`;
+  const a=n*14*Math.PI/180;const L=46;
+  s+=`<line x1="100" y1="100" x2="${(100-L*Math.sin(a)).toFixed(1)}" y2="${(100+L*Math.cos(a)).toFixed(1)}" stroke="var(--accent-ink)" stroke-width="3"/><line x1="100" y1="100" x2="${(100+L*Math.sin(a)).toFixed(1)}" y2="${(100+L*Math.cos(a)).toFixed(1)}" stroke="var(--accent-ink)" stroke-width="3"/>`;
+  s+=`<line x1="64" y1="166" x2="56" y2="182" stroke="var(--fig)" stroke-width="2"/><line x1="136" y1="166" x2="144" y2="182" stroke="var(--fig)" stroke-width="2"/>`;
+  if(sign&&n>0){s+=T(100-L*Math.sin(a)-10,100+L*Math.cos(a)*0.6,sign,{fs:14,c:'var(--accent-ink)'})+T(100+L*Math.sin(a)+10,100+L*Math.cos(a)*0.6,sign,{fs:14,c:'var(--accent-ink)'});}
+  if(o.cap)s+=T(100,Hh-1,o.cap,{fs:12,fw:400});
+  return SV(W,Hh,s,'Электроскоп');}
+/* atom: Z protons, ne electrons, nn neutrons */
+function atom(Z,ne,nn){const nsh=ne<=2?1:ne<=10?2:ne<=18?3:4;const Rm=38+(nsh-1)*22;const W=Math.max(220,2*Rm+24),cx=W/2,cy=Rm+12,Hh=2*Rm+24+(nn!=null?18:0);let s=`<circle cx="${cx}" cy="${cy}" r="20" fill="var(--hl)" fill-opacity=".5" stroke="var(--fig)" stroke-width="1.5"/>`+T(cx,cy+5,'+'+Z,{fs:14,fw:700});
+  const shells=[];let left=ne;[2,8,8,18].forEach(c=>{if(left>0){shells.push(Math.min(c,left));left-=c;}});
+  shells.forEach((k,i)=>{const r=38+i*22;s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--fig)" stroke-opacity=".35" stroke-dasharray="3 3"/>`;
+    for(let j=0;j<k;j++){const a=2*Math.PI*j/k-Math.PI/2+i*0.3;const x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5" fill="var(--accent)" fill-opacity=".85"/>`+T(x.toFixed(1),(y+3.5).toFixed(1),'−',{fs:10,fw:700,c:'var(--card)'});}});
+  if(nn!=null)s+=T(cx,Hh-4,`в ядре ${Z} протонов и ${nn} нейтронов`,{fs:12,fw:400});
+  return SV(W,Hh,s,'Модель атома');}
+/* field lines around charge */
+function field(sign){const W=150,Hh=150,c=75;let s='';for(let i=0;i<8;i++){const a=i*Math.PI/4;const x1=c+22*Math.cos(a),y1=c+22*Math.sin(a),x2=c+66*Math.cos(a),y2=c+66*Math.sin(a);
+  s+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="var(--fig)" stroke-width="1.5"/>`;
+  const [hx,hy,dx,dy]=sign>0?[c+52*Math.cos(a),c+52*Math.sin(a),Math.cos(a),Math.sin(a)]:[c+36*Math.cos(a),c+36*Math.sin(a),-Math.cos(a),-Math.sin(a)];
+  const px=-dy,py=dx;s+=`<path d="M${(hx+dx*7).toFixed(1)},${(hy+dy*7).toFixed(1)} L${(hx+px*4).toFixed(1)},${(hy+py*4).toFixed(1)} L${(hx-px*4).toFixed(1)},${(hy-py*4).toFixed(1)} Z" fill="var(--accent-ink)"/>`;}
+  s+=`<circle cx="${c}" cy="${c}" r="15" fill="${sign>0?'var(--hl)':'var(--accent)'}" fill-opacity=".5" stroke="var(--fig)" stroke-width="1.5"/>`+T(c,c+6,sign>0?'+':'−',{fs:18,fw:700});
+  return SV(W,Hh,s,'Линии электрического поля');}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Почему шарик прилипает к стене?',lvl:0,html:`
+<p class="hook">Потри воздушный шарик о волосы — и он прилипнет к стене, а волосы встанут дыбом. Зимой снимаешь свитер — треск и искорки в темноте. Берёшься за дверную ручку — щёлк, «бьёт током»! А в грозу та же самая искра длиной в несколько километров — <b>молния</b>. Всё это — <b>электрические заряды</b>. Разберёмся, откуда они берутся, почему одни тела притягиваются, а другие отталкиваются, и что внутри атома.</p>
+<div class="fact">Древние греки заметили, что янтарь, потёртый о шерсть, притягивает пылинки и пух (это описывают со времён Фалеса Милетского, VI век до н. э.). Янтарь по-гречески — «электрон». Отсюда слово «электричество».</div>`},
+{title:'Электризация и два рода зарядов',lvl:0,html:`
+<div class="box rule"><b>Электризация</b>— сообщение телу электрического заряда (например, трением или касанием). Наэлектризованное тело притягивает лёгкие предметы.</div>
+<div class="box rule"><b>Два рода зарядов</b>Положительный (+) и отрицательный (−). Договорились так: стекло, потёртое о шёлк, заряжается <b>положительно</b>; эбонит (или пластик), потёртый о мех, — <b>отрицательно</b>.</div>
+<div class="box rule"><b>Взаимодействие</b>Одноимённые заряды <b>отталкиваются</b>, разноимённые — <b>притягиваются</b>.</div>
+<div class="figrow"><div class="fig">${balls('+','+','rep')}<div class="cap">одноимённые — отталкиваются</div></div><div class="fig">${balls('+','−','att')}<div class="cap">разноимённые — притягиваются</div></div></div>
+<div class="box rule"><b>При трении заряжаются оба тела</b>— равными по модулю и <b>противоположными</b> по знаку зарядами. Стекло стало «+», значит, шёлк стал «−».</div>
+<div class="box err"><b>Частая ошибка</b>«Раз притягиваются — значит, разноимённые». Не обязательно! Заряженное тело притягивает и <b>незаряженное</b> (бумажки, стену). А вот <b>отталкивание</b> — верный признак одноимённых зарядов.</div>`},
+{title:'Проводники, диэлектрики и электроскоп',lvl:1,html:`
+<div class="box rule"><b>Проводники</b>— вещества, по которым заряд может перемещаться: металлы, графит, растворы солей и кислот, влажная земля, тело человека.<br><b>Диэлектрики (изоляторы)</b> — не проводят заряд: стекло, резина, пластик, эбонит, фарфор, сухой воздух, сухое дерево.</div>
+<p><b>Почему так.</b> В металлах есть <b>свободные электроны</b> — они не привязаны к своим атомам и «гуляют» по всему куску. В диэлектриках все электроны крепко держатся своих атомов.</p>
+<div class="figrow"><div class="fig">${scope(0,'',{cap:'не заряжен'})}</div><div class="fig">${scope(2,'+',{cap:'заряжен'})}</div></div>
+<div class="box rule"><b>Электроскоп</b>— прибор, который показывает, заряжено ли тело. Металлический стержень с двумя лёгкими листочками внизу. Коснёшься шарика заряженной палочкой — заряд растечётся по стержню, листочки зарядятся <b>одноимённо</b> и разойдутся. Чем больше заряд, тем сильнее расходятся.</div>
+<div class="box ex"><b>Почему стержень металлический, а пробка — из эбонита или пластмассы?</b>По стержню заряд должен дойти до листочков (проводник), а через пробку не должен уйти на корпус и в землю (изолятор).</div>
+<div class="box err"><b>Частая ошибка</b>Думать, что по электроскопу видно знак заряда. Листочки расходятся одинаково и от «+», и от «−». Знак можно узнать, только сравнив с известным зарядом.</div>`},
+{title:'Электрическое поле',lvl:2,html:`
+<div class="box rule"><b>Электрическое поле</b>— особый вид материи, который существует вокруг каждого заряженного тела и действует на другие заряды с некоторой силой (электрическая сила).</div>
+<p><b>Почему нужно поле.</b> Заряды действуют друг на друга, не касаясь — даже в вакууме. Значит, «посредник» — не воздух. Этот посредник и есть поле: заряд создаёт вокруг себя поле, а поле действует на другой заряд.</p>
+<div class="figrow"><div class="fig">${field(1)}<div class="cap">линии от «+»</div></div><div class="fig">${field(-1)}<div class="cap">линии к «−»</div></div></div>
+<div class="box rule"><b>Свойства</b>• Чем ближе к заряду, тем поле сильнее (линии гуще), чем дальше — слабее.<br>• Линии поля начинаются на «+» и заканчиваются на «−».<br>• Поле существует и в вакууме.</div>
+<div class="box tip"><b>Аналогия</b>Как запах от пиццы: его не видно, но чем ближе к кухне, тем он сильнее. Только поле действует не на нос, а на заряды.</div>
+<div class="box err"><b>Частая ошибка</b>«Без воздуха заряды не взаимодействуют». Ещё как взаимодействуют — через поле. В космосе электрические силы работают так же.</div>`},
+{title:'Делимость заряда. Электрон',lvl:3,html:`
+<div class="box rule"><b>Есть наименьший заряд</b>— заряд <b>электрона</b>: <span class="m">e = −1,6·10⁻¹⁹ Кл</span>. Любой заряд тела — целое число таких «порций»: <span class="m">q = N·e</span>. Делить заряд бесконечно нельзя.</div>
+<p>Заряд измеряют в <b>кулонах (Кл)</b>. 1 Кл — очень много, поэтому в задачах встречаются нКл (нанокулон, 10⁻⁹ Кл) и мкКл (микрокулон, 10⁻⁶ Кл).</p>
+<div class="box ex"><b>Пример</b>Шарик получил заряд −3,2 нКл. Сколько лишних электронов? N = 3,2·10⁻⁹ / 1,6·10⁻¹⁹ = 2·10¹⁰ — двадцать миллиардов!</div>
+<div class="box tip"><b>Удобно</b>1 нКл — это 10⁻⁹ / 1,6·10⁻¹⁹ = 6,25·10⁹ электронов, то есть 6,25 миллиарда. Значит, N (в миллиардах) = 6,25 · q (в нКл).</div>
+<div class="fact">Заряд электрона в 1909–1913 годах измерил американец Роберт Милликен: он следил в микроскоп за крошечными заряженными капельками масла в электрическом поле. Заряды всех капель оказались кратны одной и той же «порции».</div>`},
+{title:'Строение атома. Ионы',lvl:4,html:`
+<div class="box rule"><b>Атом</b>= <b>ядро</b> (в центре: протоны «+» и нейтроны без заряда) + <b>электроны</b> «−» вокруг. Заряд протона +e, электрона −e. В нейтральном атоме число электронов = числу протонов = порядковому номеру Z в таблице Менделеева.</div>
+<div class="figrow"><div class="fig">${atom(3,3,4)}<div class="cap">атом лития: Z = 3</div></div></div>
+<div class="box rule"><b>Ион</b>— атом, который потерял или приобрёл электроны.<br>Потерял электроны → <b>положительный</b> ион. Приобрёл → <b>отрицательный</b> ион. Заряд иона = (протоны − электроны)·e.</div>
+<div class="box ex"><b>Пример</b>Натрий: Z = 11, массовое число A = 23. Протонов 11, электронов 11, нейтронов 23 − 11 = 12. Если атом натрия отдаст 1 электрон — станет ионом Na⁺ (заряд +1e).</div>
+<div class="box err"><b>Частая ошибка</b>«Атом стал положительным — значит, получил протоны». Нет! Протоны сидят в ядре и при электризации не переходят. Меняется только число <b>электронов</b>.</div>
+<div class="fact">В 1911 году Эрнест Резерфорд обстреливал тонкую золотую фольгу альфа-частицами. Почти все пролетали насквозь, но некоторые отскакивали назад — «как если бы снаряд отскочил от папиросной бумаги». Так открыли крошечное ядро: оно примерно в 100 000 раз меньше атома.</div>`},
+{title:'Как объяснить электризацию',lvl:5,html:`
+<div class="box rule"><b>При электризации переходят электроны</b>Тело, получившее лишние электроны, заряжается <b>отрицательно</b>. Тело, потерявшее электроны, — <b>положительно</b>. Протоны не переходят.</div>
+<div class="box ex"><b>Пример</b>Эбонит трут о мех: электроны переходят с меха на эбонит. Эбонит «−», мех «+». Стекло о шёлк: электроны уходят со стекла на шёлк. Стекло «+», шёлк «−».</div>
+<p><b>А масса?</b> У электрона есть масса: m<sub>e</sub> = 9,1·10⁻³¹ кг. Поэтому, строго говоря, отрицательно заряженное тело становится тяжелее, а положительно заряженное — легче. Но изменение ничтожное: 10¹⁰ электронов весят всего 9,1·10⁻²¹ кг.</p>
+<div class="box err"><b>Частая ошибка</b>«Положительное тело получило положительный заряд». Нет, оно <b>отдало</b> электроны: «+» — это нехватка электронов.</div>`},
+{title:'Закон сохранения заряда',lvl:6,html:`
+<div class="box rule"><b>Закон сохранения электрического заряда</b>В замкнутой системе алгебраическая сумма зарядов не меняется: <span class="m">q₁ + q₂ + … = const</span>. Заряд не создаётся и не исчезает — только перераспределяется.</div>
+<div class="box rule"><b>Касание одинаковых шариков</b>Если два <b>одинаковых</b> металлических шарика соприкоснулись и разошлись, заряд делится поровну: <span class="m">q = (q₁ + q₂) / 2</span> (со знаками!).</div>
+<div class="widget" id="w-touch"></div>
+<div class="box ex"><b>Пример</b>q₁ = +8 нКл, q₂ = −2 нКл. После касания каждый: (8 + (−2)) / 2 = +3 нКл. До касания шарики притягивались, после — отталкиваются.</div>
+<div class="box err"><b>Частая ошибка</b>Складывать модули: (8 + 2)/2 = 5. Знаки важны! «+» и «−» частично компенсируют друг друга.</div>`},
+{title:'Влияние, заземление, молния',lvl:7,html:`
+<div class="box rule"><b>Электризация через влияние</b>Поднеси заряженную палочку к металлическому телу, не касаясь. Свободные электроны в металле сдвинутся: на ближней стороне появится заряд <b>противоположного</b> знака, на дальней — <b>такого же</b>. Ближний разноимённый заряд притягивается сильнее, чем отталкивается дальний, — поэтому <b>незаряженное тело притягивается</b> к заряженному.</div>
+<p><b>Шарик и стена.</b> Стена — не металл, но и в ней заряженный шарик чуть «сдвигает» заряды внутри молекул (поляризует). Ближе к шарику оказывается противоположный заряд — шарик прилипает.</p>
+<div class="box rule"><b>Заземление</b>Земля — огромный проводник. Если соединить с ней заряженный проводник, заряд уйдёт в землю (или придёт из неё). Так защищают бензовозы (цепь до асфальта), стиральные машины, громоотводы.</div>
+<div class="box ex"><b>Хитрый опыт</b>Поднеси «+» палочку к электроскопу, коснись шарика пальцем (заземлил), убери палец, потом палочку. Электроскоп зарядится <b>отрицательно</b>: «+» палочка притянула электроны из земли через палец.</div>
+<div class="box ex"><b>Молния</b>— гигантская искра между облаком и землёй (или между облаками). В облаке из-за трения и столкновения льдинок разделяются заряды. Громоотвод (молниеотвод, придумал Бенджамин Франклин в 1750-х) — заострённый металлический стержень, соединённый с землёй: молния бьёт в него, и заряд уходит в землю, не трогая дом.</div>
+<div class="fact">Воздух в канале молнии нагревается примерно до 30&nbsp;000 °С — это в несколько раз горячее поверхности Солнца. Воздух резко расширяется — это и есть гром.</div>`},
+{title:'★ Олимпиадные приёмы',lvl:8,html:`
+<ol class="steps">
+<li><b>Цепочки касаний.</b> Записывай заряды всех шариков после каждого касания в таблицу. Касаются только два одинаковых — каждый получает их полусумму, остальные не меняются.</li>
+<li><b>Притяжение — не доказательство.</b> Если A притягивает B, то B может быть разноимённым <b>или незаряженным</b>. Отталкивание — только одноимённые.</li>
+<li><b>Обратная задача.</b> Если после касания у каждого q, то сумма до касания была 2q: q₂ = 2q − q₁.</li>
+<li><b>Масса электронов.</b> N = |q| / e, Δm = N·m<sub>e</sub>.</li>
+</ol>
+<div class="box ex"><b>Пример</b>Шарик с зарядом 16 нКл по очереди касается трёх одинаковых незаряженных шариков. После каждого касания его заряд уменьшается вдвое: 8, 4, 2 нКл.</div>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Формулы',title:'Обозначения и формулы',rows:[
+['q','электрический заряд','Измеряется в кулонах (Кл). Бывает «+» и «−».','−3,2&nbsp;нКл'],
+['Кл, нКл, мкКл','единицы заряда','1 нКл = 10⁻⁹ Кл, 1 мкКл = 10⁻⁶ Кл.','5&nbsp;нКл = 5·10⁻⁹&nbsp;Кл'],
+['e','элементарный заряд','Заряд электрона по модулю: 1,6·10⁻¹⁹ Кл.','q<sub>p</sub>&nbsp;=&nbsp;+e'],
+['q = N·e','число электронов','Заряд — целое число «порций» e.','3,2&nbsp;нКл → 2·10¹⁰'],
+['m<sub>e</sub>','масса электрона','9,1·10⁻³¹ кг.','Δm&nbsp;=&nbsp;N·m<sub>e</sub>'],
+['Z','порядковый номер','Число протонов = число электронов в нейтральном атоме.','Na: Z&nbsp;=&nbsp;11'],
+['A − Z','число нейтронов','Массовое число минус число протонов.','23 − 11&nbsp;=&nbsp;12'],
+['q₁ + q₂ = const','сохранение заряда','Сумма зарядов замкнутой системы постоянна.','8 + (−2)&nbsp;=&nbsp;6'],
+['(q₁ + q₂)/2','касание одинаковых шаров','После касания у каждого — полусумма.','(8 − 2)/2&nbsp;=&nbsp;3']
+],after:`<div class="box tip" style="margin-top:14px"><b>Главное</b>Одноимённые отталкиваются, разноимённые притягиваются. При электризации переходят только электроны.</div>`};
+
+/* ---------- widget ---------- */
+function onTheory(root){const w=root.querySelector('#w-touch');if(!w)return;
+  w.innerHTML=`<label>q₁ = <output id="wq1">8</output> нКл<input type="range" id="wQ1" min="-10" max="10" step="1" value="8"></label>
+<label>q₂ = <output id="wq2">-2</output> нКл<input type="range" id="wQ2" min="-10" max="10" step="1" value="-2"></label>
+<div class="row" style="margin:6px 0"><button class="btn ghost" id="wT">Коснуться шариками</button></div>
+<div id="wS" style="display:flex;justify-content:center"></div><div id="wO" class="small" style="text-align:center;margin-top:6px"></div>`;
+  const A=w.querySelector('#wQ1'),B=w.querySelector('#wQ2');
+  const mode=(a,b)=>a===0&&b===0?'none':a*b>0?'rep':'att';
+  const draw=(msg)=>{const a=+A.value,b=+B.value;w.querySelector('#wq1').textContent=SG(a);w.querySelector('#wq2').textContent=SG(b);
+    w.querySelector('#wS').innerHTML=balls(a?(a>0?'+':'−'):'0',b?(b>0?'+':'−'):'0',mode(a,b),{l1:SG(a),l2:SG(b)});
+    const m=mode(a,b);w.querySelector('#wO').innerHTML=(msg||'')+(m==='rep'?'Одноимённые — <span class="out">отталкиваются</span>.':m==='att'?(a*b<0?'Разноимённые — <span class="out">притягиваются</span>.':'Заряженный шарик <span class="out">притягивает</span> незаряженный (через влияние).'):'Оба не заряжены — не взаимодействуют.')+` Сумма зарядов: <span class="out">${SG(a+b)} нКл</span>.`;};
+  A.oninput=B.oninput=()=>draw();
+  w.querySelector('#wT').onclick=()=>{const a=+A.value,b=+B.value,s=(a+b)/2;if(!Number.isInteger(s)){draw(`Полусумма ${N(s)} — не целая; выбери заряды с чётной суммой. `);return;}A.value=s;B.value=s;draw(`После касания: (${SG(a)} + ${P(b)})/2 = ${SG(s)} нКл у каждого. `);};
+  draw();}
+
+/* =================== GENERATORS =================== */
+/* L0 */
+RULE(0,'Как взаимодействуют заряженные тела?','Одноимённые отталкиваются, разноимённые притягиваются',['Одноимённые притягиваются, разноимённые отталкиваются','Все заряженные тела притягиваются','Заряженные тела не взаимодействуют без касания'],
+{short:'«Плюс с плюсом» и «минус с минусом» отталкиваются, «плюс с минусом» притягиваются.',
+explain:'Главное правило электростатики: <b>одноимённые</b> заряды (оба «+» или оба «−») <b>отталкиваются</b>, <b>разноимённые</b> («+» и «−») <b>притягиваются</b>. И они действуют друг на друга на расстоянии — через электрическое поле.',
+explain2:'Проверь опытом: натри два воздушных шарика о волосы (оба зарядятся одинаково) и подвесь рядом — разлетятся. А шарик и волосы, о которые тёр (заряды разные), тянутся друг к другу.'});
+RULE(0,'Как заряжаются два тела, которые потёрли друг о друга?','Оба заряжаются: равными по модулю и противоположными по знаку зарядами',['Заряжается только одно тело','Оба заряжаются одинаковыми по знаку зарядами','Тело с большей массой заряжается положительно'],
+{short:'Электроны переходят с одного тела на другое: у одного «+», у другого столько же «−».',
+explain:'При трении электроны переходят с одного тела на другое. Сколько электронов одно тело потеряло, столько же другое получило. Поэтому заряды <b>равны по модулю и противоположны по знаку</b>: стекло «+», шёлк «−»; эбонит «−», мех «+».',
+explain2:'Как обмен монетками: если ты отдал другу 5 монет, у тебя −5, у него +5. Ничего не появилось и не исчезло — сумма та же, ноль.'});
+G(0,()=>{const P=[['Стеклянную палочку потёрли о шёлк','стекло','+','шёлк'],['Эбонитовую палочку потёрли о мех','эбонит','−','мех'],['Пластиковую линейку потёрли о шерстяной свитер','линейка','−','свитер']];
+const p=pick(P);const opts=['Положительно','Отрицательно','Не заряжается'];const a=p[2]==='+'?0:1;const ask=pick([0,1]);const ans=ask===0?a:1-a;
+return {type:'choice',q:`${p[0]}. Как зарядится <b>${ask===0?p[1]:p[3]}</b>?`,opts,ans,
+short:`${p[1][0].toUpperCase()+p[1].slice(1)} — «${p[2]}», ${p[3]} — «${p[2]==='+'?'−':'+'}».`,
+explain:`По договорённости: стекло о шёлк — стекло «+»; эбонит (и большинство пластиков) о мех или шерсть — «−». При трении оба тела получают <b>противоположные</b> заряды.<br>${p[1][0].toUpperCase()+p[1].slice(1)} — «${p[2]}», значит, ${p[3]} — «${p[2]==='+'?'−':'+'}». Ответ: <b>${opts[ans].toLowerCase()}</b>.`,
+explain2:`Запомни две пары: «стекло о шёлк → стекло +» и «эбонит (пластик) о мех или шерсть → эбонит −». Эбонит забирает электроны у меха, стекло отдаёт их шёлку. Партнёр по трению всегда получает противоположный знак.`};});
+G(0,()=>{const sgn=['+','−'];const a=pick(sgn),b=pick(sgn);const rep=a===b;const opts=['Отталкиваются','Притягиваются','Не взаимодействуют'];
+return {type:'choice',q:`Два лёгких шарика на нитях заряжены: первый «${a}», второй «${b}». Что произойдёт?`,opts,ans:rep?0:1,pic:balls(a,b,'none'),
+short:rep?'Одноимённые — отталкиваются.':'Разноимённые — притягиваются.',
+explain:`Заряды «${a}» и «${b}» — ${rep?'<b>одноимённые</b>, значит, шарики <b>отталкиваются</b> и нити разойдутся':'<b>разноимённые</b>, значит, шарики <b>притягиваются</b> и нити наклонятся друг к другу'}.`,
+explain2:`Посмотри, как это выглядит: <div class="fig">${balls(a,b,rep?'rep':'att')}</div>`};});
+G(0,()=>{const P=[['Шарики A и B отталкиваются. Шарик A заряжен положительно. Каков заряд B?','Положительный',['Отрицательный','B не заряжен','Может быть любым'],'Отталкиваются только одноимённые заряды. A «+», значит, и B «+». (Незаряженное тело никогда не отталкивается — только притягивается.)'],
+ ['Шарики A и B притягиваются. Шарик A заряжен положительно. Что можно сказать о B?','B заряжен отрицательно или не заряжен',['B точно заряжен отрицательно','B точно заряжен положительно','B точно не заряжен'],'Разноимённые заряды притягиваются. Но заряженное тело притягивает и незаряженное (через влияние). Поэтому B либо «−», либо нейтрален.'],
+ ['Наэлектризованная расчёска притягивает мелкие кусочки бумаги. Бумажки были заряжены?','Не обязательно: заряженное тело притягивает и незаряженные',['Да, отрицательно','Да, положительно','Да, тем же знаком, что и расчёска'],'Бумажки нейтральны. Расчёска сдвигает в них заряды: ближе к ней — противоположный знак, и он притягивается сильнее.']];
+const p=pick(P);return CH(p[0],p[1],p[2],{short:p[3].split('. ')[0]+'.',explain:p[3],
+explain2:'Правило-ловушка: <b>отталкивание</b> — точный признак одноимённых зарядов. <b>Притяжение</b> бывает и между разноимёнными, и между заряженным и незаряженным телом. Ответ: «'+p[1]+'».'});});
+
+/* L1 — проводники, электроскоп */
+RULE(1,'Что такое проводник электричества?','Вещество, по которому могут перемещаться электрические заряды',['Вещество, которое не пропускает заряды','Любое вещество, которое можно наэлектризовать трением','Только металлы, нагретые до высокой температуры'],
+{short:'В проводниках есть свободные заряды (в металлах — свободные электроны).',
+explain:'Проводник — вещество, в котором заряды могут свободно перемещаться: металлы (свободные электроны), графит, растворы солей, влажная земля, тело человека. Вещества, не пропускающие заряды, — диэлектрики (изоляторы): стекло, резина, пластик, фарфор, сухой воздух.',
+explain2:'Аналогия: проводник — это шоссе для зарядов, диэлектрик — стена. По медному проводу заряд проходит мгновенно, через резиновую изоляцию — нет. Поэтому провода — из меди, а оплётка — из пластика.'});
+RULE(1,'Для чего нужен электроскоп?','Чтобы обнаружить, заряжено ли тело, и сравнить заряды по величине',['Чтобы определить знак заряда без других тел','Чтобы зарядить тело','Чтобы измерить массу электронов'],
+{short:'Листочки расходятся — тело заряжено. Сильнее расходятся — заряд больше.',
+explain:'Электроскоп показывает, есть ли заряд: листочки заряжаются одноимённо и расходятся. Чем больше заряд, тем больше угол. Знак заряда по нему сразу не узнать: листочки расходятся и от «+», и от «−».',
+explain2:'Это как «детектор»: пищит — есть заряд, пищит громче — заряд больше. А какого знака — детектор не говорит.'});
+G(1,()=>{const C=['медь','алюминий','графит','раствор поваренной соли','тело человека','влажная земля','железо','серебро'],D=['стекло','резина','фарфор','эбонит','сухой воздух','пластмасса','шёлк','сухое дерево'];
+const isC=Math.random()<.5;const it=pick(isC?C:D);const opts=['Проводник','Диэлектрик (изолятор)'];
+return {type:'choice',q:`Вещество «${it}» — проводник или диэлектрик?`,opts,ans:isC?0:1,short:isC?'Проводник: в нём заряды могут перемещаться.':'Диэлектрик: заряды по нему не перемещаются.',
+explain:`Проводники: металлы (медь, алюминий, железо, серебро), графит, растворы солей и кислот, влажная земля, тело человека. Диэлектрики: стекло, резина, фарфор, эбонит, пластмасса, шёлк, сухой воздух, сухое дерево.<br>«${it}» — <b>${opts[isC?0:1].toLowerCase()}</b>.`,
+explain2:`Вспомни, из чего делают провода (проводник) и из чего — изоляцию проводов, ручки инструментов электрика и изоляторы на столбах (диэлектрик). «${it}» — ${isC?'то, по чему ток идёт':'то, чем защищаются от тока'}.`};});
+G(1,()=>{const P=[['К шарику незаряженного электроскопа прикоснулись заряженной палочкой. Что произойдёт с листочками?','Разойдутся: они зарядятся одноимённо',['Сблизятся: они зарядятся разноимённо','Ничего не изменится','Один листочек поднимется, другой опустится'],'Заряд с палочки растечётся по металлическому стержню до листочков. Оба листочка получат заряд одного знака и оттолкнутся.'],
+ ['Электроскоп заряжен. Шарика коснулись рукой. Что будет с листочками?','Опадут: заряд уйдёт через тело человека в землю',['Разойдутся ещё сильнее','Ничего не изменится, тело — изолятор','Зарядятся противоположно и останутся разведены'],'Тело человека — проводник, оно соединено с землёй. Заряд уходит в землю, электроскоп разряжается.'],
+ ['Почему стержень электроскопа металлический, а пробка, через которую он проходит, — из эбонита или пластмассы?','Стержень должен проводить заряд к листочкам, а пробка — не давать ему уйти на корпус',['Так дешевле','Металл легче, чем пластмасса','Эбонит создаёт заряд при трении о стержень'],'Металл — проводник: заряд доходит от шарика до листочков. Эбонит — изолятор: заряд не утекает на корпус и в землю.'],
+ ['Электроскоп заряжен положительно. К шарику прикоснулись отрицательно заряженной палочкой с небольшим зарядом. Что произойдёт с листочками?','Сблизятся: часть положительного заряда скомпенсируется',['Разойдутся сильнее','Ничего не изменится','Сразу резко поднимутся вверх'],'Отрицательный заряд палочки частично «съест» положительный заряд электроскопа (закон сохранения: заряды складываются со знаками). Заряд листочков уменьшится — они сблизятся.']];
+const p=pick(P);const k=P.indexOf(p);const pic=k===0?scope(2,'',{cap:'после касания'}):k===1?scope(0,'',{cap:''}):null;
+return CH(p[0],p[1],p[2],Object.assign(pic?{pic}:{},{short:p[3].split('. ')[0]+'.',explain:p[3],
+explain2:`Помни устройство: металлический шарик → металлический стержень → лёгкие листочки (всё проводники), а изолирующая пробка отделяет их от корпуса. Листочки с зарядом одного знака отталкиваются. Ответ: «${p[1]}».`}));});
+G(1,()=>{const qa=R(2,9),qb=R(2,9);if(qa===qb)return null;const opts=['На первом','На втором'];
+return {type:'choice',q:'Одинаковые электроскопы зарядили разными зарядами. На каком электроскопе заряд больше?',pics:false,pic:`<div class="figrow"><div class="fig">${scope(qa/3.2,'',{cap:'первый'})}</div><div class="fig">${scope(qb/3.2,'',{cap:'второй'})}</div></div>`,opts,ans:qa>qb?0:1,
+short:'Где листочки разошлись сильнее, там заряд больше.',
+explain:`Чем больше заряд, тем сильнее листочки отталкиваются и тем больше угол между ними. У ${qa>qb?'первого':'второго'} электроскопа угол больше — заряд <b>больше на ${qa>qb?'первом':'втором'}</b>.`,
+explain2:'Представь двух драчунов: чем сильнее они «заряжены» (злы), тем дальше их раскидывает друг от друга. Листочки — то же самое: больше заряд — сильнее отталкивание — шире угол.'};});
+
+/* L2 — поле */
+RULE(2,'Что такое электрическое поле?','Особый вид материи вокруг заряженных тел, через который они действуют на другие заряды',['Пространство, заполненное воздухом вокруг заряда','Поток электронов от одного тела к другому','Невидимая жидкость, которая вытекает из заряда'],
+{short:'Поле — вид материи; оно передаёт действие одного заряда на другой.',
+explain:'Вокруг каждого заряженного тела существует <b>электрическое поле</b> — особый вид материи. Именно поле действует на другие заряды с электрической силой. Оно есть и в вакууме, поэтому воздух тут ни при чём, и это не поток электронов.',
+explain2:'Как гравитация: Земля притягивает Луну, хотя между ними пустота. «Посредник» — поле тяготения. Так же у зарядов — электрическое поле.'});
+G(2,()=>{const P=[['Как меняется действие электрического поля заряда при удалении от него?','Ослабевает',['Усиливается','Не меняется','Сначала усиливается, потом ослабевает'],'Чем дальше от заряженного тела, тем слабее его поле и тем меньше сила, действующая на другой заряд. Рядом с заряженной расчёской бумажки подпрыгивают, а в метре от неё — нет.'],
+ ['Будут ли два заряженных шарика взаимодействовать в вакууме (под колоколом, из которого откачан воздух)?','Да: взаимодействие передаёт электрическое поле, ему не нужен воздух',['Нет: без воздуха взаимодействия нет','Только если шарики касаются','Только одноимённые'],'Электрическое поле существует и в пустоте. Опыты под колоколом воздушного насоса показывают: заряды взаимодействуют и без воздуха.'],
+ ['На что действует электрическое поле?','На заряженные тела и частицы',['Только на металлы','На любые тела одинаково, как сила тяжести','Только на тела, которые касаются заряда'],'Электрическое поле действует с силой на заряды. На незаряженное тело оно действует косвенно: сначала разделяет в нём заряды (влияние).']];
+const p=pick(P);return CH(p[0],p[1],p[2],{short:p[3].split('. ')[0]+'.',explain:p[3],
+explain2:`Три свойства поля: 1) оно есть вокруг каждого заряда, даже в вакууме; 2) оно действует на заряды; 3) чем дальше от заряда, тем оно слабее. Ответ: «${p[1]}».`});});
+G(2,()=>{const s=pick([1,-1]);const opts=['От заряда (наружу)','К заряду (внутрь)'];
+return {type:'choice',q:`Как направлены линии электрического поля вокруг ${s>0?'положительного':'отрицательного'} заряда?`,opts,ans:s>0?0:1,
+short:s>0?'Линии выходят из «+».':'Линии входят в «−».',
+explain:`Договорились: линии поля начинаются на положительных зарядах и заканчиваются на отрицательных. Значит, у ${s>0?'«+» они направлены <b>от заряда</b>':'«−» они направлены <b>к заряду</b>'}.<div class="fig">${field(s)}</div>`,
+explain2:`Направление линии — это куда толкнуло бы маленький <b>положительный</b> заряд. ${s>0?'«+» отталкивает «+» — от себя, наружу.':'«−» притягивает «+» — к себе, внутрь.'}`};});
+G(2,()=>{const d1=pick([1,2,3]),d2=pick([5,8,10]);const opts=[`На расстоянии ${d1} см`,`На расстоянии ${d2} см`,'Одинаково'];
+return {type:'choice',q:`Маленький заряженный шарик поместили сначала на расстоянии ${d1} см от заряженного тела, а затем на расстоянии ${d2} см. Где на него действует большая сила?`,opts,ans:0,
+short:'Ближе к заряду поле сильнее.',
+explain:`Электрическое поле ослабевает с расстоянием. На ${d1} см шарик ближе, поле там сильнее, и сила больше. Ответ: <b>на ${d1} см</b>.`,
+explain2:'Посмотри на картинку линий поля: возле заряда линии густые (поле сильное), дальше — редкие (слабое).<div class="fig">'+field(1)+'</div>'};});
+
+/* L3 — электрон, делимость */
+RULE(3,'Что такое элементарный (наименьший) заряд?','Заряд электрона по модулю, e = 1,6·10⁻¹⁹ Кл; меньшего заряда у свободных частиц нет',['1 Кл','Заряд протона, равный 1 нКл','Заряд можно делить бесконечно, наименьшего нет'],
+{short:'e = 1,6·10⁻¹⁹ Кл — «атом» заряда.',
+explain:'Опыты (Иоффе, Милликен) показали: заряд не делится бесконечно. Наименьшая «порция» — заряд электрона, по модулю e = 1,6·10⁻¹⁹ Кл. Любой заряд тела — целое число таких порций: q = N·e. Протон имеет заряд +e, а не 1 нКл.',
+explain2:'Как деньги: нельзя заплатить полкопейки. Копейка — наименьшая монета. В электричестве «копейка» — e = 1,6·10⁻¹⁹ Кл.'});
+G(3,()=>{const q=pick([0.8,1.6,3.2,4.8,8,16,0.32,0.16,2,4]);const Nb=q*1e-9/1.6e-19/1e9;const sign=pick([1,-1]);
+return NUM(`Шарик имеет заряд ${sign>0?'+':'−'}${N(q)} нКл. Сколько ${sign>0?'электронов он потерял':'лишних электронов на нём'}? Ответ дай в <b>миллиардах</b> (1 млрд = 10⁹). e = 1,6·10⁻¹⁹ Кл.`,Nb,2,
+{hint:'N = |q| / e. Не забудь: 1 нКл = 10⁻⁹ Кл.',short:`N = ${N(q)}·10⁻⁹ / 1,6·10⁻¹⁹ = ${N(rd(Nb,4))}·10⁹.`,
+explain:`N = |q| / e = ${N(q)}·10⁻⁹ / (1,6·10⁻¹⁹) = ${N(rd(q/1.6,6))}·10¹⁰ = ${N(rd(Nb,4))}·10⁹ — это <b>${N(rd(Nb,2))} млрд</b> электронов.<br>${sign>0?'Заряд «+» — значит, электронов не хватает (их сняли).':'Заряд «−» — значит, электроны лишние.'}`,
+explain2:`Запомни: 1 нКл ≈ 6,25 млрд электронов (10⁻⁹ / 1,6·10⁻¹⁹ = 6,25·10⁹). У нас ${N(q)} нКл: 6,25 · ${N(q)} = ${N(rd(Nb,4))} млрд.`});});
+G(3,()=>{const Nb=pick([5,10,20,25,50,100,125]);const q=Nb*1e9*1.6e-19/1e-9;
+return NUM(`На незаряженную пылинку попало ${Nb} млрд электронов. Какой заряд у пылинки? Ответ дай в нКл (со знаком). e = 1,6·10⁻¹⁹ Кл.`,-q,2,
+{short:`q = −N·e = −${Nb}·10⁹ · 1,6·10⁻¹⁹ = ${N(-q)} нКл.`,
+explain:`Каждый электрон несёт заряд −1,6·10⁻¹⁹ Кл.<br>q = −N·e = −${Nb}·10⁹ · 1,6·10⁻¹⁹ Кл = −${N(rd(Nb*1.6,4))}·10⁻¹⁰ Кл = <b>${N(-q)} нКл</b>.<br>Минус — потому что электроны заряжены отрицательно.`,
+explain2:`1 нКл = 6,25 млрд электронов. ${Nb} млрд — это ${Nb} : 6,25 = ${N(q)} нКл, со знаком «−».`});});
+G(3,()=>{const vals=[['3,2·10⁻¹⁹ Кл',true],['8·10⁻¹⁹ Кл',true],['4,8·10⁻¹⁹ Кл',true],['0,8·10⁻¹⁹ Кл',false],['2,4·10⁻¹⁹ Кл',false],['1,2·10⁻¹⁹ Кл',false]];
+const ok=sample(vals.filter(v=>v[1]),1)[0],bad=sample(vals.filter(v=>!v[1]),3);
+return CH('Какой заряд <b>может</b> иметь капелька масла? (e = 1,6·10⁻¹⁹ Кл)',ok[0],bad.map(b=>b[0]),
+{short:`${ok[0]} — целое число зарядов e.`,
+explain:`Заряд любого тела — целое число элементарных зарядов: q = N·e. Проверим делением на 1,6·10⁻¹⁹: ${[ok].concat(bad).map(v=>`${v[0]} → ${N(rd(parseFloat(v[0].replace(',','.'))/1.6,3))}`).join('; ')}. Целое число только у <b>${ok[0]}</b>.`,
+explain2:`Нельзя иметь «полтора электрона». Значит, заряд должен делиться на 1,6·10⁻¹⁹ нацело: 1,6 · 2 = 3,2; 1,6 · 3 = 4,8; 1,6 · 5 = 8. А 0,8 — это половина e, 2,4 — полтора e, 1,2 — три четверти e: так не бывает.`});});
+
+/* L4 — атом */
+const EL=[['водород','H',1,1,'водорода'],['гелий','He',2,4,'гелия'],['литий','Li',3,7,'лития'],['углерод','C',6,12,'углерода'],['азот','N',7,14,'азота'],['кислород','O',8,16,'кислорода'],['натрий','Na',11,23,'натрия'],['магний','Mg',12,24,'магния'],['алюминий','Al',13,27,'алюминия'],['калий','K',19,39,'калия'],['кальций','Ca',20,40,'кальция'],['железо','Fe',26,56,'железа'],['медь','Cu',29,64,'меди']];
+RULE(4,'Из чего состоит атом?','Из положительно заряженного ядра (протоны и нейтроны) и отрицательных электронов вокруг него',['Из отрицательного ядра и положительных электронов','Только из протонов и электронов, перемешанных равномерно','Из нейтронов и электронов, а протоны — вокруг ядра'],
+{short:'Ядро: протоны (+) и нейтроны (0). Вокруг — электроны (−).',
+explain:'Модель Резерфорда: в центре атома крошечное <b>ядро</b>, в нём <b>протоны</b> (заряд +e) и <b>нейтроны</b> (без заряда). Вокруг движутся <b>электроны</b> (заряд −e). Ядро положительное, электроны отрицательные. «Перемешанная» модель (Томсона, «пудинг с изюмом») опровергнута опытом Резерфорда.',
+explain2:'Атом — как Солнечная система в миниатюре: «Солнце» — ядро (+), «планеты» — электроны (−). Почти вся масса — в ядре, а сам атом почти пустой.'});
+RULE(4,'Почему атом в обычном состоянии электрически нейтрален?','Число электронов равно числу протонов в ядре',['В атоме нет заряженных частиц','Число нейтронов равно числу электронов','Протоны и нейтроны компенсируют друг друга'],
+{short:'Протонов столько же, сколько электронов: + и − гасят друг друга.',
+explain:'Заряд протона +e, электрона −e, нейтрон без заряда. Если протонов и электронов поровну (Z штук), суммарный заряд Z·e − Z·e = 0. Нейтроны на заряд не влияют.',
+explain2:'Пример: у кислорода 8 протонов (+8) и 8 электронов (−8). Сумма 0. Нейтронов тоже 8, но они «ноль» и ничего не меняют.'});
+G(4,()=>{const e=pick(EL);const ask=pick(['p','e','n']);const val={p:e[2],e:e[2],n:e[3]-e[2]}[ask];if(val===0)return null;const w={p:'протонов в ядре',e:'электронов',n:'нейтронов в ядре'}[ask];
+return NUM(`Атом (нейтральный) — ${e[0]} (${e[1]}): порядковый номер Z = ${e[2]}, массовое число A = ${e[3]}. Сколько в нём ${w}?`,val,0,
+{pic:e[2]<=20?atom(e[2],e[2]):undefined,short:ask==='n'?`N = A − Z = ${e[3]} − ${e[2]} = ${val}.`:`Z = ${e[2]}: ${e[2]} протонов и ${e[2]} электронов.`,
+explain:`Порядковый номер Z = число протонов в ядре = число электронов в нейтральном атоме. Массовое число A = протоны + нейтроны.<br>${ask==='n'?`Нейтронов: A − Z = ${e[3]} − ${e[2]} = <b>${val}</b>.`:`${ask==='p'?'Протонов':'Электронов'}: Z = <b>${e[2]}</b>.`}`,
+explain2:`«Паспорт» атома ${e[1]}: Z = ${e[2]} (протонов), A = ${e[3]} (протонов + нейтронов вместе). Значит: протонов ${e[2]}, электронов ${e[2]} (атом нейтрален), нейтронов ${e[3]} − ${e[2]} = ${e[3]-e[2]}.`});});
+const IONS=[['лития',3,1],['натрия',11,1],['магния',12,2],['алюминия',13,3],['калия',19,1],['кальция',20,2],['кислорода',8,-2],['фтора',9,-1],['серы',16,-2],['хлора',17,-1]];
+G(4,()=>{const io=pick(IONS);const e=[0,0,io[1],0,io[0]];const k=io[2];const ne=e[2]-k;
+return NUM(`Атом ${e[4]} (Z = ${e[2]}) ${k>0?'потерял':'приобрёл'} ${Math.abs(k)} ${Math.abs(k)===1?'электрон':'электрона'}. Каким стал его заряд? Ответ дай в элементарных зарядах e, со знаком (например, −1).`,k,0,
+{pic:atom(e[2],ne),short:`Протонов ${e[2]}, электронов ${ne}: заряд ${e[2]} − ${ne} = ${SG(k)}e.`,
+explain:`В ядре ${e[2]} протонов — их заряд +${e[2]}e (протоны не меняются).<br>Электронов стало ${e[2]} ${k>0?'−':'+'} ${Math.abs(k)} = ${ne}, их заряд −${ne}e.<br>Итого: ${e[2]} − ${ne} = <b>${SG(k)}</b>e. Это ${k>0?'положительный':'отрицательный'} ион.`,
+explain2:`Правило: ${k>0?'потерял электроны → не хватает «минусов» → заряд «+»':'приобрёл электроны → лишние «минусы» → заряд «−»'}. Сколько электронов ушло или пришло — таков и заряд: ${SG(k)}e.`});});
+G(4,()=>{const Z=pick([3,4,5,6,7,8,9,10,11]);const d=pick([-1,0,1,2]);const ne=Z-d;const opts=['Нейтральный атом','Положительный ион','Отрицательный ион'];const ans=d===0?0:d>0?1:2;
+return {type:'choice',q:`На рисунке — модель атома: в ядре заряд +${Z} (${Z} протонов), вокруг электроны. Что это?`,pic:atom(Z,ne),opts,ans,
+short:`Протонов ${Z}, электронов ${ne}: ${d===0?'поровну — нейтральный атом':d>0?'электронов меньше — положительный ион':'электронов больше — отрицательный ион'}.`,
+explain:`Посчитай электроны на рисунке: их ${ne}. Протонов ${Z}.<br>${d===0?`${Z} = ${ne} — заряды компенсируются: <b>нейтральный атом</b>.`:d>0?`Электронов на ${d} меньше: заряд +${d}e — <b>положительный ион</b>.`:`Электронов на ${-d} больше: заряд ${d}e — <b>отрицательный ион</b>.`}`,
+explain2:`Сравни «плюсы» ядра (+${Z}) и «минусы» вокруг (${ne} электронов). Если поровну — атом. Если минусов меньше — ион «+», больше — ион «−».`};});
+
+/* L5 — объяснение электризации */
+RULE(5,'Какие частицы переходят с одного тела на другое при электризации трением?','Электроны',['Протоны','Нейтроны','Целые ядра атомов'],
+{short:'Переходят только электроны — они слабее всего связаны с атомом.',
+explain:'Протоны и нейтроны крепко сидят в ядрах, а внешние электроны связаны с атомами слабее. При трении тела тесно соприкасаются, и часть электронов переходит с одного тела на другое. Получил электроны — «−», отдал — «+».',
+explain2:'Тело с зарядом «+» не «получило плюсы» — оно потеряло часть электронов, и плюсы ядер стали «перевешивать». Тело с «−» — получило лишние электроны.'});
+G(5,()=>{const P=[['Эбонитовую палочку потёрли о мех, палочка зарядилась отрицательно. Куда перешли электроны?','С меха на палочку',['С палочки на мех','Протоны перешли с палочки на мех','Никуда: заряды появились при трении'],'Палочка «−» — значит, у неё лишние электроны. Они пришли с меха, мех стал «+».'],
+ ['Стеклянную палочку потёрли о шёлк, палочка зарядилась положительно. Куда перешли электроны?','Со стекла на шёлк',['С шёлка на стекло','Протоны перешли с шёлка на стекло','Никуда: заряды появились при трении'],'Стекло «+» — значит, оно потеряло электроны. Они ушли на шёлк, шёлк стал «−».'],
+ ['Шарик зарядился положительно. Как изменилось число электронов на нём?','Уменьшилось',['Увеличилось','Не изменилось, увеличилось число протонов','Не изменилось'],'Положительный заряд — это нехватка электронов. Протоны в ядрах при электризации не переходят.']];
+const p=pick(P);return CH(p[0],p[1],p[2],{short:p[3].split('. ')[0]+'.',explain:p[3],
+explain2:`Главное правило: переходят только <b>электроны</b>. «−» = лишние электроны (пришли), «+» = нехватка электронов (ушли). Ответ: «${p[1]}».`});});
+G(5,()=>{const q=pick([1.6,3.2,4.8,8,16]);const Ne=q*1e-9/1.6e-19;const dm=Ne*9.1e-31;const sign=pick([1,-1]);const v=dm/1e-21;
+return NUM(`Шарик зарядили до ${sign>0?'+':'−'}${N(q)} нКл. На сколько ${sign>0?'уменьшилась':'увеличилась'} его масса? Ответ дай в единицах 10⁻²¹ кг. e = 1,6·10⁻¹⁹ Кл, m<sub>e</sub> = 9,1·10⁻³¹ кг.`,v,1,
+{hint:'Сначала число электронов N = |q|/e, потом Δm = N·m<sub>e</sub>.',short:`N = ${N(rd(Ne/1e10,3))}·10¹⁰; Δm = N·m<sub>e</sub> ≈ ${N(rd(v,1))}·10⁻²¹ кг.`,
+explain:`1) N = |q| / e = ${N(q)}·10⁻⁹ / 1,6·10⁻¹⁹ = ${N(rd(Ne/1e10,3))}·10¹⁰ электронов.<br>2) Δm = N·m<sub>e</sub> = ${N(rd(Ne/1e10,3))}·10¹⁰ · 9,1·10⁻³¹ = ${N(rd(v,3))}·10⁻²¹ кг ≈ <b>${N(rd(v,1))}</b> (в 10⁻²¹ кг).<br>${sign>0?'Заряд «+»: электроны ушли — масса уменьшилась.':'Заряд «−»: электроны пришли — масса увеличилась.'} Изменение ничтожное — никакие весы его не заметят.`,
+explain2:`Удобно: 1 нКл = 6,25·10⁹ электронов, их масса 6,25·10⁹ · 9,1·10⁻³¹ ≈ 5,69·10⁻²¹ кг. У нас ${N(q)} нКл: 5,6875 · ${N(q)} ≈ ${N(rd(v,1))}·10⁻²¹ кг.`});});
+G(5,()=>{const opts=['Увеличилась','Уменьшилась','Не изменилась'];const s=pick([1,-1]);
+return {type:'choice',q:`Металлический шарик зарядили ${s>0?'положительно':'отрицательно'}. Как (строго говоря) изменилась его масса?`,opts,ans:s>0?1:0,
+short:s>0?'Электроны ушли — масса чуть уменьшилась.':'Электроны пришли — масса чуть увеличилась.',
+explain:`У электронов есть масса (9,1·10⁻³¹ кг). ${s>0?'Положительный заряд — шарик <b>потерял</b> электроны, его масса <b>уменьшилась</b>':'Отрицательный заряд — шарик <b>получил</b> электроны, его масса <b>увеличилась</b>'} — правда, на ничтожно малую величину.`,
+explain2:`Не путай: «+» не значит «добавили». «+» значит «забрали минусы». Забрали частицы — стало легче. ${s>0?'Поэтому масса уменьшилась.':'А «−» — добавили электроны, стало тяжелее.'}`};});
+
+/* L6 — сохранение заряда */
+RULE(6,'Как звучит закон сохранения электрического заряда?','В замкнутой системе алгебраическая сумма зарядов остаётся постоянной',['Заряд каждого тела всегда остаётся постоянным','Сумма модулей зарядов постоянна','При трении заряды создаются, а при касании исчезают'],
+{short:'q₁ + q₂ + … = const (со знаками).',
+explain:'Заряды не создаются и не исчезают — только переходят с тела на тело. Поэтому <b>сумма зарядов со знаками</b> в замкнутой системе постоянна. Заряд отдельного тела может меняться. И складывать надо со знаками: +5 и −5 в сумме дают 0.',
+explain2:'При трении стекла о шёлк: до — 0 и 0, после — +q и −q. Сумма снова 0 ✓. Заряды не «создались», а разделились.'});
+G(6,()=>{for(;;){const a=R(-12,12),b=R(-12,12);if(!a&&!b||(a+b)%2)continue;if(a===b)continue;const s=(a+b)/2;
+const ask=pick([0,1]);
+return NUM(`Два одинаковых металлических шарика с зарядами q₁ = ${SG(a)} нКл и q₂ = ${SG(b)} нКл привели в соприкосновение и развели. Какой заряд стал у каждого? Ответ в нКл, со знаком.`,s,0,
+{pic:balls(a?(a>0?'+':'−'):'0',b?(b>0?'+':'−'):'0','none',{l1:SG(a),l2:SG(b)}),hint:'Сложи заряды со знаками и раздели пополам.',short:`(${SG(a)} + ${P(b)}) / 2 = ${SG(s)} нКл.`,
+explain:`По закону сохранения сумма зарядов не меняется: ${SG(a)} + ${P(b)} = ${SG(a+b)} нКл. Шарики одинаковые — заряд делится поровну: ${SG(a+b)} : 2 = <b>${SG(s)} нКл</b>.${a*b<0?`<br>Ошибка «(${Math.abs(a)} + ${Math.abs(b)})/2 = ${(Math.abs(a)+Math.abs(b))/2}» — сложили модули, а разноимённые заряды частично компенсируют друг друга.`:''}`,
+explain2:`Представь заряды как деньги и долги: у одного ${SG(a)}, у другого ${SG(b)}. Сложили в общий кошелёк — ${SG(a+b)}. Поделили поровну — по ${SG(s)}.`});}});
+G(6,()=>{for(;;){const a=R(-10,10),s=R(-8,8);const b=2*s-a;if(Math.abs(b)>16||a===0||b===a||s===0)continue;
+return NUM(`Одинаковые металлические шарики привели в соприкосновение. У первого до касания был заряд ${SG(a)} нКл, а после касания у каждого стало ${SG(s)} нКл. Какой заряд был у второго шарика до касания? Ответ в нКл, со знаком.`,b,0,
+{hint:'После касания сумма 2·q. Такой же она была и до.',short:`q₂ = 2·${P(s)} − ${P(a)} = ${SG(b)} нКл.`,
+explain:`После касания суммарный заряд 2 · ${P(s)} = ${SG(2*s)} нКл. По закону сохранения до касания было столько же: ${SG(a)} + q₂ = ${SG(2*s)}.<br>q₂ = ${SG(2*s)} − ${P(a)} = <b>${SG(b)} нКл</b>.`,
+explain2:`Проверка: (${SG(a)} + ${P(b)}) / 2 = ${SG(a+b)} / 2 = ${SG(s)} ✓.`});}});
+G(6,()=>{for(;;){const a=R(-9,9),b=R(-9,9),c=R(-9,9);if((a+b+c)%3||a===b&&b===c)continue;const s=(a+b+c)/3;
+return NUM(`Три одинаковых металлических шарика с зарядами ${SG(a)} нКл, ${SG(b)} нКл и ${SG(c)} нКл одновременно свели вместе (все касаются друг друга) и развели. Какой заряд у каждого? Ответ в нКл, со знаком.`,s,0,
+{short:`(${SG(a)} + ${P(b)} + ${P(c)}) / 3 = ${SG(s)} нКл.`,
+explain:`Сумма зарядов: ${SG(a)} + ${P(b)} + ${P(c)} = ${SG(a+b+c)} нКл. Три одинаковых шарика делят её поровну: ${SG(a+b+c)} : 3 = <b>${SG(s)} нКл</b>.`,
+explain2:'Тот же закон: сумма со знаками сохраняется, одинаковые проводники при касании делят заряд поровну. Двое — пополам, трое — на три части.'});}});
+G(6,()=>{for(;;){const a=pick([-8,-6,-4,4,6,8,10,-10,12]),b=R(-12,12);if(b===0||(a+b)%2)continue;const s=(a+b)/2;const before=a*b>0?'rep':'att',after=s===0?'none':'rep';
+const opts=['Отталкиваться','Притягиваться','Не будут взаимодействовать'];const ans=s===0?2:0;
+return {type:'choice',q:`Одинаковые металлические шарики с зарядами ${SG(a)} нКл и ${SG(b)} нКл коснулись друг друга и разошлись на прежнее расстояние. Как они будут взаимодействовать после касания?`,opts,ans,
+short:`После касания у каждого ${SG(s)} нКл — ${s===0?'зарядов нет':'одноимённые заряды'}.`,
+explain:`После касания у каждого (${SG(a)} + ${P(b)}) / 2 = ${SG(s)} нКл. ${s===0?'Оба не заряжены — <b>не взаимодействуют</b>.':'Заряды одинаковые, значит, одноимённые — шарики <b>отталкиваются</b>.'}${before==='att'&&s!==0?' До касания они притягивались (разноимённые), а теперь отталкиваются!':''}`,
+explain2:`Любопытный факт: после касания одинаковых шариков у них <b>одинаковый</b> заряд. Поэтому они либо отталкиваются (если сумма не ноль), либо вообще не заряжены (если сумма ноль). Притягиваться после касания они не могут.`};}});
+
+/* L7 — влияние, заземление, явления */
+RULE(7,'Почему наэлектризованный шарик притягивает незаряженную бумажку?','В бумажке заряды смещаются: ближе к шарику — противоположный знак, он притягивается сильнее',['Бумажка всегда заряжена отрицательно','Шарик передаёт бумажке свой заряд через воздух','Притягивает сила тяжести шарика'],
+{short:'Электризация через влияние: ближний противоположный заряд притягивается сильнее.',
+explain:'Поле шарика смещает заряды в бумажке (в проводнике — свободные электроны, в диэлектрике — заряды внутри молекул). На ближней стороне оказывается заряд <b>противоположного</b> знака, на дальней — такого же. Ближний притягивается сильнее (он ближе), чем отталкивается дальний. Итог — притяжение.',
+explain2:'Представь: друг (ближняя сторона) тянет тебя за руку, а недруг (дальняя сторона) отталкивает — но он далеко и толкает слабо. Побеждает тот, кто ближе.'});
+G(7,()=>{const P=[['Почему у бензовоза сзади висит металлическая цепь до земли?','Чтобы заряды, возникающие при трении бензина и корпуса, уходили в землю',['Чтобы машина лучше тормозила','Для красоты','Чтобы корпус притягивал пыль'],'При движении бензин трётся о стенки цистерны, корпус электризуется. Искра могла бы поджечь пары бензина. Цепь — проводник — заземляет корпус, заряд уходит в землю.'],
+ ['Зачем на высоком здании ставят молниеотвод?','Чтобы молния ударила в него и заряд по проводнику ушёл в землю',['Чтобы притягивать облака','Чтобы молния не образовывалась вообще','Чтобы заряжать здание'],'Молниеотвод — металлический стержень над зданием, соединённый толстым проводом с землёй. Молния бьёт в него, и заряд уходит в землю, минуя стены.'],
+ ['Зимой ты снимаешь шерстяной свитер — слышен треск и видны искорки. Почему?','Свитер и одежда под ним электризуются трением, между ними проскакивают маленькие искры',['Свитер нагревается от трения и светится','В шерсти есть металлические нити','Это излучение тепла'],'Шерсть и синтетика при трении получают разноимённые заряды. Когда напряжение становится большим, между ними проскакивают крошечные искры — мини-молнии.'],
+ ['Почему воздушный шарик, потёртый о волосы, прилипает к стене?','Шарик заряжен, а в стене он смещает заряды — ближе к шарику оказывается противоположный знак',['Стена заряжена положительно','Шарик становится липким от трения','Шарик притягивается к стене силой тяжести'],'Это электризация через влияние (поляризация): заряженный шарик «сдвигает» заряды в молекулах стены, ближний противоположный заряд притягивает шарик.'],
+ ['Почему зимой в сухую погоду «бьёт током» дверная ручка?','Ты наэлектризовался при ходьбе (трение о ковёр, одежду), и заряд разряжается искрой на металл',['Ручка подключена к сети','Холодный металл сам вырабатывает заряд','Это тепловое излучение'],'Ты накапливаешь заряд трением подошв и одежды. Металлическая ручка — проводник, связанный с землёй, и заряд выскакивает на неё искрой. В сухом воздухе заряд не стекает — поэтому зимой это чаще.']];
+const p=pick(P);return CH(p[0],p[1],p[2],{short:p[3].split('. ')[0]+'.',explain:p[3],
+explain2:`Почти все такие явления объясняются тремя идеями: тела электризуются трением; заряд уходит по проводникам (металл, тело человека, земля); большой заряд может «перепрыгнуть» искрой. Ответ: «${p[1]}».`});});
+G(7,()=>{const s=pick(['+','−']);const opts=['Положительно','Отрицательно','Останется незаряженным'];const ans=s==='+'?1:0;
+return {type:'choice',q:`К незаряженному электроскопу поднесли (не касаясь) палочку с зарядом «${s}». Не убирая палочку, коснулись шарика пальцем, затем убрали палец, а потом палочку. Как зарядится электроскоп?`,opts,ans,
+short:`Противоположно палочке: «${s==='+'?'−':'+'}».`,
+explain:`1) Палочка «${s}» ${s==='+'?'притягивает электроны к шарику':'отталкивает электроны вниз, к листочкам'}.<br>2) Касание пальцем соединяет электроскоп с землёй: ${s==='+'?'электроны приходят из земли (их притягивает «+» палочка)':'лишние электроны уходят в землю (их отталкивает «−» палочка)'}.<br>3) Убрали палец — путь закрыт. Убрали палочку — заряд остаётся и растекается по электроскопу.<br>Итог: электроскоп заряжен <b>${s==='+'?'отрицательно':'положительно'}</b> — противоположно палочке.`,
+explain2:`Короткое правило заряда через влияние с заземлением: тело получает заряд, <b>противоположный</b> заряду палочки. Земля «отвечает» на палочку: на «+» отдаёт электроны, у «−» их забирает.`};});
+G(7,()=>{const P=[['Металлический шар на изолирующей подставке. К его левому боку поднесли (не касаясь) положительно заряженную палочку. Какой заряд появится на левой стороне шара?','Отрицательный',['Положительный','Никакого','Весь шар зарядится положительно'],'Свободные электроны в металле притягиваются к «+» палочке и собираются на ближней (левой) стороне. Слева — «−», справа — нехватка электронов, «+». В сумме шар по-прежнему нейтрален.'],
+ ['Металлический шар на изолирующей подставке. К его левому боку поднесли (не касаясь) отрицательно заряженную палочку. Какой заряд появится на правой (дальней) стороне шара?','Отрицательный',['Положительный','Никакого','Шар зарядится весь положительно'],'«−» палочка отталкивает свободные электроны на дальнюю (правую) сторону. Справа — «−», слева — «+». Ближний «+» притягивается к палочке сильнее, чем отталкивается дальний «−».'],
+ ['К металлическому шару (на изоляторе) поднесли заряженную палочку, не касаясь, а затем убрали её. Каким стал заряд шара?','Нейтральным, как и был',['Противоположным заряду палочки','Таким же, как у палочки','Вдвое меньше заряда палочки'],'Пока палочка рядом, заряды в шаре только сдвинуты. Палочку убрали — электроны вернулись на места. Заряда шар не получил: никуда ничего не уходило (шар на изоляторе, без касания).']];
+const p=pick(P);return CH(p[0],p[1],p[2],{short:p[3].split('. ')[0]+'.',explain:p[3],
+explain2:`Влияние без касания и без заземления только <b>сдвигает</b> электроны: ближняя сторона — противоположный палочке знак, дальняя — такой же. Общий заряд тела остаётся нулём. Ответ: «${p[1]}».`});});
+
+/* L8 — ★ */
+RULE(8,'Шарики A и B притягиваются, шарики B и C отталкиваются. Что точно можно сказать?','B и C заряжены одноимённо',['A и B заряжены разноимённо','A не заряжен','A и C отталкиваются'],
+{short:'Отталкивание — надёжный признак одноимённых зарядов, притяжение — нет.',
+explain:'Отталкиваться могут только одноимённо заряженные тела — значит, B и C заряжены и одного знака. А притяжение A и B возможно и если A заряжен противоположно B, и если A вообще не заряжен (притяжение через влияние). Поэтому про A точно сказать нельзя.',
+explain2:'Принцип олимпиадника: «отталкивание — улика, притяжение — алиби нет». По отталкиванию знаки определяются однозначно, по притяжению — нет.'});
+G(8,()=>{for(;;){const q=[R(-8,8)*2,R(-8,8)*2,R(-8,8)*2];const seq=shuffle([[0,1],[1,2],[0,2]]).concat([pick([[0,1],[1,2],[0,2]])]);const L='ABC';
+let c=q.slice();const rows=[];for(const [i,j] of seq){const s=(c[i]+c[j])/2;rows.push(`${L[i]} + ${L[j]}: (${SG(c[i])} + ${P(c[j])}) / 2 = ${SG(s)} → A = ${SG(i===0||j===0?s:c[0])}, B = ${SG(i===1||j===1?s:c[1])}, C = ${SG(i===2||j===2?s:c[2])}`);c[i]=s;c[j]=s;}
+const k=pick([0,1,2]);if(Math.abs(c[k]*4-Math.round(c[k]*4))>1e-9||c[k]===0)continue;if(Math.abs(c[k]-rd(c[k],2))>1e-9)continue;
+return NUM(`★ Три одинаковых металлических шарика A, B, C имеют заряды ${SG(q[0])}, ${SG(q[1])} и ${SG(q[2])} нКл. Их попарно приводят в соприкосновение по очереди: ${seq.map(([i,j])=>L[i]+' с '+L[j]).join(', затем ')}. Какой заряд в конце у шарика ${L[k]}? Ответ в нКл, со знаком.`,c[k],2,
+{hint:'Веди таблицу зарядов всех трёх шариков после каждого касания.',short:`В конце ${L[k]} = ${SG(c[k])} нКл.`,
+explain:`Ведём таблицу. При касании двух одинаковых шариков у обоих становится полусумма, третий не меняется.<br>${rows.map((r,i)=>`${i+1}) ${r}`).join('<br>')}<br>Ответ: ${L[k]} = <b>${SG(c[k])} нКл</b>.<br>Проверка сохранения: сумма в начале ${SG(q[0]+q[1]+q[2])}, в конце ${SG(rd(c[0]+c[1]+c[2],6))} ✓.`,
+explain2:`Главная ловушка — использовать старый заряд шарика, который уже касался другого. После каждого шага переписывай все три заряда заново. Сумма A + B + C всегда ${SG(q[0]+q[1]+q[2])} — это хорошая проверка.`});}},{star:true});
+G(8,()=>{const q=pick([16,32,48,64,-16,-32,-64]);const n=pick([2,3,4]);const r=q/Math.pow(2,n);
+return NUM(`★ Металлический шарик с зарядом ${SG(q)} нКл по очереди касается ${n} одинаковых с ним незаряженных шариков (каждый раз нового). Какой заряд останется на нём? Ответ в нКл, со знаком.`,r,2,
+{short:`Каждое касание делит заряд пополам: ${SG(q)} / 2${n>1?`<sup>${n}</sup>`:''} = ${SG(r)} нКл.`,
+explain:`Каждое касание с незаряженным одинаковым шариком: (q + 0) / 2 = q/2 — заряд уменьшается вдвое.<br>${range(1,n).map(i=>`После ${i}-го: ${SG(q/Math.pow(2,i))} нКл`).join('<br>')}<br>Ответ: <b>${SG(r)} нКл</b>.<br>Ошибка «${SG(q/(n+1))}» — так было бы, если бы все ${n+1} шарика коснулись <b>одновременно</b>.`,
+explain2:`Сравни: по очереди — делим на 2 каждый раз, всего на 2<sup>${n}</sup> = ${Math.pow(2,n)}. Все вместе сразу — делили бы на ${n+1}. По очереди шарику достаётся меньше: ${SG(r)} против ${SG(rd(q/(n+1),2))}.`});},{star:true});
+G(8,()=>CH('★ Два одинаковых металлических шарика сначала <b>притягивались</b>. Их на мгновение соединили и развели на прежнее расстояние — теперь они <b>отталкиваются</b>. Что можно сказать о зарядах до касания?','Они были разноимённые и не равные по модулю, или один шарик был не заряжен',['Они были разноимённые и равные по модулю','Они были одноимённые','Оба шарика были не заряжены'],
+{short:'После касания отталкиваются ⇒ полусумма не ноль. До касания притягивались ⇒ разноимённые или один нейтральный.',
+explain:'После касания у шариков одинаковые заряды (q₁ + q₂)/2. Раз они отталкиваются, эта полусумма <b>не ноль</b>, значит, q₁ ≠ −q₂. До касания они притягивались: так бывает у <b>разноимённых</b> зарядов или если <b>один не заряжен</b> (притяжение через влияние). Одноимённые отталкивались бы, равные разноимённые после касания стали бы нейтральными, а два нейтральных вообще не взаимодействуют.',
+explain2:'Проверим примерами: +6 и −2 — притягиваются; после касания по +2 — отталкиваются ✓. +6 и 0 — притягиваются (влияние); после касания по +3 — отталкиваются ✓. +4 и −4 — после касания по 0 — не взаимодействуют ✗.'}),{star:true});
+G(8,()=>{const s=pick([1,-1]);const opts=['A заряжен отрицательно','A заряжен положительно','A заряжен отрицательно или не заряжен','A не заряжен'];
+const cS=s>0?'положительно':'отрицательно';const right=s>0?'A заряжен отрицательно или не заряжен':'A заряжен положительно или не заряжен';
+const wr=s>0?['A заряжен отрицательно','A заряжен положительно','A не заряжен']:['A заряжен положительно','A заряжен отрицательно','A не заряжен'];
+return CH(`★ Шарик A притягивает шарик B, шарик B отталкивает шарик C, а C заряжен ${cS}. Что можно сказать о шарике A?`,right,wr,
+{short:`B заряжен ${cS}; A притягивает B ⇒ A ${s>0?'«−»':'«+»'} или нейтрален.`,
+explain:`1) B отталкивает C — значит, у них одноимённые заряды: B заряжен ${cS}.<br>2) A притягивает B. Это возможно, если A заряжен ${s>0?'отрицательно':'положительно'} (разноимённо с B), <b>или если A не заряжен</b> — заряженное тело притягивает и нейтральное (через влияние).<br>Поэтому однозначно сказать нельзя: <b>${right.slice(2)}</b>.`,
+explain2:'Ловушка задачи — думать, что притяжение всегда означает разные знаки. Расчёска притягивает нейтральные бумажки! Отталкивание — точная улика, притяжение — нет.'});},{star:true});
+G(8,()=>{const dm=pick([0.91,1.82,4.55,9.1,18.2]);const Ne=dm*1e-20/9.1e-31;const q=Ne*1.6e-19/1e-9;const s=pick([1,-1]);
+return NUM(`★ При электризации масса металлического шарика ${s>0?'уменьшилась':'увеличилась'} на ${N(dm)}·10⁻²⁰ кг. Какой заряд получил шарик? Ответ в нКл, со знаком. e = 1,6·10⁻¹⁹ Кл, m<sub>e</sub> = 9,1·10⁻³¹ кг.`,s>0?q:-q,2,
+{short:`N = Δm/m<sub>e</sub> = ${N(rd(Ne/1e10,4))}·10¹⁰; q = ${s>0?'+':'−'}N·e = ${SG(rd(s*q,2))} нКл.`,
+explain:`1) Масса изменилась из-за электронов: N = Δm / m<sub>e</sub> = ${N(dm)}·10⁻²⁰ / 9,1·10⁻³¹ = ${N(rd(Ne/1e10,4))}·10¹⁰.<br>2) |q| = N·e = ${N(rd(Ne/1e10,4))}·10¹⁰ · 1,6·10⁻¹⁹ = ${N(rd(q,4))}·10⁻⁹ Кл = ${N(rd(q,2))} нКл.<br>3) Знак: масса ${s>0?'уменьшилась — электроны ушли — заряд <b>«+»</b>':'увеличилась — электроны пришли — заряд <b>«−»</b>'}. Ответ: <b>${SG(rd(s*q,2))} нКл</b>.`,
+explain2:`Цепочка «масса → число электронов → заряд». Самое важное — знак: лёгкий шарик потерял электроны (стал «+»), потяжелевший — получил (стал «−»).`});},{star:true});
+G(8,()=>{for(;;){const a=R(-10,10)*2,b=R(-10,10)*2;if(a===b||a===0||b===0)continue;// A,B touch; then B touches neutral C; then A touches C
+let A=a,B=b,C=0;const s1=(A+B)/2;A=s1;B=s1;const s2=(B+C)/2;B=s2;C=s2;const s3=(A+C)/2;A=s3;C=s3;if(Math.abs(s3*4-Math.round(s3*4))>1e-9)continue;
+const ask=pick(['A','B']);const val=ask==='A'?A:B;if(val===0)continue;
+return NUM(`★ Одинаковые шарики: A (${SG(a)} нКл), B (${SG(b)} нКл) и незаряженный C. Сначала коснулись A и B, потом B и C, потом A и C. Какой заряд в конце у шарика ${ask}? Ответ в нКл, со знаком.`,val,2,
+{short:`A = ${SG(A)}, B = ${SG(B)}, C = ${SG(C)} нКл.`,
+explain:`1) A и B: (${SG(a)} + ${P(b)}) / 2 = ${SG(s1)} → A = ${SG(s1)}, B = ${SG(s1)}, C = 0.<br>2) B и C: (${SG(s1)} + 0) / 2 = ${SG(s2)} → A = ${SG(s1)}, B = ${SG(s2)}, C = ${SG(s2)}.<br>3) A и C: (${SG(s1)} + ${P(s2)}) / 2 = ${SG(s3)} → A = ${SG(s3)}, B = ${SG(s2)}, C = ${SG(s3)}.<br>Ответ: ${ask} = <b>${SG(val)} нКл</b>. Проверка: ${SG(A)} + ${P(B)} + ${P(C)} = ${SG(A+B+C)} = ${SG(a)} + ${P(b)} + 0 ✓.`,
+explain2:`Самое частое: на 3-м шаге взять у A исходные ${SG(a)} вместо ${SG(s1)}. После каждого касания переписывай заряды всех шариков.`});}},{star:true});
+
+window.TOPIC={id:'p8_charge',title:'Электрический заряд',subtitle:'Физика · 8 класс',
+intro:`<p>Почему шарик прилипает к стене, откуда «бьёт током» дверная ручка и что такое молния. Электризация, два рода зарядов, проводники и диэлектрики, электроскоп, электрическое поле, строение атома и ионы, закон сохранения заряда. Есть живая модель касания шариков, а в конце — олимпиадные задачи.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Электризация и два рода зарядов','Проводники, диэлектрики, электроскоп','Электрическое поле','Электрон и делимость заряда','Строение атома и ионы','Как объяснить электризацию','Закон сохранения заряда','Влияние, заземление, молния','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

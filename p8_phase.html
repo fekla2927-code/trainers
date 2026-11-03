@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Агрегатные превращения — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range}=H;
+const N=H.num;
+const NN=x=>N(x).replace(/^(−?)(\d+)/,(m,sg,d)=>sg+(d.length>4?d.replace(/\B(?=(\d{3})+(?!\d))/g,' '):d));
+const rd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+const NUM=(q,v,d,extra)=>{const a=rd(v,d);if(!isFinite(a)||a===0)return null;const exact=Math.abs(a-v)<1e-9;
+  return Object.assign({type:'num',q:q+(exact?'':[' Округли до целых.',' Округли до десятых.',' Округли до сотых.'][d]),ans:a,tol:0.6*Math.pow(10,-d)/Math.abs(a)},extra||{});};
+const SV=(w,h,inner,lab)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${lab||'Рисунок'}" style="font-family:system-ui,sans-serif;max-width:100%">${inner}</svg>`;
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.fs||14}" font-weight="${o.fw||600}" fill="${o.c||'var(--ink)'}">${s}</text>`;};
+const U='Дж/(кг·°С)';
+const C_W=4200,C_I=2100,LAM=340000,L_W=2300000;
+
+/* metals: c, λ, melting point */
+const MET={ice:{n:'лёд',g:'льда',c:2100,l:340000,ls:'3,4·10⁵',tm:0},pb:{n:'свинец',g:'свинца',c:140,l:25000,ls:'0,25·10⁵',tm:327},sn:{n:'олово',g:'олова',c:230,l:59000,ls:'0,59·10⁵',tm:232},al:{n:'алюминий',g:'алюминия',c:920,l:390000,ls:'3,9·10⁵',tm:660},cu:{n:'медь',g:'меди',c:400,l:210000,ls:'2,1·10⁵',tm:1085},fe:{n:'железо',g:'железа',c:460,l:270000,ls:'2,7·10⁵',tm:1539}};
+const FUEL={pet:{n:'бензин',g:'бензина',q:4.6e7,s:'4,6·10⁷'},ker:{n:'керосин',g:'керосина',q:4.6e7,s:'4,6·10⁷'},dis:{n:'дизельное топливо',g:'дизельного топлива',q:4.2e7,s:'4,2·10⁷'},alc:{n:'спирт',g:'спирта',q:2.7e7,s:'2,7·10⁷'},wood:{n:'сухие дрова',g:'сухих дров',q:1.0e7,s:'1,0·10⁷'},coal:{n:'каменный уголь',g:'каменного угля',q:2.7e7,s:'2,7·10⁷'},gas:{n:'природный газ',g:'природного газа',q:4.4e7,s:'4,4·10⁷'},h2:{n:'водород',g:'водорода',q:12e7,s:'12·10⁷'}};
+const RHO0={0:4.8,5:6.8,10:9.4,15:12.8,20:17.3,25:23.0,30:30.3};
+const lamS=k=>`λ<sub>${MET[k].g}</sub> = ${MET[k].ls} Дж/кг`;
+const qS=k=>`q = ${FUEL[k].s} Дж/кг`;
+const cS=(n,c)=>`c<sub>${n}</sub> = ${NN(c)} ${U}`;
+const RT=`<div style="overflow-x:auto;margin:6px 0"><table style="border-collapse:collapse;margin:0 auto;font-size:14px"><tr><th style="border:1px solid var(--line);padding:3px 8px;background:var(--accent-soft);color:var(--accent-ink)">t, °С</th>${Object.keys(RHO0).map(t=>`<td style="border:1px solid var(--line);padding:3px 8px;text-align:center">${t}</td>`).join('')}</tr><tr><th style="border:1px solid var(--line);padding:3px 8px;background:var(--accent-soft);color:var(--accent-ink)">ρ₀, г/м³</th>${Object.values(RHO0).map(v=>`<td style="border:1px solid var(--line);padding:3px 8px;text-align:center">${N(v)}</td>`).join('')}</tr></table></div>`;
+
+/* ---------- pictures ---------- */
+/* phase graph: pts [[x,t],...] with labels */
+function pgraph(pts,o){o=o||{};const W=320,Hh=210,L=46,Rr=16,Tp=26,B=34;const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);const xm=o.xmax||Math.max(...xs);const ymin=o.ymin!=null?o.ymin:Math.min(...ys),ymax=o.ymax||Math.max(...ys);
+  const y0=o.labels?ymin-(ymax-ymin)*0.1:ymin;const sx=v=>L+v/xm*(W-L-Rr),sy=v=>Hh-B-(v-y0)/(ymax-y0)*(Hh-B-Tp);let s='';
+  (o.yt||[]).forEach(v=>{const y=sy(v);s+=`<line x1="${L}" y1="${y}" x2="${W-Rr}" y2="${y}" stroke="var(--fig)" stroke-opacity=".15"/>`+T(L-6,y+4,N(v),{a:'end',fs:11,fw:400});});
+  (o.xt||[]).forEach(v=>{const x=sx(v);s+=T(x,Hh-B+15,N(v),{fs:11,fw:400});});
+  s+=`<line x1="${L}" y1="${Hh-B}" x2="${W-Rr}" y2="${Hh-B}" stroke="var(--fig)" stroke-width="1.4"/><line x1="${L}" y1="${Tp}" x2="${L}" y2="${Hh-B}" stroke="var(--fig)" stroke-width="1.4"/>`;
+  s+=T(L,Tp-10,'↑ t, °С',{a:'start',fs:12,c:'var(--accent-ink)'})+T(W-Rr,Hh-4,(o.xl||'τ, мин')+' →',{a:'end',fs:12,c:'var(--accent-ink)'});
+  s+=`<polyline points="${pts.map(p=>sx(p[0]).toFixed(1)+','+sy(p[1]).toFixed(1)).join(' ')}" fill="none" stroke="var(--accent-ink)" stroke-width="2.6"/>`;
+  if(o.labels)pts.forEach((p,i)=>{const up=i<pts.length-1&&pts[i+1][1]>p[1];const x=sx(p[0]),y=sy(p[1]);s+=`<circle cx="${x}" cy="${y}" r="3.5" fill="var(--hl)"/>`+(i===0?T(x+7,y+15,o.labels[i],{a:'start',fs:13,c:'var(--accent-ink)',fw:700}):up?T(x-5,y-7,o.labels[i],{a:'end',fs:13,c:'var(--accent-ink)',fw:700}):T(x,y-8,o.labels[i],{fs:13,c:'var(--accent-ink)',fw:700}));});
+  if(o.marker!=null){const m=o.marker;s+=`<circle cx="${sx(m[0])}" cy="${sy(m[1])}" r="7" fill="var(--hl)" stroke="var(--card)" stroke-width="2"/>`;}
+  return SV(W,Hh,s,'График');}
+/* energy flow of a heat engine */
+function enginePic(eta){const W=320,w1=260,wu=Math.max(6,w1*eta/100);let s=`<rect x="30" y="18" width="${w1}" height="22" rx="4" fill="var(--hl)" fill-opacity=".6"/>`+T(160,34,'Q — теплота от топлива (100 %)',{fs:12});
+  s+=`<rect x="30" y="58" width="${wu}" height="22" rx="4" fill="var(--ok)" fill-opacity=".7"/>`+T(30,98,`полезная работа — ${N(eta)} %`,{a:'start',fs:12});
+  s+=`<rect x="${32+wu}" y="58" width="${w1-wu-2}" height="22" rx="4" fill="var(--fig)" fill-opacity=".18"/>`+T(290,98,`потери — ${N(100-eta)} %`,{a:'end',fs:12});
+  return SV(W,106,s,'Распределение энергии');}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Почему после купания холодно — даже в жару?',lvl:0,html:`
+<p class="hook">Вылезаешь из моря в +30 °С — и тебя трясёт, пока не вытрешься. Почему? А почему лёд в стакане тает, а температура воды упрямо держится на нуле? Почему в горах макароны варятся дольше? И куда девается 70 % энергии бензина в машине? Ответы — в агрегатных превращениях: вещество переходит из твёрдого в жидкое, из жидкого в газ и обратно, и при этом поглощает или отдаёт <b>огромную</b> энергию.</p>
+<div class="box tip"><b>Карта переходов</b>твёрдое → жидкое: <b>плавление</b> (энергию забирает); жидкое → твёрдое: <b>кристаллизация</b> (отдаёт).<br>жидкое → газ: <b>парообразование</b> (испарение или кипение, забирает); газ → жидкое: <b>конденсация</b> (отдаёт).</div>`},
+{title:'Плавление и кристаллизация',lvl:0,html:`
+<div class="box rule"><b>Плавление</b>— переход из твёрдого состояния в жидкое. Происходит при <b>температуре плавления</b>, и пока всё не расплавится, <b>температура не меняется</b>, хотя энергию всё время подводят.</div>
+<p><b>Почему так.</b> В кристалле молекулы стоят «по местам», как зрители на стадионе. Подведённая энергия идёт не на то, чтобы они двигались быстрее (это была бы температура), а на то, чтобы разрушить «порядок» — вытащить их из мест. Пока все не разбежались — температура стоит.</p>
+<div class="fig">${pgraph([[0,-20],[2,0],[8,0],[12,40]],{labels:['A','B','C','D'],yt:[-20,0,20,40],xt:[0,2,4,6,8,10,12],ymax:40})}</div>
+<p class="small" style="text-align:center">Нагревание льда: AB — лёд нагревается, <b>BC — лёд тает при 0 °С</b>, CD — нагревается вода.</p>
+<div class="box rule"><b>Кристаллизация</b>— обратный процесс (жидкость → твёрдое), идёт при той же температуре. При кристаллизации выделяется столько же энергии, сколько было поглощено при плавлении.</div>
+<div class="box ex"><b>Температуры плавления</b>лёд 0 °С · олово 232 °С · свинец 327 °С · алюминий 660 °С · медь 1085 °С · железо 1539 °С.</div>
+<div class="box err"><b>Частая ошибка</b>«Раз энергию подводят — температура растёт». На горизонтальном участке графика энергию подводят, а температура <b>стоит</b>: идёт плавление.</div>
+<div class="fact">Овощехранилища зимой иногда спасают так: ставят туда большие баки с водой. Замерзая, вода отдаёт энергию и не даёт температуре упасть ниже 0 °С, пока вся не превратится в лёд.</div>`},
+{title:'Удельная теплота плавления λ',lvl:1,html:`
+<div class="box rule"><b>Q = λ·m</b>λ («лямбда») — удельная теплота плавления: сколько джоулей нужно, чтобы расплавить <b>1 кг</b> вещества, <b>уже нагретого</b> до температуры плавления. Единица — Дж/кг.</div>
+<div class="box ex"><b>Таблица λ, Дж/кг</b>лёд 3,4·10⁵ · алюминий 3,9·10⁵ · железо 2,7·10⁵ · медь 2,1·10⁵ · олово 0,59·10⁵ · свинец 0,25·10⁵.<br>Запись 3,4·10⁵ = 340&nbsp;000.</div>
+<div class="box ex"><b>Пример</b>Сколько энергии нужно, чтобы растопить 2 кг льда при 0 °С? Q = 340&nbsp;000 · 2 = 680&nbsp;000 Дж = 680 кДж.<br>Для сравнения: нагреть эти же 2 кг воды от 0 до 80 °С — 4200 · 2 · 80 = 672 кДж. Растопить лёд — почти так же «дорого»!</div>
+<div class="box rule"><b>Если тело холоднее точки плавления</b>Сначала нагреваем до t<sub>пл</sub>, потом плавим: <span class="m">Q = c·m·(t<sub>пл</sub> − t) + λ·m</span>.</div>
+<div class="box err"><b>Частая ошибка</b>Считать только λm, когда тело ещё холодное (свинец при 27 °С), или забыть, что λm работает только при температуре плавления.</div>`},
+{title:'Испарение и конденсация',lvl:2,html:`
+<div class="box rule"><b>Испарение</b>— парообразование с <b>поверхности</b> жидкости, при <b>любой</b> температуре. Из жидкости вылетают самые быстрые молекулы — поэтому <b>жидкость охлаждается</b>.</div>
+<p>Вот и разгадка дрожи после купания: с кожи испаряется вода и уносит энергию. Так же охлаждает нас пот, а собаку — высунутый мокрый язык.</p>
+<div class="box rule"><b>Испарение идёт быстрее, если</b>• выше температура жидкости;<br>• больше площадь поверхности (бельё развешивают, а не бросают комом);<br>• есть ветер (уносит пар);<br>• жидкость «летучая» (спирт, эфир испаряются быстрее воды).</div>
+<div class="box rule"><b>Конденсация</b>— превращение пара в жидкость. При этом энергия <b>выделяется</b>. Роса, запотевшее зеркало в ванной, «дым» над чайником (это уже не пар, а крошечные капли!).</div>
+<div class="box err"><b>Частая ошибка</b>«Белое облачко над чайником — это пар». Водяной пар невидим. Облачко — капли, в которые пар сконденсировался в холодном воздухе.</div>`},
+{title:'Кипение и удельная теплота парообразования L',lvl:3,html:`
+<div class="box rule"><b>Кипение</b>— бурное парообразование <b>по всему объёму</b>: внутри жидкости растут пузырьки пара. Идёт при <b>температуре кипения</b>, и пока жидкость кипит, её температура <b>не меняется</b>.</div>
+<div class="box rule"><b>Q = L·m</b>L — удельная теплота парообразования: сколько джоулей нужно, чтобы превратить в пар 1 кг жидкости <b>при температуре кипения</b>. Для воды L = 2,3·10⁶ Дж/кг (2300 кДж/кг!). При конденсации столько же выделяется.</div>
+<div class="box ex"><b>Сравни</b>Нагреть 1 кг воды от 0 до 100 °С — 420 кДж. Выпарить её полностью — 2300 кДж, в 5,5 раза больше! Поэтому чайник закипает быстро, а выкипает очень долго.</div>
+<div class="box rule"><b>Температура кипения зависит от давления</b>Меньше давление → ниже t<sub>кип</sub>. В горах давление меньше, вода кипит ниже 100 °С, и макароны варятся дольше. В скороварке давление выше — вода кипит при ~120 °С, и всё готовится быстрее.</div>
+<div class="box err"><b>Почему ожог паром опаснее, чем кипятком</b>Пар при 100 °С, попадая на кожу, сначала конденсируется и отдаёт L = 2300 кДж на каждый кг, и только потом остывает как вода.</div>
+<div class="fact">На вершине Эвереста (8848 м) давление втрое ниже, чем у моря, и вода кипит примерно при 70 °С: сварить там яйцо вкрутую в обычной кастрюле очень трудно.</div>`},
+{title:'Влажность воздуха',lvl:4,html:`
+<p>В воздухе всегда есть невидимый водяной пар. Но больше определённого количества воздух удержать не может — пар становится <b>насыщенным</b>, и лишний конденсируется (туман, роса).</p>
+<div class="box rule"><b>Относительная влажность</b><span class="m">φ = ρ / ρ₀ · 100 %</span><br>ρ — сколько граммов пара на самом деле в 1 м³ воздуха (абсолютная влажность), ρ₀ — сколько его <b>может</b> быть при этой температуре (плотность насыщенного пара, из таблицы).</div>
+${RT}
+<div class="box ex"><b>Пример</b>При 20 °С в 1 м³ воздуха 8,65 г пара. φ = 8,65 / 17,3 · 100 % = 50 %.</div>
+<div class="box rule"><b>Точка росы</b>— температура, при которой пар становится насыщенным. Если ночью воздух остынет ниже неё, выпадет роса. Например, ρ = 9,4 г/м³ — точка росы 10 °С.</div>
+<div class="box tip"><b>Как запомнить</b>ρ₀ растёт с температурой: тёплый воздух — «большая губка», холодный — маленькая. Охлади губку — и вода «выжмется» каплями росы.</div>
+<div class="box err"><b>Частая ошибка</b>Делить ρ₀ на ρ (получится больше 100 %). Относительная влажность не бывает больше 100 %.</div>`},
+{title:'Весь путь: лёд → вода → пар',lvl:5,html:`
+<p>Чтобы превратить лёд при −t °С в пар, нужно пройти <b>четыре этапа</b>, и для каждого своя формула:</p>
+<ol class="steps"><li>нагреть лёд до 0 °С: Q₁ = c<sub>л</sub>·m·(0 − t);</li><li>расплавить: Q₂ = λ·m;</li><li>нагреть воду до 100 °С: Q₃ = c<sub>в</sub>·m·100;</li><li>выпарить: Q₄ = L·m.</li></ol>
+<div class="widget" id="w-ice"></div>
+<div class="box ex"><b>Пример</b>1 кг льда при −20 °С → пар при 100 °С: 42 + 340 + 420 + 2300 = 3102 кДж. Больше всего «съедает» парообразование.</div>
+<div class="box err"><b>Частая ошибка</b>Взять для льда c = 4200. У льда c<sub>л</sub> = 2100, у воды c<sub>в</sub> = 4200 — это разные вещества по свойствам!</div>`},
+{title:'Энергия топлива',lvl:6,html:`
+<div class="box rule"><b>Q = q·m</b>q — удельная теплота сгорания: сколько джоулей выделяется при полном сгорании 1 кг топлива.</div>
+<div class="box ex"><b>Таблица q, Дж/кг</b>водород 12·10⁷ · бензин 4,6·10⁷ · керосин 4,6·10⁷ · природный газ 4,4·10⁷ · дизельное топливо 4,2·10⁷ · спирт 2,7·10⁷ · каменный уголь 2,7·10⁷ · сухие дрова 1,0·10⁷.</div>
+<div class="box ex"><b>Пример</b>10 г бензина: Q = 4,6·10⁷ · 0,01 = 4,6·10⁵ Дж = 460 кДж. Этого хватит, чтобы нагреть 2 кг воды почти на 55 °С (если ничего не теряется).</div>
+<div class="box rule"><b>Если часть тепла теряется</b>КПД нагревателя η показывает, какая доля энергии топлива пошла «в дело»: <span class="m">Q<sub>полезн</sub> = η · q·m</span>.</div>
+<div class="box err"><b>Частая ошибка</b>Граммы! 10 г = 0,01 кг. И степени: 4,6·10⁷ = 46&nbsp;000&nbsp;000.</div>
+<div class="fact">У водорода самая большая теплота сгорания из таблицы — 12·10⁷ Дж/кг, а при сгорании получается просто вода. Поэтому водород используют как ракетное топливо (вместе с жидким кислородом).</div>`},
+{title:'Тепловые двигатели и КПД',lvl:7,html:`
+<div class="box rule"><b>Тепловой двигатель</b>превращает часть внутренней энергии топлива в механическую работу. Части: нагреватель (горит топливо), рабочее тело (газ, который расширяется и толкает поршень), холодильник (куда уходит остаток тепла — атмосфера).</div>
+<div class="box rule"><b>КПД</b><span class="m">η = A<sub>п</sub> / Q · 100 %</span>, Q = q·m — энергия топлива. КПД любого теплового двигателя <b>меньше 100 %</b>: часть тепла обязательно уходит в холодильник.</div>
+<div class="fig">${enginePic(30)}</div>
+<div class="box ex"><b>Примеры КПД</b>паровоз ~ 8 % · бензиновый двигатель ~ 25–30 % · дизель ~ 35–40 % · паровая турбина ~ 30–40 %.</div>
+<div class="box ex"><b>Четырёхтактный двигатель</b>1) впуск (поступает горючая смесь), 2) сжатие, 3) рабочий ход (смесь загорается от искры, газы толкают поршень — только здесь совершается полезная работа), 4) выпуск.</div>
+<div class="box ex"><b>Пример</b>Двигатель сжёг 2 кг бензина и совершил работу 23 МДж. Q = 4,6·10⁷ · 2 = 92 МДж. η = 23 / 92 · 100 % = 25 %.</div>
+<div class="box err"><b>Частая ошибка</b>Делить Q на A (выйдет больше 100 %). В числителе — полезная работа, она всегда меньше.</div>
+<div class="fact">Первые практичные паровые машины построил Томас Ньюкомен (1712), а Джеймс Уатт в 1760-х сильно улучшил их, добавив отдельный конденсатор — так началась промышленная революция. Единица мощности «ватт» названа в его честь.</div>`},
+{title:'★ Олимпиадные приёмы',lvl:8,html:`
+<ol class="steps">
+<li><b>Сначала проверь, «хватит ли тепла».</b> В задачах «лёд + вода» сравни: сколько тепла может отдать вода, остывая до 0 °С (cmt), и сколько нужно, чтобы растопить весь лёд (λm). Если не хватает — растает только часть, и в конце будет 0 °С.</li>
+<li><b>Отношения вместо чисел.</b> «Чайник закипел за 10 мин. За сколько выкипит?» — одинаковый нагреватель, значит, время пропорционально энергии: τ₂/τ₁ = L·m / (c·m·Δt).</li>
+<li><b>Механика + теплота.</b> Пуля ударяется о стену: часть кинетической энергии mv²/2 идёт на нагрев и плавление.</li>
+</ol>
+<div class="box ex"><b>Пример</b>В 1 кг воды при 20 °С бросили 0,5 кг льда при 0 °С. Вода может отдать 4200 · 1 · 20 = 84 кДж. На весь лёд нужно 340&nbsp;000 · 0,5 = 170 кДж — не хватает. Растает 84&nbsp;000 / 340&nbsp;000 ≈ 0,247 кг, температура станет 0 °С.</div>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Формулы',title:'Обозначения и формулы',rows:[
+['λ','удельная теплота плавления','Дж на плавление 1 кг при t<sub>пл</sub>.','лёд 3,4·10⁵'],
+['Q = λm','плавление / кристаллизация','Поглощается при плавлении, выделяется при кристаллизации.','0,5&nbsp;кг льда: 170&nbsp;кДж'],
+['L','удельная теплота парообразования','Дж на испарение 1 кг при t<sub>кип</sub>.','вода 2,3·10⁶'],
+['Q = Lm','кипение / конденсация','Поглощается при кипении, выделяется при конденсации.','1&nbsp;кг: 2300&nbsp;кДж'],
+['q','удельная теплота сгорания','Дж при сгорании 1 кг топлива.','бензин 4,6·10⁷'],
+['Q = qm','сгорание топлива','Энергия, выделившаяся при сгорании.','0,1&nbsp;кг бензина: 4,6&nbsp;МДж'],
+['φ = ρ/ρ₀·100 %','относительная влажность','Сколько пара есть / сколько может быть.','8,65/17,3 → 50&nbsp;%'],
+['η = A<sub>п</sub>/Q·100 %','КПД','Доля энергии топлива, ставшая полезной работой.','23/92 → 25&nbsp;%'],
+['Q = cmΔt','нагревание','Нужна на участках, где температура меняется.','вода 4200, лёд 2100']
+],after:`<div class="box tip" style="margin-top:14px"><b>Как читать график</b>наклонный участок — нагрев (Q = cmΔt), горизонтальный — смена состояния (λm или Lm).</div>`};
+
+/* ---------- widget ---------- */
+function onTheory(root){const w=root.querySelector('#w-ice');if(!w)return;
+  w.innerHTML=`<label>Передано энергии Q = <output id="wiQ">200</output> кДж<input type="range" id="wiS" min="0" max="3100" step="10" value="200"></label><div id="wiG" style="display:flex;justify-content:center"></div><div id="wiO" class="small" style="text-align:center;margin-top:6px"></div>`;
+  const S=w.querySelector('#wiS');const P=[[0,-20],[42,0],[382,0],[802,100],[3102,100]];
+  const draw=()=>{const q=+S.value;w.querySelector('#wiQ').textContent=q;let t,txt;
+    if(q<=42){t=-20+q/2.1;txt=`Лёд нагревается: t = ${N(rd(t,1))} °С`;}
+    else if(q<=382){t=0;txt=`Лёд тает при 0 °С. Растаяло <span class="out">${N(rd((q-42)/340*1000,0))} г</span> из 1000 г`;}
+    else if(q<=802){t=(q-382)/4.2;txt=`Вода нагревается: t = <span class="out">${N(rd(t,1))} °С</span>`;}
+    else {t=100;txt=`Вода кипит при 100 °С. Выкипело <span class="out">${N(rd((q-802)/2300*1000,0))} г</span> из 1000 г`;}
+    w.querySelector('#wiG').innerHTML=pgraph(P,{xmax:3200,ymin:-20,ymax:100,yt:[-20,0,20,40,60,80,100],xt:[0,1000,2000,3000],xl:'Q, кДж',marker:[q,t]});
+    w.querySelector('#wiO').innerHTML=txt+'. <br>1 кг льда при −20 °С: нагрев льда 42 кДж → плавление 340 кДж → нагрев воды 420 кДж → кипение 2300 кДж.';};
+  S.oninput=draw;draw();}
+
+/* =================== GENERATORS =================== */
+/* L0 — плавление */
+RULE(0,'Что происходит с температурой кристаллического тела во время плавления?','Не меняется, хотя энергия подводится',['Растёт, потому что подводится энергия','Падает','Сначала растёт, потом падает'],
+{short:'Пока идёт плавление, температура постоянна — энергия уходит на разрушение кристалла.',
+explain:'Во время плавления вся подводимая энергия идёт на разрушение кристаллической решётки, а не на ускорение молекул. Поэтому температура стоит на месте (для льда — 0 °С), пока всё не расплавится. На графике это горизонтальный участок.',
+explain2:'Брось лёд в стакан воды и поставь термометр: пока плавают льдинки, термометр показывает около 0 °С, хотя от воздуха всё время идёт тепло. Растает последняя льдинка — тогда температура начнёт расти.'});
+RULE(0,'Что происходит при кристаллизации (отвердевании) жидкости?','Выделяется энергия, температура не меняется',['Поглощается энергия, температура растёт','Выделяется энергия, температура растёт','Поглощается энергия, температура не меняется'],
+{short:'Кристаллизация — обратное плавлению: энергия выделяется, t = t<sub>пл</sub>.',
+explain:'Кристаллизация — процесс, обратный плавлению. При плавлении энергия поглощается, значит, при кристаллизации <b>выделяется</b> ровно столько же (λm). И идёт она при той же постоянной температуре, что и плавление.',
+explain2:'Пример: вода в овощехранилище, замерзая, отдаёт энергию и «греет» овощи — не даёт температуре упасть ниже 0 °С, пока вся вода не замёрзнет.'});
+G(0,()=>{const k=pick(['ice','sn','pb','al']);const m=MET[k];const tm=m.tm;const t0=k==='ice'?-pick([10,20,30]):pick([20,30,50]);const tE=tm+(k==='ice'?pick([20,30,40]):pick([60,100,150]));
+const pts=[[0,t0],[pick([2,3]),tm],[pick([7,8]),tm],[11,tE]];const seg=pick([0,1,2]);const lab=['AB','BC','CD'];
+const what=['вещество в твёрдом состоянии нагревается','вещество плавится','жидкость нагревается'][seg];
+const yt=k==='ice'?[t0,0,tE]:[0,tm];
+return {type:'choice',q:`На графике — нагревание вещества «${m.n}». На каком участке <b>${what}</b>?`,pic:pgraph(pts,{labels:['A','B','C','D'],yt:yt,xt:[0,5,10],ymin:Math.min(0,t0),ymax:tE,xmax:12}),opts:lab,ans:seg,
+short:`${lab[seg]}: ${['наклонный участок ниже t<sub>пл</sub>','горизонтальный участок при t<sub>пл</sub>','наклонный участок выше t<sub>пл</sub>'][seg]}.`,
+explain:`На графике три участка:<br>AB — температура растёт от ${t0} до ${tm} °С: нагревается твёрдое вещество;<br>BC — <b>горизонтальный</b> участок при ${tm} °С: энергия подводится, а температура стоит — идёт плавление;<br>CD — температура снова растёт: нагревается жидкость.<br>Ответ: <b>${lab[seg]}</b>.`,
+explain2:`Ищи «полочку» — горизонтальный кусок графика. Это всегда смена состояния (здесь плавление при ${tm} °С). Всё, что до полочки, — твёрдое тело, после — жидкость.`};});
+G(0,()=>{const ks=['sn','pb','al','cu'];const k=pick(ks);const m=MET[k];const tE=m.tm+pick([80,120]);
+const pts=[[0,pick([20,30])],[3,m.tm],[8,m.tm],[11,tE]];
+return CH(`По графику нагревания определи, какое это вещество. (Температуры плавления: олово 232 °С, свинец 327 °С, алюминий 660 °С, медь 1085 °С.)`,m.n[0].toUpperCase()+m.n.slice(1),ks.filter(x=>x!==k).map(x=>MET[x].n[0].toUpperCase()+MET[x].n.slice(1)),
+{pic:pgraph(pts,{labels:['A','B','C','D'],yt:[0,m.tm],xt:[0,5,10],ymin:0,ymax:tE,xmax:12}),short:`Плавится при ${m.tm} °С — это ${m.n}.`,
+explain:`Горизонтальный участок BC — плавление, и он находится на высоте <b>${m.tm} °С</b>. Это и есть температура плавления. По таблице ${m.tm} °С — у вещества <b>«${m.n}»</b>.`,
+explain2:`Температура плавления — «паспорт» вещества. Найди на графике полочку, посмотри по вертикальной оси её температуру (${m.tm} °С) и сравни с таблицей.`});});
+G(0,()=>{const P=[['Сосулька тает на солнце','Плавление'],['Вода в луже замерзает','Кристаллизация'],['Из жидкого олова отливают солдатика, и он твердеет','Кристаллизация'],['Шоколадка растаяла в кармане','Плавление'],['Расплавленный металл в форме застывает','Кристаллизация'],['Масло растаяло на горячей сковороде','Плавление']];
+const p=pick(P);const opts=['Плавление','Кристаллизация'];const a=opts.indexOf(p[1]);
+return {type:'choice',q:`Какой процесс происходит? <i>${p[0]}</i>. Поглощается или выделяется при этом энергия — подумай тоже.`,opts:['Плавление: энергия поглощается','Кристаллизация: энергия выделяется'],ans:a,
+short:`${p[1]}: ${a?'жидкое → твёрдое, энергия выделяется':'твёрдое → жидкое, энергия поглощается'}.`,
+explain:`Плавление — твёрдое → жидкое, телу нужно <b>получать</b> энергию. Кристаллизация — жидкое → твёрдое, тело <b>отдаёт</b> энергию.<br>«${p[0]}» — это <b>${p[1].toLowerCase()}</b>.`,
+explain2:`Спроси: «Что было в начале и что в конце?» ${a?'Было жидкое, стало твёрдое':'Было твёрдое, стало жидкое'} — это ${p[1].toLowerCase()}. ${a?'Чтобы вода замёрзла, её надо охлаждать — забирать энергию, значит, она энергию отдаёт.':'Чтобы растаять, телу нужно тепло — оно энергию забирает.'}`};});
+
+/* L1 — λ */
+RULE(1,'Допиши формулу: количество теплоты, нужное для плавления тела массой m, взятого при температуре плавления, Q = …','λ · m',['c · m · Δt','λ / m','q · m'],
+{short:'Q = λm. λ — сколько Дж на 1 кг.',
+explain:'При температуре плавления температура не меняется, поэтому Δt тут нет, и cmΔt не подходит. Нужно λ (сколько Дж на 1 кг) умножить на массу: <b>Q = λm</b>. q·m — это сгорание топлива, совсем другой процесс.',
+explain2:'λ<sub>льда</sub> = 340&nbsp;000 Дж/кг: на 1 кг — 340 кДж, на 2 кг — вдвое больше, на 0,5 кг — вдвое меньше. Значит, умножаем на массу.'});
+G(1,()=>{const m=pick([0.2,0.3,0.5,0.8,1.5,2,2.5,3]);const Q=LAM*m;const it=pick(['кубиков льда в морозилке','льда для катка в ведре','снежков (снег — тот же лёд)','сосулек']);
+return NUM(`Сколько энергии нужно, чтобы растопить ${N(m)} кг ${it}, уже нагретых до 0 °С? ${lamS('ice')}. Ответ дай в кДж.`,Q/1000,1,
+{short:`Q = λm = 340&nbsp;000 · ${N(m)} = ${NN(Q)} Дж = ${N(Q/1000)} кДж.`,
+explain:`Лёд уже при 0 °С, нагревать не надо — только плавить. Q = λ·m = 3,4·10⁵ · ${N(m)} = 340&nbsp;000 · ${N(m)} = ${NN(Q)} Дж = <b>${N(Q/1000)} кДж</b>.`,
+explain2:`На каждый килограмм льда — 340 кДж. У нас ${N(m)} кг: 340 · ${N(m)} = ${N(Q/1000)} кДж.`});});
+G(1,()=>{const k=pick(['pb','sn','al','cu']);const m=MET[k];const mass=pick([0.1,0.2,0.5,1,2]);const t0=pick([20,27,32]);const Q1=m.c*mass*(m.tm-t0),Q2=m.l*mass;
+return NUM(`Какое количество теплоты нужно, чтобы расплавить ${N(mass)} кг ${m.g}, взятого при ${t0} °С? ${cS(m.g,m.c)}, ${lamS(k)}, t<sub>пл</sub> = ${m.tm} °С. Ответ дай в кДж.`,(Q1+Q2)/1000,1,
+{hint:'Сначала нагрей до температуры плавления, потом плавь.',short:`Q = ${NN(rd(Q1,2))} + ${NN(Q2)} = ${NN(rd(Q1+Q2,2))} Дж ≈ ${N(rd((Q1+Q2)/1000,1))} кДж.`,
+explain:`Два этапа:<br>1) Нагрев до ${m.tm} °С: Q₁ = c·m·Δt = ${NN(m.c)} · ${N(mass)} · (${m.tm} − ${t0}) = ${NN(rd(Q1,2))} Дж.<br>2) Плавление: Q₂ = λ·m = ${NN(m.l)} · ${N(mass)} = ${NN(Q2)} Дж.<br>Q = Q₁ + Q₂ = ${NN(rd(Q1+Q2,2))} Дж ≈ <b>${N(rd((Q1+Q2)/1000,1))} кДж</b>.<br>Только λm = ${N(Q2/1000)} кДж — ошибка: металл холодный, его сначала надо нагреть.`,
+explain2:`Представь график: наклонная линия от ${t0} до ${m.tm} °С (нагрев, ${N(rd(Q1/1000,2))} кДж), потом полочка при ${m.tm} °С (плавление, ${N(Q2/1000)} кДж). Энергия на всём пути — сумма двух кусков.`});});
+G(1,()=>{const k=pick(['ice','pb','sn','al','cu','fe']);const m=MET[k];const mass=pick([0.2,0.4,0.5,1.2,2,3]);const Q=m.l*mass;
+return NUM(`При плавлении ${m.g}, взятого при температуре плавления, поглотилось ${N(Q/1000)} кДж. Какова масса ${m.g}? ${lamS(k)}. Ответ в кг.`,mass,2,
+{short:`m = Q/λ = ${NN(Q)} / ${NN(m.l)} = ${N(mass)} кг.`,
+explain:`Из Q = λm: m = Q / λ. Переводим: ${N(Q/1000)} кДж = ${NN(Q)} Дж. m = ${NN(Q)} : ${NN(m.l)} = <b>${N(mass)} кг</b>.`,
+explain2:`На 1 кг ${m.g} нужно ${N(m.l/1000)} кДж. Сколько таких «килограммовых порций» в ${N(Q/1000)} кДж? ${N(Q/1000)} : ${N(m.l/1000)} = ${N(mass)}.`});});
+G(1,()=>{const m=pick([1,2,3,5]);const Q=LAM*m;
+return NUM(`Вода массой ${m} кг при 0 °С замёрзла (превратилась в лёд при 0 °С). Сколько энергии она <b>отдала</b>? ${lamS('ice')}. Ответ в кДж.`,Q/1000,0,
+{short:`При кристаллизации выделяется λm = ${N(Q/1000)} кДж.`,
+explain:`Кристаллизация — обратное плавлению. Выделяется ровно столько, сколько нужно на плавление: Q = λm = 340&nbsp;000 · ${m} = ${NN(Q)} Дж = <b>${N(Q/1000)} кДж</b>.`,
+explain2:`Чтобы растопить ${m} кг льда, нужно ${N(Q/1000)} кДж. Когда эта вода снова замерзает, она «возвращает» те же ${N(Q/1000)} кДж — энергия не исчезает.`});});
+
+/* L2 — испарение */
+RULE(2,'Что происходит с температурой жидкости при испарении (если не подводить тепло)?','Понижается: вылетают самые быстрые молекулы',['Повышается','Не меняется','Сначала растёт, потом падает'],
+{short:'Улетают быстрые молекулы — средняя скорость оставшихся меньше — жидкость остывает.',
+explain:'Вылететь из жидкости могут только самые «энергичные», быстрые молекулы. Они уносят энергию, а оставшиеся в среднем медленнее. Поэтому испаряющаяся жидкость <b>охлаждается</b>. Так работает пот, мокрая кожа после купания, глиняный кувшин с водой в жару.',
+explain2:'Представь класс, из которого на перемене первыми выбегают самые шустрые. В классе остаются в среднем более спокойные — «средняя шустрость» упала. Так и с молекулами: средняя энергия упала — температура ниже.'});
+RULE(2,'Что из этого НЕ ускоряет испарение?','Закрыть сосуд крышкой',['Повысить температуру жидкости','Увеличить площадь поверхности','Создать ветер над поверхностью'],
+{short:'Крышка задерживает пар — испарение почти останавливается.',
+explain:'Испарение ускоряют: более высокая температура, большая площадь поверхности, ветер (уносит пар), летучесть жидкости. Крышка, наоборот, не даёт пару уходить: над жидкостью накапливается пар, и сколько молекул вылетает, столько же возвращается обратно.',
+explain2:'Почему суп в открытой кастрюле выкипает быстрее, чем под крышкой? Под крышкой пар собирается и капает обратно. Бельё сохнет быстрее на ветру и в жару, если его развесить, а не бросить комом.'});
+G(2,()=>{const P=[
+ ['Почему после купания на ветру становится холодно?','С кожи испаряется вода и охлаждает её, а ветер ускоряет испарение',['Ветер приносит холод','Вода сама по себе холоднее воздуха','Кожа на ветру быстрее излучает'],'Испарение уносит самые быстрые молекулы — кожа охлаждается. Ветер уносит пар и ускоряет испарение.'],
+ ['Почему бельё сохнет быстрее, если его развесить, а не оставить комом?','Больше площадь поверхности — быстрее испарение',['Развешенное бельё сильнее нагревается','Ком белья не пропускает воздух к земле','Так бельё меньше впитывает влагу'],'Скорость испарения растёт с площадью поверхности: молекулам проще вылететь, если поверхность большая.'],
+ ['Почему капля спирта на руке кажется холодной, хотя спирт комнатной температуры?','Спирт быстро испаряется и охлаждает кожу',['Спирт всегда холоднее воды','Спирт хорошо проводит тепло','Спирт поглощает излучение'],'Спирт — летучая жидкость, он испаряется очень быстро и забирает много энергии у кожи.'],
+ ['Зачем собака в жару высовывает язык?','С мокрого языка испаряется вода и охлаждает собаку',['Чтобы язык нагревался на солнце','Так собака лучше чувствует запахи','Язык излучает холод'],'Собаки почти не потеют. Испарение влаги с языка и дыхательных путей уносит энергию и охлаждает их.'],
+ ['Почему в жару вода в глиняном кувшине остаётся прохладной?','Вода просачивается через поры и испаряется с поверхности, охлаждая кувшин',['Глина не пропускает излучение','Глина холоднее воздуха','В глине идёт конвекция'],'Через пористую глину проступает влага, она испаряется и забирает энергию у кувшина и воды внутри.'],
+ ['Почему зимой у тебя запотевают очки, когда ты заходишь с мороза в тёплую комнату?','Водяной пар из тёплого воздуха конденсируется на холодных стёклах',['Со стёкол испаряется вода','Стекло выделяет влагу при нагревании','Лёд на стёклах тает'],'Холодное стекло охлаждает соседний воздух, пар становится насыщенным и конденсируется в капельки — так же, как роса.']];
+const p=pick(P);return CH(p[0],p[1],p[2],{short:p[3].split('. ')[0]+'.',explain:p[3],
+explain2:`Помни два правила: испарение <b>охлаждает</b> (улетают быстрые молекулы) и идёт быстрее при большой площади, ветре, высокой температуре, у летучих жидкостей; конденсация — пар превращается в капли на холодном. Ответ: «${p[1]}».`});});
+G(2,()=>{const P=[['Лужа высыхает после дождя','Испарение'],['Зеркало в ванной запотевает','Конденсация'],['Утром на траве роса','Конденсация'],['Мокрые волосы сохнут под феном','Испарение'],['На холодной бутылке из холодильника появились капли','Конденсация'],['Белое облачко над носиком чайника','Конденсация'],['Духи пахнут на всю комнату','Испарение']];
+const p=pick(P);const opts=['Испарение','Конденсация'];
+return {type:'choice',q:`Какой процесс? <i>${p[0]}</i>.`,opts,ans:opts.indexOf(p[1]),short:p[1]==='Испарение'?'Жидкость → пар.':'Пар → жидкость (капли).',
+explain:`Испарение — жидкость превращается в невидимый пар. Конденсация — пар превращается в жидкость (появляются капли, туман, роса).<br>«${p[0]}» — <b>${p[1].toLowerCase()}</b>.${p[0].includes('облачко')?' Сам пар невидим, а облачко — это уже капли.':''}`,
+explain2:`Вопрос: вода <b>появилась</b> из ниоткуда (капли на холодном) — это конденсация пара из воздуха. Вода (или жидкость) <b>исчезла</b> — испарилась. Здесь: ${p[1].toLowerCase()}.`};});
+
+/* L3 — кипение */
+RULE(3,'Что показывает удельная теплота парообразования L?','Сколько энергии нужно, чтобы превратить в пар 1 кг жидкости при температуре кипения',['Сколько энергии нужно, чтобы нагреть 1 кг жидкости до кипения','Температуру, при которой жидкость кипит','Сколько энергии выделяется при сгорании 1 кг жидкости'],
+{short:'L — Дж на 1 кг пара при t<sub>кип</sub>. Вода: 2,3·10⁶ Дж/кг.',
+explain:'L — удельная теплота парообразования: сколько джоулей нужно, чтобы <b>превратить в пар</b> 1 кг жидкости, <b>уже нагретой</b> до температуры кипения. Нагрев до кипения считают отдельно по Q = cmΔt. Для воды L = 2,3·10⁶ Дж/кг — это огромная величина.',
+explain2:'Чайник: от 20 °С до кипения — это cmΔt (несколько минут). А вот чтобы вся вода выкипела, нужно L·m — в несколько раз больше энергии (больше часа, если забыть выключить).'});
+RULE(3,'Чем кипение отличается от испарения?','Кипение идёт по всему объёму и при определённой температуре, испарение — с поверхности при любой температуре',['Кипение идёт только с поверхности','При кипении энергия выделяется, а при испарении поглощается','Испарение бывает только при 100 °С'],
+{short:'Кипение — пузыри пара по всему объёму при t<sub>кип</sub>; испарение — с поверхности, при любой t.',
+explain:'<b>Испарение</b> — с поверхности, при любой температуре (лужа сохнет и при +5 °С). <b>Кипение</b> — пузырьки пара растут по всему объёму, идёт только при температуре кипения, и пока жидкость кипит, её температура постоянна. В обоих случаях энергия <b>поглощается</b>.',
+explain2:'Лужа на асфальте испаряется тихо, без пузырей. Вода в кастрюле при 100 °С бурлит пузырями изнутри — это кипение. Но и там, и там из жидкости получается пар, и на это нужна энергия.'});
+G(3,()=>{const m=pick([0.1,0.2,0.25,0.5,1,1.5,2]);const Q=L_W*m;
+return NUM(`Сколько энергии нужно, чтобы превратить в пар ${N(m)} кг воды, взятой при 100 °С? L = 2,3·10⁶ Дж/кг. Ответ дай в кДж.`,Q/1000,0,
+{short:`Q = Lm = 2&nbsp;300&nbsp;000 · ${N(m)} = ${NN(Q)} Дж = ${NN(Q/1000)} кДж.`,
+explain:`Вода уже при 100 °С — нагревать не надо. Q = L·m = 2,3·10⁶ · ${N(m)} = 2&nbsp;300&nbsp;000 · ${N(m)} = ${NN(Q)} Дж = <b>${NN(Q/1000)} кДж</b>.`,
+explain2:`На 1 кг — 2300 кДж. У нас ${N(m)} кг: 2300 · ${N(m)} = ${NN(Q/1000)} кДж.`});});
+G(3,()=>{const m=pick([0.5,1,1.5,2]);const t0=pick([10,15,20,25]);const Q1=C_W*m*(100-t0),Q2=L_W*m;
+return NUM(`Чайник с ${N(m)} кг воды при ${t0} °С включили и забыли. Сколько энергии нужно, чтобы вода нагрелась до кипения и полностью выкипела? ${cS('в',4200)}, L = 2,3·10⁶ Дж/кг. Ответ в МДж.`,(Q1+Q2)/1e6,2,
+{hint:'Два этапа: нагреть до 100 °С, потом выпарить.',short:`Q = ${NN(Q1)} + ${NN(Q2)} = ${NN(Q1+Q2)} Дж ≈ ${N(rd((Q1+Q2)/1e6,2))} МДж.`,
+explain:`1) Нагрев: Q₁ = 4200 · ${N(m)} · (100 − ${t0}) = ${NN(Q1)} Дж.<br>2) Парообразование: Q₂ = 2,3·10⁶ · ${N(m)} = ${NN(Q2)} Дж.<br>Q = ${NN(Q1+Q2)} Дж ≈ <b>${N(rd((Q1+Q2)/1e6,2))} МДж</b> (1 МДж = 1&nbsp;000&nbsp;000 Дж).<br>Заметь: выпаривание «стоит» в ${N(rd(Q2/Q1,1))} раза больше, чем нагрев.`,
+explain2:`Нарисуй график: подъём от ${t0} до 100 °С, потом длинная полочка при 100 °С. Подъём — ${N(rd(Q1/1e6,3))} МДж, полочка — ${N(rd(Q2/1e6,3))} МДж. Сумма ≈ ${N(rd((Q1+Q2)/1e6,2))} МДж.`});});
+G(3,()=>{const m=pick([10,20,50,100]);const Q=L_W*m/1000;const t=pick([20,30,40]);const Qw=C_W*m/1000*(100-t);
+return NUM(`На кожу попало ${m} г пара при 100 °С и сконденсировалось. Сколько энергии выделилось только при конденсации? L = 2,3·10⁶ Дж/кг. Ответ в кДж. (Для сравнения подумай: сколько отдала бы та же масса кипятка, остывая до ${t} °С?)`,Q/1000,1,
+{short:`Q = Lm = 2,3·10⁶ · ${N(m/1000)} = ${NN(Q)} Дж = ${N(Q/1000)} кДж — в ${N(rd(Q/Qw,1))} раза больше, чем от кипятка.`,
+explain:`${m} г = ${N(m/1000)} кг. Q = L·m = 2&nbsp;300&nbsp;000 · ${N(m/1000)} = ${NN(Q)} Дж = <b>${N(Q/1000)} кДж</b>.<br>А кипяток той же массы, остывая до ${t} °С, отдаст 4200 · ${N(m/1000)} · ${100-t} = ${NN(Qw)} Дж — в ${N(rd(Q/Qw,1))} раза меньше. Вот почему ожог паром опаснее.`,
+explain2:`Конденсация — обратна кипению: выделяется столько, сколько пошло на испарение, L на каждый кг. ${N(m/1000)} кг · 2300 кДж/кг = ${N(Q/1000)} кДж.`});});
+G(3,()=>{const P=[['Почему в горах вода кипит при температуре ниже 100 °С?','Там меньше атмосферное давление',['Там холоднее воздух','Там меньше силы тяжести на воду','Там вода чище'],'Температура кипения зависит от внешнего давления: чем оно меньше, тем ниже t<sub>кип</sub>. На высоте давление ниже.'],
+ ['Почему в скороварке еда готовится быстрее?','Давление внутри выше, и вода кипит при температуре выше 100 °С',['Пар в скороварке холоднее','Крышка отражает излучение','В скороварке вода не кипит вообще'],'Скороварка герметична, давление внутри растёт, и вода кипит примерно при 120 °С — еда варится в более горячей воде.'],
+ ['Воду в кастрюле довели до кипения и продолжают сильно нагревать. Что с её температурой?','Не меняется, пока вода кипит',['Растёт, пока вся вода не выкипит','Падает','Растёт в два раза быстрее'],'Пока жидкость кипит, вся энергия идёт на парообразование, температура остаётся равной температуре кипения.']];
+const p=pick(P);return CH(p[0],p[1],p[2],{short:p[3].split('. ')[0]+'.',explain:p[3],
+explain2:`Два правила кипения: 1) пока жидкость кипит, её температура постоянна; 2) температура кипения тем выше, чем больше давление (у моря 100 °С, на Эвересте ≈ 70 °С, в скороварке ≈ 120 °С). Ответ: «${p[1]}».`});});
+
+/* L4 — влажность */
+RULE(4,'Как найти относительную влажность воздуха φ?','φ = ρ / ρ₀ · 100 %, где ρ₀ — плотность насыщенного пара при этой температуре',['φ = ρ₀ / ρ · 100 %','φ = ρ · ρ₀','φ = ρ − ρ₀'],
+{short:'Сколько пара есть, делим на сколько может быть.',
+explain:'Относительная влажность показывает, насколько воздух «заполнен» паром: сколько пара есть (ρ) от того, сколько может быть при этой температуре (ρ₀). φ = ρ/ρ₀ · 100 %. Если перевернуть дробь, получится больше 100 % — так не бывает.',
+explain2:'Как стакан: ρ₀ — объём стакана, ρ — сколько налито. Налили половину — 50 %. Полный стакан — 100 %, больше уже не влезет (лишнее выпадет росой).'});
+G(4,()=>{const t=pick([10,15,20,25,30]);const r0=RHO0[t];const phi=pick([40,45,50,55,60,65,70,75,80]);const r=rd(r0*phi/100,2);
+return NUM(`Температура воздуха ${t} °С, абсолютная влажность ${N(r)} г/м³. Найди относительную влажность (в %). Плотность насыщенного пара — в таблице:${RT}`,r/r0*100,0,
+{short:`φ = ${N(r)} / ${N(r0)} · 100 % ≈ ${N(rd(r/r0*100,0))} %.`,
+explain:`1) По таблице при ${t} °С: ρ₀ = ${N(r0)} г/м³.<br>2) φ = ρ / ρ₀ · 100 % = ${N(r)} / ${N(r0)} · 100 % ≈ <b>${N(rd(r/r0*100,0))} %</b>.`,
+explain2:`При ${t} °С в 1 м³ воздуха может быть не больше ${N(r0)} г пара, а есть ${N(r)} г. Это ${N(r)} : ${N(r0)} ≈ ${N(rd(r/r0,2))} — примерно ${N(rd(r/r0*100,0))} % от максимума.`});});
+G(4,()=>{const t=pick([15,20,25,30]);const r0=RHO0[t];const phi=pick([30,40,50,60,80]);const V=pick([30,50,60,75]);const mp=r0*phi/100*V;
+return NUM(`В комнате объёмом ${V} м³ температура ${t} °С, относительная влажность ${phi} %. Сколько граммов водяного пара в воздухе комнаты? ρ₀ при ${t} °С = ${N(r0)} г/м³.`,mp,0,
+{short:`ρ = ${phi} % · ${N(r0)} = ${N(rd(r0*phi/100,3))} г/м³; m = ${N(rd(r0*phi/100,3))} · ${V} ≈ ${N(rd(mp,0))} г.`,
+explain:`1) Абсолютная влажность: ρ = φ · ρ₀ = ${N(phi/100)} · ${N(r0)} = ${N(rd(r0*phi/100,3))} г/м³.<br>2) Масса пара: m = ρ · V = ${N(rd(r0*phi/100,3))} · ${V} ≈ <b>${N(rd(mp,0))} г</b>.`,
+explain2:`В каждом кубометре может поместиться ${N(r0)} г пара, а заполнено ${phi} % — ${N(rd(r0*phi/100,3))} г. Кубометров ${V}: ${N(rd(r0*phi/100,3))} · ${V} ≈ ${N(rd(mp,0))} г — это примерно ${N(rd(mp/1000,2))} л воды!`});});
+G(4,()=>{const t=pick([20,25,30]);const r0=RHO0[t];const night=pick([0,5,10,15]);const rho=pick([5.5,7.5,10.5,12,14,16]);if(rho>r0)return null;const dew=rho>=RHO0[night];
+const opts=['Да, выпадет','Нет, не выпадет'];
+return {type:'choice',q:`Днём при ${t} °С абсолютная влажность ${N(rho)} г/м³. Ночью воздух остынет до ${night} °С. Выпадет ли роса? Таблица:${RT}`,opts,ans:dew?0:1,
+short:`При ${night} °С ρ₀ = ${N(RHO0[night])} г/м³ ${dew?'≤':'>'} ${N(rho)} г/м³ — роса ${dew?'выпадет':'не выпадет'}.`,
+explain:`Роса выпадает, если воздух не может удержать весь пар: ρ ≥ ρ₀ при новой температуре.<br>При ${night} °С: ρ₀ = ${N(RHO0[night])} г/м³. Пара в воздухе ${N(rho)} г/м³.<br>${dew?`${N(rho)} ≥ ${N(RHO0[night])} — пар станет насыщенным, лишнее выпадет: <b>роса будет</b>.`:`${N(rho)} < ${N(RHO0[night])} — пар ещё не насыщенный: <b>росы не будет</b>.`}`,
+explain2:`Губка-аналогия: ночью «губка» воздуха сжимается до ${N(RHO0[night])} г на кубометр. Если в ней ${N(rho)} г пара, ${dew?'всё не поместится — вода выжмется росой':'всё помещается — капать нечему'}.`};});
+
+/* L5 — весь путь */
+RULE(5,'Лёд при −10 °С превращают в пар при 100 °С. Какой порядок этапов верный?','Нагрев льда → плавление → нагрев воды → кипение',['Плавление → нагрев льда → кипение → нагрев воды','Нагрев льда → нагрев воды → плавление → кипение','Плавление → кипение'],
+{short:'Каждый раз сначала догреваем до точки перехода, потом переход.',
+explain:'Лёд при −10 °С не может сразу таять — сначала его нужно нагреть до 0 °С (c<sub>л</sub>mΔt). Потом он тает при 0 °С (λm). Потом вода нагревается до 100 °С (c<sub>в</sub>mΔt). И наконец кипит при 100 °С (Lm). На графике: наклон, полочка, наклон, полочка.',
+explain2:'Как лестница с площадками: подъём — площадка — подъём — площадка. Подъёмы — нагрев (температура растёт), площадки — смена состояния (температура стоит).'});
+G(5,()=>{const m=pick([0.5,1,2]);const ti=pick([10,20,30]);const tw=pick([20,30,50]);const Q1=C_I*m*ti,Q2=LAM*m,Q3=C_W*m*tw;const Q=Q1+Q2+Q3;
+return NUM(`Сколько энергии нужно, чтобы ${N(m)} кг льда при −${ti} °С превратить в воду при ${tw} °С? c<sub>льда</sub> = 2100 ${U}, ${lamS('ice')}, c<sub>воды</sub> = 4200 ${U}. Ответ в кДж.`,Q/1000,1,
+{hint:'Три этапа: нагрев льда до 0 °С, плавление, нагрев воды.',short:`${N(Q1/1000)} + ${N(Q2/1000)} + ${N(Q3/1000)} = ${N(Q/1000)} кДж.`,
+explain:`1) Лёд от −${ti} до 0 °С: Q₁ = 2100 · ${N(m)} · ${ti} = ${NN(Q1)} Дж.<br>2) Плавление: Q₂ = 340&nbsp;000 · ${N(m)} = ${NN(Q2)} Дж.<br>3) Вода от 0 до ${tw} °С: Q₃ = 4200 · ${N(m)} · ${tw} = ${NN(Q3)} Дж.<br>Q = ${NN(Q)} Дж = <b>${N(Q/1000)} кДж</b>.<br>Типичная ошибка — взять для льда 4200: c<sub>льда</sub> = 2100.`,
+explain2:`В кДж по этапам: ${N(Q1/1000)} (нагрев льда) + ${N(Q2/1000)} (плавление) + ${N(Q3/1000)} (нагрев воды) = ${N(Q/1000)}. Видно, что плавление — самая «дорогая» часть.`});});
+G(5,()=>{const m=pick([0.2,0.5,1]);const t=pick([0,10,20,40]);const Q1=C_W*m*(100-t),Q2=L_W*m;const f=Q2/(Q1+Q2)*100;
+return NUM(`Воду массой ${N(m)} кг при ${t} °С нагрели и полностью превратили в пар. Какая доля (в %) всей затраченной энергии ушла именно на парообразование? c<sub>воды</sub> = 4200 ${U}, L = 2,3·10⁶ Дж/кг.`,f,0,
+{short:`${NN(Q2)} / ${NN(Q1+Q2)} · 100 % ≈ ${N(rd(f,0))} %.`,
+explain:`Нагрев: Q₁ = 4200 · ${N(m)} · ${100-t} = ${NN(Q1)} Дж. Пар: Q₂ = 2&nbsp;300&nbsp;000 · ${N(m)} = ${NN(Q2)} Дж.<br>Доля: Q₂ / (Q₁ + Q₂) · 100 % = ${NN(Q2)} / ${NN(Q1+Q2)} · 100 % ≈ <b>${N(rd(f,0))} %</b>.<br>Масса, кстати, не важна — она сокращается.`,
+explain2:`Посчитай на 1 кг: нагрев ${N(4.2*(100-t))} кДж, пар 2300 кДж. Доля пара: 2300 / ${N(rd(2300+4.2*(100-t),1))} ≈ ${N(rd(f,0))} %. Масса одинаково умножает обе части и сокращается.`});});
+G(5,()=>{const m=pick([0.5,1,2]);const ti=pick([5,10,20]);
+const P=[[0,-ti],[2,0],[6,0],[10,100],[16,100]];const segs=['AB','BC','CD','DE'];const k=pick([0,1,2,3]);const names=['нагрев льда','плавление льда','нагрев воды','кипение воды'];
+const Qs=[C_I*m*ti,LAM*m,C_W*m*100,L_W*m];const forms=[`2100 · ${N(m)} · ${ti}`,`340&nbsp;000 · ${N(m)}`,`4200 · ${N(m)} · 100`,`2&nbsp;300&nbsp;000 · ${N(m)}`];
+return NUM(`На графике — нагревание ${N(m)} кг льда, взятого при −${ti} °С. Сколько энергии получило вещество на участке <b>${segs[k]}</b>? c<sub>льда</sub> = 2100, c<sub>воды</sub> = 4200 ${U}, λ = 3,4·10⁵ Дж/кг, L = 2,3·10⁶ Дж/кг. Ответ в кДж.`,Qs[k]/1000,1,
+{pic:pgraph(P,{labels:['A','B','C','D','E'],yt:[0,100],xt:[],ymin:-ti,ymax:100,xmax:17}),short:`${segs[k]} — ${names[k]}: ${forms[k]} = ${NN(Qs[k])} Дж.`,
+explain:`Участки: AB — нагрев льда до 0 °С, BC — плавление (полочка при 0 °С), CD — нагрев воды до 100 °С, DE — кипение (полочка при 100 °С).<br>${segs[k]} — <b>${names[k]}</b>: Q = ${forms[k]} = ${NN(Qs[k])} Дж = <b>${N(Qs[k]/1000)} кДж</b>.`,
+explain2:`Правило графика: на <b>наклонных</b> участках Q = cmΔt (у льда c = 2100, у воды 4200), на <b>горизонтальных</b> — Q = λm (при 0 °С) или Q = Lm (при 100 °С). ${segs[k]} — ${k%2?'горизонтальный':'наклонный'}, поэтому ${forms[k]}.`});});
+
+/* L6 — топливо */
+RULE(6,'Что показывает удельная теплота сгорания топлива q?','Сколько энергии выделяется при полном сгорании 1 кг топлива',['Сколько энергии нужно, чтобы поджечь 1 кг топлива','При какой температуре горит топливо','Сколько топлива сгорает за 1 секунду'],
+{short:'q — Дж на 1 кг сгоревшего топлива. Q = qm.',
+explain:'q показывает, сколько джоулей выделяется при <b>полном</b> сгорании <b>1 кг</b> топлива. Для всего топлива: Q = q·m. Например, у бензина q = 4,6·10⁷ Дж/кг: 1 кг бензина даёт 46 МДж.',
+explain2:'Сравни топлива «по калорийности»: 1 кг дров даёт 10 МДж, 1 кг угля — 27 МДж, 1 кг бензина — 46 МДж. Чем больше q, тем меньше топлива нужно для одной и той же работы.'});
+G(6,()=>{const k=pick(Object.keys(FUEL));const f=FUEL[k];const mg=pick([5,10,20,50,100,200,500]);const Q=f.q*mg/1000;
+return NUM(`Сколько энергии выделится при полном сгорании ${mg} г вещества «${f.n}»? ${qS(k)}. Ответ дай в кДж.`,Q/1000,0,
+{short:`Q = qm = ${f.s} · ${N(mg/1000)} = ${NN(Q)} Дж = ${NN(Q/1000)} кДж.`,
+explain:`1) ${mg} г = ${N(mg/1000)} кг.<br>2) Q = q·m = ${f.s} · ${N(mg/1000)} = ${NN(f.q)} · ${N(mg/1000)} = ${NN(Q)} Дж = <b>${NN(Q/1000)} кДж</b>.`,
+explain2:`1 кг даёт ${NN(f.q/1000)} кДж. 1 г — в тысячу раз меньше: ${NN(f.q/1e6)} кДж. ${mg} г — в ${mg} раз больше: ${NN(f.q/1e6)} · ${mg} = ${NN(Q/1000)} кДж.`});});
+G(6,()=>{const k=pick(['gas','alc','pet','ker']);const f=FUEL[k];const mw=pick([1,2,3,5]);const t1=pick([10,15,20]);const eta=pick([100,50,40,60]);const Qw=C_W*mw*(100-t1);const mf=Qw/(eta/100)/f.q;
+return NUM(`Сколько граммов вещества «${f.n}» нужно сжечь, чтобы нагреть ${mw} кг воды от ${t1} °С до кипения, если ${eta===100?'вся теплота идёт на нагрев воды':`на нагрев воды идёт только ${eta} % теплоты`}? ${qS(k)}, c<sub>воды</sub> = 4200 ${U}.`,mf*1000,1,
+{hint:eta===100?'q·m = c·m·Δt':'η·q·m = c·m·Δt',short:`m = ${NN(Qw)} / (${eta===100?'':N(eta/100)+' · '}${f.s}) ≈ ${N(rd(mf*1000,1))} г.`,
+explain:`1) Воде нужно: Q = 4200 · ${mw} · (100 − ${t1}) = ${NN(Qw)} Дж.<br>2) ${eta===100?'Это вся энергия топлива: q·m = Q.':`Это только ${eta} % энергии топлива: ${N(eta/100)}·q·m = Q, значит, топливо должно дать ${NN(Qw)} : ${N(eta/100)} = ${NN(rd(Qw/(eta/100),2))} Дж.`}<br>3) m = ${NN(rd(Qw/(eta/100),2))} : ${NN(f.q)} ≈ ${N(rd(mf,5))} кг ≈ <b>${N(rd(mf*1000,1))} г</b>.`,
+explain2:`Сначала «сколько энергии нужно» (${NN(Qw)} Дж${eta===100?'':`, а с учётом потерь — ${NN(rd(Qw/(eta/100),2))} Дж`}), потом «сколько топлива даёт столько энергии»: каждый грамм даёт ${NN(f.q/1000)} Дж, значит, нужно ${NN(rd(Qw/(eta/100),2))} : ${NN(f.q/1000)} ≈ ${N(rd(mf*1000,1))} г.`});});
+G(6,()=>{const ks=sample(Object.keys(FUEL).filter(x=>x!=='ker'),2);const a=FUEL[ks[0]],b=FUEL[ks[1]];if(a.q===b.q)return null;const r=Math.max(a.q,b.q)/Math.min(a.q,b.q);const big=a.q>b.q?a:b,sm=a.q>b.q?b:a;
+return NUM(`Во сколько раз больше нужно сжечь вещества «${sm.n}», чем вещества «${big.n}», чтобы получить одинаковое количество теплоты? q<sub>1</sub> = ${big.s} Дж/кг (${big.n}), q<sub>2</sub> = ${sm.s} Дж/кг (${sm.n}).`,r,2,
+{short:`m ∼ 1/q: ${big.s} : ${sm.s} ≈ ${N(rd(r,2))}.`,
+explain:`Q = q₁m₁ = q₂m₂, значит m₂ / m₁ = q₁ / q₂ = ${NN(big.q)} : ${NN(sm.q)} ≈ <b>${N(rd(r,2))}</b>. Топлива с меньшей теплотой сгорания нужно больше.`,
+explain2:`Возьми, например, 1 кг «${big.n}» — он даст ${N(big.q/1e6)} МДж. Каждый кг «${sm.n}» даёт ${N(sm.q/1e6)} МДж. Сколько кг нужно для ${N(big.q/1e6)} МДж? ${N(big.q/1e6)} : ${N(sm.q/1e6)} ≈ ${N(rd(r,2))} кг.`});});
+
+/* L7 — двигатели, КПД */
+RULE(7,'Как вычисляют КПД теплового двигателя?','η = A<sub>п</sub> / Q · 100 %, где Q = qm — энергия сгоревшего топлива',['η = Q / A<sub>п</sub> · 100 %','η = A<sub>п</sub> · Q','η = Q − A<sub>п</sub>'],
+{short:'Полезная работа делить на всю энергию топлива.',
+explain:'КПД — доля полезной работы во всей затраченной энергии: <b>η = A<sub>п</sub>/Q · 100 %</b>. Полезная работа всегда меньше энергии топлива, поэтому η < 100 %. Если делить наоборот (Q/A), получится больше 100 % — это признак ошибки.',
+explain2:'Ты купил пиццу за 100 ₽, а съел кусков на 30 ₽ — «КПД» 30 %. Так и двигатель: из 100 Дж энергии бензина «съедено» в работу примерно 25–30 Дж, остальное ушло в тепло выхлопа и радиатора.'});
+RULE(7,'Может ли КПД теплового двигателя быть равен 100 %?','Нет: часть теплоты обязательно уходит в холодильник (окружающую среду)',['Да, если хорошо смазать детали','Да, если использовать водород','Может быть даже больше 100 %'],
+{short:'КПД теплового двигателя всегда меньше 100 %.',
+explain:'Рабочему телу (газу) нужно отдать часть теплоты холодильнику (атмосфере), чтобы поршень вернулся и цикл повторился. Поэтому даже идеальный тепловой двигатель без трения не превратит всю теплоту в работу: η < 100 %. Смазка и топливо уменьшают только часть потерь.',
+explain2:'Реальные цифры: бензиновый двигатель ~ 25–30 %, дизель ~ 35–40 %, лучшие электростанции ~ 40–60 %. И никогда 100 %.'});
+G(7,()=>{const k=pick(['pet','dis']);const f=FUEL[k];const m=pick([0.5,1,2,3,5]);const eta=pick([20,25,30,35,40]);const A=f.q*m*eta/100;
+return NUM(`Двигатель израсходовал ${N(m)} кг вещества «${f.n}» и совершил полезную работу ${N(A/1e6)} МДж. Найди КПД двигателя (в %). ${qS(k)}.`,eta,0,
+{pic:enginePic(eta),short:`Q = ${N(f.q*m/1e6)} МДж; η = ${N(A/1e6)} / ${N(f.q*m/1e6)} · 100 % = ${eta} %.`,
+explain:`1) Энергия топлива: Q = q·m = ${f.s} · ${N(m)} = ${NN(f.q*m)} Дж = ${N(f.q*m/1e6)} МДж.<br>2) η = A<sub>п</sub> / Q · 100 % = ${N(A/1e6)} / ${N(f.q*m/1e6)} · 100 % = <b>${eta} %</b>.`,
+explain2:`Из ${N(f.q*m/1e6)} МДж энергии «в дело» пошло ${N(A/1e6)} МДж. Какая это часть? ${N(A/1e6)} : ${N(f.q*m/1e6)} = ${N(eta/100)}, то есть ${eta} %. Остальные ${100-eta} % ушли в тепло.`});});
+G(7,()=>{const k=pick(['pet','dis']);const f=FUEL[k];const eta=pick([25,30,35,40]);const A=pick([23,46,69,92,42,84])*1e6;const m=A/(eta/100)/f.q;
+return NUM(`Какую массу вещества «${f.n}» израсходует двигатель с КПД ${eta} %, чтобы совершить полезную работу ${N(A/1e6)} МДж? ${qS(k)}. Ответ в кг.`,m,2,
+{short:`Q = ${N(A/1e6)} : ${N(eta/100)} = ${N(rd(A/(eta/100)/1e6,3))} МДж; m = Q/q ≈ ${N(rd(m,2))} кг.`,
+explain:`1) Полезная работа — только ${eta} % энергии топлива. Значит, Q = A<sub>п</sub> / η = ${N(A/1e6)} : ${N(eta/100)} = ${N(rd(A/(eta/100)/1e6,3))} МДж.<br>2) m = Q / q = ${NN(rd(A/(eta/100),0))} : ${NN(f.q)} ≈ <b>${N(rd(m,2))} кг</b>.<br>Если забыть про КПД, выйдет всего ${N(rd(A/f.q,2))} кг — двигатель не идеальный!`,
+explain2:`Каждый кг топлива даёт ${N(f.q/1e6)} МДж, но в работу из них идёт ${eta} % — ${N(rd(f.q*eta/100/1e6,3))} МДж. Нам нужно ${N(A/1e6)} МДж работы: ${N(A/1e6)} : ${N(rd(f.q*eta/100/1e6,3))} ≈ ${N(rd(m,2))} кг.`});});
+G(7,()=>{const P=pick([20,30,40,50,60]);const eta=pick([25,30]);const tmin=pick([30,60,90,120]);const A=P*1000*tmin*60;const m=A/(eta/100)/4.6e7;
+return NUM(`Мотор мотоцикла развивает полезную мощность ${P} кВт и работает ${tmin} мин. КПД ${eta} %. Сколько килограммов бензина он израсходует? q = 4,6·10⁷ Дж/кг.`,m,2,
+{hint:'A = P·t (мощность в Вт, время в секундах).',short:`A = ${P*1000}·${tmin*60} = ${N(A/1e6)} МДж; m = A/(η·q) ≈ ${N(rd(m,2))} кг.`,
+explain:`1) Полезная работа: A = P·t = ${NN(P*1000)} Вт · ${NN(tmin*60)} с = ${NN(A)} Дж = ${N(A/1e6)} МДж.<br>2) Энергия бензина: Q = A/η = ${N(A/1e6)} : ${N(eta/100)} = ${N(rd(A/(eta/100)/1e6,2))} МДж.<br>3) m = Q/q = ${NN(rd(A/(eta/100),0))} : 46&nbsp;000&nbsp;000 ≈ <b>${N(rd(m,2))} кг</b>.`,
+explain2:`Не забудь переводы: ${P} кВт = ${NN(P*1000)} Вт (Дж в секунду), ${tmin} мин = ${NN(tmin*60)} с. Цепочка: работа → энергия топлива (делим на КПД) → масса (делим на q).`});});
+G(7,()=>{const st=['Впуск','Сжатие','Рабочий ход','Выпуск'];const P=[['Поршень идёт вниз, впускной клапан открыт, в цилиндр входит горючая смесь',0],['Оба клапана закрыты, поршень идёт вверх и сжимает смесь, она нагревается',1],['Искра поджигает смесь, раскалённые газы толкают поршень вниз — совершается полезная работа',2],['Поршень идёт вверх, выпускной клапан открыт, отработавшие газы выходят',3],['Единственный такт, в котором газ совершает полезную работу',2]];
+const p=pick(P);return {type:'choice',q:`Четырёхтактный двигатель внутреннего сгорания. Какой это такт? <i>${p[0]}</i>.`,opts:st,ans:p[1],short:`Это такт «${st[p[1]].toLowerCase()}».`,
+explain:`Порядок тактов: 1) <b>впуск</b> — поршень вниз, входит смесь; 2) <b>сжатие</b> — клапаны закрыты, поршень вверх; 3) <b>рабочий ход</b> — искра, газы толкают поршень вниз (полезная работа); 4) <b>выпуск</b> — поршень вверх, газы выходят.<br>Здесь — <b>${st[p[1]].toLowerCase()}</b>.`,
+explain2:`Запоминалка: «вдох — сжал — бах! — выдох». Вдох — впуск, сжал — сжатие, бах — рабочий ход, выдох — выпуск. «${p[0]}» — это «${['вдох','сжал','бах!','выдох'][p[1]]}».`};});
+
+/* L8 — ★ */
+RULE(8,'В воду при 20 °С бросили много льда при 0 °С. Растаял не весь лёд. Какой будет температура смеси?','0 °С',['10 °С','Ниже 0 °С','20 °С'],
+{short:'Лёд и вода вместе в равновесии — только при 0 °С.',
+explain:'Если в конце в сосуде есть и лёд, и вода, их общая температура может быть только температурой плавления — <b>0 °С</b>. Выше 0 лёд бы продолжал таять, ниже 0 — вода бы замерзала. Поэтому в задачах «растаял не весь лёд» конечная температура 0 °С.',
+explain2:'Коктейль со льдом: пока плавают льдинки, напиток холодный, около 0 °С — как бы тепло ни было вокруг. Только когда лёд растает, напиток начнёт теплеть.'});
+G(8,()=>{for(;;){const mw=pick([0.5,1,1.5,2]);const tw=pick([20,30,40,50,60]);const mi=pick([0.5,1,1.5,2]);const ti=pick([0,0,5,10]);
+const give=C_W*mw*tw,need0=C_I*mi*ti;const melt=(give-need0)/LAM;if(melt<=0.01||melt>=mi)continue;
+return NUM(`★ В ${N(mw)} кг воды при ${tw} °С бросили ${N(mi)} кг льда при ${ti?'−'+ti:'0'} °С. Сколько граммов льда растает? Потерь нет. c<sub>воды</sub> = 4200, c<sub>льда</sub> = 2100 ${U}, ${lamS('ice')}.`,melt*1000,0,
+{hint:'Сравни: сколько тепла отдаст вода, остыв до 0 °С, и сколько нужно, чтобы весь лёд нагреть и растопить.',
+short:`(${NN(give)}${ti?' − '+NN(need0):''}) / 340&nbsp;000 ≈ ${N(rd(melt*1000,0))} г.`,
+explain:`1) Вода, остывая до 0 °С, может отдать: 4200 · ${N(mw)} · ${tw} = ${NN(give)} Дж.<br>${ti?`2) На нагрев льда до 0 °С уйдёт: 2100 · ${N(mi)} · ${ti} = ${NN(need0)} Дж. Остаётся ${NN(give-need0)} Дж.<br>3)`:'2)'} На плавление всего льда нужно 340&nbsp;000 · ${N(mi)} = ${NN(LAM*mi)} Дж — <b>больше</b>, чем есть. Значит, растает только часть, и в конце будет 0 °С.<br>${ti?'4)':'3)'} Растает: m = ${NN(give-need0)} / 340&nbsp;000 ≈ ${N(rd(melt,4))} кг ≈ <b>${N(rd(melt*1000,0))} г</b>.`,
+explain2:`Думай как бухгалтер: у воды «на счету» ${NN(give)} Дж (до 0 °С ниже она не остынет, пока есть лёд). ${ti?`Сначала заплатим ${NN(need0)} Дж за нагрев льда. `:''}Остаток ${NN(give-need0)} Дж тратим на плавление по 340 Дж за грамм: ${NN(give-need0)} : 340 ≈ ${N(rd(melt*1000,0))} г.`});}},{star:true});
+G(8,()=>{for(;;){const mw=pick([1,1.5,2,3]);const tw=pick([60,70,80,90]);const mi=pick([0.1,0.2,0.25,0.3,0.4]);const give=C_W*mw*tw;if(give<=LAM*mi)continue;
+const th=(C_W*mw*tw-LAM*mi)/(C_W*(mw+mi));
+return NUM(`★ В ${N(mw)} кг воды при ${tw} °С бросили ${N(mi*1000)} г льда при 0 °С. Какая установится температура? Потерь нет. c<sub>воды</sub> = 4200 ${U}, ${lamS('ice')}. Ответ в °С.`,th,1,
+{hint:'Проверь, растает ли весь лёд. Если да — растаявшая вода потом нагревается от 0 до θ.',
+short:`4200·${N(mw)}·(${tw} − θ) = 340&nbsp;000·${N(mi)} + 4200·${N(mi)}·θ → θ ≈ ${N(rd(th,1))} °С.`,
+explain:`Проверка: вода может отдать до 0 °С ${NN(give)} Дж, на плавление льда нужно ${NN(LAM*mi)} Дж — хватает, лёд растает весь.<br>Баланс: горячая вода отдаёт 4200·${N(mw)}·(${tw} − θ); лёд получает λm = ${NN(LAM*mi)} и потом как вода нагревается: 4200·${N(mi)}·θ.<br>${NN(C_W*mw*tw)} − ${NN(C_W*mw)}θ = ${NN(LAM*mi)} + ${NN(C_W*mi)}θ<br>θ = (${NN(C_W*mw*tw)} − ${NN(LAM*mi)}) / ${NN(C_W*(mw+mi))} ≈ <b>${N(rd(th,1))} °С</b>.`,
+explain2:`Удобный трюк: сначала «растопим» лёд за счёт горячей воды — на это уйдёт ${NN(LAM*mi)} Дж, и горячая вода остынет на ${N(rd(LAM*mi/(C_W*mw),2))}° — до ${N(rd(tw-LAM*mi/(C_W*mw),2))} °С. Теперь просто смешиваем ${N(mw)} кг при ${N(rd(tw-LAM*mi/(C_W*mw),2))} °С и ${N(mi)} кг при 0 °С: θ = ${N(mw)}·${N(rd(tw-LAM*mi/(C_W*mw),2))} / ${N(mw+mi)} ≈ ${N(rd(th,1))} °С.`});}},{star:true});
+G(8,()=>{const t0=pick([10,15,20,25]);const tau=pick([5,6,8,10,12]);const r=L_W/(C_W*(100-t0));const ans=tau*r;
+return NUM(`★ Электрический чайник с водой при ${t0} °С закипел за ${tau} мин. Его забыли выключить. Через сколько минут <b>после закипания</b> выкипит вся вода? Нагреватель передаёт воде одинаковую энергию каждую секунду, потерь нет. c<sub>воды</sub> = 4200 ${U}, L = 2,3·10⁶ Дж/кг.`,ans,0,
+{hint:'Время пропорционально энергии. Масса и мощность сократятся.',
+short:`τ = ${tau} · L / (c·${100-t0}) = ${tau} · ${N(rd(r,3))} ≈ ${N(rd(ans,0))} мин.`,
+explain:`Нагреватель за каждую минуту даёт одну и ту же энергию, поэтому время ∼ энергии.<br>Нагрев: Q₁ = c·m·${100-t0}; выпаривание: Q₂ = L·m.<br>τ₂ / τ₁ = Q₂ / Q₁ = L / (c·${100-t0}) = 2&nbsp;300&nbsp;000 / ${NN(C_W*(100-t0))} ≈ ${N(rd(r,3))}.<br>τ₂ = ${tau} · ${N(rd(r,3))} ≈ <b>${N(rd(ans,0))} мин</b>.`,
+explain2:`Посчитаем на 1 кг воды: нагрев стоит ${NN(C_W*(100-t0)/1000)} кДж и занимает ${tau} мин — значит, нагреватель даёт ${N(rd(C_W*(100-t0)/1000/tau,2))} кДж в минуту. Выкипание — 2300 кДж: 2300 : ${N(rd(C_W*(100-t0)/1000/tau,2))} ≈ ${N(rd(ans,0))} мин.`});},{star:true});
+G(8,()=>{const t0=pick([27,47,77,127]);const eta=pick([50,60,80,100]);const Q=140*(327-t0)+25000;const v=Math.sqrt(2*Q/(eta/100));
+return NUM(`★ Свинцовая пуля при ${t0} °С ударяется о стальную плиту и останавливается. ${eta===100?'Вся её кинетическая энергия':`${eta} % её кинетической энергии`} идёт на нагрев пули. При какой наименьшей скорости пуля полностью расплавится? c<sub>свинца</sub> = 140 ${U}, ${lamS('pb')}, t<sub>пл</sub> = 327 °С. Ответ в м/с.`,v,0,
+{hint:'η·mv²/2 = c·m·(t<sub>пл</sub> − t₀) + λm. Масса сокращается.',
+short:`v = √(2·(140·${327-t0} + 25&nbsp;000)/${N(eta/100)}) ≈ ${N(rd(v,0))} м/с.`,
+explain:`Энергия на 1 кг пули: нагрев c·(327 − ${t0}) = 140 · ${327-t0} = ${NN(140*(327-t0))} Дж, плавление λ = 25&nbsp;000 Дж. Всего ${NN(Q)} Дж/кг.<br>Кинетическая энергия 1 кг: v²/2, на нагрев идёт ${N(eta/100)} · v²/2.<br>${N(eta/100)} · v²/2 = ${NN(Q)} → v² = ${NN(rd(2*Q/(eta/100),2))} → v ≈ <b>${N(rd(v,0))} м/с</b>.<br>Масса сократилась — не важно, большая пуля или маленькая.`,
+explain2:`Проверка в обратную сторону: при v = ${N(rd(v,0))} м/с у 1 кг пули энергия ${N(rd(v,0))}²/2 ≈ ${NN(rd(rd(v,0)**2/2,0))} Дж, на нагрев идёт ${eta} % ≈ ${NN(rd(rd(v,0)**2/2*eta/100,0))} Дж — как раз ≈ ${NN(Q)} Дж, нужных на нагрев и плавление.`});},{star:true});
+G(8,()=>{for(;;){const mw=pick([0.5,1,2]);const tw=pick([10,15,20]);const th=pick([40,50,60,70]);const ms=C_W*mw*(th-tw)/(L_W+C_W*(100-th));
+return NUM(`★ В ${N(mw)} кг воды при ${tw} °С впускают пар при 100 °С, пока температура воды не станет ${th} °С. Сколько граммов пара сконденсировалось? Потерь нет. c<sub>воды</sub> = 4200 ${U}, L = 2,3·10⁶ Дж/кг.`,ms*1000,0,
+{hint:'Пар сначала конденсируется (Lm), потом получившаяся вода остывает от 100 до θ.',
+short:`m = 4200·${N(mw)}·${th-tw} / (2&nbsp;300&nbsp;000 + 4200·${100-th}) ≈ ${N(rd(ms*1000,0))} г.`,
+explain:`Вода получает: 4200 · ${N(mw)} · (${th} − ${tw}) = ${NN(C_W*mw*(th-tw))} Дж.<br>Каждый кг пара отдаёт: при конденсации L = 2&nbsp;300&nbsp;000 Дж и при остывании от 100 до ${th} °С ещё 4200 · ${100-th} = ${NN(C_W*(100-th))} Дж. Всего ${NN(L_W+C_W*(100-th))} Дж/кг.<br>m = ${NN(C_W*mw*(th-tw))} / ${NN(L_W+C_W*(100-th))} ≈ ${N(rd(ms,4))} кг ≈ <b>${N(rd(ms*1000,0))} г</b>.<br>Если забыть остывание сконденсированной воды, выйдет ${N(rd(C_W*mw*(th-tw)/L_W*1000,0))} г — немного больше.`,
+explain2:`Видишь, как мало пара нужно — всего ${N(rd(ms*1000,0))} г на ${N(mw)} кг воды! Это потому, что L огромная: 1 г пара отдаёт ${N(rd((L_W+C_W*(100-th))/1000,1))} Дж — почти как ${N(rd((L_W+C_W*(100-th))/1000/(C_W/1000*(th-tw)),1))} г холодной воды, нагреваемой на ${th-tw}°. Так работают паровые подогреватели молока в кофейнях.`});}},{star:true});
+G(8,()=>{for(;;){const mi=pick([0.1,0.2,0.3,0.5]);const k=pick(['al','cu','fe']);const m=MET[k];const mm=pick([0.2,0.5,1]);const tm=pick([100,150,200,300]);const give=m.c*mm*tm;const melt=give/LAM;if(melt>=mi||melt<0.005)continue;
+return NUM(`★ Брусок из вещества «${m.n}» массой ${N(mm)} кг, нагретый до ${tm} °С, положили на большой кусок льда при 0 °С. Сколько граммов льда растает, пока брусок остынет до 0 °С? Потерь нет. ${cS(m.g,m.c)}, ${lamS('ice')}.`,melt*1000,0,
+{short:`${NN(m.c)}·${N(mm)}·${tm} / 340&nbsp;000 ≈ ${N(rd(melt*1000,0))} г.`,
+explain:`Брусок, остывая от ${tm} до 0 °С, отдаёт Q = ${NN(m.c)} · ${N(mm)} · ${tm} = ${NN(give)} Дж.<br>Вся эта энергия идёт на плавление льда при 0 °С: λ·m<sub>л</sub> = Q.<br>m<sub>л</sub> = ${NN(give)} / 340&nbsp;000 ≈ ${N(rd(melt,4))} кг ≈ <b>${N(rd(melt*1000,0))} г</b>.`,
+explain2:`Так в XVIII веке измеряли теплоту — «ледяным калориметром» Лапласа и Лавуазье: по массе растаявшего льда. На каждый грамм — 340 Дж. Брусок отдал ${NN(give)} Дж → ${NN(give)} : 340 ≈ ${N(rd(melt*1000,0))} г.`});}},{star:true});
+
+window.TOPIC={id:'p8_phase',title:'Агрегатные превращения',subtitle:'Физика · 8 класс',
+intro:`<p>Почему после купания холодно даже в жару, почему лёд тает при постоянной температуре, отчего в горах макароны варятся дольше и куда уходит энергия бензина. Плавление, испарение, кипение, влажность, топливо и тепловые двигатели. Есть живой график «лёд → пар», а в конце — олимпиадные задачи.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Плавление и кристаллизация','Удельная теплота плавления λ','Испарение и конденсация','Кипение: Q = Lm','Влажность воздуха','Весь путь: лёд → вода → пар','Энергия топлива','Тепловые двигатели и КПД','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

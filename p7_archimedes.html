@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Сила Архимеда и плавание — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const n=x=>{let s=H.num(Math.round(x*1e6)/1e6);const m=s.match(/^(−?)(\d+)(.*)$/);if(m&&m[2].length>4)s=m[1]+m[2].replace(/\B(?=(\d{3})+(?!\d))/g,' ')+m[3];return s;};
+const rd=(x,k)=>{const p=Math.pow(10,k==null?2:k);return Math.round(x*p)/p;};
+const gens=[];
+const G=(lvl,make,o)=>gens.push(Object.assign({lvl,make:()=>{for(let i=0;i<300;i++){const t=make();if(t)return t;}return null;}},o||{}));
+const ST={star:true},RU={rule:true},RS={rule:true,star:true};
+const NUM=o=>{const t=Object.assign({type:'num'},o);if(t.tol===undefined&&t.ans!==0)t.tol=Math.min(0.01,0.4/Math.abs(t.ans));if(!t.ansText)t.ansText=`${n(t.ans)}${t.u?' '+t.u:''}`;if(!t.ph)t.ph=t.u?`ответ в ${t.u}`:'впиши число';return t;};
+const CH=(q,right,wrongs,o)=>{const opts=shuffle([right,...wrongs]);return Object.assign({type:'choice',q,opts,ans:opts.indexOf(right)},o);};
+const M=s=>`<span class="m">${s}</span>`;
+const fr=H.frac;
+const LQ={w:{t:'вода',g:'воде',r:1000},s:{t:'морская вода',g:'морской воде',r:1030},k:{t:'керосин',g:'керосине',r:800},hg:{t:'ртуть',g:'ртути',r:13600}};
+const SOL=[{t:'пробка',r:240},{t:'сосна',r:400},{t:'дуб',r:700},{t:'лёд',r:900},{t:'парафин',r:900},{t:'алюминий',r:2700},{t:'сталь',r:7800},{t:'медь',r:8900},{t:'свинец',r:11300},{t:'золото',r:19300},{t:'стекло',r:2500}];
+
+/* ---------- pictures ---------- */
+function tank(frac,lab){ // body floating with fraction submerged (>=1 → at bottom)
+  const top=60,bot=170,h=50,w=70;const y=frac>=1?bot-h:top-h*(1-frac);
+  let s=`<svg viewBox="0 0 240 190" width="220" role="img" aria-label="Тело в жидкости" style="font-family:system-ui,sans-serif">`;
+  s+=`<rect x="20" y="${top}" width="200" height="${bot-top}" fill="var(--accent)" fill-opacity=".25"/><path d="M20,20 L20,${bot} L220,${bot} L220,20" fill="none" stroke="var(--fig)" stroke-width="2"/><line x1="20" y1="${top}" x2="220" y2="${top}" stroke="var(--accent-ink)" stroke-width="1.4"/>`;
+  s+=`<rect x="${120-w/2}" y="${y}" width="${w}" height="${h}" rx="3" fill="var(--hl)" fill-opacity=".7" stroke="var(--fig)"/>`;
+  if(lab)s+=lab;
+  return s+'</svg>';
+}
+function crownSvg(){
+  return `<svg viewBox="0 0 300 150" width="300" role="img" aria-label="Взвешивание в воздухе и в воде" style="font-family:system-ui,sans-serif">
+  <line x1="70" y1="10" x2="70" y2="60" stroke="var(--fig)" stroke-width="2"/><rect x="55" y="60" width="30" height="24" rx="3" fill="var(--hl)" fill-opacity=".7" stroke="var(--fig)"/><text x="70" y="110" text-anchor="middle" font-size="13" fill="var(--ink)">в воздухе: P</text>
+  <rect x="170" y="60" width="100" height="70" fill="var(--accent)" fill-opacity=".25"/><path d="M170,40 L170,130 L270,130 L270,40" fill="none" stroke="var(--fig)" stroke-width="2"/>
+  <line x1="220" y1="10" x2="220" y2="80" stroke="var(--fig)" stroke-width="2"/><rect x="205" y="80" width="30" height="24" rx="3" fill="var(--hl)" fill-opacity=".7" stroke="var(--fig)"/><text x="220" y="148" text-anchor="middle" font-size="13" fill="var(--ink)">в воде: P − F<tspan font-size="10" dy="3">А</tspan></text></svg>`;
+}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Сила Архимеда',lvl:0,html:`
+<p class="hook">«Титаник» весил около 50 000 тонн и был сделан из стали, которая в 7,8 раза плотнее воды. Почему он вообще плавал? И почему утонул, получив пробоину? Ответ — одна сила.</p>
+<div class="box rule"><b>Закон Архимеда</b>На тело, погружённое в жидкость (или газ), действует <b>выталкивающая сила</b>, равная весу жидкости в объёме погружённой части тела: ${M('F<sub>А</sub> = ρ<sub>ж</sub>·g·V<sub>погр</sub>')}. Направлена <b>вверх</b>.</div>
+<p><b>Почему так.</b> Давление растёт с глубиной (p = ρgh). Снизу на тело давит более глубокая, а значит более «сильная» жидкость, чем сверху. Разность сил давления снизу и сверху — и есть сила Архимеда.</p>
+<div class="box ex"><b>Пример</b>Камень объёмом 2 дм³ = 0,002 м³ целиком в воде: ${M('F<sub>А</sub> = 1000 · 10 · 0,002 = 20 Н')}.</div>
+<div class="box err"><b>Типичные ошибки</b>1) Подставлять плотность <b>тела</b>, а не жидкости.<br>2) Думать, что F<sub>А</sub> растёт с глубиной. Если тело уже целиком в жидкости, глубже — та же сила.<br>3) Забывать переводить см³ в м³: 1 см³ = 0,000001 м³.</div>
+<div class="fact">По легенде, Архимед понял свой закон в ванне — и с криком «Эврика!» побежал проверять, не подмешал ли ювелир серебро в золотую корону царя Гиерона.</div>`},
+{title:'Вес тела в жидкости',lvl:1,html:`
+<div class="box rule"><b>Правило</b>В жидкости тело «легче»: динамометр показывает ${M('P<sub>в жидк</sub> = P − F<sub>А</sub>')}. Отсюда ${M('F<sub>А</sub> = P − P<sub>в жидк</sub>')} — силу Архимеда легко измерить.</div>
+<div class="fig">${crownSvg()}</div>
+<p><b>Как Архимед проверил корону.</b> Взвесили в воздухе (P) и в воде (P₁). Разность — сила Архимеда: P − P₁ = ρ<sub>в</sub>gV, отсюда объём V. А плотность ${M('ρ = '+fr('P','P − P₁')+'·ρ<sub>в</sub>')}. Сравнили с золотом (19,3 г/см³) — и всё стало ясно.</p>
+<div class="box ex"><b>Пример</b>В воздухе 10 Н, в воде 6 Н → F<sub>А</sub> = 4 Н, V = 4/(1000·10) = 0,0004 м³ = 400 см³, ρ = 10/4 · 1000 = 2500 кг/м³ — стекло.</div>
+<div class="box tip"><b>Почему в бассейне легко поднять друга</b>Тело человека почти такой же плотности, как вода, — сила Архимеда почти полностью «съедает» вес.</div>`},
+{title:'Условия плавания тел',lvl:2,html:`
+<p class="hook">Почему лёд плавает в воде, но тонет в керосине? Почему стальной болт плавает в ртути?</p>
+<div class="box rule"><b>Правило (тело целиком сплошное)</b>• ρ<sub>тела</sub> &gt; ρ<sub>жидк</sub> — <b>тонет</b>;<br>• ρ<sub>тела</sub> = ρ<sub>жидк</sub> — плавает <b>внутри</b> жидкости на любой глубине;<br>• ρ<sub>тела</sub> &lt; ρ<sub>жидк</sub> — <b>всплывает</b> и плавает у поверхности.</div>
+<p><b>Почему так.</b> Целиком погружённое тело: F<sub>тяж</sub> = ρ<sub>т</sub>gV, F<sub>А</sub> = ρ<sub>ж</sub>gV. Объём и g одинаковые — побеждает та сила, где плотность больше.</p>
+<div class="widget" id="w-float"></div>
+<div class="box err"><b>Типичная ошибка</b>«Тяжёлые тонут, лёгкие плавают». Нет! Бревно в 500 кг плавает, а гвоздь в 5 г тонет. Решает <b>плотность</b>, а не масса.</div>
+<div class="fact">В Мёртвом море вода такая солёная (плотность ≈ 1240 кг/м³), что человек лежит на воде, как на надувном матрасе, и может читать газету.</div>`},
+{title:'Плавающее тело. Ватерлиния',lvl:3,html:`
+<div class="box rule"><b>Правило</b>Плавающее тело погружается ровно настолько, чтобы ${M('F<sub>А</sub> = F<sub>тяж</sub>')}. Доля погружённого объёма: ${M(fr('V<sub>погр</sub>','V')+' = '+fr('ρ<sub>т</sub>','ρ<sub>ж</sub>'))}.</div>
+<p><b>Почему так.</b> ρ<sub>ж</sub>gV<sub>погр</sub> = ρ<sub>т</sub>gV → V<sub>погр</sub>/V = ρ<sub>т</sub>/ρ<sub>ж</sub>. Сосна (400) в воде погружена на 40 %, лёд (900) — на 90 %.</p>
+<div class="figrow"><div class="fig">${tank(0.4)}<div class="cap">сосна: 40 % под водой</div></div><div class="fig">${tank(0.9)}<div class="cap">лёд: 90 % под водой</div></div></div>
+<p><b>Ватерлиния</b> — линия на борту судна, до которой оно погружается при полной загрузке. <b>Осадка</b> — глубина погружения.</p>
+<div class="fact">Над водой у айсберга лишь около 1/9 объёма в пресной воде и примерно 1/8 в морской (900/1030 ≈ 0,87 под водой). Именно скрытая часть айсберга пропорола борт «Титаника».</div>`},
+{title:'Плавание судов',lvl:4,html:`
+<p class="hook">Как плавает стальной корабль? Сталь тонет, но корпус корабля — это «стальная коробка с воздухом». Средняя плотность корабля меньше плотности воды.</p>
+<div class="box rule"><b>Правило</b><b>Водоизмещение</b> — масса воды, вытесненной судном при погружении по ватерлинию. Она равна массе судна с грузом. <b>Грузоподъёмность</b> = водоизмещение − масса самого судна.</div>
+<p><b>Почему так.</b> Плавает — значит вес судна = вес вытесненной воды (F<sub>А</sub> = mg).</p>
+<p>Из реки в море судно <b>поднимается</b> (осадка уменьшается): морская вода плотнее, нужно вытеснить меньший объём.</p>
+<div class="box ex"><b>Пример</b>Баржа с дном 50 м² после погрузки осела на 0,4 м. Дополнительно вытеснено 50·0,4 = 20 м³ воды = 20 т — столько и погрузили.</div>
+<div class="fact">Водоизмещение «Титаника» — около 52 000 т. Пробоина заполнила водой несколько отсеков, судно стало тяжелее вытесненной им воды — и пошло ко дну.</div>`},
+{title:'Воздухоплавание',lvl:5,html:`
+<div class="box rule"><b>Правило</b>Закон Архимеда работает и в воздухе: ${M('F<sub>А</sub> = ρ<sub>возд</sub>·g·V')}, ρ<sub>возд</sub> ≈ 1,29 кг/м³. Шар поднимается, если F<sub>А</sub> больше веса оболочки, газа и груза.</div>
+<p><b>Чем наполняют шары:</b> гелием (0,18 кг/м³), водородом (0,09 кг/м³, но он взрывоопасен) или горячим воздухом (при нагревании воздух расширяется и становится менее плотным).</p>
+<div class="box ex"><b>Пример</b>Шар объёмом 100 м³ с гелием: F<sub>А</sub> = 1,29·10·100 = 1290 Н, вес гелия 0,18·10·100 = 180 Н. Остаётся 1110 Н — на оболочку и груз.</div>
+<p>С высотой воздух разрежается, F<sub>А</sub> уменьшается — шар поднимается до высоты, где силы сравняются.</p>
+<div class="fact">Первый полёт людей на воздушном шаре — 1783 год, Франция, шар братьев Монгольфье с горячим воздухом.</div>`},
+{title:'★ Олимпиадные идеи',lvl:[6,7],html:`
+<ul class="steps"><li><b>Лёд в стакане воды тает — уровень не меняется.</b> Плавающий лёд вытесняет воду массой, равной своей массе. Растаяв, он превращается в воду той же массы — она займёт ровно «вытесненный» объём.</li>
+<li><b>Лёд с камнем внутри</b> — уровень <b>понижается</b>: пока камень во льду, он «плавает» и вытесняет воду своей массы; утонув, вытесняет только свой объём (меньше).</li>
+<li><b>Лёд в солёной воде</b> — уровень <b>повышается</b>: талая пресная вода занимает больший объём, чем вытеснявшаяся солёная.</li>
+<li><b>Тело на границе двух жидкостей:</b> ${M('ρ<sub>т</sub>V = ρ<sub>1</sub>V<sub>1</sub> + ρ<sub>2</sub>V<sub>2</sub>')}.</li>
+<li><b>Лодка с камнем:</b> выбросишь камень в пруд — уровень воды в пруду <b>понизится</b>.</li></ul>`}
+];
+
+const symbols={tab:'Формулы',title:'Формулы и обозначения',rows:[
+['F<sub>А</sub> = ρ<sub>ж</sub>gV','сила Архимеда','выталкивающая сила = вес вытесненной жидкости','вода, 1 дм³ → 10 Н'],
+['ρ<sub>ж</sub>','плотность жидкости','НЕ плотность тела!','вода 1000 кг/м³'],
+['V<sub>погр</sub>','объём погружённой части','какой объём жидкости вытеснило тело','1 см³ = 0,000001 м³'],
+['P − F<sub>А</sub>','вес в жидкости','что покажет динамометр','10 Н − 4 Н = 6 Н'],
+['ρ<sub>т</sub> &gt; ρ<sub>ж</sub>','тело тонет','плотность тела больше','сталь в воде'],
+['ρ<sub>т</sub>/ρ<sub>ж</sub>','доля под водой','для плавающего тела','лёд: 0,9'],
+['m<sub>выт</sub>','водоизмещение','масса вытесненной воды = масса судна с грузом','52 000 т']],
+after:`<div class="box tip"><b>Плотности (кг/м³)</b>пробка 240, сосна 400, дуб 700, лёд и парафин 900, керосин 800, вода 1000, морская вода 1030, алюминий 2700, сталь 7800, медь 8900, свинец 11 300, ртуть 13 600, золото 19 300. Воздух 1,29, гелий 0,18, водород 0,09.</div>`};
+
+/* ---------- gens ---------- */
+/* L0 */
+G(0,()=>CH('Допиши формулу силы Архимеда: F<sub>А</sub> = …','ρ<sub>жидкости</sub> · g · V<sub>погружённой части</sub>',['ρ<sub>тела</sub> · g · V<sub>тела</sub>','m<sub>тела</sub> · g','ρ<sub>жидкости</sub> · g · h'],{
+ short:'F<sub>А</sub> = ρ<sub>ж</sub>gV<sub>погр</sub> — вес вытесненной жидкости.',
+ explain:'Сила Архимеда равна весу жидкости, которую вытеснило тело: плотность <b>жидкости</b> × g × объём <b>погружённой части</b>. ρ<sub>тела</sub>gV — это сила тяжести тела, mg — тоже. ρgh — давление, а не сила.',
+ explain2:'Представь: тело вынули, а «ямку» в воде заполнили водой. Эта вода раньше спокойно висела — её держала та же выталкивающая сила. Значит, F<sub>А</sub> = вес этой воды = ρ<sub>ж</sub>gV.'}),RU);
+G(0,()=>CH('От чего <b>зависит</b> сила Архимеда?','От плотности жидкости и объёма погружённой части тела',['От плотности и массы тела','От глубины погружения (даже если тело уже целиком в воде)','От формы сосуда'],{
+ short:'Только ρ<sub>ж</sub> и V<sub>погр</sub> (и g).',
+ explain:'F<sub>А</sub> = ρ<sub>ж</sub>gV<sub>погр</sub>. В формуле нет ни массы тела, ни его плотности, ни глубины, ни формы сосуда. Шар из стали и шар из пробки одинакового объёма, целиком под водой, выталкиваются одинаково (просто стальной тяжелее и всё равно тонет).',
+ explain2:'Сила Архимеда «не знает», из чего тело. Она знает только, сколько жидкости тело вытеснило и какая это жидкость.'}),RU);
+G(0,()=>{const a=sample(SOL.filter(s=>s.r>1000),2);
+ return CH(`Шар из материала «${a[0].t}» и шар из материала «${a[1].t}» одинакового объёма целиком погружены в воду. На какой из них действует <b>большая</b> сила Архимеда?`,'Силы одинаковые',[`На шар «${a[0].t}»`,`На шар «${a[1].t}»`],{
+ short:'Объёмы равны, жидкость одна — F<sub>А</sub> одинаковые.',
+ explain:`F<sub>А</sub> = ρ<sub>воды</sub>gV. Жидкость одна и объёмы одинаковые — значит силы Архимеда <b>равны</b>. Плотности ${a[0].t} (${n(a[0].r)}) и ${a[1].t} (${n(a[1].r)}) влияют на силу тяжести, а не на выталкивающую силу.`,
+ explain2:'Оба шара вытесняют одинаковое количество воды — значит, вода выталкивает их одинаково.'});});
+G(0,()=>CH('Камень целиком под водой опускают глубже — с 1 м до 5 м. Как меняется сила Архимеда? (Вода несжимаема.)','Не меняется',['Растёт в 5 раз','Уменьшается','Растёт, но не в 5 раз'],{
+ short:'F<sub>А</sub> не зависит от глубины для целиком погружённого тела.',
+ explain:'Давление растёт с глубиной и сверху, и снизу на одну и ту же величину. Разность давлений снизу и сверху (она и создаёт F<sub>А</sub>) не меняется. По формуле F<sub>А</sub> = ρ<sub>ж</sub>gV глубины нет.',
+ explain2:'Если F<sub>А</sub> росла бы с глубиной, то тонущий камень где-то остановился бы на полпути. Но камни тонут до самого дна.'}));
+G(0,()=>CH('Почему возникает выталкивающая сила?','Снизу на тело давит более глубокая жидкость, давление там больше, чем сверху',['Жидкость притягивает тело вверх','Тело теряет часть массы в воде','Молекулы воды прилипают к телу и тянут вверх'],{
+ short:'Давление снизу больше давления сверху.',
+ explain:'p = ρgh: нижняя грань тела глубже, давление на неё больше. Сила давления снизу больше силы давления сверху, разность направлена вверх — это F<sub>А</sub>. Масса тела в воде не меняется.',
+ explain2:'Кубик в воде: на верхнюю грань давит столб воды высотой h, на нижнюю — h + a (a — ребро). Разница давлений ρga, сила ρga·a² = ρgV. Вот и формула Архимеда!'}));
+
+/* L1 */
+G(1,()=>CH('Динамометр показывает P в воздухе. Что он покажет, если тело целиком опустить в воду?','P − F<sub>А</sub>',['P + F<sub>А</sub>','P','F<sub>А</sub>'],{
+ short:'В жидкости тело легче на F<sub>А</sub>.',
+ explain:'Вниз тянет сила тяжести, вверх — пружина динамометра и сила Архимеда. Пружине остаётся держать только <b>P − F<sub>А</sub></b>. Поэтому под водой камни поднимать легче.',
+ explain2:'Сила Архимеда помогает пружине — та растягивается меньше. Показание уменьшается ровно на F<sub>А</sub>.'}),RU);
+G(1,()=>{const V=pick([50,100,200,250,400,500,800]);const L=pick([LQ.w,LQ.k,LQ.s]);const F=L.r*10*V/1e6;
+ return NUM({q:`Брусок объёмом ${V} см³ целиком погрузили в ${L.t==='вода'?'воду':L.t==='керосин'?'керосин':'морскую воду'} (ρ = ${n(L.r)} кг/м³). Найди силу Архимеда. g = 10 Н/кг. Ответ — в Н.`,ans:F,u:'Н',
+ hint:'1 см³ = 0,000001 м³.',short:`F<sub>А</sub> = ${n(L.r)} · 10 · ${n(V/1e6)} = ${n(F)} Н.`,
+ explain:`1) V = ${V} см³ = ${V} : 1 000 000 = ${n(V/1e6)} м³.<br>2) F<sub>А</sub> = ρ<sub>ж</sub>gV = ${n(L.r)} · 10 · ${n(V/1e6)} = <b>${n(F)} Н</b>.`,
+ explain2:`Удобный приём для воды: 1 см³ воды — 1 г, вес 0,01 Н. ${V} см³ вытесненной воды весят ${n(V/100)} Н. ${L.r!==1000?`Жидкость плотнее/легче воды в ${n(L.r/1000)} раза: ${n(V/100)} · ${n(L.r/1000)} = ${n(F)} Н.`:''}`});});
+G(1,()=>{const s=pick(SOL.filter(x=>x.r>2000&&x.r<12000));const V=pick([100,200,500,1000]);const P=s.r*10*V/1e6,FA=10*V/1e3/1e3*1000;const P1=P-FA;
+ return NUM({q:`Деталь из материала «${s.t}» (ρ = ${n(s.r)} кг/м³) объёмом ${V} см³ висит на динамометре, целиком погружённая в воду. Что показывает динамометр? g = 10 Н/кг. Ответ — в Н.`,ans:rd(P1,4),u:'Н',
+ short:`P = ${n(rd(P,4))} Н, F<sub>А</sub> = ${n(FA)} Н, показание ${n(rd(P1,4))} Н.`,
+ explain:`1) V = ${n(V/1e6)} м³. Масса m = ρV = ${n(s.r)} · ${n(V/1e6)} = ${n(rd(s.r*V/1e6,4))} кг, вес P = ${n(rd(P,4))} Н.<br>2) F<sub>А</sub> = 1000 · 10 · ${n(V/1e6)} = ${n(FA)} Н.<br>3) Показание: P − F<sub>А</sub> = ${n(rd(P,4))} − ${n(FA)} = <b>${n(rd(P1,4))} Н</b>.`,
+ explain2:`Можно в одну строку: (ρ<sub>т</sub> − ρ<sub>в</sub>)·g·V = (${n(s.r)} − 1000) · 10 · ${n(V/1e6)} = ${n(rd(P1,4))} Н.`});});
+G(1,()=>{const P=pick([5,8,10,12,15,20]);const FA=pick([1,2,2.5,3,4]);if(FA>=P)return null;const V=FA/10000*1e6;
+ return NUM({q:`Камень на динамометре в воздухе — ${P} Н, целиком в воде — ${n(P-FA)} Н. Найди объём камня. g = 10 Н/кг. Ответ — в см³.`,ans:V,u:'см³',
+ short:`F<sub>А</sub> = ${n(FA)} Н; V = ${n(FA)}/(1000·10) = ${n(FA/10000)} м³ = ${n(V)} см³.`,
+ explain:`1) Сила Архимеда — разность показаний: F<sub>А</sub> = ${P} − ${n(P-FA)} = ${n(FA)} Н.<br>2) F<sub>А</sub> = ρ<sub>в</sub>gV → V = ${n(FA)} / (1000 · 10) = ${n(FA/10000)} м³ = <b>${n(V)} см³</b>.`,
+ explain2:`Вода объёмом 100 см³ весит 1 Н. Камень вытеснил воду весом ${n(FA)} Н — значит, её было ${n(FA)} · 100 = ${n(V)} см³. Это и есть объём камня.`});});
+G(1,()=>{const gold=Math.random()<0.5;const P=19.3;const rho=gold?19.3:pick([14.5,13.8,16,12.5]);const P1=rd(P-P/rho,3);const ans=rd(P/(P-P1),2);
+ return NUM({q:`Как Архимед: корону взвесили в воздухе — ${n(P)} Н, а в воде — ${n(P1)} Н. Найди плотность материала короны. Ответ — в г/см³, округли до десятых. Золото — 19,3 г/см³. Из чистого ли золота корона?`,pic:`<div class="fig">${crownSvg()}</div>`,ans,u:'г/см³',
+ short:`ρ = ${n(P)} / ${n(rd(P-P1,3))} · 1 г/см³ ≈ ${n(rd(ans,1))} г/см³ — ${gold?'чистое золото':'не чистое золото'}.`,
+ explain:`1) F<sub>А</sub> = ${n(P)} − ${n(P1)} = ${n(rd(P-P1,3))} Н. Это вес воды в объёме короны.<br>2) Корона тяжелее такой же по объёму воды в ${n(P)} / ${n(rd(P-P1,3))} ≈ ${n(rd(ans,2))} раза. Плотность воды 1 г/см³ → ρ ≈ <b>${n(rd(ans,1))} г/см³</b>.<br>${gold?'Совпадает с золотом — ювелир честный!':'Меньше 19,3 — в золото подмешан более лёгкий металл (серебро). Ювелир жульничал!'}`,
+ explain2:`Формула: ρ = ρ<sub>в</sub> · P / (P − P<sub>в воде</sub>). Смысл: во сколько раз корона тяжелее воды того же объёма, во столько раз она плотнее воды.`});});
+
+/* L2 */
+G(2,()=>CH('Сплошное тело опустили в жидкость. Когда оно <b>утонет</b>?','Когда плотность тела больше плотности жидкости',['Когда масса тела больше 1 кг','Когда объём тела больше объёма жидкости','Когда плотность тела меньше плотности жидкости'],{
+ short:'ρ<sub>т</sub> &gt; ρ<sub>ж</sub> — тонет.',
+ explain:'Для целиком погружённого тела F<sub>тяж</sub> = ρ<sub>т</sub>gV, а F<sub>А</sub> = ρ<sub>ж</sub>gV. Если ρ<sub>т</sub> &gt; ρ<sub>ж</sub>, сила тяжести больше — тело тонет. Масса сама по себе ничего не решает: огромное бревно плавает, маленький гвоздь тонет.',
+ explain2:'Сравнивай плотности, как в игре «кто тяжелее при равном объёме». Тело тяжелее такого же объёма жидкости — идёт вниз.'}),RU);
+G(2,()=>CH('Тело плавает <b>внутри</b> жидкости, не всплывая и не опускаясь (как рыба). Что это значит?','Плотность тела равна плотности жидкости',['Плотность тела больше плотности жидкости','На тело не действует сила тяжести','Сила Архимеда больше силы тяжести'],{
+ short:'ρ<sub>т</sub> = ρ<sub>ж</sub> → F<sub>А</sub> = F<sub>тяж</sub> на любой глубине.',
+ explain:'Если ρ<sub>т</sub> = ρ<sub>ж</sub>, то F<sub>А</sub> = F<sub>тяж</sub> — силы уравновешены, тело висит на любой глубине. Рыбы и подводные лодки регулируют свою среднюю плотность (плавательный пузырь, балластные цистерны).',
+ explain2:'Подводная лодка набирает воду в цистерны — становится плотнее и опускается. Продувает цистерны воздухом — легче — всплывает. Чтобы висеть на глубине — плотность «как у воды».'}),RU);
+G(2,()=>{const c=pick([{s:'лёд',r:900,L:LQ.k,res:'тонет'},{s:'лёд',r:900,L:LQ.w,res:'плавает'},{s:'парафин',r:900,L:LQ.k,res:'тонет'},{s:'сталь',r:7800,L:LQ.hg,res:'плавает'},{s:'золото',r:19300,L:LQ.hg,res:'тонет'},{s:'дуб',r:700,L:LQ.k,res:'плавает'},{s:'свинец',r:11300,L:LQ.hg,res:'плавает'}]);
+ return CH(`Кусок «${c.s}» (ρ = ${n(c.r)} кг/м³) бросили в ${c.L.t==='вода'?'воду':c.L.t} (ρ = ${n(c.L.r)} кг/м³). Что произойдёт?`,c.res==='тонет'?'Утонет':'Будет плавать у поверхности',[c.res==='тонет'?'Будет плавать у поверхности':'Утонет','Будет висеть внутри жидкости'],{
+ short:`${n(c.r)} ${c.r>c.L.r?'>':'<'} ${n(c.L.r)} → ${c.res==='тонет'?'тонет':'плавает'}.`,
+ explain:`Сравниваем плотности: тело ${n(c.r)}, жидкость ${n(c.L.r)} кг/м³. ${c.r>c.L.r?'Тело плотнее — <b>тонет</b>.':'Тело менее плотное — <b>всплывает</b> и плавает.'}${c.s==='лёд'&&c.L===LQ.k?' Да, лёд, который плавает в воде, в керосине тонет!':''}${c.L===LQ.hg&&c.r<c.L.r?' Да, металл плавает в ртути — она почти вдвое плотнее стали.':''}`,
+ explain2:`Правило одно для всех жидкостей: плотнее жидкости — вниз, легче — вверх. Сама жидкость задаёт «порог»: для ${c.L.t==='вода'?'воды':c.L.t==='ртуть'?'ртути':'керосина'} это ${n(c.L.r)} кг/м³.`});});
+G(2,()=>CH('Сырое яйцо тонет в пресной воде. В воду насыпали много соли — яйцо всплыло. Почему?','Плотность солёной воды стала больше плотности яйца',['Соль сделала яйцо легче','Соль уменьшила силу тяжести','Яйцо растворило соль и стало пустым'],{
+ short:'Растёт ρ<sub>ж</sub> — растёт F<sub>А</sub>.',
+ explain:'Плотность яйца ≈ 1030–1090 кг/м³ — чуть больше пресной воды (1000). Соль увеличивает плотность воды. Когда ρ<sub>воды</sub> стала больше ρ<sub>яйца</sub>, сила Архимеда превысила вес, и яйцо всплыло.',
+ explain2:'Сила тяжести яйца не изменилась. Изменилась жидкость: стала «тяжелее», а значит выталкивает сильнее.'}));
+G(2,()=>{const L=pick([LQ.w,LQ.k]);const all=SOL.filter(s=>!['парафин'].includes(s.t));const fl=all.filter(s=>s.r<L.r),sk=all.filter(s=>s.r>L.r);const r=pick(fl);const w=sample(sk,3);
+ return CH(`Какое из тел будет плавать в ${L.g}?`,`${r.t} (${n(r.r)} кг/м³)`,w.map(s=>`${s.t} (${n(s.r)} кг/м³)`),{
+ short:`${n(r.r)} < ${n(L.r)}.`,
+ explain:`Плотность ${L.t==='вода'?'воды':'керосина'} ${n(L.r)} кг/м³. Плавает только тело с меньшей плотностью: ${r.t} — ${n(r.r)}. Остальные: ${w.map(s=>`${s.t} ${n(s.r)}`).join(', ')} — больше ${n(L.r)}, тонут.`,
+ explain2:`Просто сравни каждое число с ${n(L.r)}. Меньше — плавает.`});});
+
+/* L3 */
+G(3,()=>CH('Тело плавает на поверхности жидкости. Какое условие выполняется?','Сила Архимеда равна силе тяжести тела',['Сила Архимеда больше силы тяжести','Сила Архимеда равна нулю','Плотность тела равна плотности жидкости'],{
+ short:'Плавает → F<sub>А</sub> = F<sub>тяж</sub>.',
+ explain:'Плавающее тело покоится, значит силы уравновешены: F<sub>А</sub> = mg. Тело погружается ровно настолько, чтобы вытесненная жидкость весила столько же, сколько само тело. Если F<sub>А</sub> была бы больше, тело всплывало бы дальше.',
+ explain2:'Положи на воду пустую пластиковую бутылку, а затем налей в неё немного воды: она осядет глубже — вытеснит больше воды, ровно на вес налитой.'}),RU);
+G(3,()=>{const s=pick([{t:'пробка',r:240},{t:'сосна',r:400},{t:'дуб',r:700},{t:'лёд',r:900},{t:'берёза',r:650}]);const L=pick([LQ.w,LQ.k]);if(s.r>=L.r)return null;const f=rd(s.r/L.r*100,2);
+ return NUM({q:`Какая часть объёма бруска (${s.t}, ρ = ${n(s.r)} кг/м³) погружена, когда он плавает в ${L.g} (ρ = ${n(L.r)} кг/м³)? Ответ — в процентах.`,ans:f,u:'%',
+ short:`${n(s.r)} / ${n(L.r)} = ${n(f)} %.`,
+ explain:`Плавание: ρ<sub>ж</sub>gV<sub>погр</sub> = ρ<sub>т</sub>gV → V<sub>погр</sub>/V = ρ<sub>т</sub>/ρ<sub>ж</sub> = ${n(s.r)} / ${n(L.r)} = ${n(rd(s.r/L.r,4))} = <b>${n(f)} %</b>.`,
+ explain2:`Брусок весит как ${n(f)} % своего объёма ${L.t==='вода'?'воды':'керосина'}. Чтобы вытеснить столько же по весу жидкости, он должен уйти под поверхность на ${n(f)} % объёма.`});});
+G(3,()=>{const L=pick([LQ.w,LQ.s]);const f=rd(100*(1-900/L.r),1);
+ return NUM({q:`Какая часть айсберга находится <b>над</b> водой в ${L.r===1000?'пресной воде (1000 кг/м³)':'морской воде (1030 кг/м³)'}? Плотность льда 900 кг/м³. Ответ — в процентах, округли до целых.`,ans:f,u:'%',tol:0.045,
+ short:`Под водой ${n(rd(90000/L.r,1))} %, над водой ≈ ${n(f)} %.`,
+ explain:`1) Под водой: ρ<sub>льда</sub>/ρ<sub>воды</sub> = 900 / ${n(L.r)} ≈ ${n(rd(900/L.r,3))} → ${n(rd(90000/L.r,1))} %.<br>2) Над водой: 100 − ${n(rd(90000/L.r,1))} ≈ <b>${n(f)} %</b> (≈ ${Math.round(f)} %).`,
+ explain2:`Отсюда выражение «верхушка айсберга»: над водой лишь примерно 1/${Math.round(100/f)} часть, а самое опасное скрыто.`});});
+G(3,()=>{const s=pick([{t:'сосны',r:400},{t:'дуба',r:700},{t:'берёзы',r:650},{t:'пробки',r:240}]);const h=pick([10,20,25,40,50]);const d=s.r*h/1000;
+ return NUM({q:`Брусок из ${s.t} (ρ = ${n(s.r)} кг/м³) высотой ${h} см плавает в воде, лёжа горизонтально. Какова его осадка (глубина погружения)? Ответ — в см.`,ans:d,u:'см',
+ short:`Осадка = ${h} · ${n(s.r)}/1000 = ${n(d)} см.`,pic:`<div class="fig">${tank(s.r/1000)}</div>`,
+ explain:`Погружена доля ρ<sub>т</sub>/ρ<sub>в</sub> = ${n(s.r/1000)} высоты бруска (сечение по высоте одинаковое).<br>Осадка = ${h} · ${n(s.r/1000)} = <b>${n(d)} см</b>.`,
+ explain2:`Пусть основание S. Вес: ${n(s.r)}·g·S·${n(h/100)}. Вытесненная вода: 1000·g·S·d. Приравняли: d = ${n(s.r)}·${n(h/100)}/1000 м = ${n(d)} см.`});});
+G(3,()=>{const V=pick([2,3,5,8,12]);const L=pick([LQ.w,LQ.s]);const m=L.r*V;
+ return NUM({q:`Резиновая лодка с туристами плавает в ${L.g}, вытесняя ${V} м³ ${L.r===1000?'воды':'морской воды (1030 кг/м³)'}. Какова масса лодки с туристами? Ответ — в кг.`,ans:m,u:'кг',
+ short:`m = ρ<sub>ж</sub>V = ${n(L.r)} · ${V} = ${n(L.r*V)} кг.`,
+ explain:`Плавает → вес лодки = вес вытесненной воды → массы равны: m = ρ<sub>ж</sub>V = ${n(L.r)} · ${V} = <b>${n(L.r*V)} кг</b>.`,
+ explain2:`Каждый кубометр ${L.r===1000?'воды':'морской воды'} — ${n(L.r)} кг. Лодка «заменяет» собой ${V} м³ воды — значит, весит как они.`});});
+
+/* L4 */
+G(4,()=>CH('Что такое <b>водоизмещение</b> судна?','Масса воды, вытесняемой судном при погружении до ватерлинии',['Объём трюма судна','Масса самого судна без груза','Скорость судна в узлах'],{
+ short:'Водоизмещение = масса вытесненной воды = масса судна с грузом.',
+ explain:'Водоизмещение — масса воды, которую вытесняет судно, погружённое до ватерлинии. Так как судно плавает, эта масса равна массе судна <b>вместе с грузом</b>. Грузоподъёмность = водоизмещение − масса пустого судна.',
+ explain2:'«Водо-измещение» — сколько воды судно «вымещает» (вытесняет) со своего места.'}),RU);
+G(4,()=>{const D=pick([5000,8000,12000,20000,52000]);const own=Math.round(D*pick([0.3,0.4,0.5,0.6])/100)*100;
+ return NUM({q:`Водоизмещение судна ${n(D)} т, масса самого судна ${n(own)} т. Какова его грузоподъёмность? Ответ — в т.`,ans:D-own,u:'т',
+ short:`${n(D)} − ${n(own)} = ${n(D-own)} т.`,
+ explain:`Водоизмещение — масса судна <b>с грузом</b>. Груз = ${n(D)} − ${n(own)} = <b>${n(D-own)} т</b>.`,
+ explain2:`Корабль с полным грузом весит ${n(D)} т. Из них ${n(own)} т — он сам, остальное — груз.`});});
+G(4,()=>CH('Корабль из реки вышел в море. Что произошло с его осадкой?','Уменьшилась — корабль немного поднялся',['Увеличилась — корабль осел глубже','Не изменилась','Корабль утонул'],{
+ short:'Морская вода плотнее → нужен меньший объём → осадка меньше.',
+ explain:'Сила Архимеда должна по-прежнему равняться весу корабля: ρ<sub>ж</sub>gV<sub>погр</sub> = mg. Морская вода плотнее (1030 против 1000), значит нужный V<sub>погр</sub> меньше — корабль <b>поднимается</b>. Поэтому на бортах рисуют разные ватерлинии для пресной и морской воды.',
+ explain2:'В Мёртвом море человек лежит на воде почти «поверх» неё — очень плотная вода. Кораблю в море чуть-чуть «легче», чем в реке.'}));
+G(4,()=>{const S=pick([40,50,80,100,150]);const dh=pick([0.2,0.3,0.4,0.5]);const m=S*dh;
+ return NUM({q:`Площадь дна баржи (горизонтальное сечение) ${S} м². После погрузки баржа осела в речной воде на ${n(dh*100)} см. Какова масса груза? Ответ — в т.`,ans:m,u:'т',
+ short:`ΔV = ${S} · ${n(dh)} = ${n(m)} м³ воды = ${n(m)} т.`,
+ explain:`1) Дополнительно вытеснено воды: ΔV = S·Δh = ${S} · ${n(dh)} = ${n(m)} м³.<br>2) Масса этой воды: 1000 · ${n(m)} = ${n(m*1000)} кг = ${n(m)} т.<br>3) Груз весит столько же, сколько дополнительно вытесненная вода: <b>${n(m)} т</b>.`,
+ explain2:`Удобно: 1 м³ воды = 1 т. Баржа «вдавилась» в воду ещё на ${n(m)} м³ — значит, на неё положили ${n(m)} т.`});});
+G(4,()=>{const D=pick([10000,20000,52000,100000]);const F=D*1000*10/1e6;
+ return NUM({q:`Водоизмещение судна ${n(D)} т. Чему равна сила Архимеда, действующая на полностью загруженное судно? g = 10 Н/кг. Ответ — в МН (меганьютонах).`,ans:F,u:'МН',
+ short:`F<sub>А</sub> = mg = ${n(D*1000)} · 10 = ${n(F)} МН.`,
+ explain:`Судно плавает → F<sub>А</sub> = вес вытесненной воды = m<sub>выт</sub>·g.<br>m = ${n(D)} т = ${n(D*1000)} кг. F<sub>А</sub> = ${n(D*1000)} · 10 = ${n(D*10000)} Н = <b>${n(F)} МН</b> (1 МН = 1 000 000 Н).`,
+ explain2:`1 т даёт 10 000 Н = 0,01 МН. ${n(D)} т → ${n(D)} · 0,01 = ${n(F)} МН.`});});
+
+/* L5 */
+G(5,()=>CH('Когда воздушный шар начнёт <b>подниматься</b>?','Когда сила Архимеда в воздухе больше общего веса шара (оболочка, газ, корзина, груз)',['Когда шар наполнен любым газом','Когда шар весит меньше 1 тонны','Когда сила Архимеда равна нулю'],{
+ short:'F<sub>А</sub> &gt; P<sub>общий</sub>.',
+ explain:'Закон Архимеда действует и в газах: F<sub>А</sub> = ρ<sub>возд</sub>gV. Шар поднимается, если эта сила больше суммарного веса оболочки, газа внутри и груза. Поэтому шар наполняют лёгким газом (гелий, водород) или горячим воздухом.',
+ explain2:'Шар — как пробка в воде, только «вода» тут — воздух. Средняя плотность шара должна быть меньше плотности воздуха.'}),RU);
+G(5,()=>{const V=pick([50,100,200,500,1000]);const F=1.29*10*V;
+ return NUM({q:`Какая сила Архимеда действует в воздухе на аэростат объёмом ${V} м³? Плотность воздуха 1,29 кг/м³, g = 10 Н/кг. Ответ — в Н.`,ans:rd(F,2),u:'Н',
+ short:`F<sub>А</sub> = 1,29 · 10 · ${V} = ${n(rd(F,2))} Н.`,
+ explain:`F<sub>А</sub> = ρ<sub>возд</sub>gV = 1,29 · 10 · ${V} = <b>${n(rd(F,2))} Н</b>. Плотность берём <b>воздуха</b>, а не газа внутри!`,
+ explain2:`1 м³ воздуха весит 12,9 Н. Шар вытесняет ${V} м³ воздуха: ${V} · 12,9 = ${n(rd(F,2))} Н.`});});
+G(5,()=>{const V=pick([100,200,300,500]);const ms=pick([20,30,40,50]);const m=rd((1.29-0.18)*V-ms,2);
+ return NUM({q:`Шар объёмом ${V} м³ наполнен гелием (0,18 кг/м³). Масса оболочки и корзины ${ms} кг. Груз какой наибольшей массы он может поднять? Плотность воздуха 1,29 кг/м³. Ответ — в кг.`,ans:m,u:'кг',
+ short:`(1,29 − 0,18) · ${V} − ${ms} = ${n(m)} кг.`,
+ explain:`Условие подъёма: F<sub>А</sub> ≥ вес гелия + оболочки + груза. Делим всё на g и пишем через массы:<br>1,29 · ${V} ≥ 0,18 · ${V} + ${ms} + m<br>${n(rd(1.29*V,2))} ≥ ${n(rd(0.18*V,2))} + ${ms} + m → m ≤ <b>${n(m)} кг</b>.`,
+ explain2:`Каждый кубометр гелия «тянет» вверх (1,29 − 0,18) = 1,11 кг. ${V} м³ → ${n(rd(1.11*V,2))} кг. Минус оболочка ${ms} кг = ${n(m)} кг на груз.`});});
+G(5,()=>CH('Почему воздушный шар с горячим воздухом (монгольфьер) поднимается?','Горячий воздух менее плотный, чем холодный снаружи, поэтому F<sub>А</sub> больше веса шара',['Горячий воздух ничего не весит','Огонь горелки отталкивает шар от земли, как ракету','Горячий воздух притягивается к Солнцу'],{
+ short:'Нагретый воздух расширяется → его плотность меньше.',
+ explain:'При нагревании воздух расширяется: та же масса занимает больший объём, плотность падает. Шар с горячим воздухом в целом легче холодного воздуха того же объёма — сила Архимеда побеждает. Пилот управляет высотой горелкой: подогрел — выше, остыл — ниже.',
+ explain2:'Горячий воздух всегда поднимается вверх — поэтому у потолка в комнате теплее. Шар просто «ловит» этот горячий воздух в мешок.'}));
+G(5,()=>CH('Почему шар с гелием, отпущенный в небо, не улетает бесконечно вверх, а поднимается до определённой высоты (если не лопнет)?','С высотой воздух становится менее плотным, и сила Архимеда уменьшается',['На высоте исчезает сила тяжести','Гелий на высоте тяжелеет','Шар упирается в облака'],{
+ short:'F<sub>А</sub> = ρ<sub>возд</sub>gV, а ρ<sub>возд</sub> падает с высотой.',
+ explain:'Чем выше, тем разреженнее воздух, тем меньше ρ<sub>возд</sub> и сила Архимеда. На какой-то высоте F<sub>А</sub> сравняется с весом шара — там он и «зависнет». (Детские шарики обычно раньше лопаются: снаружи давление падает, и гелий их раздувает.)',
+ explain2:'Как пробка, которая всплывает только до поверхности воды. Для шара «поверхность» — высота, где воздух становится достаточно редким.'}));
+
+/* L6 ★ лёд и две жидкости */
+G(6,()=>CH('В стакане с водой плавает кусок льда. Лёд полностью растаял. Как изменился уровень воды?','Не изменился',['Повысился','Понизился','Зависит от массы льда'],{
+ short:'Талая вода занимает ровно тот объём, который вытеснял лёд.',
+ explain:'Плавающий лёд вытесняет воду, масса которой равна массе льда (F<sub>А</sub> = mg). Растаяв, лёд превращается в воду <b>той же массы</b> — она займёт ровно вытесненный объём. Уровень <b>не изменится</b>.',
+ explain2:'Пусть лёд 90 г. Он вытесняет 90 г воды = 90 см³. Растаяв, даст 90 г воды = 90 см³ — ровно «заполнит ямку», которую он делал. Ничего не прибавилось и не убавилось.'}),RS);
+G(6,()=>{const c=pick([{t:'с вмёрзшим камешком',q:'В стакане с пресной водой плавает лёд с вмёрзшим камешком',r:'Понизится',w:'Пока камень во льду, он «плывёт» и вытесняет воду массой, равной своей массе. Утонув, он вытесняет только свой объём — а это меньше, ведь камень плотнее воды. Суммарный вытесненный объём уменьшился — уровень понизился.'},
+ {t:'с пузырьком воздуха внутри',q:'В стакане с пресной водой плавает лёд с пузырьком воздуха внутри',r:'Не изменится',w:'Воздух почти ничего не весит. Лёд вытеснял воду массой, равной массе льда; талая вода займёт тот же объём. Пузырёк просто уйдёт в атмосферу. Уровень не изменится.'},
+ {t:'в солёной воде',q:'В стакане с очень солёной водой плавает кусок льда из пресной воды',r:'Повысится',w:'Лёд вытеснял солёную воду массой, равной своей массе. Растаяв, он даст пресную воду той же массы, но пресная вода менее плотная, значит её объём больше вытесненного. Уровень повысится.'},
+ {t:'с пробкой',q:'В стакане с пресной водой плавает лёд с вмёрзшим кусочком пробки',r:'Не изменится',w:'Пробка и после таяния будет плавать — вытесняя воду, масса которой равна её массе, как и раньше. Лёд даёт ровно «свою» воду. Уровень не изменится.'}]);
+ const all=['Повысится','Понизится','Не изменится'];
+ return CH(`${c.q}. Лёд растаял. Как изменится уровень жидкости в стакане?`,c.r,all.filter(x=>x!==c.r),{
+ short:c.r+'.',explain:c.w,
+ explain2:'Общий метод: сравни, какой объём жидкости вытеснялся <b>до</b> (у плавающего тела — масса тела / ρ жидкости) и <b>после</b> (талая вода + то, что утонуло или плавает). Больше стало — уровень выше.'});},ST);
+G(6,()=>{const r=pick([850,900,950,875,925]);const x=(r-800)/200*100;
+ return NUM({q:`В сосуде слой воды, а поверх него слой керосина (800 кг/м³). Брусок плотностью ${r} кг/м³ плавает на границе: частично в воде, частично в керосине (целиком погружён в жидкости). Какая доля его объёма находится в <b>воде</b>? Ответ — в процентах.`,ans:x,u:'%',
+ short:`${r} = 1000x + 800(1 − x) → x = ${n(x/100)}.`,
+ explain:`Пусть в воде доля x, в керосине (1 − x). Сила Архимеда от обеих жидкостей = сила тяжести:<br>1000·x·gV + 800·(1 − x)·gV = ${r}·gV<br>1000x + 800 − 800x = ${r} → 200x = ${r-800} → x = ${n(x/100)} = <b>${n(x)} %</b>.`,
+ explain2:`Плотность бруска ${r} лежит между 800 и 1000. Он «смешивает» жидкости: на сколько его плотность выше 800, такую часть пути от 800 до 1000 она прошла: (${r} − 800)/(1000 − 800) = ${n(x/100)}.`});},ST);
+G(6,()=>CH('Лёд плавает в стакане с <b>водой</b>, а сверху долили керосин так, что лёд оказался целиком в жидкостях (часть в воде, часть в керосине). Лёд растаял. Как изменился общий уровень жидкостей?','Понизился',['Не изменился','Повысился','Сначала повысился, потом вернулся'],{
+ short:'Целиком погружённый лёд вытеснял весь свой объём V, а талая вода займёт только 0,9V.',
+ explain:'Лёд (900) вытесняет воду и керосин: 1000·V<sub>в</sub> + 800·V<sub>к</sub> = 900·V. Талая вода имеет объём 0,9V. А вытеснялось V<sub>в</sub> + V<sub>к</sub> = V (лёд целиком в жидкостях). 0,9V &lt; V → уровень <b>понизился</b> на объём 0,1V.',
+ explain2:'Если лёд целиком погружён, он вытесняет свой полный объём V. Растаяв, он даёт воду объёмом 0,9V (лёд на 10 % «пышнее» воды). Объём уменьшился — уровень упал.'}),ST);
+
+/* L7 ★ */
+G(7,()=>CH('Ты сидишь в лодке в маленьком пруду, в лодке лежит тяжёлый камень. Ты бросаешь камень за борт, он тонет. Как изменится уровень воды в пруду?','Понизится',['Повысится','Не изменится','Зависит от глубины пруда'],{
+ short:'В лодке камень вытеснял воду своей массы, на дне — только своего объёма.',
+ explain:'Пока камень в лодке, лодка вытесняет дополнительно воду <b>массой</b> камня: m/ρ<sub>в</sub>. На дне камень вытесняет только свой <b>объём</b>: m/ρ<sub>к</sub>. Камень плотнее воды (ρ<sub>к</sub> &gt; ρ<sub>в</sub>), значит m/ρ<sub>к</sub> &lt; m/ρ<sub>в</sub>. Вытеснено меньше — уровень <b>понизится</b>.',
+ explain2:'Числа: камень 2,5 кг, плотность 2500 кг/м³. В лодке он вытеснял 2,5 л воды. На дне — только свой объём 1 л. Минус 1,5 л — уровень упал. Это классическая задача, которой «ловили» даже физиков-профессоров.'}),RS);
+G(7,()=>{const k=pick([1,2,3,5]);const m=rd(7.8*k,1);const hol=rd(6.8*k,1);
+ return NUM({q:`Полый стальной шар массой ${n(m)} кг плавает <b>внутри</b> воды, целиком погрузившись и не касаясь дна. Каков объём полости? Плотность стали 7800 кг/м³. Ответ — в дм³ (литрах).`,ans:hol,u:'дм³',
+ hint:'Плавает внутри → средняя плотность шара = плотность воды. Найди полный объём и объём стали.',short:`V = ${n(m)} дм³, V<sub>стали</sub> = ${k} дм³, полость ${n(hol)} дм³.`,
+ explain:`1) Плавает внутри воды → F<sub>А</sub> = mg → ρ<sub>в</sub>V = m → V = ${n(m)} / 1000 = ${n(m/1000)} м³ = ${n(m)} дм³.<br>2) Объём самой стали: ${n(m)} / 7800 = ${n(k/1000)} м³ = ${k} дм³.<br>3) Полость: ${n(m)} − ${k} = <b>${n(hol)} дм³</b>.`,
+ explain2:`Шар должен весить как вода его объёма. ${n(m)} кг воды — это ${n(m)} л. Сталь занимает ${k} л (она в 7,8 раза плотнее воды). Всё остальное — пустота: ${n(hol)} л.`});},ST);
+G(7,()=>{const P=pick([10,12,16,20]);const FA=pick([2,4,5]);const L=pick([{t:'керосин',r:800},{t:'спирт',r:800},{t:'солёный раствор',r:1200},{t:'глицерин',r:1260}]);const P1=P-FA,P2=rd(P-FA*L.r/1000,3);
+ return NUM({q:`Тело взвесили на динамометре: в воздухе ${P} Н, в воде ${P1} Н, в неизвестной жидкости ${n(P2)} Н. Найди плотность жидкости. Ответ — в кг/м³.`,ans:L.r,u:'кг/м³',
+ short:`ρ = 1000 · ${n(rd(P-P2,3))} / ${FA} = ${L.r} кг/м³.`,
+ explain:`1) В воде F<sub>А</sub> = ${P} − ${P1} = ${FA} Н = 1000·gV.<br>2) В жидкости F<sub>А</sub>' = ${P} − ${n(P2)} = ${n(rd(P-P2,3))} Н = ρ·gV.<br>3) Делим: ρ / 1000 = ${n(rd(P-P2,3))} / ${FA} → ρ = <b>${L.r} кг/м³</b> (${L.t}).<br>Объём тела знать не нужно — он сокращается.`,
+ explain2:`Тело одно и то же, объём один. Значит выталкивающая сила пропорциональна плотности жидкости. В неизвестной жидкости она в ${n(rd((P-P2)/FA,3))} раза ${L.r>1000?'больше':'меньше'}, чем в воде → плотность ${n(rd((P-P2)/FA,3))} · 1000 = ${L.r}.`});},ST);
+G(7,()=>{const N=pick([8,10,12]);const V=pick([0.2,0.25,0.3]);const r=pick([500,600]);const cap=(1000-r)*N*V;const pp=Math.floor(cap/70);
+ return NUM({q:`Плот связан из ${N} брёвен объёмом по ${n(V)} м³ каждое, плотность дерева ${r} кг/м³. Сколько человек массой по 70 кг можно посадить на плот, чтобы он ещё не ушёл под воду целиком?`,ans:pp,u:'чел.',ph:'число людей',
+ short:`Запас (1000 − ${r}) · ${n(N*V)} = ${n(cap)} кг; ${n(cap)} : 70 → ${pp}.`,
+ explain:`1) Объём плота: ${N} · ${n(V)} = ${n(rd(N*V,3))} м³. Полностью погружённый, он вытесняет ${n(rd(N*V*1000,1))} кг воды.<br>2) Сам плот весит ${r} · ${n(rd(N*V,3))} = ${n(rd(N*V*r,1))} кг.<br>3) Запас: ${n(rd(N*V*1000,1))} − ${n(rd(N*V*r,1))} = ${n(rd(cap,1))} кг.<br>4) ${n(rd(cap,1))} : 70 ≈ ${n(rd(cap/70,2))} → <b>${pp}</b> человек (округляем <b>вниз</b>: ${pp+1}-й уже притопит плот).`,
+ explain2:`Каждый кубометр дерева в воде может «нести» 1000 − ${r} = ${1000-r} кг. Кубометров ${n(rd(N*V,3))} → ${n(rd(cap,1))} кг. Людей по 70 кг влезает ${pp} (на ${pp+1} уже не хватит).`});},ST);
+
+/* ---------- widget ---------- */
+function onTheory(root){
+ const w=root.querySelector('#w-float');if(!w)return;
+ const L=[{t:'керосин',r:800},{t:'вода',r:1000},{t:'морская вода',r:1030},{t:'Мёртвое море',r:1240},{t:'ртуть',r:13600}];
+ w.innerHTML=`<b>Попробуй сам: утонет или нет?</b>
+ <label>Плотность тела: <input type="range" id="f-r" min="100" max="3000" step="50" value="900"><output id="f-ro"></output></label>
+ <label>Жидкость: <input type="range" id="f-l" min="0" max="4" step="1" value="1"><output id="f-lo"></output></label>
+ <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap"><div id="f-svg"></div><div class="out" id="f-out" style="flex:1 1 140px;padding-top:10px"></div></div>`;
+ const r=w.querySelector('#f-r'),l=w.querySelector('#f-l');
+ const upd=()=>{const rr=+r.value,li=L[+l.value];const f=rr/li.r;
+  w.querySelector('#f-ro').textContent=n(rr)+' кг/м³';w.querySelector('#f-lo').textContent=`${li.t} (${n(li.r)} кг/м³)`;
+  w.querySelector('#f-svg').innerHTML=tank(Math.min(1,f));
+  w.querySelector('#f-out').innerHTML=f<1?`Плавает.<br>Под поверхностью: ${n(rr)} / ${n(li.r)} ≈ <b>${n(rd(f*100,1))} %</b> объёма.`:f===1?'Плавает <b>внутри</b> жидкости на любой глубине.':`ρ<sub>т</sub> &gt; ρ<sub>ж</sub>: <b>тонет</b>.<br>Сила Архимеда — лишь ${n(rd(100/f,1))} % от силы тяжести.`;};
+ r.oninput=upd;l.oninput=upd;upd();
+}
+
+window.TOPIC={id:'p7_archimedes',title:'Сила Архимеда и плавание',subtitle:'Физика · 7 класс',
+intro:`<p>Почему стальной корабль плавает, лёд не тонет, а воздушный шар взлетает? Разбираем закон Архимеда, условия плавания, суда и воздухоплавание. В конце — знаменитые олимпиадные задачи про тающий лёд и лодку с камнем. Везде g = 10 Н/кг.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Сила Архимеда','Вес тела в жидкости','Условия плавания','Плавающее тело. Осадка','Плавание судов','Воздухоплавание','★ Лёд и две жидкости','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

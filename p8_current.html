@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ток, напряжение, сопротивление — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+/* =====================================================================
+   Circuit helper: series–parallel networks → resistance, currents, SVG
+   leaf: {t:'R'|'L'|'A'|'V'|'W'|'K'|'X', r:Ом, n:'R₁', v:'4 Ом', on:true(K closed)}
+   series: {s:[…]}, parallel: {p:[…]}
+   ===================================================================== */
+const SUBD=s=>String(s).replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d]);
+const r2=x=>Math.round(x*100)/100;
+const rnd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+/* numeric task with sensible relative tolerance for an answer rounded to d decimals */
+const NUMT=(x,d,o)=>{const a=rnd(x,d);const A=Math.abs(a)||1;let tol=Math.max(0.6*Math.pow(10,-d)/A,0.004);tol=Math.min(tol,0.9/A,0.5);return Object.assign({type:'num',ans:a,tol},o||{});};
+function Rof(n){
+  if(n.s){let s=0;for(const c of n.s){const r=Rof(c);if(r===Infinity)return Infinity;s+=r;}return s;}
+  if(n.p){let g=0;for(const c of n.p){const r=Rof(c);if(r===0)return 0;if(r!==Infinity)g+=1/r;}return g?1/g:Infinity;}
+  switch(n.t){case 'A':case 'W':return 0;case 'V':case 'X':return Infinity;case 'K':return n.on?0:Infinity;default:return n.r;}
+}
+/* distribute current I / voltage U over the tree; leaves get .I and .U */
+function dist(n,I,U){
+  n.I=I;n.U=U;
+  if(n.s){const rs=n.s.map(Rof);const inf=rs.filter(r=>r===Infinity).length;
+    n.s.forEach((c,i)=>{if(inf){dist(c,0,rs[i]===Infinity?U/inf:0);}else dist(c,I,I*rs[i]);});return;}
+  if(n.p){const rs=n.p.map(Rof);const z=rs.filter(r=>r===0).length;
+    n.p.forEach((c,i)=>{const Ic=z?(rs[i]===0?I/z:0):(rs[i]===Infinity?0:U/rs[i]);dist(c,Ic,U);});}
+}
+function solveTree(n,U){const R=Rof(n);dist(n,R===0?Infinity:U/R,U);return R;}
+function leaves(n,out){out=out||[];if(n.s)n.s.forEach(c=>leaves(c,out));else if(n.p)n.p.forEach(c=>leaves(c,out));else out.push(n);return out;}
+const clone=n=>JSON.parse(JSON.stringify(n));
+/* nodal solver for arbitrary networks: edges [a,b,r], returns resistance between s and g */
+function Rnet(N,edges,s,g){
+  const M=[];for(let i=0;i<N;i++)M.push(new Array(N+1).fill(0));
+  for(const [a,b,r] of edges){const c=1/r;M[a][a]+=c;M[b][b]+=c;M[a][b]-=c;M[b][a]-=c;}
+  // fix V_s=1, V_g=0
+  for(const k of [s,g]){M[k].fill(0);M[k][k]=1;M[k][N]=k===s?1:0;}
+  for(let i=0;i<N;i++){let p=i;for(let j=i+1;j<N;j++)if(Math.abs(M[j][i])>Math.abs(M[p][i]))p=j;[M[i],M[p]]=[M[p],M[i]];
+    for(let j=0;j<N;j++)if(j!==i){const f=M[j][i]/M[i][i];for(let k=i;k<=N;k++)M[j][k]-=f*M[i][k];}}
+  const V=M.map((row,i)=>row[N]/row[i]);let I=0;for(const [a,b,r] of edges){if(a===s)I+=(V[a]-V[b])/r;else if(b===s)I+=(V[b]-V[a])/r;}
+  return 1/I;
+}
+/* ---------- drawing ---------- */
+const LW=66,LH=60,LT=30,ST=13;
+function dims(n){
+  if(n.s){const d=n.s.map(dims);const t=Math.max(...d.map(x=>x.t)),b=Math.max(...d.map(x=>x.h-x.t));n._d={w:d.reduce((a,x)=>a+x.w,0),h:t+b,t};return n._d;}
+  if(n.p){const d=n.p.map(dims);n._d={w:Math.max(...d.map(x=>x.w))+2*ST,h:d.reduce((a,x)=>a+x.h,0),t:d[0].t};return n._d;}
+  n._d={w:n.w||LW,h:LH,t:LT};return n._d;
+}
+const TX=(x,y,t,o)=>{o=o||{};return `<text x="${r2(x)}" y="${r2(y)}" text-anchor="${o.a||'middle'}" font-size="${o.fs||12}" font-weight="${o.wt||600}" fill="${o.c||'var(--ink)'}">${t}</text>`;};
+const WI=(x1,y1,x2,y2,o)=>`<line x1="${r2(x1)}" y1="${r2(y1)}" x2="${r2(x2)}" y2="${r2(y2)}" stroke="${(o&&o.c)||'var(--fig)'}" stroke-width="${(o&&o.sw)||2}" stroke-linecap="round"${o&&o.dash?' stroke-dasharray="5 4"':''}/>`;
+const DOT=(x,y)=>`<circle cx="${r2(x)}" cy="${r2(y)}" r="3.2" fill="var(--fig)"/>`;
+/* element symbol centred at 0,0, horizontal, total width 2*hw; returns [svg, hw] */
+function sym(t,o){o=o||{};const F='var(--fig)';
+  switch(t){
+    case 'R':return [`<rect x="-15" y="-6.5" width="30" height="13" fill="${o.hl?'var(--hl)':'var(--card)'}" fill-opacity="${o.hl?0.6:1}" stroke="${F}" stroke-width="2"/>`,15];
+    case 'L':{const g=o.glow;return [(g?`<circle r="${(11+12*Math.min(1,g))}" fill="var(--hl)" fill-opacity="${0.25+0.6*Math.min(1,g)}"/>`:'')+`<circle r="10" fill="var(--card)" stroke="${F}" stroke-width="2"/><path d="M-7,-7 L7,7 M-7,7 L7,-7" stroke="${F}" stroke-width="1.8"/>`,10];}
+    case 'X':return [`<circle r="10" fill="var(--card)" stroke="${F}" stroke-width="2" stroke-dasharray="3 3"/><path d="M-7,-7 L7,7 M-7,7 L7,-7" stroke="${F}" stroke-width="1.4" stroke-dasharray="2 2"/>`,10];
+    case 'A':case 'V':return [`<circle r="11" fill="var(--card)" stroke="${F}" stroke-width="2"/><text y="4.5" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-ink)">${t}</text>`,11];
+    case 'K':return [o.on?`<circle cx="-12" r="2.6" fill="${F}"/><circle cx="12" r="2.6" fill="${F}"/><line x1="-12" y1="0" x2="12" y2="0" stroke="${F}" stroke-width="2"/>`:`<circle cx="-12" r="2.6" fill="${F}"/><circle cx="12" r="2.6" fill="${F}"/><line x1="-12" y1="0" x2="10" y2="-11" stroke="${F}" stroke-width="2"/>`,12];
+    case 'B':return [`<line x1="-4" y1="-15" x2="-4" y2="15" stroke="${F}" stroke-width="2"/><line x1="4" y1="-8" x2="4" y2="8" stroke="${F}" stroke-width="4.5"/>`,4];
+    case 'W':return ['',0];
+  }
+  return ['',0];
+}
+/* draw element between (x1,y) and (x2,y) (horizontal) or vertical when vert */
+function elem(t,x1,y1,x2,y2,o){o=o||{};const [g,hw]=sym(t,o);const cx=(x1+x2)/2,cy=(y1+y2)/2;const vert=Math.abs(x2-x1)<Math.abs(y2-y1);
+  let s='';if(vert){s+=WI(x1,y1,x1,cy-hw)+WI(x1,cy+hw,x1,y2);}else{s+=WI(x1,y1,cx-hw,y1)+WI(cx+hw,y1,x2,y1);}
+  if(t==='W'){s=WI(x1,y1,x2,y2);}
+  s+=`<g transform="translate(${r2(cx)},${r2(cy)})${vert?' rotate(90)':''}">${g}</g>`;
+  if(vert){if(o.n)s+=TX(cx+hw+6+(t==='B'?8:0),cy-(o.v?3:-4),o.n,{a:'start',c:'var(--accent-ink)',fs:13,wt:700});if(o.v)s+=TX(cx+hw+6+(t==='B'?8:0),cy+(o.n?12:4),o.v,{a:'start'});}
+  else{if(o.n)s+=TX(cx,cy-(t==='B'?20:o.glow!=null?27:16),o.n,{c:'var(--accent-ink)',fs:13,wt:700});if(o.v)s+=TX(cx,cy+(t==='B'?28:24),o.v);}
+  return s;
+}
+function drawNode(n,x,y){const d=n._d;let s='';
+  if(n.s){let cx=x;const ty=y+d.t;n.s.forEach(c=>{s+=drawNode(c,cx,ty-c._d.t);cx+=c._d.w;});return s;}
+  if(n.p){let cy=y;const xl=x+ST,xr=x+d.w-ST;const rows=[];
+    n.p.forEach(c=>{const ty=cy+c._d.t;rows.push(ty);s+=drawNode(c,xl,cy);if(xl+c._d.w<xr)s+=WI(xl+c._d.w,ty,xr,ty);cy+=c._d.h;});
+    s+=WI(x,rows[0],xl,rows[0])+WI(xr,rows[0],x+d.w,rows[0]);
+    s+=WI(xl,rows[0],xl,rows[rows.length-1])+WI(xr,rows[0],xr,rows[rows.length-1]);
+    rows.forEach((ty,i)=>{if(i<rows.length-1){s+=DOT(xl,ty)+DOT(xr,ty);}});
+    return s;}
+  const ty=y+d.t;return elem(n.t,x,ty,x+d.w,ty,{n:n.n,v:n.v,on:n.on,hl:n.hl,glow:n.glow});
+}
+/* full circuit: network on top, battery (and extras) on the bottom wire
+   o.bat: label under battery; o.bottom: extra leaves on the bottom wire (e.g. key, ammeter); o.noBat: draw open terminals */
+function circuit(net,o){o=o||{};dims(net);const d=net._d;const M=24,G=12;
+  const bottom=[{t:'B',n:o.batN||'',v:o.bat||''}].concat(o.bottom||[]);if(o.noBat)bottom.length=0;
+  const bw=bottom.length*60;const W=Math.max(d.w,bw)+2*M+2*G;const x0=(W-d.w)/2;
+  const T0=o.top||4;const yb=d.h+(o.noBat?18:30)+T0-4;const Hh=yb+(o.noBat?20:36);
+  let s=`<svg viewBox="0 0 ${r2(W)} ${r2(Hh)}" width="${Math.min(340,Math.round(W))}" role="img" aria-label="${o.aria||'Схема электрической цепи'}" style="font-family:system-ui,sans-serif">`;
+  s+=drawNode(net,x0,T0);const ty=T0+d.t;const xl=x0-G,xr=x0+d.w+G;
+  s+=WI(xl,ty,x0,ty)+WI(x0+d.w,ty,xr,ty);
+  if(o.noBat){s+=WI(xl,ty,xl,yb)+WI(xr,ty,xr,yb)+`<circle cx="${r2(xl)}" cy="${r2(yb)}" r="4" fill="var(--card)" stroke="var(--fig)" stroke-width="2"/><circle cx="${r2(xr)}" cy="${r2(yb)}" r="4" fill="var(--card)" stroke="var(--fig)" stroke-width="2"/>`+(o.ends?TX(xl,yb+18,o.ends[0],{c:'var(--accent-ink)',fs:13,wt:700})+TX(xr,yb+18,o.ends[1],{c:'var(--accent-ink)',fs:13,wt:700}):'');return s+'</svg>';}
+  s+=WI(xl,ty,xl,yb)+WI(xr,ty,xr,yb);
+  const seg=(xr-xl)/bottom.length;bottom.forEach((b,i)=>{s+=elem(b.t,xl+i*seg,yb,xl+(i+1)*seg,yb,{n:b.n,v:b.v,on:b.on});});
+  return s+'</svg>';
+}
+const Rl=(r,n,o)=>Object.assign({t:'R',r,n,v:o&&o.nov?'':fmtR(r)},o||{});
+const fmtR=r=>H.num(r)+' Ом';
+
+/* ---------- local helpers ---------- */
+const N=H.num;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<400;i++){const t=make();if(t)return t;}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const M=s=>`<span class="m">${s}</span>`;
+const F=H.frac;
+const MAT=[['серебро',0.016],['медь',0.017],['алюминий',0.028],['вольфрам',0.055],['железо',0.10],['никелин',0.40],['константан',0.50],['нихром',1.1]];
+const MATg={'серебро':'серебра','медь':'меди','алюминий':'алюминия','вольфрам':'вольфрама','железо':'железа','никелин':'никелина','константан':'константана','нихром':'нихрома'};
+const rhoTable=`<table class="sym" style="width:auto;margin:0 auto"><tr><th>Вещество</th><th>ρ, Ом·мм²/м</th></tr>${MAT.map(m=>`<tr><td>${m[0]}</td><td>${N(m[1])}</td></tr>`).join('')}</table>`;
+
+/* ---------- meter (gauge) ---------- */
+function meter(L,max,nd,major,k){
+  const cx=160,cy=150,Rr=118,a0=150,a1=30;const ang=i=>(a0-(a0-a1)*i/nd)*Math.PI/180;
+  const P=(i,r)=>[cx+r*Math.cos(ang(i)),cy-r*Math.sin(ang(i))];
+  let s=`<svg viewBox="0 0 320 175" width="300" role="img" aria-label="Шкала прибора" style="font-family:system-ui,sans-serif">`;
+  s+=`<rect x="8" y="6" width="304" height="162" rx="14" fill="var(--card)" stroke="var(--fig)" stroke-width="1.5"/>`;
+  s+=`<path d="M${r2(P(0,Rr)[0])},${r2(P(0,Rr)[1])} A${Rr},${Rr} 0 0 1 ${r2(P(nd,Rr)[0])},${r2(P(nd,Rr)[1])}" fill="none" stroke="var(--fig)" stroke-width="1.6"/>`;
+  for(let i=0;i<=nd;i++){const big=i%major===0;const a=P(i,Rr),b=P(i,Rr-(big?14:8));s+=WI(a[0],a[1],b[0],b[1],{sw:big?2:1.2});
+    if(big){const t=P(i,Rr-27);s+=TX(t[0],t[1]+4,N(rnd(i*max/nd,4)),{fs:12});}}
+  const e=P(k,Rr-4);s+=`<line x1="${cx}" y1="${cy}" x2="${r2(e[0])}" y2="${r2(e[1])}" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="6" fill="var(--accent)"/>`;
+  s+=`<text x="52" y="150" text-anchor="middle" font-size="22" font-weight="700" fill="var(--accent-ink)">${L}</text>`;
+  return s+'</svg>';
+}
+/* ---------- I(U) graph ---------- */
+function graphIU(lines,su,si,o){o=o||{};const nx=6,ny=5,X0=44,Y0=200,cw=44,ch=34;
+  let s=`<svg viewBox="0 0 340 236" width="320" role="img" aria-label="График зависимости силы тока от напряжения" style="font-family:system-ui,sans-serif">`;
+  for(let i=0;i<=nx;i++){s+=`<line x1="${X0+i*cw}" y1="${Y0}" x2="${X0+i*cw}" y2="${Y0-ny*ch}" stroke="var(--line)"/>`;s+=TX(X0+i*cw,Y0+16,N(rnd(i*su,3)),{fs:11,wt:500});}
+  for(let j=0;j<=ny;j++){s+=`<line x1="${X0}" y1="${Y0-j*ch}" x2="${X0+nx*cw}" y2="${Y0-j*ch}" stroke="var(--line)"/>`;if(j)s+=TX(X0-6,Y0-j*ch+4,N(rnd(j*si,3)),{fs:11,wt:500,a:'end'});}
+  s+=WI(X0,Y0,X0+nx*cw+12,Y0,{sw:1.6})+WI(X0,Y0,X0,Y0-ny*ch-14,{sw:1.6});
+  s+=TX(X0+nx*cw+8,Y0+30,'U, В',{fs:12,a:'end'})+TX(X0+6,Y0-ny*ch-6,'I, А',{fs:12,a:'start'});
+  lines.forEach((L,idx)=>{const k=(L.b*ch)/(L.a*cw);let ex=nx*cw,ey=ex*k;if(ey>ny*ch){ey=ny*ch;ex=ey/k;}
+    s+=`<line x1="${X0}" y1="${Y0}" x2="${r2(X0+ex)}" y2="${r2(Y0-ey)}" stroke="var(--accent)" stroke-width="2.6"/>`;
+    s+=`<circle cx="${X0+L.a*cw}" cy="${Y0-L.b*ch}" r="4" fill="var(--accent)"/>`;
+    const atR=ex>=nx*cw-1;const lx=X0+ex+(atR?14:6),ly=Y0-ey+(atR?4:-12);
+    s+=`<circle cx="${r2(lx)}" cy="${r2(ly-4)}" r="9" fill="var(--card)" stroke="var(--accent)"/>`+TX(lx,ly+0.5,L.name,{fs:12,c:'var(--accent-ink)',wt:700});});
+  return s+'</svg>';
+}
+
+/* ---------- theory figures ---------- */
+const symRow=[['R','резистор'],['L','лампа'],['B','батарея (источник)'],['K','ключ'],['A','амперметр'],['V','вольтметр']].map(([t,nm])=>{
+  const [g,hw]=sym(t,{});return `<div class="fig"><svg viewBox="0 0 110 50" width="110" style="font-family:system-ui,sans-serif">${elem(t,8,25,102,25,{})}</svg><div class="cap">${nm}${t==='B'?'<br>длинная черта — «+»':''}</div></div>`;}).join('');
+const figAV=circuit({s:[{p:[{t:'V'},{t:'L',n:'L'}]},{t:'A'}]},{bat:'4,5 В',bottom:[{t:'K',n:'K',on:true}]});
+const figBadA=circuit({p:[{t:'L',n:'L'},{t:'A'}]},{bat:'4,5 В'});
+
+const theory=[
+{title:'Зачем всё это: телефон, птицы и ток',lvl:0,html:`
+<p class="hook">Ты ставишь телефон на зарядку — и через час в нём «залито» столько энергии, что можно смотреть видео полдня. Что именно течёт по проводу? Почему лампа загорается мгновенно, хотя электроны в проводе ползут медленнее улитки? И почему воробей спокойно сидит на проводе под 10 000 вольт?</p>
+<div class="box rule"><b>Электрический ток</b>Ток — это <b>упорядоченное (направленное) движение заряженных частиц</b>.</div>
+<p>В металле много <b>свободных электронов</b> — они и так носятся хаотично, как люди на вокзале. Пока все бегают кто куда, тока нет. Включили батарейку — появилось <b>электрическое поле</b>, и вся толпа начала дружно дрейфовать в одну сторону. Вот это и есть ток.</p>
+<div class="box rule"><b>Три условия тока</b>1) есть <b>свободные заряженные частицы</b> (проводник);<br>2) есть <b>источник тока</b>, который создаёт электрическое поле;<br>3) цепь <b>замкнута</b> — путь без разрывов.</div>
+<p>Кто несёт ток: в <b>металлах</b> — свободные электроны; в <b>растворах солей, кислот, щелочей</b> — ионы (+ и −); в <b>газах</b> (молния, неоновая лампа) — ионы и электроны.</p>
+<div class="box rule"><b>Направление тока</b>За направление тока договорились считать направление движения <b>положительных</b> зарядов: <b>от «+» источника к «−»</b> по внешней цепи. Электроны в металле бегут наоборот — от «−» к «+».</div>
+<div class="box err"><b>Типичная ошибка</b>«Ток идёт туда, куда бегут электроны». Нет: договорились раньше, чем открыли электрон (это сделали в 1897 году), — и менять не стали.</div>
+<div class="fact">Электроны в медном проводе дрейфуют со скоростью порядка <b>долей миллиметра в секунду</b>. А лампа загорается сразу, потому что <b>электрическое поле</b> разносится по проводу почти со скоростью света — и все электроны трогаются с места одновременно, как вода в полной трубе.</div>`},
+{title:'Сила тока: сколько заряда пробегает за секунду',lvl:1,html:`
+<div class="box rule"><b>Сила тока</b>${M('I = '+F('q','t'))} — заряд, прошедший через поперечное сечение проводника за 1 секунду.<br>Единица — <b>ампер (А)</b>: 1 А = 1 Кл/с.</div>
+<p>Представь турникет в метро. Сила тока — это сколько людей проходит через турникет <b>за секунду</b>. Только вместо людей — кулоны заряда.</p>
+<div class="box ex"><b>Пример</b>За 5 с через лампу прошло 2 Кл. ${M('I = 2 / 5 = 0,4 А')}.<br>Наоборот: ${M('q = I·t')}; ${M('t = q / I')}.</div>
+<p>Удобные приставки: <b>1 мА = 0,001 А</b> (миллиампер), <b>1 кА = 1000 А</b>. Минуты и часы переводи в <b>секунды</b>!</p>
+<div class="box tip"><b>Ёмкость аккумулятора</b>На батарее телефона пишут «5000 мА·ч». Это <b>заряд</b>: ток 5000 мА = 5 А мог бы идти 1 час. В кулонах: 5 А · 3600 с = 18 000 Кл.</div>
+<p>Заряд электрона ${M('e = 1,6·10⁻¹⁹ Кл')}. Число электронов: ${M('N = q / e')}. При токе 1 А через сечение каждую секунду пролетает 6,25·10¹⁸ электронов!</p>
+<div class="box err"><b>Ловушка</b>Не забывай переводить мА в А и минуты в секунды: 300 мА за 2 мин — это 0,3 А · 120 с = 36 Кл, а не 600.</div>
+<div class="fact">Единица силы тока названа в честь французского физика <b>Андре-Мари Ампера</b>. А удар молнии — это ток в десятки тысяч ампер, но длится он лишь тысячные доли секунды.</div>`},
+{title:'Напряжение: насколько сильно «толкают» заряды',lvl:2,html:`
+<div class="box rule"><b>Напряжение</b>${M('U = '+F('A','q'))} — работа электрического поля по перемещению заряда 1 Кл.<br>Единица — <b>вольт (В)</b>: 1 В = 1 Дж/Кл.</div>
+<p>Аналогия с водой: напряжение — это <b>высота водопада</b> (насколько сильно толкает), а сила тока — <b>сколько воды</b> падает за секунду. Высокий водопад с тонкой струйкой — большое U, маленькое I.</p>
+<div class="box ex"><b>Пример</b>Поле перенесло заряд 3 Кл и совершило работу 36 Дж. ${M('U = 36 / 3 = 12 В')}.<br>Работа: ${M('A = U·q')}.</div>
+<table class="sym" style="width:auto;margin:0 auto"><tr><th>Источник</th><th>Напряжение</th></tr>
+<tr><td>пальчиковая батарейка</td><td>1,5 В</td></tr><tr><td>аккумулятор телефона</td><td>≈ 3,7 В</td></tr><tr><td>USB-зарядка</td><td>5 В (быстрая — до 20 В)</td></tr>
+<tr><td>аккумулятор автомобиля</td><td>12 В</td></tr><tr><td>розетка дома</td><td>220 В (в Европе 230 В)</td></tr><tr><td>линия электропередачи</td><td>от 6 до 750 кВ</td></tr></table>
+<div class="fact">Вольт назван в честь <b>Алессандро Вольты</b>, который в 1800 году собрал первую батарейку — «вольтов столб» из медных и цинковых кружков, проложенных мокрой тканью. А электрический угорь создаёт напряжение до 600 В!</div>`},
+{title:'Сопротивление и формула R = ρl/S',lvl:3,html:`
+<div class="box rule"><b>Сопротивление проводника</b>${M('R = '+F('ρ·l','S'))}, где l — длина, S — площадь поперечного сечения, ρ — <b>удельное сопротивление</b> вещества (из таблицы).<br>Единица — <b>ом (Ом)</b>.</div>
+<p>Почему так? Электроны, пробираясь через металл, «толкаются» с ионами решётки. Чем <b>длиннее</b> провод — тем больше толкотни (R растёт пропорционально l). Чем <b>толще</b> — тем больше «полос движения» (R уменьшается во столько же раз, во сколько выросла S). Как пробка: длинная узкая улица хуже короткого широкого проспекта.</p>
+<div class="figrow"><div>${rhoTable}<div class="cap">Удельное сопротивление при 20 °C</div></div></div>
+<div class="box ex"><b>Пример</b>Медный провод: l = 100 м, S = 0,5 мм². ${M('R = 0,017 · 100 / 0,5 = 3,4 Ом')}.<br>Нихромовая спираль: R = 22 Ом, S = 0,1 мм² → ${M('l = R·S / ρ = 22 · 0,1 / 1,1 = 2 м')}.</div>
+<div class="box tip"><b>Удобная единица</b>Если ρ в Ом·мм²/м, то длину бери в <b>метрах</b>, а площадь — в <b>мм²</b>. Ничего переводить не надо.</div>
+<div class="box err"><b>Типичная ошибка</b>«R = U/I, значит, если поднять напряжение, сопротивление вырастет». Нет! Сопротивление проводника зависит только от <b>материала, длины, толщины</b> (и температуры). Формула R = U/I лишь позволяет его <b>измерить</b>.</div>
+<div class="box err"><b>Ловушка «вытянули провод»</b>Если проволоку растянуть в 2 раза, объём не меняется, значит площадь сечения уменьшится в 2 раза. R вырастет в 2 · 2 = <b>4 раза</b>.</div>
+<p><b>Реостат</b> — прибор с переменным сопротивлением: ползунок меняет длину провода, по которому идёт ток.</p>`},
+{title:'Закон Ома — главная формула главы',lvl:4,html:`
+<div class="box rule"><b>Закон Ома для участка цепи</b>${M('I = '+F('U','R'))}<br>Сила тока на участке цепи <b>прямо пропорциональна напряжению</b> на его концах и <b>обратно пропорциональна сопротивлению</b>.</div>
+<p>Снова вода: напряжение — напор, сопротивление — узость трубы, ток — сколько воды течёт. Сильнее напор → больше воды. Уже труба → меньше воды.</p>
+<div class="box tip"><b>Треугольник Ома</b>Закрой пальцем то, что ищешь: <b>U</b> сверху, <b>I</b> и <b>R</b> снизу.<br>${M('I = U / R')}, ${M('U = I·R')}, ${M('R = U / I')}.</div>
+<div class="widget" id="w-ohm"></div>
+<div class="box ex"><b>Пример</b>Лампа фонарика: U = 4,5 В, R = 15 Ом. ${M('I = 4,5 / 15 = 0,3 А')}.<br>Резистор при токе 20 мА держит 5 В: ${M('R = 5 / 0,02 = 250 Ом')}.</div>
+<div class="box err"><b>Ловушка</b>Ток 20 мА — это 0,02 А, а не 20 А. Переводи миллиамперы и килоомы до вычислений: 1 кОм = 1000 Ом.</div>
+<div class="fact">Георг Ом открыл свой закон в 1826–1827 годах, сам изготавливая проволоку и самодельные приборы. Коллеги сперва его высмеяли — а теперь его фамилия стоит на каждом резисторе.</div>`},
+{title:'График I(U): вольт-амперная характеристика',lvl:5,html:`
+<div class="box rule"><b>Вольт-амперная характеристика</b>Для резистора график зависимости ${M('I(U)')} — <b>прямая через начало координат</b> (I прямо пропорциональна U). Чем <b>круче</b> прямая, тем <b>меньше</b> сопротивление.</div>
+<div class="fig">${graphIU([{a:4,b:4,name:'1'},{a:6,b:2,name:'2'}],2,0.5)}</div>
+<p>Как найти R по графику: возьми удобную точку на прямой (лучше в узле клеток), прочитай U и I и раздели: ${M('R = U / I')}.</p>
+<div class="box ex"><b>Пример по рисунку</b>Прямая 1 проходит через точку U = 8 В, I = 2 А → R₁ = 8 / 2 = 4 Ом. Прямая 2: U = 12 В, I = 1 А → R₂ = 12 Ом. Прямая 2 более пологая — сопротивление больше.</div>
+<div class="box err"><b>Ловушка</b>Не путай: на горизонтальной оси здесь U, а на вертикальной — I. Чем круче I(U), тем меньше R. (Если бы оси поменять местами, было бы наоборот!)</div>`},
+{title:'Амперметр и вольтметр: как включать',lvl:6,html:`
+<div class="figrow">${symRow}</div>
+<div class="box rule"><b>Амперметр</b>измеряет силу тока и включается <b>последовательно</b> с тем элементом, ток в котором меряем. Его сопротивление очень <b>маленькое</b>.</div>
+<div class="box rule"><b>Вольтметр</b>измеряет напряжение и включается <b>параллельно</b> участку — его клеммы касаются двух концов участка. Его сопротивление очень <b>большое</b>.</div>
+<div class="fig">${figAV}</div>
+<p>Логика простая. Амперметр должен «пропустить через себя» тот же ток — поэтому стоит в разрыве цепи, как турникет. И не мешать — поэтому почти без сопротивления. Вольтметр сравнивает две точки, как линейка высоту двух ступенек, и почти не берёт ток себе.</p>
+<div class="box err"><b>Опасная ошибка</b>Амперметр параллельно лампе или прямо к полюсам источника: его сопротивление почти 0 — ток огромный, прибор сгорит, лампа погаснет (её «обходят»).<div class="fig">${figBadA}</div></div>
+<div class="box err"><b>Ещё ошибка</b>Вольтметр последовательно с лампой: из-за огромного сопротивления ток почти пропадает, лампа не горит, а вольтметр покажет почти всё напряжение источника.</div>
+<div class="box tip"><b>Цена деления</b>Возьми два соседних числа на шкале, вычти меньшее из большего и раздели на число делений между ними. Показание = цена деления × число делений до стрелки.</div>`},
+{title:'Ток и безопасность',lvl:7,html:`
+<p>Опасно для человека не «напряжение само по себе», а <b>ток через тело</b>. Уже около 0,05–0,1 А может остановить сердце. Тело имеет сопротивление, и по закону Ома ток I = U/R: чем больше напряжение — тем больше ток. Мокрая кожа сопротивляется гораздо хуже сухой — поэтому вода и электричество смертельно опасная пара.</p>
+<div class="box rule"><b>Безопасное напряжение</b>В сухом помещении безопасным считают напряжение до 36–42 В. 220 В в розетке — уже опасно!</div>
+<div class="fact">Птица на проводе ЛЭП сидит двумя лапками на одном проводе. Между лапками — несколько сантиметров толстого алюминиевого провода с крошечным сопротивлением, и напряжение там — <b>тысячные доли вольта</b> (проверишь в задачах). А вот если крупная птица коснётся крылом второго провода или опоры — беда.</div>`},
+{title:'Шпаргалка',lvl:0,html:`
+<ul class="steps">
+<li>Ток — направленное движение заряженных частиц; направление — от «+» к «−».</li>
+<li>${M('I = q / t')} (А), ${M('U = A / q')} (В), ${M('R = ρl / S')} (Ом).</li>
+<li>Закон Ома: ${M('I = U / R')}; ${M('U = IR')}; ${M('R = U / I')}.</li>
+<li>R не зависит от U и I — только от материала, длины, сечения, температуры.</li>
+<li>Амперметр — последовательно, вольтметр — параллельно.</li>
+<li>Переводи: мА → А (÷1000), кОм → Ом (×1000), мин → с (×60), ч → с (×3600).</li></ul>`}
+];
+
+const symbols={tab:'Формулы',title:'Величины и формулы',rows:[
+['I','Сила тока, ампер (А)','Сколько заряда проходит за 1 секунду',M('I = q / t')],
+['q','Электрический заряд, кулон (Кл)','«Количество электричества»; заряд электрона e = 1,6·10⁻¹⁹ Кл',M('q = I·t')],
+['U','Напряжение, вольт (В)','Работа поля по переносу 1 Кл заряда',M('U = A / q')],
+['A','Работа тока, джоуль (Дж)','Энергия, которую поле передало зарядам',M('A = U·q')],
+['R','Сопротивление, ом (Ом)','Насколько проводник «мешает» току',M('R = U / I')],
+['ρ','Удельное сопротивление, Ом·мм²/м','Свойство вещества (из таблицы): медь 0,017, нихром 1,1',M('R = ρl / S')],
+['l, S','Длина (м) и площадь сечения (мм²)','Длиннее — больше R; толще — меньше R','l = 2 м, S = 0,5 мм²'],
+['I = U/R','Закон Ома','Ток растёт с напряжением и падает с сопротивлением','12 В / 4 Ом = 3 А'],
+['Ⓐ','Амперметр','Включают последовательно, R ≈ 0','—'],
+['Ⓥ','Вольтметр','Включают параллельно, R очень большое','—']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Перед вычислением переведи всё в А, В, Ом, с. Потом закон Ома.</div>`};
+
+/* =================== generators =================== */
+/* L0 — ток */
+G(0,()=>CH('Что такое электрический ток?','Упорядоченное (направленное) движение заряженных частиц',['Хаотическое движение электронов в металле','Движение любых частиц вещества','Энергия, которая хранится в батарейке'],{
+ short:'Ток — именно <b>упорядоченное</b> движение <b>заряженных</b> частиц.',
+ explain:'Определение: <b>электрический ток — это упорядоченное (направленное) движение заряженных частиц</b>.<br>Хаотически электроны движутся всегда, даже в выключенном проводе — это ещё не ток. Нейтральные частицы ток не создают. А энергия батарейки — это причина тока, а не он сам.',
+ explain2:'Представь стадион после матча. Люди просто бродят — это хаос, «тока» нет. Объявили выход — все дружно идут к воротам. Вот это и есть ток: <b>все в одну сторону</b>, и это <b>заряженные</b> частицы.'}),{rule:true});
+G(0,()=>CH('Какое направление принято за направление электрического тока?','От «+» к «−» источника (как двигались бы положительные заряды)',['От «−» к «+» (куда бегут электроны)','От источника к лампе по кратчайшему пути','Направление тока не определено'],{
+ short:'Договорились: от «+» к «−» по внешней цепи.',
+ explain:'За направление тока <b>принято</b> направление движения <b>положительных</b> зарядов — по внешней цепи <b>от «+» к «−»</b>. Электроны в металле движутся наоборот, но договорённость появилась раньше открытия электрона.',
+ explain2:'Запомни: «ток течёт с плюса». Как вода с горки: «+» — вершина, «−» — подножие. А электроны — «лососи», плывут против течения.'}),{rule:true});
+G(0,()=>{const good=['есть свободные заряженные частицы','есть источник тока (электрическое поле)','цепь замкнута'];const bad=pick([['рядом есть магнит','провод длиннее 1 м'],['сопротивление очень большое','провод медный'],['в цепи есть лампа','в цепи есть амперметр']]);
+ const opts=shuffle(good.concat(bad));return {type:'multi',q:'Что <b>обязательно</b> нужно, чтобы в цепи шёл электрический ток? Отметь все верные условия.',opts,ans:good.map(g=>opts.indexOf(g)).sort((a,b)=>a-b),
+ short:'Свободные заряды + источник + замкнутая цепь.',
+ explain:`Три условия: 1) <b>свободные заряженные частицы</b> — без них нечему двигаться; 2) <b>источник тока</b> — он создаёт поле, которое толкает заряды; 3) <b>замкнутая цепь</b> — иначе заряды упрутся в разрыв.<br>«${bad[0]}» и «${bad[1]}» — не обязательны: ток бывает и без этого.`,
+ explain2:'Аналогия с водой по трубам: нужна <b>вода</b> (свободные заряды), <b>насос</b> (источник) и <b>трубы без дыр и заглушек по кругу</b> (замкнутая цепь). Всё остальное — детали.'};});
+G(0,()=>{const cond=['медная проволока','алюминиевая ложка','графитовый стержень карандаша','солёная вода','железный гвоздь'];const ins=['резиновая перчатка','стеклянная палочка','сухая деревянная линейка','пластиковая ручка','фарфоровый изолятор','воздух (сухой)'];
+ const askC=Math.random()<0.6;const c=askC?pick(cond):pick(ins);const w=askC?sample(ins,3):sample(cond,3);
+ return CH(`Что из перечисленного — <b>${askC?'проводник':'диэлектрик (изолятор)'}</b>?`,c,w,{
+ short:askC?`${c} — проводник: в нём есть свободные заряды.`:`${c} — изолятор: свободных зарядов почти нет.`,
+ explain:askC?`Проводники — вещества со <b>свободными заряженными частицами</b>: металлы (свободные электроны), графит, растворы солей (ионы). Из списка это <b>${c}</b>. Остальные (${w.join(', ')}) — изоляторы.`:`Изоляторы (диэлектрики) почти не имеют свободных зарядов: резина, стекло, сухое дерево, пластик, фарфор, сухой воздух. Из списка это <b>${c}</b>. А ${w.join(', ')} — проводники.`,
+ explain2:'Подсказка из жизни: из чего делают провода? Металл. А чем их покрывают, чтобы не било током? Пластик и резина. Солёная вода тоже проводит — поэтому купаться в грозу опасно.'});});
+G(0,()=>{const v=pick([['металле','свободные электроны',['положительные ионы','протоны','нейтральные атомы']],['растворе поваренной соли','положительные и отрицательные ионы',['только свободные электроны','протоны','нейтроны']]]);
+ return CH(`Какие частицы создают ток в ${v[0]}?`,v[1],v[2],{short:`В ${v[0]} ток создают ${v[1]}.`,
+ explain:`Ток создают <b>свободные</b> заряженные частицы. В металлах это <b>электроны</b>: они оторвались от атомов и бродят по всему куску металла, а ионы сидят в узлах решётки. В растворах солей кристаллы распадаются на <b>ионы</b> (Na⁺ и Cl⁻), они и движутся. Ответ: <b>${v[1]}</b>.`,
+ explain2:'Протоны сидят глубоко в ядрах — им не сдвинуться. Нейтроны и атомы целиком не заряжены — тока не дают. Остаются электроны (в металле) и ионы (в растворе).'});});
+
+/* L1 — сила тока */
+G(1,()=>CH('Допиши формулу силы тока: I = …',M('q / t'),[M('q · t'),M('t / q'),M('U · R')],{
+ short:'I = q / t — заряд за единицу времени.',
+ explain:`Сила тока — это заряд, прошедший через сечение проводника <b>за 1 секунду</b>: ${M("I = q / t")}. «За секунду» — значит делим на время. Единица: 1 А = 1 Кл / 1 с.`,
+ explain2:'Сравни со скоростью: v = s / t — путь за секунду. Сила тока — «заряд за секунду»: I = q / t. Проверка: 10 Кл за 5 с → 2 Кл каждую секунду → 2 А.'}),{rule:true});
+G(1,()=>{const I=pick([0.2,0.4,0.5,1.5,2,2.5,3,4,0.25,0.8]);const t=pick([2,4,5,8,10,20,40]);const q=rnd(I*t,4);
+ return NUMT(I,3,{q:`Через поперечное сечение проводника за ${t} с прошёл заряд ${N(q)} Кл. Найди силу тока. Ответ — в амперах.`,
+ hint:'I = q / t.',short:`I = ${N(q)} / ${t} = ${N(I)} А.`,
+ explain:`Сила тока — заряд за секунду: ${M(`I = q / t = ${N(q)} / ${t} = ${N(I)} А`)}.<div class="box err"><b>Не так</b>q · t = ${N(rnd(q*t,3))} — умножать нельзя: чем дольше идёт тот же заряд, тем ток <b>меньше</b>.</div>`,
+ explain2:`За ${t} с прошло ${N(q)} Кл. Разложи поровну на ${t} секунд: каждую секунду ${N(I)} Кл. «Кулон в секунду» — это и есть ампер: <b>${N(I)} А</b>.`});});
+G(1,()=>{const ImA=pick([200,250,300,400,500,600,800,150]);const tm=pick([2,3,5,10,15]);const q=ImA/1000*tm*60;
+ return NUMT(q,2,{q:`Ток в лампочке фонарика ${ImA} мА. Какой заряд пройдёт через лампу за ${tm} мин? Ответ — в кулонах.`,
+ hint:'Переведи мА в А, минуты — в секунды, затем q = I·t.',short:`${N(ImA/1000)} А · ${tm*60} с = ${N(q)} Кл.`,
+ explain:`1) ${ImA} мА = ${N(ImA/1000)} А (делим на 1000).<br>2) ${tm} мин = ${tm*60} с.<br>3) ${M(`q = I·t = ${N(ImA/1000)} · ${tm*60} = ${N(q)} Кл`)}.<div class="box err"><b>Ловушка</b>${ImA} · ${tm} = ${ImA*tm} — забыл перевести единицы.</div>`,
+ explain2:`Сначала за 1 секунду: ${N(ImA/1000)} Кл. За минуту в 60 раз больше: ${N(rnd(ImA/1000*60,3))} Кл. За ${tm} мин: ${N(rnd(ImA/1000*60,3))} · ${tm} = ${N(q)} Кл.`});});
+G(1,()=>{const k=R(1,6),t=pick([1,2,5,10]);const I=0.16*k;const Nn=k*t; // N·10^18
+ return NUMT(Nn,1,{q:`Сила тока в проводе ${N(rnd(I,2))} А. Сколько электронов проходит через сечение провода за ${t} с? Заряд электрона e = 1,6·10⁻¹⁹ Кл. Ответ дай в виде числа, умноженного на 10¹⁸ (например, 5 означает 5·10¹⁸).`,
+ hint:'Найди заряд q = I·t, потом раздели на заряд одного электрона.',short:`N = ${N(rnd(I*t,2))} / (1,6·10⁻¹⁹) = ${Nn}·10¹⁸.`,
+ explain:`1) Заряд: ${M(`q = I·t = ${N(rnd(I,2))} · ${t} = ${N(rnd(I*t,2))} Кл`)}.<br>2) Каждый электрон несёт 1,6·10⁻¹⁹ Кл. Число электронов: ${M(`N = q / e = ${N(rnd(I*t,2))} / (1,6·10⁻¹⁹) = ${N(rnd(I*t/1.6,3))}·10¹⁹ = ${Nn}·10¹⁸`)}.<br>Ответ: <b>${Nn}</b>.`,
+ explain2:`Полезно помнить: 1 Кл — это 6,25·10¹⁸ электронов. У нас ${N(rnd(I*t,2))} Кл → ${N(rnd(I*t,2))} · 6,25·10¹⁸ = ${Nn}·10¹⁸ электронов. Огромное число — электроны очень «мелкие порции» заряда.`});});
+G(1,()=>{const cap=pick([3000,4000,4500,5000,6000]);const I=pick([200,250,300,400,500]);const h=cap/I;
+ return NUMT(h,2,{q:`На аккумуляторе смартфона написано «${cap} мА·ч». В режиме просмотра видео телефон потребляет в среднем ${I} мА. На сколько часов хватит полного заряда? Ответ — в часах.`,
+ hint:'мА·ч — это ток, умноженный на время. Раздели ёмкость на ток.',short:`${cap} мА·ч / ${I} мА = ${N(h)} ч.`,
+ explain:`«${cap} мА·ч» — это заряд: такой ток в миллиамперах мог бы идти 1 час. Из ${M('q = I·t')} получаем ${M(`t = q / I = ${cap} мА·ч / ${I} мА = ${N(h)} ч`)}. Миллиамперы сокращаются, остаются часы.`,
+ explain2:`Представь бак на ${cap} литров и кран, из которого вытекает ${I} литров в час. Бак опустеет через ${cap} / ${I} = ${N(h)} ч. Аккумулятор так же: «литры» — это мА·ч, «кран» — ток в мА. (В кулонах: ${cap/1000} А · 3600 с = ${N(cap/1000*3600)} Кл.)`});});
+
+/* L2 — напряжение */
+G(2,()=>CH('Какая формула определяет напряжение?',M('U = A / q'),[M('U = q / A'),M('U = A · q'),M('U = q / t')],{
+ short:'Напряжение — работа поля на 1 Кл заряда: U = A / q.',
+ explain:`Напряжение показывает, какую <b>работу</b> совершает электрическое поле, перемещая <b>заряд 1 Кл</b>: ${M("U = A / q")}. Отсюда 1 В = 1 Дж / 1 Кл. ${M("q / t")} — это сила тока, не напряжение.`,
+ explain2:'«Сколько джоулей на каждый кулон». Батарейка 1,5 В: каждый кулон, пройдя по цепи, отдаёт 1,5 Дж энергии. 2 Кл → 3 Дж, значит U = 3 / 2 = 1,5 В.'}),{rule:true});
+G(2,()=>{const U=pick([1.5,4.5,9,12,24,36,220]);const q=pick([2,3,4,5,10,0.5]);const A=rnd(U*q,3);
+ return NUMT(U,2,{q:`При перемещении заряда ${N(q)} Кл электрическое поле совершило работу ${N(A)} Дж. Чему равно напряжение на участке? Ответ — в вольтах.`,
+ hint:'U = A / q.',short:`U = ${N(A)} / ${N(q)} = ${N(U)} В.`,
+ explain:`${M(`U = A / q = ${N(A)} / ${N(q)} = ${N(U)} В`)}.<div class="box err"><b>Не так</b>q / A = ${N(rnd(q/A,4))} — перепутаны местами. Напряжение — джоули <b>на</b> кулон.</div>`,
+ explain2:`Сколько джоулей приходится на 1 Кл? ${N(A)} Дж делим на ${N(q)} Кл → ${N(U)} Дж на каждый кулон. Это и есть <b>${N(U)} В</b>.`});});
+G(2,()=>{const U=pick([220,230,12,9]);const I=pick([0.5,2,4,5,10]);const tm=pick([1,2,5,10]);const q=I*tm*60;const A=U*q/1000;
+ return NUMT(A,2,{q:`Через прибор, включённый под напряжение ${U} В, шёл ток ${N(I)} А в течение ${tm} мин. Какую работу совершило электрическое поле? Ответ — в кДж.`,
+ hint:'Найди заряд q = I·t (время в секундах!), затем A = U·q.',short:`q = ${N(q)} Кл, A = ${U} · ${N(q)} = ${N(U*q)} Дж = ${N(A)} кДж.`,
+ explain:`1) ${tm} мин = ${tm*60} с.<br>2) Заряд: ${M(`q = I·t = ${N(I)} · ${tm*60} = ${N(q)} Кл`)}.<br>3) Работа: ${M(`A = U·q = ${U} · ${N(q)} = ${N(U*q)} Дж`)} = <b>${N(A)} кДж</b> (делим на 1000).`,
+ explain2:`Можно сразу: A = U·I·t = ${U} · ${N(I)} · ${tm*60} = ${N(U*q)} Дж. 1 кДж = 1000 Дж → ${N(A)} кДж.`});});
+G(2,()=>{const D=[['пальчиковая батарейка АА','1,5 В'],['USB-порт зарядки телефона','5 В'],['аккумулятор автомобиля','12 В'],['бытовая розетка в России','220 В']];const d=pick(D);
+ return CH(`Какое напряжение у источника: <b>${d[0]}</b>?`,d[1],D.filter(x=>x!==d).map(x=>x[1]),{short:`${d[0]} — ${d[1]}.`,
+ explain:`Запомни «лестницу» напряжений: батарейка АА — <b>1,5 В</b>, USB-зарядка — <b>5 В</b>, автомобильный аккумулятор — <b>12 В</b>, розетка — <b>220 В</b> (в Европе 230 В). Ответ: ${d[1]}.`,
+ explain2:'Подсказка: в автомобильном аккумуляторе 6 банок по 2 В = 12 В. USB придумали с 5 В. Батарейка — самое маленькое, розетка — самое большое и опасное.'});});
+
+/* L3 — сопротивление */
+G(3,()=>CH('Как сопротивление проводника зависит от его длины l, площади сечения S и вещества (ρ)?',M('R = ρl / S'),[M('R = ρS / l'),M('R = lS / ρ'),M('R = ρ / (lS)')],{
+ short:'R = ρl / S: длиннее — больше, толще — меньше.',
+ explain:`${M("R = ρl / S")}: сопротивление <b>пропорционально длине</b> (длинный путь — больше «толкотни») и <b>обратно пропорционально площади сечения</b> (толстый провод — больше «полос движения»). ρ — свойство вещества.`,
+ explain2:'Проверь здравым смыслом: удлинили провод в 2 раза — R должно вырасти. В формуле ρS/l оно бы уменьшилось — значит, неверно. Сделали толще — R должно уменьшиться, значит S в знаменателе.'}),{rule:true});
+G(3,()=>CH('От чего <b>не зависит</b> сопротивление металлического проводника?','От напряжения на нём и силы тока в нём',['От длины проводника','От площади его поперечного сечения','От вещества, из которого он сделан'],{
+ short:'R — свойство самого проводника; U и I его не меняют.',
+ explain:`Сопротивление определяется формулой ${M("R = ρl / S")}: вещество, длина, площадь сечения (и ещё температура). Если увеличить U, ток вырастет во столько же раз, а отношение ${M("U / I")} останется прежним. Поэтому R <b>не зависит</b> от U и I.`,
+ explain2:'Аналогия: узость трубы не зависит от того, как сильно ты качаешь насос. Сильнее качаешь — больше воды течёт, но труба та же.'}),{rule:true});
+G(3,()=>{const m=pick(MAT.filter(x=>x[0]!=='серебро'));const l=pick([2,5,10,20,40,50,100,200]);const S=pick([0.1,0.2,0.25,0.5,1,2,2.5]);const Rv=m[1]*l/S;
+ if(Rv<0.05||Rv>2000)return null;const d=Rv<1?3:Rv<10?2:1;
+ return NUMT(Rv,d,{q:`Проволока из ${MATg[m[0]]} длиной ${l} м имеет площадь поперечного сечения ${N(S)} мм². Найди её сопротивление (ρ = ${N(m[1])} Ом·мм²/м). Ответ — в омах${d?`, округли до ${d===1?'десятых':d===2?'сотых':'тысячных'}`:''}.`,
+ hint:'R = ρl / S, длина в метрах, площадь в мм² — переводить не нужно.',short:`R = ${N(m[1])} · ${l} / ${N(S)} ≈ ${N(rnd(Rv,d))} Ом.`,
+ explain:`${M(`R = ρl / S = ${N(m[1])} · ${l} / ${N(S)} = ${N(rnd(m[1]*l,4))} / ${N(S)} ≈ ${N(rnd(Rv,d))} Ом`)}.<br>Единицы: (Ом·мм²/м) · м / мм² = Ом — всё сходится.`,
+ explain2:`По шагам: у 1 м такой проволоки сечением 1 мм² сопротивление ${N(m[1])} Ом. Длина ${l} м → в ${l} раз больше: ${N(rnd(m[1]*l,4))} Ом. Сечение ${N(S)} мм² — это в ${N(rnd(1/S,3))} раз ${S<1?'тоньше':'толще'}, чем 1 мм², → ${S<1?'умножаем':'делим'}: ${N(rnd(Rv,d))} Ом.`});});
+G(3,()=>{const Rv=pick([11,22,44,55,110,33]);const S=pick([0.1,0.2,0.5]);const l=Rv*S/1.1;
+ return NUMT(l,2,{q:`Для спирали электроплитки нужна нихромовая проволока сопротивлением ${Rv} Ом с площадью сечения ${N(S)} мм². Какой длины её взять? ρ нихрома = 1,1 Ом·мм²/м. Ответ — в метрах.`,
+ hint:'Из R = ρl / S выражаем l = R·S / ρ.',short:`l = ${Rv} · ${N(S)} / 1,1 = ${N(rnd(l,2))} м.`,
+ explain:`Из ${M('R = ρl / S')} умножим обе части на S и разделим на ρ: ${M('l = R·S / ρ')}.<br>${M(`l = ${Rv} · ${N(S)} / 1,1 = ${N(rnd(Rv*S,3))} / 1,1 = ${N(rnd(l,2))} м`)}.`,
+ explain2:`Посчитай сопротивление 1 м этой проволоки: 1,1 / ${N(S)} = ${N(rnd(1.1/S,3))} Ом. Нужно ${Rv} Ом → сколько таких метров? ${Rv} / ${N(rnd(1.1/S,3))} = ${N(rnd(l,2))} м.`});});
+G(3,()=>{const m=pick(MAT);const S=pick([0.5,1,2]);const l=pick([10,20,50,100]);const Rv=m[1]*l/S;
+ return CH(`Проволока длиной ${l} м и сечением ${N(S)} мм² имеет сопротивление ${N(rnd(Rv,4))} Ом. Из какого вещества она сделана? (Пользуйся таблицей удельных сопротивлений.)${rhoTable}`,m[0],sample(MAT.filter(x=>x!==m).map(x=>x[0]),3),{
+ short:`ρ = ${N(rnd(Rv,4))} · ${N(S)} / ${l} = ${N(m[1])} Ом·мм²/м — это ${m[0]}.`,
+ explain:`Выразим ρ: ${M('ρ = R·S / l')} = ${N(rnd(Rv,4))} · ${N(S)} / ${l} = <b>${N(m[1])}</b> Ом·мм²/м. По таблице такое удельное сопротивление у вещества «${m[0]}».`,
+ explain2:`Удельное сопротивление — сопротивление куска 1 м × 1 мм². Наш провод в ${l} раз длиннее (R больше в ${l} раз) и ${S===1?'такой же толщины':`в ${N(S)} раза ${S>1?'толще':'тоньше'}`}. Пересчитай обратно на «1 м × 1 мм²» — получится ${N(m[1])}: ${m[0]}.`});});
+G(3,()=>{const k=pick([2,3,4,5]);const m=pick([2,3,4,5,6].filter(x=>x!==k));const up=Math.random()<0.5;const ans=k/m;
+ if(Math.abs(ans*100-Math.round(ans*100))>1e-9)return null;
+ return NUMT(ans,2,{q:`Длину проводника увеличили в ${k} раза, а площадь его сечения — в ${m} раза (материал тот же). Во сколько раз изменилось сопротивление? Ответ: во сколько раз новое R больше старого (если меньше — дробью или десятичной).`,
+ hint:'R пропорционально l и обратно пропорционально S.',short:`R → R · ${k} / ${m} = ${N(ans)} R.`,
+ explain:`${M('R = ρl / S')}. Длина ×${k} → R ×${k}. Сечение ×${m} → R ÷${m}. Итого ${M(`R' = R · ${k} / ${m} = ${N(ans)} R`)}. Ответ: <b>${N(ans)}</b>${ans<1?' (сопротивление уменьшилось)':''}.`,
+ explain2:`Пример: было ρ = 1, l = 1, S = 1 → R = 1. Стало l = ${k}, S = ${m} → R = ${k} / ${m} = ${N(ans)}.`});});
+
+/* L4 — закон Ома */
+G(4,()=>CH('Как правильно формулируется закон Ома для участка цепи?','Сила тока прямо пропорциональна напряжению и обратно пропорциональна сопротивлению',['Сила тока обратно пропорциональна напряжению и прямо пропорциональна сопротивлению','Напряжение прямо пропорционально сопротивлению и не зависит от тока','Сопротивление прямо пропорционально напряжению'],{
+ short:'I = U / R: U в числителе, R в знаменателе.',
+ explain:`Закон Ома: ${M("I = U / R")}. Напряжение в числителе → ток растёт вместе с ним (<b>прямо</b> пропорционален). Сопротивление в знаменателе → чем оно больше, тем ток меньше (<b>обратно</b> пропорционален). А сопротивление от U не зависит — это свойство проводника.`,
+ explain2:'Напор воды (U) больше → течёт больше воды (I). Труба уже (R больше) → течёт меньше. Вот и вся формулировка.'}),{rule:true});
+G(4,()=>{const w=pick(['U','R']);return w==='U'?CH('Вырази напряжение из закона Ома: U = …',M('I · R'),[M('I / R'),M('R / I'),M('I + R')],{short:'U = I·R.',
+ explain:`Из ${M("I = U / R")} умножаем обе части на R: ${M("U = I·R")}. Проверка единицами: А · Ом = В.`,explain2:'Треугольник Ома: U сверху, I и R внизу рядом → закрываешь U, видишь I и R рядом — умножаешь: U = I·R.'}):
+ CH('Вырази сопротивление из закона Ома: R = …',M('U / I'),[M('I / U'),M('U · I'),M('I − U')],{short:'R = U / I.',
+ explain:`Из ${M("I = U / R")}: ${M("I·R = U")}, затем делим на I: ${M("R = U / I")}.`,explain2:'Треугольник Ома: закрываешь R — остаётся U над I, значит делишь: R = U / I. Проверка: 12 В, 3 А → 4 Ом; 4 Ом · 3 А = 12 В ✅.'});},{rule:true});
+G(4,()=>{const Rv=pick([4,5,6,8,10,12,15,20,24,30,40,50,60]);const U=pick([1.5,3,4.5,6,9,12,24,36,220]);const I=U/Rv;if(I*1000%1>1e-6||I>20)return null;
+ return NUMT(I,3,{q:`На резистор сопротивлением ${Rv} Ом подали напряжение ${N(U)} В. Найди силу тока. Ответ — в амперах.`,hint:'I = U / R.',short:`I = ${N(U)} / ${Rv} = ${N(I)} А.`,
+ explain:`Закон Ома: ${M(`I = U / R = ${N(U)} / ${Rv} = ${N(I)} А`)}.<div class="box err"><b>Не так</b>U · R = ${N(U*Rv)} — так получилось бы, что чем больше сопротивление, тем больше ток. Абсурд.</div>`,
+ explain2:`Проверь ответ: ${N(I)} А · ${Rv} Ом = ${N(rnd(I*Rv,4))} В — совпало с напряжением ✅. Значит, I = ${N(I)} А.`});});
+G(4,()=>{const ImA=pick([20,25,40,50,100,150,200,250,300,500]);const U=pick([1.5,3,4.5,5,6,9,12]);const Rv=U/(ImA/1000);if(Math.abs(Rv-Math.round(Rv*10)/10)>1e-9)return null;
+ return NUMT(Rv,1,{q:`Светодиодная лента при напряжении ${N(U)} В потребляет ток ${ImA} мА. Каково её сопротивление? Ответ — в омах.`,hint:'Сначала переведи мА в А, потом R = U / I.',short:`${ImA} мА = ${N(ImA/1000)} А; R = ${N(U)} / ${N(ImA/1000)} = ${N(Rv)} Ом.`,
+ explain:`1) ${ImA} мА = ${N(ImA/1000)} А.<br>2) ${M(`R = U / I = ${N(U)} / ${N(ImA/1000)} = ${N(Rv)} Ом`)}.<div class="box err"><b>Ловушка</b>${N(U)} / ${ImA} = ${N(rnd(U/ImA,4))} — забыл перевести миллиамперы, ответ в 1000 раз меньше.</div>`,
+ explain2:`Удобный трюк: В / мА = кОм. ${N(U)} / ${ImA} = ${N(rnd(U/ImA,4))} кОм = ${N(Rv)} Ом.`});});
+G(4,()=>{const I=pick([0.2,0.5,1.5,2,2.5,3,4,0.25]);const RkOhm=Math.random()<0.4;const Rv=RkOhm?pick([1,2,5])*1000:pick([2,4,5,6,8,10,12,20,44]);const U=I*Rv;const II=RkOhm?pick([2,3,5,6,10]):I;const UU=RkOhm?II/1000*Rv:U;
+ const Is=RkOhm?`${II} мА`:`${N(I)} А`,Rs=RkOhm?`${Rv/1000} кОм`:`${Rv} Ом`;
+ return NUMT(UU,2,{q:`Через резистор сопротивлением ${Rs} идёт ток ${Is}. Какое напряжение на резисторе? Ответ — в вольтах.`,hint:'U = I·R. Переведи в А и Ом.',short:`U = ${RkOhm?N(II/1000):N(I)} · ${Rv} = ${N(UU)} В.`,
+ explain:`${RkOhm?`Переводим: ${II} мА = ${N(II/1000)} А, ${Rv/1000} кОм = ${Rv} Ом.<br>`:''}${M(`U = I·R = ${RkOhm?N(II/1000):N(I)} · ${Rv} = ${N(UU)} В`)}.`,
+ explain2:`Закон Ома «наоборот»: если ток ${Is} идёт через ${Rs}, то на каждый ампер приходится ${Rv} В... Проще проверить: ${N(UU)} В / ${Rv} Ом = ${N(RkOhm?II/1000:I)} А ✅.`});});
+
+/* L5 — графики */
+G(5,()=>CH('Как выглядит график зависимости силы тока от напряжения I(U) для резистора (R постоянно)?','Прямая, проходящая через начало координат',['Горизонтальная прямая','Гипербола','Парабола с вершиной в начале координат'],{
+ short:'I = U/R — прямая пропорциональность → прямая через (0; 0).',
+ explain:`При постоянном R закон Ома ${M("I = U / R = (1/R)·U")} — это прямая пропорциональность вида y = kx. Её график — <b>прямая через начало координат</b>. Гипербола была бы у зависимости I(R) при постоянном U.`,
+ explain2:'Проверь точками: U = 0 → I = 0; U вдвое больше → I вдвое больше. Это точки на одной прямой из нуля.'}),{rule:true});
+const lineSet=()=>{const su=pick([1,2,5]),si=pick([0.1,0.2,0.5,1]);for(let k=0;k<100;k++){const a1=R(2,6),b1=R(2,5),a2=R(2,6),b2=R(1,5);const R1=a1*su/(b1*si),R2=a2*su/(b2*si);
+  if(Math.abs(R1-R2)<0.5||Math.abs(a1*b2-a2*b1)===0)continue;if(R1%0.5||R2%0.5)continue;if(Math.abs(b1/a1-b2/a2)<0.25)continue;return {su,si,L:[{a:a1,b:b1,name:'1'},{a:a2,b:b2,name:'2'}],R:[R1,R2]};}return null;};
+G(5,()=>{const s=lineSet();if(!s)return null;const i=R(0,1);const L=s.L[i];const U=L.a*s.su,I=rnd(L.b*s.si,3),Rv=s.R[i];
+ return NUMT(Rv,1,{q:`На графике — зависимость силы тока от напряжения для двух проводников. Найди сопротивление проводника <b>${L.name}</b>. Ответ — в омах.`,pic:graphIU(s.L,s.su,s.si),
+ hint:'Возьми точку прямой в узле клеток (она отмечена), прочитай U и I и раздели U на I.',short:`Точка (${N(U)} В; ${N(I)} А): R = ${N(U)} / ${N(I)} = ${N(Rv)} Ом.`,
+ explain:`На прямой ${L.name} отмечена точка в узле сетки: U = ${N(U)} В, I = ${N(I)} А.<br>${M(`R = U / I = ${N(U)} / ${N(I)} = ${N(Rv)} Ом`)}.<div class="box err"><b>Не так</b>I / U = ${N(rnd(I/U,4))} — это не сопротивление (единица была бы А/В).</div>`,
+ explain2:`Цена клетки по оси U — ${N(s.su)} В, по оси I — ${N(s.si)} А. Отмеченная точка: ${L.a} клеток вправо → ${N(U)} В, ${L.b} клеток вверх → ${N(I)} А. Делим: ${N(Rv)} Ом.`});});
+G(5,()=>{const s=lineSet();if(!s)return null;const big=s.R[0]>s.R[1]?0:1;
+ return CH('По графикам I(U) определи: у какого проводника сопротивление <b>больше</b>?',`у проводника ${s.L[big].name}`,[`у проводника ${s.L[1-big].name}`,'сопротивления одинаковы','по графику определить нельзя'],{pic:graphIU(s.L,s.su,s.si),
+ short:`Прямая ${s.L[big].name} положе — при том же U ток меньше, значит R больше.`,
+ explain:`Возьми одинаковое напряжение для обоих проводников. Где ток меньше, там сопротивление больше. Прямая ${s.L[big].name} идёт <b>положе</b>, ток в ней меньше.<br>Точно: R₁ = ${N(s.R[0])} Ом, R₂ = ${N(s.R[1])} Ом → больше у проводника <b>${s.L[big].name}</b>.`,
+ explain2:'Правило: на графике I(U) <b>круче — меньше R</b>, <b>положе — больше R</b>. Большое сопротивление «душит» ток: напряжение растёт, а ток прибавляет мало.'});});
+G(5,()=>{const s=lineSet();if(!s)return null;const i=R(0,1);const L=s.L[i];const Rv=s.R[i];const U=pick([20,24,30,36,40,50,60,100,120,220]);const I=U/Rv;if(I*100%1>1e-6)return null;
+ return NUMT(I,2,{q:`По графику найди, какой ток пойдёт через проводник <b>${L.name}</b>, если подать на него напряжение ${U} В (это за пределами графика). Ответ — в амперах.`,pic:graphIU(s.L,s.su,s.si),
+ hint:'Сначала найди сопротивление по точке на графике, потом I = U / R.',short:`R = ${N(Rv)} Ом, I = ${U} / ${N(Rv)} = ${N(I)} А.`,
+ explain:`1) По отмеченной точке: U = ${N(L.a*s.su)} В, I = ${N(rnd(L.b*s.si,3))} А → ${M(`R = ${N(Rv)} Ом`)}.<br>2) При ${U} В: ${M(`I = U / R = ${U} / ${N(Rv)} = ${N(I)} А`)}.`,
+ explain2:`Можно пропорцией: при ${N(L.a*s.su)} В ток ${N(rnd(L.b*s.si,3))} А. Напряжение больше в ${N(rnd(U/(L.a*s.su),3))} раза → ток тоже: ${N(rnd(L.b*s.si,3))} · ${N(rnd(U/(L.a*s.su),3))} = ${N(I)} А.`});});
+
+/* L6 — амперметр и вольтметр */
+G(6,()=>{const a=Math.random()<0.5;return CH(a?'Как включают в цепь <b>амперметр</b>?':'Как включают в цепь <b>вольтметр</b>?',a?'Последовательно с тем элементом, ток в котором измеряют':'Параллельно тому участку, напряжение на котором измеряют',[a?'Параллельно элементу':'Последовательно с элементом',a?'Прямо к полюсам источника, без нагрузки':'Только между амперметром и ключом','Как угодно — показания не изменятся'],{
+ short:a?'Амперметр — последовательно (R ≈ 0).':'Вольтметр — параллельно (R очень большое).',
+ explain:'<b>Амперметр</b> включают <b>последовательно</b>: через него должен пройти тот же ток, что и через элемент. Его сопротивление почти нулевое, чтобы не мешать.<br><b>Вольтметр</b> — <b>параллельно</b>: он сравнивает две точки (концы участка). Его сопротивление огромное, чтобы почти не брать ток.',
+ explain2:'Амперметр — «турникет»: считает всех, кто проходит, значит стоит прямо на пути. Вольтметр — «линейка между двумя ступеньками»: прикладываешь к двум концам сбоку.'});},{rule:true});
+G(6,()=>{const what=pick(['A','V']);
+ const ok=what==='A'?{s:[{t:'L',n:'L'},{t:'A'}]}:{s:[{p:[{t:'V'},{t:'L',n:'L'}]}]};
+ const bad=what==='A'?[{p:[{t:'L',n:'L'},{t:'A'}]},{s:[{t:'L',n:'L'},{t:'V'}]},{s:[{p:[{t:'A'},{t:'L',n:'L'}]},{t:'V'}]}]:[{s:[{t:'L',n:'L'},{t:'V'}]},{p:[{t:'L',n:'L'},{t:'A'}]},{s:[{p:[{t:'A'},{t:'L',n:'L'}]},{t:'V'}]}];
+ const all=shuffle([ok].concat(bad));const opts=all.map(n=>circuit(n,{bat:''}));
+ return {type:'choice',pics:true,q:what==='A'?'На какой схеме прибор включён правильно, чтобы измерить <b>силу тока в лампе</b>?':'На какой схеме прибор включён правильно, чтобы измерить <b>напряжение на лампе</b>?',opts,ans:all.indexOf(ok),
+ short:what==='A'?'Амперметр стоит последовательно с лампой.':'Вольтметр подключён к двум концам лампы — параллельно.',
+ explain:what==='A'?'Силу тока измеряет <b>амперметр (A)</b>, и стоять он должен <b>последовательно</b> с лампой — в разрыве того же провода, чтобы весь ток лампы прошёл через него. Схема с амперметром параллельно лампе — короткое замыкание лампы; схемы с вольтметром вместо амперметра — вообще не тот прибор.':'Напряжение измеряет <b>вольтметр (V)</b>, и включают его <b>параллельно</b> лампе: одна клемма — к одному концу лампы, другая — к другому. Вольтметр последовательно разорвёт цепь (огромное R) — лампа не будет гореть.',
+ explain2:'Проверка пальцем: проведи по проводу от «+» батарейки. '+(what==='A'?'Если ты обязательно проходишь и через A, и через лампу по одному пути без развилок — это последовательно. ✅':'Если у лампы и вольтметра общие обе точки (развилка до и после) — это параллельно. ✅')};});
+G(6,()=>{const S=pick([['A',2,20,5],['A',3,30,5],['A',1,20,4],['A',5,25,5],['V',6,30,5],['V',12,24,4],['V',4,40,10],['V',15,30,6]]);const [L,max,nd,mj]=S;const price=max/nd;const k=R(3,nd-2);if(k%mj===0)return null;const ask=pick(['p','r','r']);
+ const val=rnd(k*price,4);const unit=L==='A'?'А':'В';
+ return NUMT(ask==='p'?rnd(price,4):val,3,{q:ask==='p'?`Определи цену деления шкалы ${L==='A'?'амперметра':'вольтметра'}. Ответ — в ${L==='A'?'амперах':'вольтах'}.`:`Что показывает ${L==='A'?'амперметр':'вольтметр'}? Ответ — в ${L==='A'?'амперах':'вольтах'}.`,pic:meter(L,max,nd,mj,k),
+ hint:'Цена деления: разность двух соседних чисел на шкале ÷ число делений между ними.',
+ short:ask==='p'?`(${N(rnd(mj*price,4))} − 0) / ${mj} = ${N(rnd(price,4))} ${unit}.`:`Цена деления ${N(rnd(price,4))} ${unit}, стрелка на ${k}-м делении: ${N(val)} ${unit}.`,
+ explain:`1) Соседние числа на шкале: 0 и ${N(rnd(mj*price,4))}. Между ними ${mj} делений.<br>2) Цена деления: ${M(`${N(rnd(mj*price,4))} / ${mj} = ${N(rnd(price,4))} ${unit}`)}.${ask==='r'?`<br>3) Стрелка стоит на ${k}-м делении от нуля (${Math.floor(k/mj)*mj ? `${Math.floor(k/mj)*mj} делений до числа ${N(rnd(Math.floor(k/mj)*mj*price,4))} и ещё ${k%mj}` : `${k} делений`}). Показание: ${M(`${k} · ${N(rnd(price,4))} = ${N(val)} ${unit}`)}.`:''}`,
+ explain2:ask==='p'?`Делений между 0 и ${N(rnd(mj*price,4))} — ${mj}. Значит, одно деление — это ${mj}-я часть от ${N(rnd(mj*price,4))}: ${N(rnd(price,4))} ${unit}.`:`Найди ближайшее число <b>левее</b> стрелки: ${N(rnd(Math.floor(k/mj)*mj*price,4))}. От него до стрелки ${k%mj} ${plural(k%mj,'деление','деления','делений')} по ${N(rnd(price,4))} → ${N(rnd(Math.floor(k/mj)*mj*price,4))} + ${N(rnd((k%mj)*price,4))} = ${N(val)} ${unit}.`});});
+G(6,()=>CH('Почему амперметр нельзя подключать напрямую к полюсам источника тока (без нагрузки)?','Его сопротивление очень мало, ток будет огромным — прибор сгорит',['Его сопротивление очень велико, и ток не пойдёт','Амперметр покажет напряжение вместо тока','Ничего не случится, просто покажет ноль'],{
+ short:'R амперметра ≈ 0 → I = U/R огромный.',
+ explain:`Амперметр специально делают с <b>очень маленьким сопротивлением</b>, чтобы он не мешал току в цепи. Если подключить его прямо к источнику, по закону Ома ${M("I = U / R")} при почти нулевом R ток будет огромным — это <b>короткое замыкание</b>: прибор сгорит, источник испортится.`,
+ explain2:'Пример: батарейка 4,5 В, амперметр 0,01 Ом. I = 4,5 / 0,01 = 450 А! Такой ток прибор не выдержит. Вольтметру подключение к полюсам не страшно — у него R огромное.'}));
+
+G(7,()=>CH('Что из перечисленного <b>увеличит</b> сопротивление медного провода?','Взять провод той же толщины, но длиннее',['Взять провод той же длины, но толще','Подать на провод большее напряжение','Пропустить по проводу больший ток'],{
+ short:'R = ρl / S: больше l → больше R.',
+ explain:`Сопротивление зависит только от вещества, длины и сечения: ${M('R = ρl / S')}. Длиннее → R больше ✅. Толще → R меньше. Напряжение и ток не меняют R (если провод не нагревается).`,
+ explain2:'Длинный узкий коридор — толкучка; короткий широкий — свободно. Сколько людей пускают (ток) и как сильно толкают (напряжение) — сам коридор не меняют.'}),{rule:true});
+/* L7 — комбинированные */
+G(7,()=>{const m=pick([['медного',0.017,'Медный'],['алюминиевого',0.028,'Алюминиевый']]);const l=pick([10,20,50,100,200]);const S=pick([0.5,1,1.5,2,2.5]);const U=pick([1.2,1.7,3.4,6.8,2.8,5.6,12]);const Rv=m[1]*l/S;const I=U/Rv;
+ if(I>25||I<0.05)return null;
+ return NUMT(I,2,{q:`${m[2]} провод длиной ${l} м и сечением ${N(S)} мм² подключён к напряжению ${N(U)} В. Найди силу тока (ρ = ${N(m[1])} Ом·мм²/м). Ответ — в амперах, округли до сотых.`,
+ hint:'Сначала R = ρl / S, затем I = U / R.',short:`R = ${N(rnd(Rv,4))} Ом, I = ${N(U)} / ${N(rnd(Rv,4))} ≈ ${N(rnd(I,2))} А.`,
+ explain:`1) ${M(`R = ρl / S = ${N(m[1])} · ${l} / ${N(S)} = ${N(rnd(Rv,4))} Ом`)}.<br>2) ${M(`I = U / R = ${N(U)} / ${N(rnd(Rv,4))} ≈ ${N(rnd(I,2))} А`)}.`,
+ explain2:`Можно одной формулой: ${M('I = U·S / (ρl)')} = ${N(U)} · ${N(S)} / (${N(m[1])} · ${l}) = ${N(rnd(U*S,4))} / ${N(rnd(m[1]*l,4))} ≈ ${N(rnd(I,2))} А.`});});
+G(7,()=>{const l=pick([5,8,10,12,15,20]);const S=pick([0.5,1,1.1,2.2]);const Imax=pick([1,2,2.5,3,4,5]);const Rv=1.1*l/S;const U=Imax*Rv;if(U>400)return null;
+ return NUMT(U,1,{q:`Реостат намотан из нихромовой проволоки длиной ${l} м и сечением ${N(S)} мм². Наибольший допустимый ток — ${N(Imax)} А. Какое наибольшее напряжение можно подать на <b>всю обмотку</b> реостата? ρ = 1,1 Ом·мм²/м. Ответ — в вольтах, округли до десятых.`,
+ hint:'Найди полное сопротивление обмотки, затем U = I·R.',short:`R = 1,1 · ${l} / ${N(S)} = ${N(rnd(Rv,3))} Ом; U = ${N(Imax)} · ${N(rnd(Rv,3))} ≈ ${N(rnd(U,1))} В.`,
+ explain:`1) Сопротивление всей обмотки: ${M(`R = ρl / S = 1,1 · ${l} / ${N(S)} = ${N(rnd(Rv,3))} Ом`)}.<br>2) При наибольшем токе: ${M(`U = I·R = ${N(Imax)} · ${N(rnd(Rv,3))} ≈ ${N(rnd(U,1))} В`)}. Больше подавать нельзя — ток превысит ${N(Imax)} А и проволока перегреется.`,
+ explain2:`Закон Ома говорит: ток ${N(Imax)} А через сопротивление R требует напряжения I·R. Сопротивление обмотки ${N(rnd(Rv,3))} Ом → ${N(rnd(U,1))} В — это «потолок».`});});
+G(7,()=>{const k=pick([2,3,4,5]);const R0=pick([2,3,5,10,0.5]);const ans=R0*k*k;
+ return NUMT(ans,1,{q:`Проволоку сопротивлением ${N(R0)} Ом протянули через волочильный станок, и она стала в ${k} раза длиннее (объём металла не изменился). Каким стало её сопротивление? Ответ — в омах.`,
+ hint:'Длина выросла в k раз, а площадь сечения? Объём V = l·S постоянен.',short:`l ×${k}, S ÷${k} → R ×${k*k}: ${N(R0)} · ${k*k} = ${N(ans)} Ом.`,
+ explain:`Объём ${M('V = l·S')} не меняется. Длина выросла в ${k} раза → площадь сечения <b>уменьшилась</b> в ${k} раза.<br>В ${M('R = ρl / S')} оба изменения увеличивают R: ×${k} из-за длины и ещё ×${k} из-за тонкости. Итого ×${k*k}: ${M(`R = ${N(R0)} · ${k*k} = ${N(ans)} Ом`)}.<div class="box err"><b>Ловушка</b>${N(R0)} · ${k} = ${N(R0*k)} — забыли, что провод стал тоньше.</div>`,
+ explain2:`Представь пластилиновую колбаску: тянешь её в ${k} раза длиннее — она становится в ${k} раза тоньше (по площади среза). Ток должен пройти в ${k} раза больший путь по в ${k} раза более узкой «дороге» → сопротивление ×${k}·${k} = ×${k*k}.`});});
+G(7,()=>{const I=pick([200,300,400,500,600]);const S=pick([120,150,185,240,300]);const d=pick([4,5,6,8,10]);const U=0.028*(d/100)/S*I*1000; // мВ
+ return NUMT(U,2,{q:`🐦 Воробей сидит на алюминиевом проводе ЛЭП. Сила тока в проводе ${I} А, площадь сечения провода ${S} мм², расстояние между лапками воробья ${d} см. Какое напряжение между его лапками? ρ алюминия = 0,028 Ом·мм²/м. Ответ — в милливольтах (1 мВ = 0,001 В), округли до сотых.`,
+ hint:'Найди сопротивление куска провода длиной d (в метрах!), потом U = I·R.',short:`R = 0,028 · ${N(d/100)} / ${S} ≈ ${N(rnd(0.028*d/100/S*1e6,2))}·10⁻⁶ Ом; U ≈ ${N(rnd(U,2))} мВ.`,
+ explain:`1) ${d} см = ${N(d/100)} м.<br>2) Сопротивление кусочка провода между лапками: ${M(`R = ρl / S = 0,028 · ${N(d/100)} / ${S} ≈ ${N(rnd(0.028*d/100/S*1e6,2))}·10⁻⁶ Ом`)} (миллионные доли ома!).<br>3) ${M(`U = I·R = ${I} · ${N(rnd(0.028*d/100/S*1e6,2))}·10⁻⁶ ≈ ${N(rnd(U/1000,6))} В ≈ ${N(rnd(U,2))} мВ`)}.<br>Это в сотни раз меньше, чем у пальчиковой батарейки, — воробью ничего не грозит.`,
+ explain2:`Почему так мало? Толстый алюминиевый провод на кусочке в ${d} см почти не сопротивляется. По закону Ома напряжение на участке U = I·R: даже большой ток, умноженный на крошечное R, даёт милливольты. Опасно другое — коснуться одновременно провода и опоры (там тысячи вольт).`});});
+
+/* L8 — ★ */
+G(8,()=>CH('★ Чтобы амперметр мог измерять бо́льшие токи, к нему подключают шунт. Как?','Параллельно амперметру, с маленьким сопротивлением',['Последовательно с амперметром, с большим сопротивлением','Параллельно амперметру, с большим сопротивлением','Последовательно, с маленьким сопротивлением'],{
+ short:'Шунт — «обходная дорожка» параллельно амперметру, через неё идёт большая часть тока.',
+ explain:'Шунт (от англ. shunt — ответвление) включают <b>параллельно</b> амперметру, и сопротивление у него <b>маленькое</b>: тогда бо́льшая часть тока идёт в обход прибора, а через сам амперметр — лишь безопасная доля. А для вольтметра наоборот: <b>добавочное сопротивление</b> — большое и <b>последовательно</b>.',
+ explain2:'Представь, что у моста ограничение по весу. Чтобы пропустить толпу, строят рядом широкий обходной мост (параллельно) — через старый идёт лишь часть людей. Это и есть шунт.'}),{star:true,rule:true});
+G(8,()=>{const n=pick([2,3,4,5,10]);const R0=pick([10,20,25,50,100,200]);const ans=R0/(n*n);
+ return NUMT(ans,2,{q:`★ Проволоку сопротивлением ${R0} Ом разрезали на ${n} ${plural(n,'равную часть','равные части','равных частей')} и скрутили их в один жгут (части соединены параллельно — как одна толстая проволока). Каково сопротивление жгута? Ответ — в омах, округли до сотых.`,
+ hint:'Как изменились длина и площадь сечения «новой толстой проволоки»?',short:`l ÷${n}, S ×${n} → R ÷${n*n} = ${N(ans)} Ом.`,
+ explain:`Жгут — это проволока, которая в ${n} раз <b>короче</b> (R ÷${n}) и в ${n} раз <b>толще</b> (R ещё ÷${n}).<br>${M(`R = ${R0} / ${n*n} = ${N(ans)} Ом`)}.<div class="box err"><b>Ловушка</b>${R0} / ${n} = ${N(R0/n)} — учли только одно из двух изменений.</div>`,
+ explain2:`Другой путь: каждый кусок — ${N(R0/n)} Ом. ${n} одинаковых кусков параллельно дают сопротивление в ${n} раз меньше одного куска: ${N(R0/n)} / ${n} = ${N(ans)} Ом.`});},{star:true});
+G(8,()=>{const dCu=8900,dAl=2700,rCu=0.017,rAl=0.028;const ratio=rCu*dCu/(rAl*dAl);
+ const ask=pick(['CuAl','AlCu']);const ans=ask==='CuAl'?ratio:1/ratio;
+ return NUMT(ans,1,{q:`★ Медный и алюминиевый провода имеют <b>одинаковую массу и одинаковую длину</b>. Во сколько раз сопротивление ${ask==='CuAl'?'медного провода больше сопротивления алюминиевого':'алюминиевого провода составляет от сопротивления медного'}? ρ: медь 0,017, алюминий 0,028 Ом·мм²/м; плотность: медь 8900 кг/м³, алюминий 2700 кг/м³. Ответ округли до десятых.`,
+ hint:'Масса m = D·l·S (D — плотность). Выразите S через массу и подставьте в R = ρl/S.',short:`R ∝ ρ·D → ${N(rCu)}·8900 / (${N(rAl)}·2700) ≈ ${N(rnd(ratio,2))}.`,
+ explain:`Масса провода ${M('m = D·l·S')} → ${M('S = m / (D·l)')}. Подставим: ${M('R = ρl / S = ρ·D·l² / m')}.<br>Массы и длины одинаковы, значит ${M('R ∝ ρ·D')}:<br>медь: 0,017 · 8900 = 151,3; алюминий: 0,028 · 2700 = 75,6.<br>${M('R<sub>Cu</sub> / R<sub>Al</sub> = 151,3 / 75,6 ≈ 2,0')}. ${ask==='CuAl'?'Ответ: <b>2</b> (точнее ≈ 2,0).':'Ответ: ≈ <b>0,5</b>.'}<br>Вот почему ЛЭП делают из алюминия: при той же массе он проводит ток в 2 раза лучше меди (и дешевле)!`,
+ explain2:`Медь проводит лучше (ρ меньше в 0,028 / 0,017 ≈ 1,65 раза), но она в 8900 / 2700 ≈ 3,3 раза тяжелее. Значит, при той же массе алюминиевый провод в 3,3 раза толще. Итог: алюминий выигрывает в 3,3 / 1,65 ≈ 2 раза.`});},{star:true});
+G(8,()=>{const I0=pick([2,3,4,5,6]);const t1=pick([2,4,6,10]);const t2=pick([0,3,5,10]);const q=I0*t1/2+I0*t2;
+ const pic=(()=>{const X0=40,Y0=150,sx=240/(t1+t2+2),sy=110/I0;let s=`<svg viewBox="0 0 320 180" width="300" style="font-family:system-ui,sans-serif" role="img" aria-label="График силы тока от времени">`;
+  s+=`<polygon points="${X0},${Y0} ${r2(X0+t1*sx)},${r2(Y0-I0*sy)} ${r2(X0+(t1+t2)*sx)},${r2(Y0-I0*sy)} ${r2(X0+(t1+t2)*sx)},${Y0}" fill="var(--hl)" fill-opacity="0.35"/>`;
+  s+=WI(X0,Y0,X0+260,Y0,{sw:1.6})+WI(X0,Y0,X0,20,{sw:1.6})+TX(X0+258,Y0+18,'t, с',{fs:12,a:'end'})+TX(X0+8,26,'I, А',{fs:12,a:'start'});
+  s+=`<polyline points="${X0},${Y0} ${r2(X0+t1*sx)},${r2(Y0-I0*sy)} ${r2(X0+(t1+t2)*sx)},${r2(Y0-I0*sy)}" fill="none" stroke="var(--accent)" stroke-width="2.6"/>`;
+  s+=WI(X0,Y0-I0*sy,X0+t1*sx,Y0-I0*sy,{dash:true,sw:1})+TX(X0-6,Y0-I0*sy+4,String(I0),{a:'end'})+TX(X0-6,Y0+4,'0',{a:'end'});
+  s+=TX(X0+t1*sx,Y0+16,String(t1))+(t2?WI(X0+(t1+t2)*sx,Y0,X0+(t1+t2)*sx,Y0-I0*sy,{dash:true,sw:1})+TX(X0+(t1+t2)*sx,Y0+16,String(t1+t2)):'');return s+'</svg>';})();
+ return NUMT(q,1,{q:`★ Сила тока в цепи менялась, как на графике: за ${t1} с равномерно выросла от 0 до ${I0} А${t2?`, а затем ${t2} с оставалась постоянной`:''}. Какой заряд прошёл через цепь за всё это время${t2?'':` (${t1} с)`}? Ответ — в кулонах.`,pic,
+ hint:'q = I·t работает только при постоянном токе. А в общем случае заряд — это площадь под графиком I(t).',short:`Площадь: ½·${I0}·${t1}${t2?` + ${I0}·${t2}`:''} = ${N(q)} Кл.`,
+ explain:`Когда ток постоянный, ${M('q = I·t')} — это площадь прямоугольника под графиком. Когда ток меняется, заряд всё равно равен <b>площади под графиком I(t)</b>.<br>Треугольник: ${M(`½ · ${I0} · ${t1} = ${N(I0*t1/2)} Кл`)}.${t2?`<br>Прямоугольник: ${M(`${I0} · ${t2} = ${I0*t2} Кл`)}.`:''}<br>Итого <b>${N(q)} Кл</b>.<div class="box err"><b>Ловушка</b>${I0} · ${t1+t2} = ${I0*(t1+t2)} — как будто ток всё время был ${I0} А.</div>`,
+ explain2:`Пока ток рос от 0 до ${I0} А, он в среднем был ${N(I0/2)} А (рост равномерный). За ${t1} с прошло ${N(I0/2)} · ${t1} = ${N(I0*t1/2)} Кл.${t2?` Потом ${I0} А ещё ${t2} с → ${I0*t2} Кл.`:''} Всего ${N(q)} Кл.`});},{star:true});
+G(8,()=>{const I0=pick([1,2,5]);const n=pick([5,10,20]);const RA=pick([0.2,0.5,0.9,1.9,0.95,0.38]);const Rsh=RA/(n-1);if(Math.abs(Rsh*1000-Math.round(Rsh*1000))>1e-6)return null;
+ return NUMT(Rsh,3,{q:`★ Амперметр с сопротивлением ${N(RA)} Ом рассчитан на ток до ${I0} А. Какой шунт (резистор параллельно амперметру) нужно подключить, чтобы измерять токи до ${I0*n} А? Ответ — в омах.`,
+ hint:'Через амперметр пойдёт не больше I₀, остальное — через шунт. Напряжение на амперметре и шунте одинаковое (параллельно).',
+ short:`R<sub>ш</sub> = R<sub>A</sub> / (n − 1) = ${N(RA)} / ${n-1} = ${N(Rsh)} Ом.`,
+ explain:`При полном токе ${I0*n} А через амперметр идёт ${I0} А, значит через шунт ${I0*n} − ${I0} = ${I0*(n-1)} А — в ${n-1} раз больше.<br>Напряжение на них одинаковое (параллельно): ${M(`U = ${I0} · ${N(RA)} = ${N(rnd(I0*RA,4))} В`)}.<br>${M(`R<sub>ш</sub> = U / I<sub>ш</sub> = ${N(rnd(I0*RA,4))} / ${I0*(n-1)} = ${N(Rsh)} Ом`)}.`,
+ explain2:`Ток делится обратно пропорционально сопротивлениям. Шунт должен брать в ${n-1} раз больше тока, чем амперметр → его сопротивление в ${n-1} раз меньше: ${N(RA)} / ${n-1} = ${N(Rsh)} Ом.`});},{star:true});
+G(8,()=>{const U0=pick([3,5,10]);const n=pick([2,5,10,20]);const RV=pick([1000,2000,5000,10000]);const Rd=(n-1)*RV;
+ return NUMT(Rd/1000,2,{q:`★ Вольтметр рассчитан на напряжение до ${U0} В, его сопротивление ${RV/1000} кОм. Какое добавочное сопротивление нужно включить <b>последовательно</b> с ним, чтобы измерять напряжения до ${U0*n} В? Ответ — в килоомах.`,
+ hint:'При U = '+U0*n+' В на самом вольтметре должно оставаться '+U0+' В. Ток через вольтметр и добавочный резистор один и тот же.',
+ short:`R<sub>д</sub> = (n − 1)·R<sub>V</sub> = ${n-1} · ${RV/1000} = ${N(Rd/1000)} кОм.`,
+ explain:`Ток через вольтметр при полном отклонении: ${M(`I = ${U0} / ${RV} = ${N(U0/RV)} А`)}.<br>На добавочном резисторе должно «упасть» ${U0*n} − ${U0} = ${U0*(n-1)} В при том же токе.<br>${M(`R<sub>д</sub> = ${U0*(n-1)} / ${N(U0/RV)} = ${Rd} Ом = ${N(Rd/1000)} кОм`)}.`,
+ explain2:`При последовательном соединении напряжения делятся пропорционально сопротивлениям. Добавочный резистор должен взять на себя в ${n-1} раз больше напряжения, чем вольтметр → его R в ${n-1} раз больше: ${n-1} · ${RV/1000} = ${N(Rd/1000)} кОм.`});},{star:true});
+G(8,()=>{const U=pick([4.5,6,12]);return CH(`★ Ученик по ошибке включил вольтметр (очень большое сопротивление) <b>последовательно</b> с лампой в цепь с источником ${N(U)} В. Что произойдёт?`,`Лампа не загорится, вольтметр покажет почти ${N(U)} В`,['Лампа загорится нормально, вольтметр покажет 0','Лампа загорится ярче, вольтметр сгорит','Лампа не загорится, вольтметр покажет 0'],{
+ pic:circuit({s:[{t:'L',n:'L'},{t:'V'}]},{bat:N(U)+' В'}),
+ short:'Огромное R вольтметра → ток ≈ 0; почти всё напряжение — на вольтметре.',
+ explain:`Цепь последовательная: ток один и тот же. Сопротивление вольтметра огромное (тысячи ом и больше), поэтому ток ${M('I = U / (R<sub>V</sub> + R<sub>L</sub>)')} почти нулевой — <b>лампа не горит</b>.<br>Напряжения в последовательной цепи делятся пропорционально сопротивлениям. Почти всё сопротивление — у вольтметра, значит почти всё напряжение (≈ ${N(U)} В) окажется на нём.`,
+ explain2:`Числа: R<sub>V</sub> = 10 000 Ом, R<sub>L</sub> = 10 Ом. I = ${N(U)} / 10 010 ≈ ${N(rnd(U/10010*1000,2))} мА — лампа не светит. На лампе U = I·10 ≈ ${N(rnd(U*10/10010,4))} В, на вольтметре — остальные ≈ ${N(rnd(U*10000/10010,2))} В.`});},{star:true});
+
+/* ---------- interactive theory ---------- */
+function onTheory(root){const w=root.querySelector('#w-ohm');if(!w)return;
+  w.innerHTML=`<b>Поиграй с законом Ома</b>
+  <label>Напряжение U = <output id="ouo"></output><input type="range" id="ou" min="0" max="12" step="0.5" value="6"></label>
+  <label>Сопротивление R = <output id="oro"></output><input type="range" id="or" min="2" max="40" step="1" value="12"></label>
+  <div id="opic" class="fig"></div><div id="otxt" style="text-align:center;line-height:1.7"></div>`;
+  const g=id=>w.querySelector('#'+id);
+  const u=()=>{const U=+g('ou').value,Rv=+g('or').value;const I=U/Rv;g('ouo').textContent=N(U)+' В';g('oro').textContent=N(Rv)+' Ом';
+    g('opic').innerHTML=circuit({s:[{p:[{t:'V'},{t:'L',n:'L',v:N(Rv)+' Ом',glow:I/1.5}]},{t:'A'}]},{bat:N(U)+' В',top:14});
+    g('otxt').innerHTML=`Амперметр: <span class="out">I = ${N(U)} / ${N(Rv)} = ${N(rnd(I,3))} А</span><br>Вольтметр: <span class="out">${N(U)} В</span><br>${I>1?'💡 Ярко! ':I>0.3?'💡 Светит. ':I>0?'🕯️ Еле-еле. ':'Тока нет — U = 0. '}Увеличь U — ток растёт; увеличь R — ток падает.`;};
+  g('ou').oninput=g('or').oninput=u;u();}
+
+window.TOPIC={id:'p8_current',title:'Ток, напряжение, сопротивление',subtitle:'Физика · 8 класс',
+intro:`<p>Что на самом деле течёт по проводам, чем сила тока отличается от напряжения, почему толстый провод лучше тонкого и как одной формулой — законом Ома — связать всё вместе. Научишься включать амперметр и вольтметр, читать шкалы и графики. В конце — олимпиадные задачи (шунт, жгут, медь против алюминия).</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Электрический ток','Сила тока','Напряжение','Сопротивление проводника','Закон Ома','Графики I(U)','Амперметр и вольтметр','Комбинированные задачи','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

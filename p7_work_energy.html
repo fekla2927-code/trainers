@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Работа, мощность, энергия — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const n=x=>{let s=H.num(Math.round(x*1e6)/1e6);const m=s.match(/^(−?)(\d+)(.*)$/);if(m&&m[2].length>4)s=m[1]+m[2].replace(/\B(?=(\d{3})+(?!\d))/g,' ')+m[3];return s;};
+const rd=(x,k)=>{const p=Math.pow(10,k==null?2:k);return Math.round(x*p)/p;};
+const gens=[];
+const G=(lvl,make,o)=>gens.push(Object.assign({lvl,make:()=>{for(let i=0;i<300;i++){const t=make();if(t)return t;}return null;}},o||{}));
+const ST={star:true},RU={rule:true},RS={rule:true,star:true};
+const NUM=o=>{const t=Object.assign({type:'num'},o);if(t.tol===undefined&&t.ans!==0)t.tol=Math.min(0.01,0.4/Math.abs(t.ans));if(!t.ansText)t.ansText=`${n(t.ans)}${t.u?' '+t.u:''}`;if(!t.ph)t.ph=t.u?`ответ в ${t.u}`:'впиши число';return t;};
+const CH=(q,right,wrongs,o)=>{const opts=shuffle([right,...wrongs]);return Object.assign({type:'choice',q,opts,ans:opts.indexOf(right)},o);};
+const M=s=>`<span class="m">${s}</span>`;
+const fr=H.frac;
+
+/* ---------- pictures ---------- */
+function leverSvg(m1,l1,m2,l2,opt){ // arms in units 1..5, masses
+  opt=opt||{};const cx=160,cy=44,u=26;const M1=m1*l1,M2=m2*l2;const ang=opt.flat?0:Math.max(-12,Math.min(12,(M1-M2)*3/Math.max(1,Math.max(M1,M2))*4));
+  const a=ang*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a);
+  const pt=d=>[cx+d*u*ca,cy-d*u*sa]; // left end goes down when ang>0
+  let s=`<svg viewBox="0 0 320 ${opt.h||140}" width="320" role="img" aria-label="Рычаг" style="font-family:system-ui,sans-serif">`;
+  const L=pt(-5.6),Rr=pt(5.6);
+  s+=`<path d="M${cx},${cy+4} L${cx-14},${cy+30} L${cx+14},${cy+30} Z" fill="var(--fig)" fill-opacity=".5" stroke="var(--fig)"/><line x1="138" y1="${cy+30}" x2="182" y2="${cy+30}" stroke="var(--fig)" stroke-width="1.5"/>`;
+  s+=`<line x1="${L[0]}" y1="${L[1]}" x2="${Rr[0]}" y2="${Rr[1]}" stroke="var(--fig)" stroke-width="5" stroke-linecap="round"/>`;
+  for(let d=-5;d<=5;d++){if(!d)continue;const p=pt(d);s+=`<circle cx="${p[0]}" cy="${p[1]}" r="1.8" fill="var(--card)"/>`;}
+  const hang=(d,m,lab)=>{const p=pt(d);const bw=14+Math.min(16,m*1.6),bh=12+Math.min(14,m*1.2);const top=p[1]+28;
+    return `<line x1="${p[0]}" y1="${p[1]}" x2="${p[0]}" y2="${top}" stroke="var(--fig)"/><rect x="${p[0]-bw/2}" y="${top}" width="${bw}" height="${bh}" rx="3" fill="var(--hl)" fill-opacity=".7" stroke="var(--fig)"/><text x="${p[0]}" y="${top+bh+14}" text-anchor="middle" font-size="12" fill="var(--ink)">${lab}</text>`;};
+  s+=hang(-l1,m1,opt.lab1||(m1+' кг'))+hang(l2,m2,opt.lab2||(m2+' кг'));
+  return s+'</svg>';
+}
+function blockSvg(kind){
+  let s=`<svg viewBox="0 0 150 190" width="140" role="img" aria-label="Блок" style="font-family:system-ui,sans-serif"><line x1="10" y1="10" x2="140" y2="10" stroke="var(--fig)" stroke-width="3"/>`;
+  if(kind==='fixed'){
+    s+=`<line x1="75" y1="10" x2="75" y2="40" stroke="var(--fig)" stroke-width="2"/><circle cx="75" cy="55" r="18" fill="var(--card)" stroke="var(--fig)" stroke-width="2"/><circle cx="75" cy="55" r="3" fill="var(--fig)"/>`;
+    s+=`<line x1="57" y1="55" x2="57" y2="130" stroke="var(--accent-ink)" stroke-width="1.6"/><rect x="45" y="130" width="24" height="22" rx="3" fill="var(--hl)" fill-opacity=".7" stroke="var(--fig)"/><text x="57" y="170" text-anchor="middle" font-size="12" fill="var(--ink)">P</text>`;
+    s+=`<line x1="93" y1="55" x2="93" y2="140" stroke="var(--accent-ink)" stroke-width="1.6"/><path d="M93,152 L88,140 L98,140 Z" fill="var(--accent-ink)"/><text x="100" y="140" font-size="12" fill="var(--ink)">F = P</text>`;
+  }else{
+    s+=`<line x1="40" y1="10" x2="40" y2="110" stroke="var(--accent-ink)" stroke-width="1.6"/><circle cx="58" cy="110" r="18" fill="var(--card)" stroke="var(--fig)" stroke-width="2"/><circle cx="58" cy="110" r="3" fill="var(--fig)"/>`;
+    s+=`<line x1="76" y1="110" x2="76" y2="40" stroke="var(--accent-ink)" stroke-width="1.6"/><path d="M76,28 L71,40 L81,40 Z" fill="var(--accent-ink)"/><text x="84" y="44" font-size="12" fill="var(--ink)">F = P/2</text>`;
+    s+=`<line x1="58" y1="110" x2="58" y2="140" stroke="var(--fig)"/><rect x="46" y="140" width="24" height="22" rx="3" fill="var(--hl)" fill-opacity=".7" stroke="var(--fig)"/><text x="58" y="180" text-anchor="middle" font-size="12" fill="var(--ink)">P</text>`;
+  }
+  return s+'</svg>';
+}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Механическая работа',lvl:0,html:`
+<p class="hook">Подъёмный кран поднимает бетонную плиту на 9-й этаж. Ты весь урок держишь тяжёлый рюкзак на вытянутых руках и устаёшь. Кто совершил работу? С точки зрения физики — только кран!</p>
+<div class="box rule"><b>Правило</b>Механическая работа ${M('A = F·s')}: сила × путь, пройденный <b>в направлении силы</b>. Единица — <b>джоуль</b>: 1 Дж = 1 Н · 1 м.</div>
+<p><b>Почему так.</b> Работа — это «сколько сделано»: чем больше сила и чем дальше ты ею продвинул тело, тем больше работа. Нет перемещения — нет работы, как бы ты ни устал.</p>
+<p><b>Работа равна нулю</b>, если: тело не движется (держишь рюкзак); тело движется перпендикулярно силе (несёшь сумку горизонтально — сила руки направлена вверх).</p>
+<div class="box ex"><b>Пример</b>Кран поднял плиту 2 т на 25 м: F = mg = 20 000 Н, A = 20 000 · 25 = 500 000 Дж = 500 кДж.</div>
+<div class="box err"><b>Типичная ошибка</b>Брать путь, пройденный не вдоль силы. При подъёме груза важна высота h, а не длина дороги: ${M('A = mgh')}.</div>`},
+{title:'Мощность',lvl:1,html:`
+<div class="box rule"><b>Правило</b>Мощность — работа за единицу времени: ${M('N = '+fr('A','t'))}. Единица — <b>ватт</b>: 1 Вт = 1 Дж/с. Если тело движется равномерно со скоростью v под действием силы F: ${M('N = F·v')}.</div>
+<p><b>Почему так.</b> Ты и подъёмный кран можете поднять один и тот же кирпич на 10 м — работа одна. Но кран сделает это за секунду, а ты — за минуту. Мощность показывает <b>быстроту</b> работы.</p>
+<div class="box ex"><b>Пример</b>Ты взбежал на 3-й этаж (6 м) за 10 с, масса 50 кг: A = 500 · 6 = 3000 Дж, N = 3000/10 = 300 Вт.</div>
+<div class="fact">«Лошадиная сила» — около 736 Вт. Её придумал Джеймс Уатт, чтобы объяснить владельцам шахт, скольких лошадей заменит его паровая машина. Мощность человека в рывке — около 1 л. с., а долго — лишь 70–100 Вт.</div>`},
+{title:'Рычаг. Правило моментов',lvl:2,html:`
+<p class="hook">«Дайте мне точку опоры, и я сдвину Землю!» — сказал Архимед. Он был прав в принципе: с длинным рычагом малая сила уравновешивает огромную.</p>
+<div class="box rule"><b>Правило рычага</b>Рычаг в равновесии, если ${M('F<sub>1</sub>·l<sub>1</sub> = F<sub>2</sub>·l<sub>2</sub>')}. l — <b>плечо</b> силы: кратчайшее расстояние от оси вращения до линии действия силы. Произведение M = F·l называют <b>моментом силы</b> (Н·м).</div>
+<p><b>Почему так.</b> Силу, приложенную дальше от оси, «поворачивать» легче. Чем длиннее плечо, тем меньшая сила нужна для того же поворачивающего действия.</p>
+<div class="widget" id="w-lever"></div>
+<div class="box ex"><b>Где рычаги вокруг тебя</b>Ножницы, качели, гаечный ключ, плоскогубцы, тачка, весло, дверная ручка (её ставят подальше от петель), твоё предплечье.</div>
+<div class="box err"><b>Типичная ошибка</b>Измерять плечо от конца рычага или брать длину всего рычага. Плечо — от <b>оси (точки опоры)</b> до силы.</div>`},
+{title:'Блоки',lvl:3,html:`
+<div class="box rule"><b>Правило</b>• <b>Неподвижный</b> блок выигрыша в силе не даёт, только меняет направление силы: F = P.<br>• <b>Подвижный</b> блок даёт выигрыш в силе в 2 раза: F = P/2 (если блок лёгкий и нет трения). Зато конец верёвки нужно вытянуть на 2h, чтобы поднять груз на h.</div>
+<div class="figrow"><div class="fig">${blockSvg('fixed')}<div class="cap">неподвижный</div></div><div class="fig">${blockSvg('move')}<div class="cap">подвижный</div></div></div>
+<p><b>Почему так.</b> Подвижный блок висит на <b>двух</b> участках верёвки, и каждый держит половину веса. Неподвижный блок — это рычаг с равными плечами.</p>
+<div class="box err"><b>Типичная ошибка</b>Забывать вес самого подвижного блока: тогда F = (P + P<sub>блока</sub>)/2.</div>`},
+{title:'«Золотое правило» механики и КПД',lvl:4,html:`
+<div class="box rule"><b>Золотое правило механики</b>Ни один простой механизм не даёт выигрыша в работе: во сколько раз выигрываем в силе, во столько раз проигрываем в расстоянии.</div>
+<p><b>Пример.</b> Наклонная плоскость длиной 5 м на высоту 1 м: тащить вдоль неё нужно с силой в 5 раз меньше веса (без трения), но путь в 5 раз длиннее высоты.</p>
+<div class="box rule"><b>КПД</b>Коэффициент полезного действия: ${M('η = '+fr('A<sub>полезная</sub>','A<sub>затраченная</sub>')+' · 100 %')}. Из-за трения и веса деталей он всегда <b>меньше 100 %</b>.</div>
+<div class="box ex"><b>Пример</b>Ящик 50 кг подняли по доске длиной 4 м на высоту 1 м, прикладывая силу 160 Н. A<sub>п</sub> = mgh = 500 Дж, A<sub>з</sub> = F·L = 640 Дж, η = 500/640 ≈ 78 %.</div>
+<div class="box err"><b>Типичная ошибка</b>Перепутать полезную и затраченную работу. Полезная — то, ради чего всё затевалось (поднять груз: mgh). Затраченная — то, что сделали мы (F × путь нашей силы). Если вышло η &gt; 100 % — ты их перепутал.</div>`},
+{title:'Энергия: потенциальная и кинетическая',lvl:5,html:`
+<p class="hook">Почему сосулька с крыши опасна, а с подоконника первого этажа — нет? И почему авария на 120 км/ч намного страшнее, чем на 60 — не вдвое, а вчетверо?</p>
+<div class="box rule"><b>Правило</b>Энергия — способность совершить работу (Дж).<br>• <b>Потенциальная</b> (тело поднято): ${M('E<sub>п</sub> = mgh')}.<br>• <b>Кинетическая</b> (тело движется): ${M('E<sub>к</sub> = '+fr('mv²','2'))}.</div>
+<p><b>Почему так.</b> Поднятое тело, падая, может совершить работу mgh — например, забить сваю. Летящее тело может что-то сломать — и чем быстрее, тем сильнее. Скорость в квадрате: в 2 раза быстрее — в <b>4 раза</b> больше энергии.</p>
+<div class="box ex"><b>Пример</b>Машина 1000 кг, 72 км/ч = 20 м/с: E<sub>к</sub> = 1000 · 400 / 2 = 200 000 Дж = 200 кДж.</div>
+<div class="box err"><b>Типичная ошибка</b>Подставлять скорость в км/ч. Переводи в м/с: делим на 3,6 (72 км/ч = 20 м/с).</div>`},
+{title:'Превращения энергии',lvl:6,html:`
+<div class="box rule"><b>Закон сохранения механической энергии</b>Если нет трения и сопротивления, полная механическая энергия не меняется: ${M('E<sub>п</sub> + E<sub>к</sub> = const')}. Энергия лишь переходит из одного вида в другой.</div>
+<p><b>Почему так.</b> Падающее тело теряет высоту (E<sub>п</sub> уменьшается), но набирает скорость (E<sub>к</sub> растёт) — ровно на столько же.</p>
+<div class="box ex"><b>Пример</b>Камень падает с 20 м: mgh = mv²/2 → v² = 2gh = 400, v = 20 м/с. Масса не нужна — сокращается!</div>
+<p>Качели: вверху E<sub>п</sub> максимальна, скорость 0; внизу — наоборот. Американские горки: вагон разгоняют наверх один раз, а дальше он едет «на энергии высоты».</p>
+<div class="box err"><b>Куда девается энергия при трении?</b>Она не исчезает, а переходит во внутреннюю (тела нагреваются). Поэтому качели без подталкивания постепенно останавливаются.</div>`},
+{title:'★ Олимпиадные идеи: рычаги и блоки',lvl:[7,8],html:`
+<ul class="steps"><li><b>Рычаг с собственным весом:</b> вес однородного стержня приложен к его <b>середине</b>. Записывай правило моментов, включая этот вес.</li>
+<li><b>Неравноплечие весы:</b> если тело на левой чаше уравновешивает гири m₁, а на правой — m₂, то истинная масса ${M('m = √(m₁m₂)')}.</li>
+<li><b>Полиспаст:</b> если подвижная обойма висит на k участках верёвки, ${M('F = P/k')}, а верёвку надо вытянуть на k·h.</li>
+<li><b>Система Архимеда:</b> n подвижных блоков, каждый на своей верёвке: каждый делит силу пополам — ${M('F = P/2<sup>n</sup>')}.</li>
+<li><b>Энергетический подход:</b> по золотому правилу F·(путь руки) = P·(подъём груза) — удобно для любых систем блоков без трения.</li></ul>`}
+];
+
+const symbols={tab:'Формулы',title:'Формулы и обозначения',rows:[
+['A = Fs','механическая работа','сила × путь вдоль силы','100 Н · 3 м = 300 Дж'],
+['Дж','джоуль','1 Н · 1 м','1 кДж = 1000 Дж'],
+['N = A/t','мощность','работа за секунду','600 Дж / 2 с = 300 Вт'],
+['N = Fv','мощность при равномерном движении','сила тяги × скорость','1000 Н · 20 м/с = 20 кВт'],
+['F₁l₁ = F₂l₂','правило рычага','моменты сил равны','20·0,3 = 60·0,1'],
+['M = Fl','момент силы','сила × плечо, Н·м','—'],
+['η','КПД','A<sub>полезная</sub> / A<sub>затраченная</sub> · 100 %','500/640 ≈ 78 %'],
+['E<sub>п</sub> = mgh','потенциальная энергия','энергия поднятого тела','2 кг, 5 м → 100 Дж'],
+['E<sub>к</sub> = mv²/2','кинетическая энергия','энергия движения','2 кг, 3 м/с → 9 Дж'],
+['л. с.','лошадиная сила','≈ 736 Вт','100 л. с. ≈ 73,6 кВт']],
+after:`<div class="box tip"><b>Переводы</b>км/ч → м/с: делим на 3,6. мин → с: × 60. кВт → Вт: × 1000. т → кг: × 1000.</div>`};
+
+/* ---------- gens ---------- */
+/* L0 */
+G(0,()=>CH('Допиши формулу механической работы: A = …','F · s (сила × путь в направлении силы)',['F / s','m · s','F · t (сила × время)'],{
+ short:'A = Fs.',
+ explain:'Работа — сила, умноженная на путь, пройденный <b>в направлении этой силы</b>: A = F·s, в джоулях. Время в формулу работы не входит — оно входит в мощность.',
+ explain2:'1 Дж — это когда силой 1 Н сдвинули тело на 1 м. Удвоил силу или путь — работа вдвое больше.'}),RU);
+G(0,()=>CH('В каком случае механическая работа <b>равна нулю</b>?','Штангист держит штангу над головой неподвижно',['Кран поднимает груз','Мальчик тащит санки по снегу','Лошадь везёт телегу'],{
+ short:'Нет перемещения — нет работы.',
+ explain:'A = F·s. Штангист прикладывает огромную силу, но штанга <b>не движется</b>: s = 0, значит A = 0. Он устаёт из-за работы мышц внутри тела, но механическую работу над штангой не совершает. Во всех остальных случаях тело перемещается вдоль силы.',
+ explain2:'Физика строгая: стена, которую ты час толкаешь, не сдвинулась — работы ноль, как бы ты ни вспотел.'}),RU);
+G(0,()=>{const F=pick([20,50,80,120,250,400]);const s=pick([2,3,5,10,15,25]);
+ return NUM({q:`Мальчик тянет санки с силой ${F} Н вдоль дороги и проходит ${s} м. Какую работу совершает сила? Ответ — в Дж.`,ans:F*s,u:'Дж',
+ short:`A = ${F} · ${s} = ${F*s} Дж.`,
+ explain:`A = F·s = ${F} · ${s} = <b>${F*s} Дж</b>.`,
+ explain2:`Каждый метр пути — ${F} Дж работы (сила ${F} Н). Метров ${s} → ${F*s} Дж.`});});
+G(0,()=>{const m=pick([500,800,1200,2000,2500]);const h=pick([6,10,12,15,20,30]);const A=m*10*h;
+ return NUM({q:`Подъёмный кран поднял бетонную плиту массой ${n(m)} кг на высоту ${h} м. Какую работу он совершил? g = 10 Н/кг. Ответ — в кДж.`,ans:A/1000,u:'кДж',
+ short:`A = mgh = ${n(m)} · 10 · ${h} = ${n(A)} Дж = ${n(A/1000)} кДж.`,
+ explain:`1) Сила, равная весу: F = mg = ${n(m)} · 10 = ${n(m*10)} Н.<br>2) A = F·h = ${n(m*10)} · ${h} = ${n(A)} Дж = <b>${n(A/1000)} кДж</b>.`,
+ explain2:`При подъёме груза работа A = mgh. ${n(m)} · 10 · ${h} = ${n(A)}. Переводим: делим на 1000 → ${n(A/1000)} кДж.`});});
+G(0,()=>CH('Ты несёшь тяжёлую сумку, равномерно идя по горизонтальному коридору. Какую работу совершает сила, с которой рука держит сумку (она направлена вверх)?','Ноль: сумка перемещается перпендикулярно силе',['Положительную: ведь сумка тяжёлая','Равную весу сумки × длину коридора','Отрицательную'],{
+ short:'Сила вверх, перемещение по горизонтали — работа 0.',
+ explain:'Работа — это сила × путь <b>в направлении силы</b>. Рука тянет сумку вверх, а сумка движется вбок. Вдоль силы (вверх) сумка не сместилась — A = 0. Устаёшь ты из-за напряжения мышц, а не из-за механической работы над сумкой.',
+ explain2:'Сравни: если поднять сумку на 1 м вверх, работа будет P·1 м. А если пронести её 100 м по горизонтали на той же высоте — высота не изменилась, работа силы руки 0.'}));
+
+/* L1 */
+G(1,()=>CH('Допиши формулу мощности: N = …','A / t',['A · t','F · s','t / A'],{
+ short:'N = A/t — работа за единицу времени.',
+ explain:'Мощность показывает, <b>как быстро</b> совершается работа: N = A/t, в ваттах (1 Вт = 1 Дж/с). Та же работа за меньшее время — больше мощность. A·t росла бы, если работать медленнее — абсурд.',
+ explain2:'Ты и лифт поднимаетесь на 10-й этаж. Работа почти одна (масса × g × высота), но лифт быстрее — его мощность больше.'}),RU);
+G(1,()=>{const m=pick([40,45,50,60]);const h=pick([6,9,12]);const t=pick([6,8,10,12,15,20]);const A=m*10*h;const N=A/t;if(!Number.isInteger(N*10))return null;
+ return NUM({q:`Артём (${m} кг) взбежал по лестнице на высоту ${h} м за ${t} с. Какую мощность он развил? g = 10 Н/кг. Ответ — в Вт.`,ans:N,u:'Вт',
+ short:`A = ${m}·10·${h} = ${n(A)} Дж; N = ${n(A)}/${t} = ${n(N)} Вт.`,
+ explain:`1) Работа против силы тяжести: A = mgh = ${m} · 10 · ${h} = ${n(A)} Дж.<br>2) N = A/t = ${n(A)} / ${t} = <b>${n(N)} Вт</b> (≈ ${n(rd(N/736,2))} л. с.).`,
+ explain2:`Каждую секунду Артём поднимает себя на ${n(rd(h/t,3))} м: ${m*10} Н · ${n(rd(h/t,3))} м/с = ${n(N)} Вт. Это то же N = F·v.`});});
+G(1,()=>{const N=pick([2,4,5,10,15]);const m=pick([500,1000,1500,2000]);const h=pick([10,12,15,20,30]);const t=m*10*h/(N*1000);if(!Number.isInteger(t*10))return null;
+ return NUM({q:`Мотор подъёмника мощностью ${N} кВт поднимает груз массой ${n(m)} кг на высоту ${h} м. Сколько времени займёт подъём? Потерь нет, g = 10 Н/кг. Ответ — в секундах.`,ans:t,u:'с',
+ short:`t = A/N = ${n(m*10*h)} / ${n(N*1000)} = ${n(t)} с.`,
+ explain:`1) A = mgh = ${n(m)} · 10 · ${h} = ${n(m*10*h)} Дж.<br>2) N = A/t → t = A/N = ${n(m*10*h)} / ${n(N*1000)} = <b>${n(t)} с</b>.`,
+ explain2:`Мотор делает ${n(N*1000)} Дж каждую секунду. Нужно ${n(m*10*h)} Дж. Сколько секунд? ${n(m*10*h)} : ${n(N*1000)} = ${n(t)}.`});});
+G(1,()=>{const F=pick([500,800,1000,1500,2000]);const kmh=pick([36,54,72,90,108]);const v=kmh/3.6;const N=F*v/1000;
+ return NUM({q:`Автомобиль едет равномерно со скоростью ${kmh} км/ч, сила тяги двигателя ${n(F)} Н. Какую мощность развивает двигатель? Ответ — в кВт.`,ans:N,u:'кВт',
+ hint:'N = F·v, скорость — в м/с.',short:`v = ${kmh}/3,6 = ${n(v)} м/с; N = ${n(F)}·${n(v)} = ${n(F*v)} Вт = ${n(N)} кВт.`,
+ explain:`1) Переводим скорость: ${kmh} км/ч = ${kmh} : 3,6 = ${n(v)} м/с.<br>2) N = A/t = F·s/t = F·v = ${n(F)} · ${n(v)} = ${n(F*v)} Вт = <b>${n(N)} кВт</b>.`,
+ explain2:`За 1 секунду машина проезжает ${n(v)} м и сила тяги совершает работу ${n(F)} · ${n(v)} = ${n(F*v)} Дж. Работа за секунду — это и есть мощность.`});});
+G(1,()=>{const hp=pick([75,100,150,200,250]);const kw=rd(hp*0.736,2);
+ return NUM({q:`Мощность двигателя ${hp} л. с. Сколько это киловатт? 1 л. с. ≈ 736 Вт. Округли до десятых.`,ans:kw,u:'кВт',
+ short:`${hp} · 736 = ${n(hp*736)} Вт ≈ ${n(rd(kw,1))} кВт.`,
+ explain:`${hp} · 736 = ${n(hp*736)} Вт = ${n(kw)} кВт ≈ <b>${n(rd(kw,1))} кВт</b>.`,
+ explain2:`1 л. с. ≈ 0,736 кВт (чуть меньше киловатта). ${hp} · 0,736 ≈ ${n(rd(kw,1))}.`});});
+
+/* L2 Рычаг */
+G(2,()=>CH('Как звучит правило равновесия рычага?','F₁·l₁ = F₂·l₂: силы обратно пропорциональны своим плечам',['F₁·l₂ = F₂·l₁: силы пропорциональны плечам','F₁ = F₂ при любых плечах','F₁ + l₁ = F₂ + l₂'],{
+ short:'Моменты равны: F₁l₁ = F₂l₂.',
+ explain:'Рычаг в равновесии, если моменты сил равны: F₁l₁ = F₂l₂. Значит, <b>к длинному плечу</b> нужна <b>меньшая</b> сила (обратная пропорциональность). Вариант «F₁l₂ = F₂l₁» означал бы, что на длинном плече нужна большая сила — это противоречит опыту с качелями.',
+ explain2:'Качели: папа (80 кг) сидит близко к оси, сын (40 кг) — на краю, вдвое дальше. 80 · 1 = 40 · 2 — равновесие!'}),RU);
+G(2,()=>CH('Что такое <b>плечо силы</b>?','Кратчайшее расстояние от оси вращения до линии действия силы',['Длина всего рычага','Расстояние от точки приложения силы до конца рычага','Расстояние между двумя силами'],{
+ short:'Плечо — от оси до линии действия силы, по перпендикуляру.',
+ explain:'Плечо измеряют от <b>оси вращения (точки опоры)</b> до линии, вдоль которой действует сила, по кратчайшему пути (перпендикуляру). Если сила перпендикулярна рычагу — это просто расстояние от оси до точки приложения.',
+ explain2:'Открывая дверь, толкай у ручки — плечо большое. Толкни у самых петель — плечо почти ноль, и дверь не откроется даже при большой силе.'}),RU);
+G(2,()=>{const F1=pick([10,20,30,40,60]);const l1=pick([10,20,30,40,60]);const l2=pick([5,10,15,20,30,40,60,80]);const F2=F1*l1/l2;if(l1===l2||!Number.isInteger(F2*10))return null;
+ return NUM({q:`К рычагу на расстоянии ${l1} см от оси приложена сила ${F1} Н. Какую силу нужно приложить на расстоянии ${l2} см от оси с другой стороны, чтобы рычаг был в равновесии? Ответ — в Н.`,ans:F2,u:'Н',
+ short:`F₂ = ${F1}·${l1}/${l2} = ${n(F2)} Н.`,
+ explain:`F₁l₁ = F₂l₂ → F₂ = F₁·l₁/l₂ = ${F1} · ${l1} / ${l2} = <b>${n(F2)} Н</b>.<br>${l2>l1?'Плечо длиннее — сила меньше.':'Плечо короче — сила больше.'} Сантиметры можно не переводить: они сокращаются.`,
+ explain2:`Момент первой силы: ${F1} · ${l1} = ${F1*l1} Н·см. Второй должен быть таким же: F₂ · ${l2} = ${F1*l1} → F₂ = ${n(F2)} Н.`});});
+G(2,()=>{const m1=pick([2,3,4,6]);const l1=pick([1,2,3,4]);const m2=pick([1,2,3,4,6,8,12]);const l2=m1*l1/m2;if(m1===m2||!Number.isInteger(l2)||l2>5||l2<1)return null;
+ return NUM({q:`Слева от оси на расстоянии ${l1} делений висит груз ${m1} кг. На каком расстоянии (в делениях) справа надо повесить груз ${m2} кг, чтобы рычаг уравновесился?`,pic:`<div class="fig">${leverSvg(m1,l1,m2,l2,{flat:true})}</div>`,ans:l2,u:'дел.',ph:'число делений',
+ short:`${m1}·${l1} = ${m2}·l₂ → l₂ = ${l2}.`,
+ explain:`Моменты равны: ${m1}g · ${l1} = ${m2}g · l₂ (g сокращается).<br>l₂ = ${m1} · ${l1} / ${m2} = <b>${l2}</b> дел.`,
+ explain2:`Слева «момент» ${m1} · ${l1} = ${m1*l1}. Справа груз ${m2} кг — сколько раз по ${m2} в ${m1*l1}? ${l2} — столько делений.`});});
+G(2,()=>{const a=pick([1,2]),b=pick([3,4]);const m1=pick([2,3,4]),m2=pick([1,2,3]);const c=pick([2,3,4,5]);const M=m1*a+m2*b;const m=M/c;if(!Number.isInteger(m*10))return null;
+ return NUM({q:`На левом плече рычага висят два груза: ${m1} кг на расстоянии ${a} дел. и ${m2} кг на расстоянии ${b} дел. от оси. Груз какой массы надо повесить справа на расстоянии ${c} дел., чтобы было равновесие? Ответ — в кг.`,ans:m,u:'кг',
+ short:`(${m1}·${a} + ${m2}·${b}) / ${c} = ${n(m)} кг.`,
+ explain:`Моменты сил с одной стороны <b>складываются</b>: слева ${m1}·${a} + ${m2}·${b} = ${M} (кг·дел.).<br>Справа m · ${c} = ${M} → m = <b>${n(m)} кг</b>.`,
+ explain2:`Каждый груз «крутит» рычаг по-своему: ${m1} кг на ${a} дел. — как ${m1*a} кг на 1 дел.; ${m2} кг на ${b} дел. — как ${m2*b} кг на 1 дел. Вместе ${M}. Справа на ${c} дел. нужно ${M}/${c} = ${n(m)} кг.`});});
+G(2,()=>{const L=pick([1,1.2,1.5,2]);const d=pick([0.1,0.2,0.25]);const F=pick([50,100,150]);const Fq=F*(L-d)/d;if(!Number.isInteger(Fq))return null;
+ return NUM({q:`Ломом длиной ${n(L)} м поднимают камень. Точка опоры находится на расстоянии ${n(d*100)} см от конца лома, упирающегося в камень. На другой конец давят с силой ${F} Н. С какой силой лом действует на камень? Ответ — в Н.`,ans:Fq,u:'Н',
+ short:`Плечи ${n(L-d)} м и ${n(d)} м: F = ${F}·${n(L-d)}/${n(d)} = ${n(Fq)} Н.`,
+ explain:`1) Плечо твоей силы: ${n(L)} − ${n(d)} = ${n(rd(L-d,2))} м; плечо силы камня: ${n(d)} м.<br>2) ${F} · ${n(rd(L-d,2))} = F<sub>к</sub> · ${n(d)} → F<sub>к</sub> = <b>${n(Fq)} Н</b>. Выигрыш в силе в ${n(rd((L-d)/d,2))} раза!`,
+ explain2:`Типичная ошибка — брать плечом всю длину лома (${n(L)} м). Плечо отсчитывается от точки опоры: от неё до твоей руки ${n(rd(L-d,2))} м.`});});
+
+/* L3 Блоки */
+G(3,()=>CH('Какой выигрыш в силе даёт <b>подвижный</b> блок (блок лёгкий, трения нет)?','В 2 раза',['Никакого — он только меняет направление силы','В 4 раза','Зависит от радиуса блока'],{pic:`<div class="fig">${blockSvg('move')}</div>`,
+ short:'Груз висит на двух участках верёвки → F = P/2.',
+ explain:'Подвижный блок перемещается вместе с грузом и висит на <b>двух</b> участках верёвки. Каждый держит половину веса: F = P/2. Выигрыш в силе — в 2 раза (но верёвку тянуть вдвое дальше). Направление меняет <b>неподвижный</b> блок, и он выигрыша не даёт.',
+ explain2:'Подвижный блок — это рычаг, у которого ось на краю (где верёвка закреплена), груз — в центре (плечо r), а твоя сила — на другом краю (плечо 2r). Плечо вдвое больше — сила вдвое меньше.'}),RU);
+G(3,()=>CH('Зачем нужен <b>неподвижный</b> блок?','Чтобы изменить направление силы (тянуть вниз, а груз шёл вверх)',['Чтобы выиграть в силе в 2 раза','Чтобы выиграть в работе','Чтобы уменьшить массу груза'],{pic:`<div class="fig">${blockSvg('fixed')}</div>`,
+ short:'Неподвижный блок: F = P, меняет направление.',
+ explain:'Неподвижный блок — рычаг с равными плечами (радиусами). Выигрыша в силе нет: F = P. Зато тянуть вниз удобнее — можно помогать собственным весом. Например, флаг на флагштоке поднимают через неподвижный блок.',
+ explain2:'Ни один механизм не даёт выигрыша в работе. А неподвижный блок не даёт и выигрыша в силе — только удобство направления.'}),RU);
+G(3,()=>{const m=pick([20,30,40,50,60,80]);const F=m*10/2;
+ return NUM({q:`С помощью подвижного блока поднимают груз массой ${m} кг. Какую силу нужно прикладывать к свободному концу верёвки? Блок лёгкий, трения нет, g = 10 Н/кг. Ответ — в Н.`,ans:F,u:'Н',
+ short:`P = ${m*10} Н, F = P/2 = ${F} Н.`,
+ explain:`1) Вес груза P = mg = ${m} · 10 = ${m*10} Н.<br>2) Подвижный блок даёт выигрыш в 2 раза: F = ${m*10} / 2 = <b>${F} Н</b>.`,
+ explain2:`Два участка верёвки держат груз вместе, каждый — половину: ${m*10} / 2 = ${F} Н. Ты тянешь один из них.`});});
+G(3,()=>{const h=pick([1,1.5,2,3,4,5]);
+ return NUM({q:`Груз поднимают с помощью подвижного блока на высоту ${n(h)} м. На сколько метров придётся вытянуть свободный конец верёвки?`,ans:2*h,u:'м',
+ short:`В 2 раза больше: ${n(2*h)} м.`,
+ explain:`Груз поднялся на ${n(h)} м — <b>оба</b> участка верёвки, на которых висит блок, укоротились на ${n(h)} м. Всего вытянуть надо ${n(h)} + ${n(h)} = <b>${n(2*h)} м</b>. Выиграли в силе в 2 раза — проиграли в расстоянии в 2 раза («золотое правило»).`,
+ explain2:`Проверка через работу: F·s = P·h. F = P/2 → s = 2h = ${n(2*h)} м.`});});
+G(3,()=>{const m=pick([30,40,50,60]);const mb=pick([2,4,5,6]);const F=(m+mb)*10/2;
+ return NUM({q:`Груз массой ${m} кг поднимают подвижным блоком массой ${mb} кг. Какую силу нужно прикладывать к верёвке? Трения нет, g = 10 Н/кг. Ответ — в Н.`,ans:F,u:'Н',
+ short:`F = (${m} + ${mb}) · 10 / 2 = ${n(F)} Н.`,
+ explain:`Блок поднимается вместе с грузом, поэтому верёвка держит и его вес: P<sub>общ</sub> = (${m} + ${mb}) · 10 = ${(m+mb)*10} Н.<br>F = ${(m+mb)*10} / 2 = <b>${n(F)} Н</b>.<br>Ответ ${m*5} Н — если забыть вес блока.`,
+ explain2:`Можно по частям: на груз нужно ${m*5} Н, на блок ${mb*5} Н, вместе ${n(F)} Н.`});});
+
+/* L4 Золотое правило, КПД */
+G(4,()=>CH('Как звучит «золотое правило» механики?','Во сколько раз выигрываем в силе, во столько раз проигрываем в расстоянии',['Простые механизмы дают выигрыш в работе','Чем длиннее рычаг, тем больше работа','Выигрыш в силе всегда в 2 раза'],{
+ short:'Выигрыша в работе нет.',
+ explain:'Ни один простой механизм (рычаг, блок, наклонная плоскость) не даёт выигрыша в <b>работе</b>. Выиграл в силе в k раз — путь твоей силы в k раз длиннее. Работа F·s одна и та же (а с трением — даже больше).',
+ explain2:'Серпантин в горах: подъём пологий (сила тяги меньше), но дорога намного длиннее. Высота та же — работа против силы тяжести та же.'}),RU);
+G(4,()=>CH('Допиши формулу КПД: η = …','A<sub>полезная</sub> / A<sub>затраченная</sub> · 100 %',['A<sub>затраченная</sub> / A<sub>полезная</sub> · 100 %','A<sub>полезная</sub> − A<sub>затраченная</sub>','A<sub>полезная</sub> · A<sub>затраченная</sub>'],{
+ short:'КПД — доля полезной работы.',
+ explain:'КПД показывает, какая <b>доля</b> затраченной работы пошла на полезное дело: η = A<sub>п</sub>/A<sub>з</sub> · 100 %. Так как A<sub>п</sub> &lt; A<sub>з</sub> (трение, вес деталей), КПД всегда меньше 100 %. Если поделить наоборот, выйдет больше 100 % — признак ошибки.',
+ explain2:'Купил 10 яблок, 2 оказались гнилыми: «КПД покупки» 8/10 = 80 %. Полезное — сверху, всё потраченное — снизу.'}),RU);
+G(4,()=>{const m=pick([20,30,40,50,60]);const h=pick([0.5,1,1.2,1.5]);const L=pick([2,3,4,5]);const eff=pick([0.6,0.7,0.75,0.8]);const F=rd(m*10*h/(L*eff),0);const et=rd(m*10*h/(F*L)*100,1);if(F<=m*10*h/L)return null;
+ return NUM({q:`Ящик массой ${m} кг втащили по наклонной доске длиной ${L} м на высоту ${n(h)} м, прикладывая вдоль доски силу ${n(F)} Н. Найди КПД наклонной плоскости. g = 10 Н/кг. Ответ — в %, округли до целых.`,ans:Math.round(et),u:'%',tol:0.55/Math.round(et),
+ short:`η = ${n(m*10*h)} / ${n(F*L)} · 100 % ≈ ${n(Math.round(et))} %.`,
+ explain:`1) Полезная работа (подняли ящик): A<sub>п</sub> = mgh = ${m} · 10 · ${n(h)} = ${n(m*10*h)} Дж.<br>2) Затраченная (тащили вдоль доски): A<sub>з</sub> = F·L = ${n(F)} · ${L} = ${n(F*L)} Дж.<br>3) η = ${n(m*10*h)} / ${n(F*L)} · 100 % ≈ <b>${n(Math.round(et))} %</b>.`,
+ explain2:`Без трения хватило бы силы mg·h/L = ${n(rd(m*10*h/L,2))} Н. Тянули ${n(F)} Н — лишнее ушло на трение. КПД = идеальная сила / реальная = ${n(rd(m*10*h/L,2))} / ${n(F)} ≈ ${n(Math.round(et))} %.`});});
+G(4,()=>{const m=pick([20,30,40,50]);const F=pick([120,125,150,160,200,220,250,300]);if(F<=m*5||F>=m*10)return null;const et=rd(m*10/(2*F)*100,2);
+ return NUM({q:`Груз массой ${m} кг поднимают подвижным блоком, прикладывая к верёвке силу ${F} Н. Найди КПД установки. g = 10 Н/кг. Ответ — в %.`,ans:et,u:'%',
+ hint:'Верёвку тянут на 2h, а груз поднимается на h.',short:`η = mgh / (F·2h) = ${m*10} / ${2*F} = ${n(et)} %.`,
+ explain:`Пусть груз поднят на h. Полезная работа mgh = ${m*10}·h, затраченная F·2h = ${2*F}·h.<br>η = ${m*10}h / (${2*F}h) · 100 % = <b>${n(et)} %</b>. Высота сокращается!`,
+ explain2:`Идеальный блок требовал бы ${m*5} Н. Реально ${F} Н. КПД = ${m*5} / ${F} = ${n(et)} %. Лишнее — на вес блока и трение.`});});
+G(4,()=>{const Ap=pick([600,800,1200,1500,2400]);const eff=pick([60,75,80]);const Az=Ap/(eff/100);if(!Number.isInteger(Az))return null;
+ return NUM({q:`КПД механизма ${eff} %. Полезная работа ${n(Ap)} Дж. Какую работу пришлось затратить? Ответ — в Дж.`,ans:Az,u:'Дж',
+ short:`A<sub>з</sub> = ${n(Ap)} / ${n(eff/100)} = ${n(Az)} Дж.`,
+ explain:`η = A<sub>п</sub>/A<sub>з</sub> → A<sub>з</sub> = A<sub>п</sub>/η = ${n(Ap)} / ${n(eff/100)} = <b>${n(Az)} Дж</b>.<br>Затраченная всегда больше полезной. Если умножить ${n(Ap)} · ${n(eff/100)}, получится меньше полезной — так не бывает.`,
+ explain2:`${n(Ap)} Дж — это ${eff} % от затраченной. 1 % — ${n(Ap/eff)} Дж, 100 % — ${n(Az)} Дж.`});});
+G(4,()=>CH('Изобретатель утверждает, что его механизм имеет КПД 120 %. Что можно сказать?','Это невозможно: полезная работа не может быть больше затраченной',['Это возможно, если механизм очень хорошо смазан','Это возможно для длинного рычага','Это нормально для подвижного блока'],{
+ short:'η ≤ 100 % всегда (реально — меньше).',
+ explain:'КПД больше 100 % означал бы, что механизм выдаёт больше работы, чем в него вложили, — «вечный двигатель». Это противоречит «золотому правилу» и закону сохранения энергии. Реальные механизмы из-за трения имеют η &lt; 100 %.',
+ explain2:'Смазка уменьшает трение, приближая КПД к 100 %, но перескочить 100 % нельзя: энергия не берётся из ничего.'}));
+
+/* L5 Энергия */
+G(5,()=>CH('Допиши формулу потенциальной энергии тела, поднятого на высоту h: E<sub>п</sub> = …','m · g · h',['m · v² / 2','m · g / h','ρ · g · h'],{
+ short:'E<sub>п</sub> = mgh.',
+ explain:'Поднятое тело может, опускаясь, совершить работу mg·h. Поэтому E<sub>п</sub> = mgh. mv²/2 — кинетическая энергия, ρgh — давление жидкости.',
+ explain2:'Чтобы поднять тело на h, нужно совершить работу mgh. Эта работа «запасается» в виде потенциальной энергии.'}),RU);
+G(5,()=>CH('Допиши формулу кинетической энергии: E<sub>к</sub> = …','m · v² / 2',['m · v / 2','m · v²','m · g · v'],{
+ short:'E<sub>к</sub> = mv²/2.',
+ explain:'Кинетическая энергия E<sub>к</sub> = mv²/2. Скорость — <b>в квадрате</b>: в 2 раза быстрее — в 4 раза больше энергии. Поэтому скорость так опасна на дороге.',
+ explain2:'Запомни «половина эм вэ квадрат». Проверка единиц: кг · (м/с)² = кг·м²/с² = Н·м = Дж ✓.'}),RU);
+G(5,()=>{const m=pick([0.2,0.5,2,5,10,50]);const h=pick([2,3,5,10,20,40]);const E=m*10*h;
+ return NUM({q:`Сосулька массой ${n(m)} кг висит на крыше на высоте ${h} м. Какова её потенциальная энергия относительно земли? g = 10 Н/кг. Ответ — в Дж.`,ans:E,u:'Дж',
+ short:`E<sub>п</sub> = ${n(m)} · 10 · ${h} = ${n(E)} Дж.`,
+ explain:`E<sub>п</sub> = mgh = ${n(m)} · 10 · ${h} = <b>${n(E)} Дж</b>. Падая, сосулька превратит всю эту энергию в кинетическую — вот почему она опасна.`,
+ explain2:`Вес сосульки ${n(m*10)} Н. Падая с ${h} м, сила тяжести совершит работу ${n(m*10)} · ${h} = ${n(E)} Дж.`});});
+G(5,()=>{const m=pick([800,1000,1200,1500]);const kmh=pick([36,54,72,90,108]);const v=kmh/3.6;const E=m*v*v/2/1000;
+ return NUM({q:`Автомобиль массой ${n(m)} кг едет со скоростью ${kmh} км/ч. Чему равна его кинетическая энергия? Ответ — в кДж.`,ans:E,u:'кДж',
+ short:`v = ${n(v)} м/с; E<sub>к</sub> = ${n(m)}·${n(v*v)}/2 = ${n(E*1000)} Дж.`,
+ explain:`1) ${kmh} км/ч = ${kmh} : 3,6 = ${n(v)} м/с.<br>2) E<sub>к</sub> = mv²/2 = ${n(m)} · ${n(v)}² / 2 = ${n(m)} · ${n(v*v)} / 2 = ${n(E*1000)} Дж = <b>${n(E)} кДж</b>.`,
+ explain2:`Если подставить км/ч, получится ${n(m*kmh*kmh/2/1000)} кДж — почти в 13 раз больше (3,6² ≈ 13). Всегда переводи в м/с!`});});
+G(5,()=>{const k=pick([2,3,4]);
+ return CH(`Скорость самоката увеличилась в ${k} раза. Во сколько раз увеличилась его кинетическая энергия?`,`В ${k*k} раз${k*k<5?'а':''}`,[`В ${k} раза`,`В ${2*k} раз${2*k<5?'а':''}`,'Не изменилась'].filter(x=>x!==`В ${k*k} раз${k*k<5?'а':''}`),{
+ short:`E ~ v²: ${k}² = ${k*k}.`,
+ explain:`E<sub>к</sub> = mv²/2 — скорость в квадрате. Скорость ×${k} → энергия ×${k}² = <b>${k*k}</b>.`,
+ explain2:`Проверь числами: m = 2 кг, v = 1 м/с → E = 1 Дж. v = ${k} м/с → E = 2 · ${k*k}/2 = ${k*k} Дж. В ${k*k} раз больше.`});});
+
+/* L6 Превращения энергии */
+G(6,()=>CH('Что утверждает закон сохранения механической энергии (без трения)?','Сумма потенциальной и кинетической энергии остаётся постоянной',['Кинетическая энергия всегда постоянна','Потенциальная энергия всегда постоянна','Энергия исчезает при падении тела'],{
+ short:'E<sub>п</sub> + E<sub>к</sub> = const.',
+ explain:'Без трения и сопротивления полная механическая энергия E<sub>п</sub> + E<sub>к</sub> не меняется. Каждая из них меняется (переходит одна в другую), но сумма постоянна.',
+ explain2:'Как деньги на двух счетах: можно переводить со счёта «высота» на счёт «скорость», но общая сумма та же.'}),RU);
+G(6,()=>{const p=pick([[5,10],[20,20],[45,30],[1.25,5],[3.2,8],[0.8,4],[80,40]]);
+ return NUM({q:`Мяч падает без начальной скорости с высоты ${n(p[0])} м. С какой скоростью он подлетит к земле? Сопротивлением воздуха пренебречь, g = 10 Н/кг. Ответ — в м/с.`,ans:p[1],u:'м/с',
+ short:`mgh = mv²/2 → v = √(2gh) = √${n(20*p[0])} = ${p[1]} м/с.`,
+ explain:`Вся потенциальная энергия переходит в кинетическую: mgh = mv²/2. Масса сокращается: v² = 2gh = 2 · 10 · ${n(p[0])} = ${n(20*p[0])}.<br>v = √${n(20*p[0])} = <b>${p[1]} м/с</b>.`,
+ explain2:`Проверка: на 1 кг мяча было ${n(10*p[0])} Дж. Кинетическая на 1 кг: ${p[1]}²/2 = ${n(p[1]*p[1]/2)} Дж. Совпало ✓.`});});
+G(6,()=>{const v=pick([2,4,5,6,8,10,12,20]);const h=v*v/20;
+ return NUM({q:`Мяч подбросили вертикально вверх со скоростью ${v} м/с. На какую высоту он поднимется? Сопротивлением воздуха пренебречь, g = 10 Н/кг. Ответ — в м.`,ans:h,u:'м',
+ short:`h = v²/(2g) = ${v*v}/20 = ${n(h)} м.`,
+ explain:`Внизу вся энергия кинетическая, вверху (скорость 0) — потенциальная: mv²/2 = mgh.<br>h = v²/(2g) = ${v}² / 20 = ${v*v} / 20 = <b>${n(h)} м</b>.`,
+ explain2:`Обратная задача к падению: с ${n(h)} м мяч упал бы со скоростью ${v} м/с. Значит, подброшенный с ${v} м/с, он туда и долетит.`});});
+G(6,()=>{const s=pick([{q:'Качели движутся из крайнего верхнего положения вниз',r:'Потенциальная → кинетическая'},{q:'Мяч летит вертикально вверх',r:'Кинетическая → потенциальная'},{q:'Сосулька падает с крыши',r:'Потенциальная → кинетическая'},{q:'Санки въезжают в горку по инерции',r:'Кинетическая → потенциальная'}]);
+ return CH(`${s.q}. Какое превращение энергии происходит?`,s.r,[s.r==='Потенциальная → кинетическая'?'Кинетическая → потенциальная':'Потенциальная → кинетическая','Никаких превращений нет','Механическая энергия исчезает'],{
+ short:s.r+'.',
+ explain:`${s.r.startsWith('Потенц')?'Высота уменьшается — E<sub>п</sub> уменьшается, скорость растёт — E<sub>к</sub> растёт.':'Скорость уменьшается — E<sub>к</sub> уменьшается, высота растёт — E<sub>п</sub> растёт.'} Энергия переходит: <b>${s.r.toLowerCase()}</b>.`,
+ explain2:'Правило: тело опускается и ускоряется — «высота → скорость». Тело поднимается и замедляется — «скорость → высота».'});});
+G(6,()=>{const h=pick([20,30,45,50]);const m=pick([200,300,400,500]);const E=m*10*h/1000;
+ return NUM({q:`Вагончик американских горок массой ${m} кг стартует без скорости с вершины высотой ${h} м. Какой будет его кинетическая энергия в самой нижней точке трассы (на уровне земли)? Трения нет, g = 10 Н/кг. Ответ — в кДж.`,ans:E,u:'кДж',
+ short:`E<sub>к</sub> = mgh = ${m}·10·${h} = ${n(E*1000)} Дж.`,
+ explain:`Без трения вся потенциальная энергия вершины переходит в кинетическую внизу: E<sub>к</sub> = mgh = ${m} · 10 · ${h} = ${n(E*1000)} Дж = <b>${n(E)} кДж</b>.<br>Форма трассы (петли, повороты) значения не имеет — важна только разность высот.`,
+ explain2:`Скорость внизу: v = √(2gh) = √${20*h} ≈ ${n(rd(Math.sqrt(20*h),1))} м/с ≈ ${n(rd(Math.sqrt(20*h)*3.6,0))} км/ч.`});});
+
+/* L7 ★ рычаги */
+G(7,()=>CH('Однородный стержень лежит на опоре. Где приложена его сила тяжести при расчёте моментов?','В середине стержня',['На конце стержня','В точке опоры','Её не учитывают'],{
+ short:'У однородного стержня центр тяжести — середина.',
+ explain:'Вес однородного стержня распределён равномерно, но действует так же, как одна сила mg, приложенная к <b>середине</b>. Её плечо — расстояние от опоры до середины стержня.',
+ explain2:'Положи линейку на палец: она балансирует, если палец ровно под серединой. Значит, «весь вес» действует там.'}),RS);
+G(7,()=>{const Mr=pick([2,4,6,8]);const a=pick([0.25,0.4,0.5]);const L=2;const m=Mr*(L/2-a)/a;
+ return NUM({q:`Однородный стержень длиной ${L} м и массой ${Mr} кг лежит на опоре, находящейся на расстоянии ${n(a*100)} см от левого конца. Груз какой массы надо подвесить к <b>левому</b> концу, чтобы стержень был в равновесии? Ответ — в кг.`,ans:m,u:'кг',
+ hint:'Вес стержня приложен к его середине. Плечо веса — от опоры до середины.',short:`m · ${n(a)} = ${Mr} · ${n(L/2-a)} → m = ${n(m)} кг.`,
+ explain:`1) Середина стержня — 1 м от левого конца, то есть ${n(L/2-a)} м правее опоры. Вес стержня ${Mr*10} Н крутит его вправо с плечом ${n(L/2-a)} м.<br>2) Груз на левом конце: плечо ${n(a)} м.<br>3) m·g·${n(a)} = ${Mr}·g·${n(L/2-a)} → m = ${Mr} · ${n(L/2-a)} / ${n(a)} = <b>${n(m)} кг</b>.`,
+ explain2:`Ошибка — делить стержень на «левую» и «правую» часть и забыть, что опора не в середине. Проще всего считать весь вес в середине стержня.`});},ST);
+G(7,()=>{const s=pick([0.5,1,2]);const pq=pick([[2,3],[3,4],[4,5],[1,2],[2,5]]);const m1=s*pq[0]*pq[0]*100,m2=s*pq[1]*pq[1]*100,m=s*pq[0]*pq[1]*100;
+ return NUM({q:`У весов неравные плечи. Когда сыр положили на левую чашу, его уравновесили гири ${n(m1)} г на правой. Когда на правую — гири ${n(m2)} г на левой. Какова настоящая масса сыра? Ответ — в г.`,ans:m,u:'г',
+ hint:'Запиши правило рычага для обоих взвешиваний и перемножь.',short:`m = √(${n(m1)} · ${n(m2)}) = ${n(m)} г.`,
+ explain:`Пусть плечи l₁ (левое) и l₂ (правое).<br>1) m·l₁ = ${n(m1)}·l₂.<br>2) ${n(m2)}·l₁ = m·l₂.<br>Перемножим: m²·l₁l₂ = ${n(m1)}·${n(m2)}·l₁l₂ → m² = ${n(m1*m2)} → m = <b>${n(m)} г</b>.<br>Среднее арифметическое (${n((m1+m2)/2)} г) — неверный ответ!`,
+ explain2:`Отношение плеч: l₁/l₂ = ${n(m1)}/m = m/${n(m2)} → m в «середине» по умножению: во сколько раз m больше ${n(m1)}, во столько ${n(m2)} больше m: ${n(m1)} · ${n(rd(m/m1,4))} = ${n(m)}, ${n(m)} · ${n(rd(m/m1,4))} = ${n(m2)} ✓.`});},ST);
+G(7,()=>{const L=pick([2,3,4]);const a=pick([0.5,1,1.5]);const m=pick([60,80,90,120]);if(a>=L)return null;const F2=m*10*a/L,F1=m*10-F2;
+ return NUM({q:`Два друга несут на лёгкой палке длиной ${L} м мешок массой ${m} кг, подвешенный на расстоянии ${n(a)} м от Артёма. С какой силой палка давит на плечо <b>Артёма</b>? g = 10 Н/кг. Ответ — в Н.`,ans:F1,u:'Н',
+ hint:'Возьми ось вращения на плече друга.',short:`F<sub>А</sub> = ${m*10} · ${n(L-a)}/${L} = ${n(F1)} Н.`,
+ explain:`Берём ось в точке опоры на плече друга. Момент веса мешка: ${m*10} · ${n(L-a)} (мешок в ${n(L-a)} м от друга). Момент силы Артёма: F · ${L}.<br>F = ${m*10} · ${n(L-a)} / ${L} = <b>${n(F1)} Н</b>. Другу достаётся ${n(F2)} Н.<br>Тому, кто ближе к грузу, тяжелее — Артём ближе (${n(a)} м из ${L}).`,
+ explain2:`Проверка: ${n(F1)} + ${n(F2)} = ${m*10} Н — вместе держат весь мешок ✓. И ${n(F1)} · ${n(a)} = ${n(F2)} · ${n(L-a)} ✓ (моменты относительно мешка).`});},ST);
+
+/* L8 ★ блоки */
+G(8,()=>CH('Полиспаст: подвижная обойма с грузом весом P висит на k участках одной верёвки. Какую силу нужно приложить к концу верёвки (без трения, обойма лёгкая)?','P / k',['P · k','P / 2 при любом k','P / 2<sup>k</sup>'],{
+ short:'Натяжение одной верёвки одинаково, k участков → F = P/k.',
+ explain:'Вдоль одной верёвки натяжение везде одинаковое — F. Обойму держат k участков, суммарно kF = P → <b>F = P/k</b>. Верёвку при этом придётся вытянуть на k·h. P/2<sup>k</sup> — это для системы, где каждый подвижный блок висит на <b>своей</b> верёвке.',
+ explain2:'По золотому правилу: поднять груз на h → каждый из k участков укоротится на h, всего вытянуть k·h. F·kh = P·h → F = P/k.'}),RS);
+G(8,()=>{const k=pick([3,4,5,6]);const m=pick([120,150,200,240,300]);const F=m*10/k;if(!Number.isInteger(F))return null;
+ return NUM({q:`Груз массой ${m} кг поднимают полиспастом, у которого подвижная обойма висит на ${k} участках верёвки. Какую силу надо приложить к концу верёвки? Трения нет, обойма лёгкая, g = 10 Н/кг. Ответ — в Н.`,ans:F,u:'Н',
+ short:`F = ${m*10}/${k} = ${n(F)} Н.`,
+ explain:`Все ${k} участков одной верёвки натянуты одинаково силой F и вместе держат груз: ${k}F = ${m*10} Н → F = <b>${n(F)} Н</b>.<br>Зато, чтобы поднять груз на 1 м, вытянуть придётся ${k} м верёвки.`,
+ explain2:`Проверка через работу: ${n(F)} Н · ${k} м = ${m*10} Н · 1 м ✓.`});},ST);
+G(8,()=>{const nn=pick([2,3,4]);const m=pick([40,80,160,320]);const F=m*10/Math.pow(2,nn);
+ return NUM({q:`Система Архимеда: ${nn} подвижных блока, каждый висит на своей верёвке (один конец верёвки закреплён к потолку, другой — к оси следующего блока; последний конец тянешь ты). К нижнему блоку подвешен груз массой ${m} кг. Какую силу ты прикладываешь? Блоки лёгкие, трения нет, g = 10 Н/кг. Ответ — в Н.`,ans:F,u:'Н',
+ short:`Каждый блок делит силу на 2: ${m*10} / 2<sup>${nn}</sup> = ${n(F)} Н.`,
+ explain:`Первый (нижний) подвижный блок даёт натяжение своей верёвки ${m*10}/2 = ${m*5} Н. Эта верёвка тянет ось второго блока — он снова делит пополам, и так ${nn} раза.<br>F = ${m*10} / 2<sup>${nn}</sup> = ${m*10} / ${Math.pow(2,nn)} = <b>${n(F)} Н</b>.`,
+ explain2:`${Array.from({length:nn},(_,i)=>`после ${i+1}-го блока: ${n(m*10/Math.pow(2,i+1))} Н`).join('; ')}. Но верёвку придётся тянуть в ${Math.pow(2,nn)} раз дальше, чем поднимается груз.`});},ST);
+G(8,()=>{const m=pick([1000,1500,2000]);const h=pick([10,12,15,20]);const N=pick([5,6,8,10]);const eff=pick([0.6,0.75,0.8]);const t=m*10*h/(eff*N*1000);if(!Number.isInteger(t*10))return null;
+ return NUM({q:`Подъёмный кран с двигателем мощностью ${N} кВт и КПД ${n(eff*100)} % поднимает плиту массой ${n(m)} кг на высоту ${h} м. Сколько времени длится подъём? g = 10 Н/кг. Ответ — в с.`,ans:t,u:'с',
+ short:`t = mgh / (η·N) = ${n(m*10*h)} / ${n(eff*N*1000)} = ${n(t)} с.`,
+ explain:`1) Полезная работа: mgh = ${n(m)} · 10 · ${h} = ${n(m*10*h)} Дж.<br>2) Двигатель за время t совершает работу N·t, из неё полезна доля η: η·N·t = mgh.<br>3) t = ${n(m*10*h)} / (${n(eff)} · ${n(N*1000)}) = ${n(m*10*h)} / ${n(eff*N*1000)} = <b>${n(t)} с</b>.<br>Если забыть КПД, выйдет ${n(m*10*h/(N*1000))} с — слишком мало.`,
+ explain2:`Полезная мощность крана: ${n(eff*100)} % от ${N} кВт = ${n(eff*N)} кВт = ${n(eff*N*1000)} Дж в секунду. Нужно ${n(m*10*h)} Дж: ${n(t)} с.`});},ST);
+
+/* ---------- widget ---------- */
+function onTheory(root){
+ const w=root.querySelector('#w-lever');if(!w)return;
+ w.innerHTML=`<b>Попробуй сам: уравновесь рычаг</b>
+ <label>Левый груз: <input type="range" id="lv-m1" min="1" max="10" step="1" value="4"><output id="lv-m1o"></output></label>
+ <label>Левое плечо: <input type="range" id="lv-l1" min="1" max="5" step="1" value="3"><output id="lv-l1o"></output></label>
+ <label>Правый груз: <input type="range" id="lv-m2" min="1" max="10" step="1" value="6"><output id="lv-m2o"></output></label>
+ <label>Правое плечо: <input type="range" id="lv-l2" min="1" max="5" step="1" value="3"><output id="lv-l2o"></output></label>
+ <div id="lv-svg"></div><div class="out" id="lv-out"></div>`;
+ const g=id=>w.querySelector(id);
+ const upd=()=>{const m1=+g('#lv-m1').value,l1=+g('#lv-l1').value,m2=+g('#lv-m2').value,l2=+g('#lv-l2').value;
+  g('#lv-m1o').textContent=m1+' кг';g('#lv-l1o').textContent=l1+' дел.';g('#lv-m2o').textContent=m2+' кг';g('#lv-l2o').textContent=l2+' дел.';
+  g('#lv-svg').innerHTML=leverSvg(m1,l1,m2,l2,{h:150});
+  const M1=m1*10*l1,M2=m2*10*l2;
+  g('#lv-out').innerHTML=`Моменты: слева ${m1*10} Н · ${l1} = ${M1}, справа ${m2*10} Н · ${l2} = ${M2} (Н·дел.)<br>${M1===M2?'<b>Равновесие!</b> F₁l₁ = F₂l₂':M1>M2?'Перевешивает <b>левая</b> сторона':'Перевешивает <b>правая</b> сторона'}`;};
+ ['#lv-m1','#lv-l1','#lv-m2','#lv-l2'].forEach(id=>g(id).oninput=upd);upd();
+}
+
+window.TOPIC={id:'p7_work_energy',title:'Работа, мощность, энергия',subtitle:'Физика · 7 класс',
+intro:`<p>Работа, мощность, рычаги и блоки, «золотое правило» механики, КПД, потенциальная и кинетическая энергия. В разделе про рычаг — интерактивные весы: попробуй уравновесить сам. В конце — олимпиадные задачи на рычаги и системы блоков. Везде g = 10 Н/кг.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Механическая работа','Мощность','Рычаг. Правило моментов','Блоки','Золотое правило. КПД','Потенциальная и кинетическая энергия','Превращения энергии','★ Рычаги','★ Системы блоков'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

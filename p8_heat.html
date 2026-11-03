@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Теплота — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range}=H;
+const N=H.num;
+const NN=x=>N(x).replace(/^(−?)(\d+)/,(m,sg,d)=>sg+(d.length>4?d.replace(/\B(?=(\d{3})+(?!\d))/g,' '):d));
+const FR=H.frac;
+const rd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+/* numeric answer rounded to d decimals; tolerance = half of the last kept digit */
+const NUM=(q,v,d,extra)=>{const a=rd(v,d);if(!isFinite(a)||a===0)return null;const exact=Math.abs(a-v)<1e-9;
+  return Object.assign({type:'num',q:q+(exact?'':[' Округли до целых.',' Округли до десятых.',' Округли до сотых.'][d]),ans:a,tol:0.6*Math.pow(10,-d)/Math.abs(a)},extra||{});};
+const SV=(w,h,inner,lab)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${lab||'Рисунок'}" style="font-family:system-ui,sans-serif;max-width:100%">${inner}</svg>`;
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.fs||14}" font-weight="${o.fw||600}" fill="${o.c||'var(--ink)'}">${s}</text>`;};
+const U='Дж/(кг·°С)';
+const ab=(x)=>x<0?`(${N(x)})`:N(x);
+
+/* substances: c in J/(kg·°C) */
+const SUB={water:{n:'вода',g:'воды',c:4200},ice:{n:'лёд',g:'льда',c:2100},al:{n:'алюминий',g:'алюминия',c:920},cu:{n:'медь',g:'меди',c:400},fe:{n:'железо',g:'железа',c:460},pb:{n:'свинец',g:'свинца',c:140},brick:{n:'кирпич',g:'кирпича',c:880},oil:{n:'подсолнечное масло',g:'подсолнечного масла',c:1700},alc:{n:'спирт',g:'спирта',c:2500},ker:{n:'керосин',g:'керосина',c:2100}};
+const METALS=['al','cu','fe','pb'];
+const cOf=k=>`c<sub>${SUB[k].g}</sub> = ${NN(SUB[k].c)} ${U}`;
+
+/* ---------- pictures ---------- */
+/* beaker: x,y top-left, w,h, fill level 0..1, temperature → colour */
+function beaker(x,y,w,h,lvl,temp,top,bot){const lh=Math.max(4,h*lvl);const hot=Math.max(0,Math.min(1,temp/100));
+  let s=`<rect x="${x+2}" y="${y+h-lh}" width="${w-4}" height="${lh-2}" fill="var(--hl)" fill-opacity="${(0.15+0.65*hot).toFixed(2)}"/>`;
+  s+=`<rect x="${x+2}" y="${y+h-lh}" width="${w-4}" height="${lh-2}" fill="var(--accent)" fill-opacity="${(0.45*(1-hot)).toFixed(2)}"/>`;
+  s+=`<path d="M${x},${y} V${y+h} H${x+w} V${y}" fill="none" stroke="var(--fig)" stroke-width="2"/>`;
+  if(top)s+=T(x+w/2,y-8,top,{fs:13,c:'var(--accent-ink)',fw:700});
+  if(bot)s+=T(x+w/2,y+h+17,bot,{fs:13});return s;}
+/* mixing picture: a + b → ? */
+function mixPic(a,b,res){let s=beaker(14,26,70,62,Math.min(1,0.25+a.m/ (a.m+b.m)*0.7),a.t,a.top,a.bot)+T(100,62,'+',{fs:22})+beaker(116,26,70,62,Math.min(1,0.25+b.m/(a.m+b.m)*0.7),b.t,b.top,b.bot)+T(206,62,'→',{fs:22});
+  s+=beaker(228,26,80,62,0.92,res.t==null?50:res.t,res.top,res.bot);return SV(320,108,s,'Смешивание');}
+/* heating graph t(τ) */
+function graph(lines,o){o=o||{};const W=320,Hh=220,L=44,Rr=14,Tp=24,B=36;const xm=o.xmax,ym=o.ymax,y0=o.ymin||0;
+  const sx=v=>L+v/xm*(W-L-Rr),sy=v=>Hh-B-(v-y0)/(ym-y0)*(Hh-B-Tp);let s='';
+  for(let v=y0;v<=ym+1e-9;v+=o.ystep){const y=sy(v);s+=`<line x1="${L}" y1="${y}" x2="${W-Rr}" y2="${y}" stroke="var(--fig)" stroke-opacity=".15"/>`+T(L-6,y+4,N(v),{a:'end',fs:11,fw:400});}
+  for(let v=0;v<=xm+1e-9;v+=o.xstep){const x=sx(v);s+=`<line x1="${x}" y1="${Tp}" x2="${x}" y2="${Hh-B}" stroke="var(--fig)" stroke-opacity=".15"/>`+T(x,Hh-B+15,N(v),{fs:11,fw:400});}
+  s+=`<line x1="${L}" y1="${Hh-B}" x2="${W-Rr}" y2="${Hh-B}" stroke="var(--fig)" stroke-width="1.4"/><line x1="${L}" y1="${Tp}" x2="${L}" y2="${Hh-B}" stroke="var(--fig)" stroke-width="1.4"/>`;
+  s+=T(L,Tp-10,'↑ t, °С',{a:'start',fs:12,c:'var(--accent-ink)'})+T(W-Rr,Hh-4,(o.xl||'τ, мин')+' →',{a:'end',fs:12,c:'var(--accent-ink)'});
+  const cols=['var(--accent-ink)','var(--hl)','var(--ok)'];
+  lines.forEach((ln,i)=>{s+=`<polyline points="${ln.pts.map(p=>sx(p[0]).toFixed(1)+','+sy(p[1]).toFixed(1)).join(' ')}" fill="none" stroke="${cols[i]}" stroke-width="2.6"/>`;
+    const p=ln.pts[ln.pts.length-1];if(ln.label)s+=T(sx(p[0])-6,sy(p[1])-8,ln.label,{a:'end',fs:13,c:cols[i],fw:700});});
+  return SV(W,Hh,s,'График температуры');}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Почему железо на морозе «холоднее» дерева?',lvl:0,html:`
+<p class="hook">Зимой во дворе возьмись рукой в варежке… нет, лучше без варежки 😄 — за железные перила, а потом за деревянную скамейку. Перила обжигают холодом, скамейка — почти нет. Но термометр покажет у обоих <b>одну и ту же</b> температуру, например −10 °С! Почему так? И почему чай в термосе остаётся горячим целый день, а море летом прогревается намного медленнее песка на пляже? Всё это — про <b>теплоту</b>.</p>
+<p>В этой теме ты научишься считать, сколько энергии нужно, чтобы вскипятить чайник, и предсказывать, какая получится температура, если смешать горячую и холодную воду. Это не «школьная» задача — так рассчитывают отопление, двигатели и даже охлаждение процессора в твоём телефоне.</p>
+<div class="box tip"><b>Маршрут</b>внутренняя энергия → как её изменить → три вида теплопередачи → формула Q = cmΔt → уравнение теплового баланса → калориметр → олимпиадные задачи.</div>`},
+{title:'Внутренняя энергия',lvl:0,html:`
+<div class="box rule"><b>Внутренняя энергия</b>— это энергия движения и взаимодействия всех частиц (молекул, атомов), из которых состоит тело. Обозначают <span class="m">U</span>, измеряют в джоулях (Дж).</div>
+<p><b>Почему так.</b> Молекулы никогда не стоят на месте: дрожат, летают, толкаются. У каждой есть кинетическая энергия (она движется) и потенциальная (молекулы притягиваются и отталкиваются друг от друга). Сложи эти энергии всех молекул — получишь внутреннюю энергию.</p>
+<div class="box rule"><b>От чего зависит U</b>• от <b>температуры</b>: горячее → молекулы быстрее → U больше;<br>• от <b>массы</b>: больше молекул → U больше;<br>• от <b>агрегатного состояния</b>: 1 кг воды при 0 °С имеет больше U, чем 1 кг льда при 0 °С (чтобы растопить лёд, ему нужно передать энергию).</div>
+<div class="box err"><b>Частая ошибка</b>Думать, что внутренняя энергия зависит от скорости или высоты тела. Нет! Мяч на шкафу и мяч на полу (при одной температуре) имеют одинаковую <b>внутреннюю</b> энергию — разная у них <b>механическая</b> (потенциальная).</div>
+<div class="box ex"><b>Пример</b>Горячий чай в кружке (80 °С) и такой же чай, но остывший (20 °С). У горячего внутренняя энергия больше: его молекулы движутся быстрее.</div>
+<div class="fact">Внутренняя энергия есть у любого тела, даже у льда при −50 °С: молекулы там тоже колеблются. Полностью «замереть» молекулы не могут даже при абсолютном нуле, −273,15 °С.</div>`},
+{title:'Как изменить внутреннюю энергию: работа и теплопередача',lvl:1,html:`
+<div class="box rule"><b>Два способа</b>1) <b>Совершить работу</b>: тереть, сжимать, ударять, сгибать.<br>2) <b>Теплопередача</b> — энергия сама переходит от более горячего тела к более холодному <b>без совершения работы</b>.</div>
+<p><b>Работа.</b> Потри ладони — они теплеют. Ты совершаешь работу против силы трения, и она превращается во внутреннюю энергию. Сгибай проволоку туда-сюда — место сгиба станет горячим. Накачиваешь мяч насосом — насос нагревается: ты сжимаешь воздух.</p>
+<p><b>Наоборот:</b> если газ сам совершает работу (расширяется, толкает поршень, выбивает пробку), его внутренняя энергия <b>уменьшается</b> и он охлаждается. Поэтому, когда открываешь газировку, у горлышка появляется лёгкий туман: газ расширился и остыл.</p>
+<p><b>Теплопередача.</b> Ложка в горячем чае нагревается, хотя её никто не трёт. Энергия переходит от чая к ложке, пока температуры не сравняются.</p>
+<div class="box err"><b>Частая ошибка</b>«Холод переходит от льда к руке». Нет никакого «холода»: это <b>рука отдаёт энергию</b> льду. Теплопередача всегда идёт <b>от горячего к холодному</b>, сама обратно — никогда.</div>
+<div class="fact">Метеориты раскаляются и светятся в атмосфере не потому, что в космосе жарко (там очень холодно), а потому, что они на огромной скорости сжимают воздух перед собой и трутся о него, — это работа.</div>`},
+{title:'Три вида теплопередачи',lvl:2,html:`
+<div class="box rule"><b>Теплопроводность</b>— энергия передаётся от частицы к частице, а <b>само вещество не перемещается</b>. Хорошо проводят металлы (лучше всех серебро и медь), плохо — дерево, пластик, шерсть, пух и особенно воздух.</div>
+<div class="box rule"><b>Конвекция</b>— энергию переносят <b>потоки (струи) жидкости или газа</b>: тёплое лёгкое поднимается вверх, холодное тяжёлое опускается вниз. Бывает только в жидкостях и газах.</div>
+<div class="box rule"><b>Излучение</b>— энергию переносят электромагнитные волны (инфракрасные лучи). Им <b>не нужно вещество</b> — излучение идёт даже через вакуум. Тёмные тела поглощают излучение лучше светлых.</div>
+<p><b>Разгадка железа на морозе.</b> Металл и дерево одинаково холодные, но металл отлично проводит тепло: он быстро «утаскивает» энергию от руки в глубину. Рука остывает — и мозг говорит «холодно!». Дерево проводит плохо: тонкий слой у руки прогревается, и дальше энергия почти не уходит. В бане всё наоборот: железо при +90 °С обжигает, а дерево — нет.</p>
+<p><b>Почему батарея — под окном, а кондиционер — под потолком?</b> Конвекция! Тёплый воздух от батареи поднимается и встречает холодный воздух у окна. Холодный воздух из кондиционера опускается и перемешивает комнату.</p>
+<p><b>Термос:</b> между двойными стенками откачан воздух (вакуум — нет теплопроводности и конвекции), а стенки зеркальные (отражают излучение). Поэтому чай долго горячий, а мороженое — долго холодное.</p>
+<div class="box err"><b>Частая ошибка</b>«Солнце греет Землю конвекцией». Между Солнцем и Землёй почти пустота — работает только <b>излучение</b>.</div>
+<div class="fact">Термос (сосуд Дьюара) придумал шотландский физик Джеймс Дьюар в 1892 году — для хранения сжиженных газов, а не чая. Свет Солнца (и его тепловое излучение) летит до Земли около 8 минут 20 секунд.</div>`},
+{title:'Количество теплоты: Q = cmΔt',lvl:3,html:`
+<div class="box rule"><b>Количество теплоты</b>— энергия, которую тело получает или отдаёт при теплопередаче. Обозначают Q, измеряют в джоулях.<br><span class="m">Q = c · m · (t₂ − t₁)</span>, где t₁ — начальная, t₂ — конечная температура, m — масса (в кг!), c — удельная теплоёмкость вещества.</div>
+<p><b>Почему формула такая.</b> Нагреть 2 кг воды в 2 раза труднее, чем 1 кг (вдвое больше молекул) → Q ∼ m. Нагреть на 20 °С вдвое труднее, чем на 10 °С → Q ∼ Δt. А разные вещества «впитывают» энергию по-разному — это и есть c.</p>
+<div class="box ex"><b>Пример 1</b>Сколько теплоты нужно, чтобы нагреть 2 кг воды от 20 °С до 70 °С?<br>Q = 4200 · 2 · (70 − 20) = 4200 · 2 · 50 = 420&nbsp;000 Дж = <b>420 кДж</b>.</div>
+<div class="box ex"><b>Пример 2: остывание</b>Железный утюг массой 1,5 кг остыл от 120 °С до 20 °С. Q = 460 · 1,5 · (20 − 120) = −69&nbsp;000 Дж. Минус значит, что тело <b>отдало</b> 69 кДж. В задачах «сколько выделилось» отвечают положительным числом: 69 кДж.</div>
+<div class="box err"><b>Частая ошибка</b>Подставить массу в граммах. 300 г = 0,3 кг! Иначе ответ выйдет в 1000 раз больше.</div>
+<div class="box tip"><b>Удобно</b>1 кДж = 1000 Дж, 1 МДж = 1&nbsp;000&nbsp;000 Дж. Ответ 420&nbsp;000 Дж легче записать как 420 кДж.</div>`},
+{title:'Удельная теплоёмкость',lvl:[3,4],html:`
+<div class="box rule"><b>Удельная теплоёмкость c</b>показывает, сколько джоулей нужно, чтобы нагреть <b>1 кг</b> вещества на <b>1 °С</b>. Единица — Дж/(кг·°С).</div>
+<div style="overflow-x:auto;margin:8px 0"><table style="border-collapse:collapse;margin:0 auto;font-size:15px">
+<tr><th style="border:1px solid var(--line);padding:4px 10px;background:var(--accent-soft);color:var(--accent-ink)">Вещество</th><th style="border:1px solid var(--line);padding:4px 10px;background:var(--accent-soft);color:var(--accent-ink)">c, Дж/(кг·°С)</th></tr>
+${[['вода',4200],['спирт',2500],['лёд',2100],['подсолнечное масло',1700],['алюминий',920],['кирпич',880],['железо',460],['медь',400],['свинец',140]].map(r=>`<tr><td style="border:1px solid var(--line);padding:4px 10px">${r[0]}</td><td style="border:1px solid var(--line);padding:4px 10px;text-align:center">${NN(r[1])}</td></tr>`).join('')}
+</table></div>
+<p>У воды c = 4200 — одна из самых больших. Поэтому вода нагревается и остывает очень медленно. Летом песок на пляже раскалён, а море прохладное; осенью наоборот — море ещё тёплое. Из-за этого у моря климат мягче.</p>
+<div class="box ex"><b>Выражаем из формулы</b>c = Q / (m·Δt), &nbsp; m = Q / (c·Δt), &nbsp; Δt = Q / (c·m).<br>Пример: на нагрев 0,5 кг металла на 40 °С ушло 8000 Дж. c = 8000 / (0,5 · 40) = 8000 / 20 = 400 Дж/(кг·°С) — это медь.</div>
+<div class="box err"><b>Не путай</b>c — свойство <b>вещества</b> (у любого куска меди c = 400). А теплоёмкость тела C = c·m — свойство конкретного тела (сколько нужно на 1 °С всему телу).</div>`},
+{title:'Нагреватели и графики',lvl:5,html:`
+<p>Если нагреватель каждую секунду передаёт телу одну и ту же энергию (например, 1000 Дж в секунду, это мощность 1000 Вт), то за время τ он передаст <span class="m">Q = P · τ</span> (τ — в секундах).</p>
+<div class="box ex"><b>Пример</b>Нагреватель отдаёт воде 2000 Дж каждую секунду. Сколько времени греть 1 кг воды от 20 до 100 °С? Q = 4200 · 1 · 80 = 336&nbsp;000 Дж, τ = 336&nbsp;000 : 2000 = 168 с = 2,8 мин.</div>
+<div class="fig">${graph([{pts:[[0,20],[4,80]],label:'1'},{pts:[[0,20],[10,80]],label:'2'}],{xmax:10,xstep:2,ymax:100,ystep:20})}</div>
+<p class="small" style="text-align:center">Одинаковые нагреватели, одинаковые массы. Тело 1 нагрелось на 60 °С за 4 мин, тело 2 — за 10 мин.</p>
+<div class="box rule"><b>Как читать график</b>При одинаковых нагревателях и массах <b>круче</b> график — <b>меньше</b> удельная теплоёмкость (вещество нагревается легко). Положе график — больше c. Здесь c₂ : c₁ = 10 : 4 = 2,5.</div>
+<div class="box err"><b>Ловушка</b>Время в минутах, а мощность в Дж/с — переведи минуты в секунды (× 60)!</div>`},
+{title:'Уравнение теплового баланса',lvl:6,html:`
+<div class="box rule"><b>Закон сохранения энергии для теплообмена</b>Если тепло никуда не теряется, то сколько энергии <b>отдали</b> горячие тела, столько же <b>получили</b> холодные: <span class="m">Q<sub>отд</sub> = Q<sub>пол</sub></span>. В конце у всех тел одна температура θ (тэта).</div>
+<p><b>Смешиваем воду.</b> m₁ горячей воды при t₁ и m₂ холодной при t₂:<br><span class="m">c·m₁·(t₁ − θ) = c·m₂·(θ − t₂)</span>. Здесь c сокращается, и получается:</p>
+<div class="box rule"><b>Температура смеси</b><span class="m">θ = (m₁t₁ + m₂t₂) / (m₁ + m₂)</span> — это «среднее, взвешенное по массам». Чем больше какой-то воды, тем ближе θ к её температуре.</div>
+<div class="widget" id="w-mix"></div>
+<div class="box ex"><b>Пример</b>В ванну налили 60 л воды при 50 °С и 20 л при 10 °С. 1 л воды — это 1 кг. θ = (60·50 + 20·10) : 80 = (3000 + 200) : 80 = 40 °С.</div>
+<div class="box err"><b>Частые ошибки</b>• Писать (θ − t₁) у горячей воды: получится минус. Пиши «большая − меньшая»: горячая (t₁ − θ), холодная (θ − t₂).<br>• Просто брать среднее (t₁ + t₂)/2 — так можно только при <b>равных массах</b>.<br>• Ответ θ всегда <b>между</b> t₁ и t₂. Вышло больше горячей или меньше холодной — ищи ошибку.</div>`},
+{title:'Разные вещества и калориметр',lvl:7,html:`
+<p>Если смешивают разные вещества (горячий кусок металла бросают в воду), c уже не сокращается:</p>
+<div class="box rule"><b>Металл в воде</b><span class="m">c<sub>м</sub>·m<sub>м</sub>·(t<sub>м</sub> − θ) = c<sub>в</sub>·m<sub>в</sub>·(θ − t<sub>в</sub>)</span> &nbsp;⇒&nbsp; <span class="m">θ = (c<sub>м</sub>m<sub>м</sub>t<sub>м</sub> + c<sub>в</sub>m<sub>в</sub>t<sub>в</sub>) / (c<sub>м</sub>m<sub>м</sub> + c<sub>в</sub>m<sub>в</sub>)</span></div>
+<div class="box ex"><b>Пример</b>Медный брусок 0,5 кг при 100 °С опустили в 0,2 кг воды при 20 °С.<br>Брусок отдаёт: 400 · 0,5 · (100 − θ) = 200·(100 − θ).<br>Вода получает: 4200 · 0,2 · (θ − 20) = 840·(θ − 20).<br>200·100 + 840·20 = (200 + 840)·θ → θ = 36&nbsp;800 : 1040 ≈ 35,4 °С.<br>Брусок остыл на 64,6 °С, а вода нагрелась всего на 15,4 °С — у воды «тепловая ёмкость» больше.</div>
+<p><b>Калориметр</b> — прибор для опытов с теплотой: внутренний стакан (часто алюминиевый) в другом стакане, между ними воздух (плохо проводит тепло). Сам внутренний стакан тоже нагревается — его надо учитывать как ещё одно тело.</p>
+<div class="box rule"><b>Общий рецепт</b>1) Выпиши всех, кто отдаёт тепло, и всех, кто получает. 2) Для каждого Q = cm·(большая t − меньшая t). 3) Приравняй суммы. 4) Реши уравнение. 5) Проверь: θ между самой низкой и самой высокой температурой.</div>
+<div class="box ex"><b>Удобный приём</b>Обозначай теплоёмкость каждого тела C = c·m (Дж/°С). Тогда θ = (C₁t₁ + C₂t₂ + C₃t₃) / (C₁ + C₂ + C₃) — для любого числа тел.</div>`},
+{title:'★ Олимпиадные приёмы',lvl:8,html:`
+<ol class="steps">
+<li><b>Неизвестные «сокращаются».</b> Часто не дают ни массу, ни c — дают только температуры. Введи отношение теплоёмкостей k = C₁ / C₂ и найди его из одного опыта, потом используй в другом.</li>
+<li><b>Цепочка опытов.</b> «Влили ложку горячей воды — температура выросла на 5°, вторую — на 3°…». После каждой ложки калориметр «тяжелее» на одну ложку. Пиши баланс для каждого шага.</li>
+<li><b>Термометр тоже тело.</b> Если у термометра есть теплоёмкость, он забирает часть тепла — и показывает не начальную температуру воды, а уже немного другую.</li>
+<li><b>Три жидкости.</b> Если смешать всё сразу, θ = ΣCt / ΣC — порядок смешивания не важен (без потерь).</li>
+</ol>
+<div class="box ex"><b>Пример</b>Горячий брусок при 100 °С опустили в воду при 20 °С — стало 40 °С. Тогда C<sub>б</sub>·60 = C<sub>в</sub>·20, то есть C<sub>б</sub> = C<sub>в</sub>/3. Массу и c знать не нужно!</div>
+<div class="fact">Слово «калория» осталось от старой теории «теплорода» — невидимой жидкости, которая якобы перетекает из горячего в холодное. В 1840-х Джеймс Джоуль опытами показал, что теплота — это энергия: 1 калория ≈ 4,19 Дж. На упаковках еды и сейчас пишут ккал.</div>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Формулы',title:'Обозначения и формулы',rows:[
+['U','внутренняя энергия','Энергия движения и взаимодействия всех молекул тела.','горячее → U больше'],
+['Q','количество теплоты','Энергия, полученная или отданная при теплопередаче, Дж.','420&nbsp;кДж'],
+['c','удельная теплоёмкость','Сколько Дж нужно на 1 кг и 1 °С.','вода 4200'],
+['Δt = t₂ − t₁','изменение температуры','Конечная минус начальная.','70 − 20&nbsp;=&nbsp;50'],
+['Q = cmΔt','нагревание / охлаждение','Теплота пропорциональна c, массе и Δt.','4200·2·50&nbsp;=&nbsp;420&nbsp;000'],
+['C = cm','теплоёмкость тела','Сколько Дж нужно всему телу на 1 °С.','0,5&nbsp;кг меди: 200&nbsp;Дж/°С'],
+['Q<sub>отд</sub> = Q<sub>пол</sub>','тепловой баланс','Горячие отдали столько, сколько получили холодные.','θ между t₁ и t₂'],
+['θ','температура смеси','Для воды: (m₁t₁ + m₂t₂) / (m₁ + m₂).','(2·80 + 3·20)/5&nbsp;=&nbsp;44'],
+['Q = Pτ','нагреватель','Мощность (Дж/с) × время в секундах.','2000·60&nbsp;=&nbsp;120&nbsp;кДж']
+],after:`<div class="box tip" style="margin-top:14px"><b>Таблица c, Дж/(кг·°С)</b>вода 4200 · спирт 2500 · лёд 2100 · масло 1700 · алюминий 920 · кирпич 880 · железо 460 · медь 400 · свинец 140</div>`};
+
+/* ---------- widget ---------- */
+function onTheory(root){const w=root.querySelector('#w-mix');if(!w)return;
+  w.innerHTML=`<label>Горячая: m₁ = <output id="wm1">2</output> кг<input type="range" id="wM1" min="0.5" max="5" step="0.5" value="2"></label>
+<label>t₁ = <output id="wt1">80</output> °С<input type="range" id="wT1" min="40" max="100" step="5" value="80"></label>
+<label>Холодная: m₂ = <output id="wm2">3</output> кг<input type="range" id="wM2" min="0.5" max="5" step="0.5" value="3"></label>
+<label>t₂ = <output id="wt2">20</output> °С<input type="range" id="wT2" min="0" max="35" step="5" value="20"></label>
+<div id="wmS" style="display:flex;justify-content:center"></div><div id="wmO" class="small" style="text-align:center;margin-top:6px"></div>`;
+  const g=id=>w.querySelector(id);
+  const draw=()=>{const m1=+g('#wM1').value,t1=+g('#wT1').value,m2=+g('#wM2').value,t2=+g('#wT2').value;
+    g('#wm1').textContent=N(m1);g('#wt1').textContent=t1;g('#wm2').textContent=N(m2);g('#wt2').textContent=t2;
+    const th=(m1*t1+m2*t2)/(m1+m2);const q=4200*m1*(t1-th)/1000;
+    g('#wmS').innerHTML=mixPic({m:m1,t:t1,top:N(t1)+' °С',bot:N(m1)+' кг'},{m:m2,t:t2,top:N(t2)+' °С',bot:N(m2)+' кг'},{t:th,top:'θ ≈ '+N(rd(th,1))+' °С',bot:N(m1+m2)+' кг'});
+    g('#wmO').innerHTML=`θ = (${N(m1)}·${t1} + ${N(m2)}·${t2}) / ${N(m1+m2)} ≈ <span class="out">${N(rd(th,1))} °С</span>. Горячая вода отдала ≈ <span class="out">${N(rd(q,1))} кДж</span> — ровно столько получила холодная.`;};
+  w.querySelectorAll('input').forEach(i=>i.oninput=draw);draw();}
+
+/* =================== GENERATORS =================== */
+/* L0 — внутренняя энергия */
+RULE(0,'Что такое внутренняя энергия тела?','Энергия движения и взаимодействия всех частиц, из которых состоит тело',['Энергия движения тела как целого','Энергия тела, поднятого над Землёй','Только энергия взаимодействия тела с Землёй'],
+{short:'Внутренняя энергия — это энергия молекул: их движения и взаимодействия.',
+explain:'Внутренняя энергия — это сумма кинетических энергий всех молекул (они движутся) и потенциальных энергий их взаимодействия (они притягиваются и отталкиваются). Движение тела как целого и высота над Землёй — это <b>механическая</b> энергия, её путают с внутренней чаще всего.',
+explain2:'Представь мяч в виде огромного роя пчёл-молекул. Внутренняя энергия — это насколько бешено жужжат и толкаются пчёлы внутри роя. А куда летит сам рой и на какой он высоте — это механическая энергия.'});
+RULE(0,'От чего зависит внутренняя энергия тела?','От температуры, массы и агрегатного состояния',['От скорости движения тела','От высоты, на которой находится тело','Только от формы тела'],
+{short:'Горячее, больше масса, жидкость вместо льда — внутренняя энергия больше.',
+explain:'Чем выше <b>температура</b>, тем быстрее движутся молекулы. Чем больше <b>масса</b>, тем больше молекул. И <b>агрегатное состояние</b> важно: у 1 кг воды при 0 °С энергия больше, чем у 1 кг льда при 0 °С. Скорость и высота тела меняют только механическую энергию.',
+explain2:'Проверь себя: мяч бросили — он полетел быстрее, но не стал горячее. Значит, от скорости внутренняя энергия не зависит. А чай остыл — молекулы замедлились — внутренняя энергия уменьшилась.'});
+G(0,()=>{const P=[
+ ['Стакан воды при 80 °С','такой же стакан воды при 20 °С',0,'Масса одинаковая, но у первой воды температура выше: молекулы движутся быстрее.'],
+ ['1 кг воды при 20 °С','2 кг воды при 20 °С',1,'Температура одинаковая, но во втором случае вдвое больше молекул.'],
+ ['1 кг льда при 0 °С','1 кг воды при 0 °С',1,'Чтобы растопить лёд, ему нужно передать энергию. Поэтому у воды при 0 °С энергия больше, чем у льда при 0 °С.'],
+ ['Мяч на полу','такой же мяч на шкафу (температура та же)',2,'Высота меняет потенциальную (механическую) энергию, а внутренняя зависит от температуры, массы и состояния — они одинаковы.'],
+ ['Неподвижный камень при 15 °С','такой же камень при 15 °С, летящий со скоростью 10 м/с',2,'Скорость камня как целого — это кинетическая (механическая) энергия. Молекулы внутри движутся так же: температура одна.'],
+ ['Ведро воды при 10 °С','чашка воды при 10 °С',0,'Температуры равны, но в ведре молекул намного больше.']];
+const p=pick(P);const opts=['У первого','У второго','Одинаковая'];
+return {type:'choice',q:`У какого тела <b>внутренняя</b> энергия больше?<br>1) ${p[0]};<br>2) ${p[1]}.`,opts,ans:p[2],short:p[3],
+explain:`${p[3]}<br>Помни: внутренняя энергия зависит от <b>температуры</b>, <b>массы</b> и <b>агрегатного состояния</b>, но не от скорости и высоты тела. Ответ: <b>${opts[p[2]].toLowerCase()}</b>.`,
+explain2:`Задай три вопроса: где горячее? где больше вещества? где жидкость, а где лёд? Если по всем трём одинаково — внутренняя энергия одинаковая, как бы тело ни двигалось. Здесь: ${p[3]}`};});
+G(0,()=>{const P=[['Самолёт разгоняется на взлётной полосе (температура корпуса не меняется)',0],['Батарея нагревает воздух в комнате',1],['Лёд тает на столе',1],['Велосипедист разгоняется под горку',0],['Суп остывает в тарелке',1],['Ящик поднимают на 5-й этаж',0],['Камень лежит на солнце и нагревается',1],['Шайба скользит по льду всё медленнее (нагревом пренебречь)',0]];
+const p=pick(P);const opts=['Механическая','Внутренняя'];
+return {type:'choice',q:`Какая энергия тела меняется в этой ситуации?<br><i>${p[0]}</i>.`,opts,ans:p[1],
+short:p[1]?'Меняется температура или состояние — значит, внутренняя.':'Меняется скорость или высота тела как целого — механическая.',
+explain:`Механическая энергия зависит от скорости и высоты тела <b>как целого</b>, внутренняя — от температуры, массы и агрегатного состояния.<br>«${p[0]}»: ${p[1]?'меняется температура или состояние вещества — это <b>внутренняя</b> энергия.':'меняется скорость или высота тела, а температура та же — это <b>механическая</b> энергия.'}`,
+explain2:`Спроси себя: «Изменилось ли что-то <b>внутри</b> — стало горячее, холоднее, растаяло?» Если да — внутренняя. «Изменилось ли, как тело движется или где находится?» — механическая. Здесь ответ: <b>${opts[p[1]].toLowerCase()}</b>.`};});
+
+/* L1 — работа и теплопередача */
+RULE(1,'Какими двумя способами можно изменить внутреннюю энергию тела?','Совершением работы и теплопередачей',['Только нагреванием на огне','Изменением скорости и высоты тела','Изменением формы и цвета тела'],
+{short:'Работа (тереть, сжимать, ударять) и теплопередача.',
+explain:'Внутреннюю энергию меняют: 1) <b>работой</b> — трение, сжатие, удары, изгибы (потри ладони); 2) <b>теплопередачей</b> — энергия сама переходит от горячего тела к холодному (ложка в чае). Огонь — лишь один из примеров теплопередачи, а скорость и высота меняют механическую энергию.',
+explain2:'Как нагреть гвоздь? Можно положить в огонь (теплопередача), а можно бить по нему молотком или быстро тереть о доску (работа). Два разных пути — один результат.'});
+RULE(1,'Как идёт теплопередача сама по себе?','От более нагретого тела к менее нагретому',['От холодного тела к горячему','От тела с большей массой к телу с меньшей массой','В обе стороны одинаково, поэтому ничего не меняется'],
+{short:'Всегда от горячего к холодному — пока температуры не сравняются.',
+explain:'Теплопередача — переход энергии <b>без совершения работы</b>, и сам по себе он идёт только <b>от горячего к холодному</b>. Масса тут ни при чём: горячая капля нагреет холодный океан (чуть-чуть), а не наоборот. Когда держишь лёд, «холод» не переходит в руку — это рука отдаёт энергию льду.',
+explain2:'Аналогия: вода сама течёт сверху вниз, а не снизу вверх. Температура — это «высота», энергия «стекает» от высокой к низкой, пока уровни не сравняются.'});
+G(1,()=>{const P=[['Ты трёшь ладони друг о друга',0,'работа против трения'],['Насос нагревается, когда накачиваешь колесо',0,'сжатие воздуха — работа'],['Ложка нагревается в горячем чае',1,'энергия переходит от чая к ложке'],['Греешь руки у костра',1,'энергия от костра к рукам без работы'],['Метеорит раскаляется в атмосфере',0,'трение о воздух и его сжатие — работа'],['Пила нагревается при распиливании доски',0,'работа против трения'],['Кастрюля нагревается на плите',1,'энергия от плиты к кастрюле'],['Проволоку быстро сгибают и разгибают — место сгиба нагрелось',0,'деформация — работа'],['Пакет молока нагревается на столе в комнате',1,'энергия от тёплого воздуха к холодному молоку'],['Шины машины нагреваются при резком торможении',0,'трение о дорогу — работа']];
+const p=pick(P);const opts=['Совершение работы','Теплопередача'];
+return {type:'choice',q:`Каким способом изменилась внутренняя энергия?<br><i>${p[0]}</i>.`,opts,ans:p[1],short:`Здесь ${p[2]}.`,
+explain:`${p[1]?'Никто ничего не трёт, не сжимает и не бьёт — энергия сама переходит от горячего тела к холодному. Это <b>теплопередача</b>':'Тело нагревается, потому что над ним <b>совершают работу</b> (трут, сжимают, гнут, ударяют)'}: ${p[2]}.`,
+explain2:`Проверка: есть ли в ситуации «горячий сосед», от которого идёт энергия? ${p[1]?'Да — значит, теплопередача.':'Нет! Всё вокруг той же температуры, а тело нагрелось от движения, трения или сжатия — это работа.'}`};});
+G(1,()=>{const P=[['Воздух в цилиндре быстро сжимают поршнем',0,'над газом совершают работу — его внутренняя энергия растёт'],['Газ в цилиндре быстро расширяется и толкает поршень',1,'газ сам совершает работу — тратит свою внутреннюю энергию'],['Сжатый воздух выбивает пробку из бутылки',1,'воздух совершает работу и охлаждается (появляется туман)'],['Велосипедный насос сжимает воздух',0,'над воздухом совершают работу']];
+const p=pick(P);const opts=['Повышается','Понижается','Не меняется'];
+return {type:'choice',q:`Теплообмена с окружением нет (всё происходит очень быстро). <i>${p[0]}</i>. Что происходит с температурой газа?`,opts,ans:p[1],short:`${p[2][0].toUpperCase()+p[2].slice(1)}.`,
+explain:`Правило: если <b>над телом совершают работу</b> — его внутренняя энергия <b>растёт</b> (температура повышается). Если <b>тело само совершает работу</b> — внутренняя энергия <b>уменьшается</b> (тело охлаждается).<br>Здесь ${p[2]}, поэтому температура <b>${opts[p[1]].toLowerCase()}</b>.`,
+explain2:`Вспомни: открываешь холодную газировку — у горлышка появляется дымок. Газ расширился, «потратился» на работу и охладился так, что пар сконденсировался. А насос при накачке колеса горячий: ты сжимаешь воздух, совершая над ним работу.`};});
+
+/* L2 — виды теплопередачи */
+RULE(2,'Какой вид теплопередачи возможен в вакууме (пустоте)?','Излучение',['Теплопроводность','Конвекция','Никакой'],
+{short:'Излучению не нужно вещество — так Солнце греет Землю.',
+explain:'Теплопроводности нужны соседние частицы, конвекции — потоки жидкости или газа. В пустоте нет ни того, ни другого. Остаётся <b>излучение</b>: инфракрасные лучи летят через вакуум — именно так энергия Солнца доходит до Земли.',
+explain2:'Между Солнцем и Землёй 150 млн км почти пустого космоса. Если бы излучение не проходило через пустоту, мы бы замёрзли. А почему в термосе вакуум? Чтобы отключить теплопроводность и конвекцию.'});
+RULE(2,'Что такое конвекция?','Перенос энергии потоками жидкости или газа',['Передача энергии от частицы к частице без перемещения вещества','Перенос энергии электромагнитными лучами','Передача энергии внутри твёрдых тел'],
+{short:'Конвекция — тёплые струи поднимаются, холодные опускаются.',
+explain:'При <b>конвекции</b> энергию переносит само вещество: тёплый (лёгкий) воздух или вода поднимается, холодный (тяжёлый) — опускается. Поэтому конвекция бывает только в жидкостях и газах. «От частицы к частице без перемещения» — это теплопроводность, «лучами» — излучение.',
+explain2:'Посмотри на кастрюлю с водой на плите: снизу поднимаются тёплые струи, сверху опускается холодная вода. Вода как бы сама «возит» энергию — это и есть конвекция.'});
+const MODES=['Теплопроводность','Конвекция','Излучение'];
+G(2,()=>{const P=[['Ручка металлической ложки в горячем чае нагревается',0,'энергия передаётся по металлу от частицы к частице'],['Воздух в комнате прогревается от батареи',1,'тёплый воздух поднимается, холодный опускается'],['Земля нагревается Солнцем',2,'через космическую пустоту энергия идёт лучами'],['Вода в кастрюле прогревается по всему объёму',1,'тёплые струи воды поднимаются от дна'],['Ты греешь ладони, держа их сбоку от костра',2,'сбоку горячий воздух не идёт (он поднимается вверх), греют лучи'],['Сковорода нагревается от конфорки, а ручка — от сковороды',0,'по металлу от частицы к частице'],['Над асфальтом в жару «дрожит» воздух',1,'струи нагретого воздуха поднимаются вверх'],['Лицо нагревается, когда смотришь на горячую лампу накаливания',2,'энергия идёт лучами'],['Ветер дует с моря на сушу днём (бриз)',1,'над тёплой сушей воздух поднимается, на его место приходит воздух с моря'],['Утюг гладит ткань и нагревает её',0,'энергия передаётся при соприкосновении']];
+const p=pick(P);
+return {type:'choice',q:`Какой вид теплопередачи главный здесь?<br><i>${p[0]}</i>.`,opts:MODES,ans:p[1],short:`${MODES[p[1]]}: ${p[2]}.`,
+explain:`Признаки: <b>теплопроводность</b> — соприкосновение, вещество не перемещается; <b>конвекция</b> — движутся потоки жидкости или газа; <b>излучение</b> — энергия идёт лучами, даже через пустоту.<br>Здесь ${p[2]} — это <b>${MODES[p[1]].toLowerCase()}</b>.`,
+explain2:`Задай вопросы по очереди: «Тела касаются?» → теплопроводность. «Что-то течёт или поднимается?» → конвекция. «Тела далеко, между ними ничего не движется?» → излучение. Для «${p[0].toLowerCase()}» ответ: ${MODES[p[1]].toLowerCase()}.`};});
+G(2,()=>{const P=[
+ ['Зимой на улице железные перила кажутся холоднее деревянной скамейки. Почему?','Железо лучше проводит тепло и быстрее отводит его от руки',['Железо на самом деле холоднее дерева','Дерево само выделяет тепло','Железо излучает холод'],'Температура у них одинаковая (они давно на одном морозе). Но металл — хороший проводник: он быстро уносит энергию от руки, рука остывает, и мы чувствуем холод. Дерево проводит плохо.'],
+ ['Почему батареи отопления ставят внизу, под окном?','Тёплый воздух поднимается и перемешивает воздух во всей комнате',['Внизу батарея меньше излучает','Так батарея лучше проводит тепло к полу','Так удобнее подвести трубы, физика тут ни при чём'],'Работает конвекция: нагретый воздух лёгкий, поднимается вверх, а холодный от окна опускается к батарее — так вся комната прогревается. Батарея под потолком грела бы только потолок.'],
+ ['Зачем в термосе между стенками откачивают воздух?','В вакууме нет теплопроводности и конвекции',['Чтобы термос стал легче','Чтобы в вакууме не было излучения','Чтобы стенки не запотевали'],'Теплопроводности нужны частицы, конвекции — потоки газа. В пустоте их нет. А против излучения стенки делают зеркальными.'],
+ ['Почему пуховик такой тёплый?','Между пушинками много воздуха, а воздух плохо проводит тепло',['Пух сам вырабатывает тепло','Пух хорошо проводит тепло от тела наружу','Пух отражает холод'],'Воздух — один из самых плохих проводников тепла. Пух удерживает воздух неподвижным (нет конвекции), и энергия тела почти не уходит.'],
+ ['Почему летом удобнее ходить в светлой одежде?','Светлая ткань отражает солнечное излучение, а тёмная поглощает',['Светлая ткань лучше проводит тепло','В светлой одежде сильнее конвекция','Светлая ткань легче'],'Солнце греет излучением. Тёмные тела поглощают излучение лучше, светлые — отражают. Поэтому в чёрной футболке на солнце жарче.'],
+ ['Почему кондиционер вешают под потолком?','Холодный воздух тяжелее, он опускается и перемешивает комнату',['Холодный воздух поднимается вверх','Под потолком меньше излучение','Так холод лучше проводится по стене'],'Холодный воздух плотнее, он опускается вниз, а тёплый поднимается к кондиционеру — работает конвекция.']];
+const p=pick(P);return CH(p[0],p[1],p[2],{short:p[3].split('. ')[0]+'.',explain:p[3],
+explain2:`Вспомни три вида: теплопроводность (касание, металл — хорошо, воздух — плохо), конвекция (тёплое вверх, холодное вниз), излучение (лучи, тёмное поглощает, светлое и зеркальное отражает). Верный ответ: «${p[1]}».`});});
+G(2,()=>{const P=[['медь','дерево',0],['воздух','железо',1],['пенопласт','алюминий',1],['серебро','стекло',0],['вата','кирпич',1],['сталь','шерсть',0]];
+const p=pick(P);const opts=[`${p[0][0].toUpperCase()+p[0].slice(1)}`,`${p[1][0].toUpperCase()+p[1].slice(1)}`];
+return {type:'choice',q:`Какой материал <b>лучше</b> проводит тепло: ${p[0]} или ${p[1]}?`,opts,ans:p[2],short:`${opts[p[2]]} — ${['медь','серебро','сталь','железо','алюминий'].includes([p[0],p[1]][p[2]])?'металл, а металлы — лучшие проводники':'плотнее, а в другом материале много воздуха'}.`,
+explain:`Лучшие проводники тепла — <b>металлы</b> (серебро, медь, алюминий, железо). Плохие — дерево, стекло, пластик, а хуже всех — <b>воздух</b> и материалы, где его много (вата, пух, пенопласт, шерсть).<br>Значит, лучше проводит <b>${[p[0],p[1]][p[2]]}</b>.`,
+explain2:`Представь: какую сковородку можно взять за край голой рукой, если середина горячая? Деревянную или с пластиковой ручкой — можно, металлическую — нет. Металл быстро «доставляет» тепло к руке. Из пары ${p[0]}/${p[1]} лучший проводник — ${[p[0],p[1]][p[2]]}.`};});
+
+/* L3 — Q = cmΔt */
+RULE(3,'Допиши формулу количества теплоты при нагревании: Q = …','c · m · (t₂ − t₁)',['c · m · t₂','c · (t₂ − t₁) / m','m · (t₂ − t₁) / c'],
+{short:'Q = cm(t₂ − t₁): теплоёмкость × масса × изменение температуры.',
+explain:'Q пропорционально массе (вдвое больше воды — вдвое больше теплоты) и изменению температуры Δt = t₂ − t₁ (нагреть на 20° — вдвое больше, чем на 10°), а коэффициент — удельная теплоёмкость c. Поэтому <b>Q = c·m·(t₂ − t₁)</b>. Брать только t₂ нельзя: важно, <b>на сколько</b> нагрели, а не до скольких.',
+explain2:'Проверь на здравый смысл: если масса растёт, Q должно расти. В вариантах «/m» — наоборот, падает. Если вода уже горячая (t₁ = 90) и её греют до 100, нужно мало энергии — значит, важна разность t₂ − t₁, а не t₂.'});
+RULE(3,'Что показывает удельная теплоёмкость вещества?','Сколько теплоты нужно, чтобы нагреть 1 кг вещества на 1 °С',['Сколько теплоты нужно, чтобы нагреть всё тело на 1 °С','До какой температуры можно нагреть 1 кг вещества','Сколько теплоты выделяется при сгорании 1 кг вещества'],
+{short:'c — джоули на 1 кг и на 1 °С. У воды 4200.',
+explain:'Удельная теплоёмкость c — сколько джоулей нужно, чтобы нагреть <b>1 кг</b> вещества на <b>1 °С</b>. «Удельная» значит «на единицу массы». Для всего тела это уже <b>теплоёмкость тела</b> C = cm. А теплота сгорания — другая величина (q).',
+explain2:'Вода: c = 4200 Дж/(кг·°С). Значит, чтобы нагреть литр (1 кг) воды всего на один градус, нужно 4200 Дж. Медь: c = 400 — в 10 раз меньше, её нагреть гораздо легче.'});
+G(3,()=>{const m=pick([0.5,1,1.5,2,2.5,3,4,5]);const t1=pick([10,15,20,25]);const t2=pick([40,50,60,70,80,90,100]);const Q=4200*m*(t2-t1);
+const plot=pick(['чайник','кастрюлю','ванночку для котёнка','походный котелок']);
+return NUM(`В ${plot} налили ${N(m)} кг воды при ${t1} °С и нагрели до ${t2} °С. Сколько теплоты получила вода? (${cOf('water')}). Ответ дай в кДж.`,Q/1000,1,
+{hint:'Q = c·m·(t₂ − t₁), потом раздели на 1000.',short:`Q = 4200 · ${N(m)} · ${t2-t1} = ${NN(Q)} Дж = ${N(Q/1000)} кДж.`,
+explain:`1) Изменение температуры: Δt = ${t2} − ${t1} = ${t2-t1} °С.<br>2) Q = c·m·Δt = 4200 · ${N(m)} · ${t2-t1} = <b>${NN(Q)} Дж</b>.<br>3) В кДж: ${NN(Q)} : 1000 = <b>${N(Q/1000)} кДж</b>.<br>Ошибка «4200 · ${N(m)} · ${t2}» — так считать нельзя: важно, на сколько нагрели, а не до какой температуры.`,
+explain2:`По шагам: нагреть 1 кг воды на 1° — это 4200 Дж. ${N(m)} кг на 1° — это 4200 · ${N(m)} = ${NN(4200*m)} Дж. А на ${t2-t1}° — ещё в ${t2-t1} раз больше: ${NN(4200*m)} · ${t2-t1} = ${NN(Q)} Дж = ${N(Q/1000)} кДж.`});});
+G(3,()=>{const k=pick(METALS.concat(['brick']));const s=SUB[k];const mg=pick([200,300,400,500,800,1200,1500]);const m=mg/1000;const t1=pick([15,20,25]);const t2=pick([65,75,120,170,220]);const Q=s.c*m*(t2-t1);
+const it={al:'алюминиевую кастрюлю',cu:'медную деталь',fe:'железную гирю',pb:'свинцовую пластину',brick:'кирпич'}[k];
+return NUM(`Нужно нагреть ${it} массой ${NN(mg)} г от ${t1} °С до ${t2} °С. Сколько теплоты потребуется? (${cOf(k)}). Ответ дай в джоулях.`,Q,0,
+{hint:'Сначала переведи граммы в килограммы.',short:`${NN(mg)} г = ${N(m)} кг; Q = ${NN(s.c)} · ${N(m)} · ${t2-t1} = ${NN(rd(Q,2))} Дж.`,
+explain:`1) Масса в килограммах: ${NN(mg)} г = ${N(m)} кг (делим на 1000).<br>2) Δt = ${t2} − ${t1} = ${t2-t1} °С.<br>3) Q = c·m·Δt = ${NN(s.c)} · ${N(m)} · ${t2-t1} = <b>${NN(rd(Q,2))} Дж</b>.<br>Если подставить ${NN(mg)} вместо ${N(m)}, ответ выйдет в 1000 раз больше — частая ошибка.`,
+explain2:`Сначала на 1 кг: нагреть 1 кг ${s.g} на ${t2-t1}° — это ${NN(s.c)} · ${t2-t1} = ${NN(s.c*(t2-t1))} Дж. У нас ${N(m)} кг, то есть ${N(m)} часть этого: ${NN(s.c*(t2-t1))} · ${N(m)} = ${NN(rd(Q,2))} Дж.`});});
+G(3,()=>{const k=pick(['fe','cu','al','brick']);const s=SUB[k];const m=pick([0.5,1,1.5,2,3,4]);const t1=pick([80,100,150,200,300]);const t2=pick([20,25,30]);const Q=s.c*m*(t1-t2);
+const it={fe:'Железный утюг',cu:'Медный паяльник',al:'Алюминиевая сковорода',brick:'Кирпич из печки'}[k];
+return NUM(`${it} массой ${N(m)} кг остыл от ${t1} °С до ${t2} °С. Сколько теплоты он отдал окружающему воздуху? (${cOf(k)}). Ответ дай в кДж.`,Q/1000,1,
+{short:`Q = ${NN(s.c)} · ${N(m)} · (${t1} − ${t2}) = ${NN(Q)} Дж = ${N(Q/1000)} кДж.`,
+explain:`При остывании формула та же, только Δt = t₁ − t₂ (на сколько остыл): ${t1} − ${t2} = ${t1-t2} °С.<br>Q = ${NN(s.c)} · ${N(m)} · ${t1-t2} = ${NN(Q)} Дж = <b>${N(Q/1000)} кДж</b>.<br>Если писать (t₂ − t₁), выйдет −${N(Q/1000)} кДж: минус как раз и означает «отдал».`,
+explain2:`Остывание — это нагревание «наоборот». Сколько энергии нужно, чтобы нагреть тело от ${t2} до ${t1} °С, ровно столько же оно отдаёт, остывая от ${t1} до ${t2} °С: ${N(Q/1000)} кДж.`});});
+
+/* L4 — выражаем c, m, Δt */
+RULE(4,'Как найти массу из формулы Q = c·m·Δt?','m = Q / (c·Δt)',['m = Q·c·Δt','m = c·Δt / Q','m = Q·c / Δt'],
+{short:'Неизвестный множитель = произведение : известные множители.',
+explain:'В Q = c·m·Δt масса — один из множителей. Неизвестный множитель находят делением произведения на остальные множители: <b>m = Q / (c·Δt)</b>. Так же c = Q / (m·Δt) и Δt = Q / (c·m).',
+explain2:'Как в 2-м классе: 3 · ? · 4 = 24 → ? = 24 : (3 · 4) = 2. Здесь Q — «24», а c и Δt — «3» и «4». Проверка единиц: Дж / (Дж/(кг·°С) · °С) = кг ✓.'});
+G(4,()=>{const k=pick(['al','cu','fe','pb','brick','oil','alc']);const s=SUB[k];const m=pick([0.2,0.25,0.4,0.5,1,2]);const dt=pick([10,20,25,40,50]);const Q=s.c*m*dt;
+return NUM(`Чтобы нагреть ${N(m)} кг неизвестного вещества на ${dt} °С, потребовалось ${NN(Q)} Дж. Найди удельную теплоёмкость вещества (в ${U}).`,s.c,0,
+{hint:'c = Q / (m·Δt)',short:`c = ${NN(Q)} / (${N(m)} · ${dt}) = ${NN(s.c)} — это ${s.n}.`,
+explain:`Из Q = c·m·Δt: c = Q / (m·Δt).<br>m·Δt = ${N(m)} · ${dt} = ${N(m*dt)}.<br>c = ${NN(Q)} : ${N(m*dt)} = <b>${NN(s.c)} ${U}</b>.<br>По таблице это <b>${s.n}</b>.`,
+explain2:`Найдём, сколько нужно на 1 кг и 1 °С. На ${N(m)} кг и ${dt}° — ${NN(Q)} Дж. На ${N(m)} кг и 1° — в ${dt} раз меньше: ${NN(Q/dt)} Дж. На 1 кг и 1° — ещё раздели на ${N(m)}: ${NN(s.c)} Дж. Это и есть c.`});});
+G(4,()=>{const k=pick(['water','al','fe','cu']);const s=SUB[k];const m=pick([0.5,0.8,1.5,2,2.5,3]);const dt=pick([20,30,40,50,60]);const Qk=s.c*m*dt/1000;
+return NUM(`На нагревание ${s.g} на ${dt} °С ушло ${N(Qk)} кДж теплоты. Какова масса ${s.g}? (${cOf(k)}). Ответ дай в кг.`,m,2,
+{hint:'Переведи кДж в Дж и раздели на c·Δt.',short:`m = ${NN(Qk*1000)} / (${NN(s.c)} · ${dt}) = ${N(m)} кг.`,
+explain:`1) Q = ${N(Qk)} кДж = ${NN(Qk*1000)} Дж.<br>2) m = Q / (c·Δt) = ${NN(Qk*1000)} / (${NN(s.c)} · ${dt}) = ${NN(Qk*1000)} / ${NN(s.c*dt)} = <b>${N(m)} кг</b>.<br>Если забыть перевести кДж в Дж, получится в 1000 раз меньше: ${N(m/1000)} кг.`,
+explain2:`Сколько теплоты уходит на 1 кг? 1 кг ${s.g} на ${dt}° — это ${NN(s.c)} · ${dt} = ${NN(s.c*dt)} Дж. Всего ушло ${NN(Qk*1000)} Дж. Сколько «килограммовых порций» поместилось? ${NN(Qk*1000)} : ${NN(s.c*dt)} = ${N(m)}.`});});
+G(4,()=>{const k=pick(['water','al','cu','fe','oil']);const s=SUB[k];const m=pick([0.5,1,2,4,5]);const dt=pick([5,8,10,12,15,20,25,30]);const t1=pick([10,15,20]);const Q=s.c*m*dt;
+return NUM(`Тело из вещества «${s.n}» массой ${N(m)} кг при ${t1} °С получило ${NN(Q)} Дж теплоты. До какой температуры оно нагрелось? (${cOf(k)}). Ответ в °С.`,t1+dt,1,
+{hint:'Сначала Δt = Q/(cm), потом прибавь к начальной температуре.',short:`Δt = ${NN(Q)} / (${NN(s.c)}·${N(m)}) = ${dt} °С; t₂ = ${t1} + ${dt} = ${t1+dt} °С.`,
+explain:`1) Δt = Q / (c·m) = ${NN(Q)} / (${NN(s.c)} · ${N(m)}) = ${NN(Q)} / ${NN(s.c*m)} = ${dt} °С.<br>2) Это <b>на сколько</b> нагрелось. Конечная температура: t₂ = t₁ + Δt = ${t1} + ${dt} = <b>${t1+dt} °С</b>.<br>Ответ «${dt}» — типичная ошибка: забыли прибавить начальную температуру.`,
+explain2:`Нагреть всё тело на 1° стоит c·m = ${NN(s.c*m)} Дж. У нас ${NN(Q)} Дж — хватит на ${NN(Q)} : ${NN(s.c*m)} = ${dt} градусов. Было ${t1} °С, стало ${t1} + ${dt} = ${t1+dt} °С.`});});
+G(4,()=>{const a=pick(['water','oil','alc']),b=pick(['al','cu','fe','brick']);const A=SUB[a],B=SUB[b];const r=A.c/B.c;
+return NUM(`Одинаковым массам ${A.g} и ${B.g} сообщили одинаковое количество теплоты. Во сколько раз изменение температуры ${B.g} больше, чем ${A.g}? (${cOf(a)}, ${cOf(b)}).`,r,2,
+{short:`Δt ∼ 1/c: ${NN(A.c)} : ${NN(B.c)} ≈ ${N(rd(r,2))}.`,
+explain:`Δt = Q / (c·m). Q и m одинаковые, значит, Δt обратно пропорционально c: чем меньше c, тем сильнее нагреется.<br>Δt<sub>${B.n}</sub> : Δt<sub>${A.n}</sub> = c<sub>${A.n}</sub> : c<sub>${B.n}</sub> = ${NN(A.c)} : ${NN(B.c)} ≈ <b>${N(rd(r,2))}</b>.<br>Отношение «наоборот» (${NN(B.c)} : ${NN(A.c)}) — частая ошибка: вещество с <b>маленьким</b> c нагревается <b>сильнее</b>.`,
+explain2:`Пусть Q = ${NN(A.c*B.c/100)} Дж, m = 1 кг (числа не важны). Тогда ${A.n}: Δt = ${NN(A.c*B.c/100)} / ${NN(A.c)} = ${N(B.c/100)}°, ${B.n}: Δt = ${NN(A.c*B.c/100)} / ${NN(B.c)} = ${N(A.c/100)}°. Отношение ${N(A.c/100)} : ${N(B.c/100)} ≈ ${N(rd(r,2))}.`});});
+
+/* L5 — нагреватели и графики */
+RULE(5,'Одинаковые нагреватели греют одинаковые массы двух веществ. График температуры первого вещества идёт круче. У какого вещества удельная теплоёмкость больше?','У второго (график положе)',['У первого (график круче)','Одинаковая','По графику понять нельзя'],
+{short:'Круче график — легче нагревается — меньше c.',
+explain:'За одно и то же время оба вещества получают одинаковую энергию Q. Δt = Q/(cm): чем <b>больше</b> c, тем <b>меньше</b> Δt, тем <b>положе</b> график. Круто растёт температура у вещества с маленькой теплоёмкостью.',
+explain2:'Вспомни пляж: на солнце (одинаковый «нагреватель») песок нагревается быстро (круто), а вода медленно (полого). У воды c = 4200 — очень большая, у песка — около 900.'});
+G(5,()=>{const P=pick([500,800,1000,1200,1500,2000,2500]);const m=pick([0.5,1,1.5,2]);const t1=pick([10,15,20]);const t2=pick([60,80,100]);const Q=4200*m*(t2-t1);const tau=Q/P;
+return NUM(`Электрический нагреватель каждую секунду передаёт воде ${NN(P)} Дж. За сколько минут он нагреет ${N(m)} кг воды от ${t1} °С до ${t2} °С? Потерь нет, ${cOf('water')}.`,tau/60,1,
+{hint:'Найди Q, раздели на энергию за 1 секунду — получишь секунды. Потом в минуты.',short:`Q = ${NN(Q)} Дж; τ = ${NN(Q)} : ${NN(P)} = ${N(rd(tau,1))} с ≈ ${N(rd(tau/60,1))} мин.`,
+explain:`1) Q = 4200 · ${N(m)} · (${t2} − ${t1}) = ${NN(Q)} Дж.<br>2) Каждую секунду — ${NN(P)} Дж, значит, время τ = ${NN(Q)} : ${NN(P)} = ${N(rd(tau,2))} с.<br>3) В минутах: ${N(rd(tau,2))} : 60 ≈ <b>${N(rd(tau/60,1))} мин</b>.<br>Не забудь последний шаг: ответ «${N(rd(tau,1))}» — это секунды, а спрашивают минуты.`,
+explain2:`Как наполнять бочку из крана: в бочку нужно ${NN(Q)} «литров-джоулей», кран даёт ${NN(P)} в секунду. Сколько секунд ждать? ${NN(Q)} : ${NN(P)} ≈ ${N(rd(tau,1))} с — это ${N(rd(tau/60,1))} мин.`});});
+G(5,()=>{for(;;){const pr=pick([['oil',17,42],['alc',25,42],['ker',20,40],['ker',30,60],['ker',15,30]]);const k=pr[0];const s=SUB[k];const t0=20;const tw=pick([4,5,6,8]);
+const dw=pr[1],dx=pr[2];const tx=tw;
+const pic=graph([{pts:[[0,t0],[tw,t0+dw]],label:'вода'},{pts:[[0,t0],[tx,t0+dx]],label:'?'}],{xmax:tw,xstep:tw<=5?1:2,ymax:100,ystep:20});
+if(Math.abs(dx-Math.round(dx))>1e-9)continue;
+return NUM(`На графике — нагревание 1 кг воды и 1 кг неизвестной жидкости <b>одинаковыми</b> нагревателями. За ${tw} мин вода нагрелась от ${t0} до ${t0+dw} °С, а жидкость — от ${t0} до ${t0+dx} °С. Найди удельную теплоёмкость жидкости (в ${U}). ${cOf('water')}.`,s.c,0,
+{pic,hint:'Обе получили одинаковое Q за одно и то же время.',short:`c·${dx} = 4200·${dw} → c = ${NN(s.c)}.`,
+explain:`Нагреватели одинаковые, время одно и то же → энергия Q одинаковая.<br>Вода: Q = 4200 · 1 · ${dw} = ${NN(4200*dw)} Дж.<br>Жидкость: Q = c · 1 · ${dx}.<br>c · ${dx} = ${NN(4200*dw)} → c = ${NN(4200*dw)} : ${dx} = <b>${NN(s.c)} ${U}</b>.<br>Проверка: жидкость нагрелась сильнее воды — значит, её c меньше 4200 ✓.`,
+explain2:`Короче через отношение: Δt обратно пропорционально c. Жидкость нагрелась в ${N(rd(dx/dw,3))} раза сильнее воды, значит, её c во столько же раз меньше: 4200 : ${N(rd(dx/dw,3))} = ${NN(s.c)}.`});}});
+
+/* L6 — смешивание воды */
+RULE(6,'Как звучит уравнение теплового баланса (без потерь)?','Количество теплоты, отданное горячими телами, равно количеству теплоты, полученному холодными',['Температура смеси равна сумме температур','Горячее тело отдаёт свою температуру холодному','Холодное тело передаёт горячему холод'],
+{short:'Q отданное = Q полученное — закон сохранения энергии.',
+explain:'Энергия не появляется и не исчезает. Если тепло не уходит наружу, всё, что <b>отдали</b> горячие тела, <b>получили</b> холодные: Q<sub>отд</sub> = Q<sub>пол</sub>. Передаётся <b>энергия</b>, а не «температура» или «холод»; температуры не складываются.',
+explain2:'Как с деньгами: если Петя отдал Васе 100 ₽ и никто ничего не потерял, у Васи стало на 100 ₽ больше. Энергия — как деньги: сколько ушло у горячей воды, столько пришло к холодной.'});
+RULE(6,'Смешали <b>равные массы</b> воды при t₁ и t₂. Какой будет температура смеси (без потерь)?','(t₁ + t₂) / 2',['t₁ + t₂','t₁ − t₂','Большая из t₁ и t₂'],
+{short:'При равных массах — ровно посередине.',
+explain:'Баланс: c·m·(t₁ − θ) = c·m·(θ − t₂). Массы равные и сокращаются: t₁ − θ = θ − t₂, то есть θ = (t₁ + t₂)/2 — среднее арифметическое. Горячая остывает ровно на столько, на сколько холодная нагревается. Температура смеси всегда <b>между</b> t₁ и t₂, а не их сумма.',
+explain2:'Литр воды при 80° и литр при 20° — что получится? 100°? Нет, ведь не может же вода стать горячее самой горячей! Встретятся посередине: 50°. Горячая остыла на 30, холодная нагрелась на 30.'});
+G(6,()=>{for(;;){const m1=pick([1,2,3,4,5]);const m2=pick([1,2,3,4,6]);if(m1===m2)continue;const t1=pick([60,70,80,90,100]);const t2=pick([10,15,20,25]);const th=(m1*t1+m2*t2)/(m1+m2);
+const a={m:m1,t:t1,top:t1+' °С',bot:m1+' кг'},b={m:m2,t:t2,top:t2+' °С',bot:m2+' кг'};
+return NUM(`Смешали ${m1} кг воды при ${t1} °С и ${m2} кг воды при ${t2} °С. Какой станет температура смеси? Потерями тепла пренебречь. Ответ в °С.`,th,1,
+{pic:mixPic(a,b,{t:th,top:'θ = ?',bot:(m1+m2)+' кг'}),hint:'Горячая отдаёт c·m₁·(t₁ − θ), холодная получает c·m₂·(θ − t₂).',
+short:`θ = (${m1}·${t1} + ${m2}·${t2}) / ${m1+m2} = ${m1*t1+m2*t2} / ${m1+m2} ≈ ${N(rd(th,1))} °С.`,
+explain:`Баланс: c·${m1}·(${t1} − θ) = c·${m2}·(θ − ${t2}). c сокращается:<br>${m1*t1} − ${m1}θ = ${m2}θ − ${m2*t2}<br>${m1*t1} + ${m2*t2} = ${m1+m2}θ<br>θ = ${m1*t1+m2*t2} : ${m1+m2} ≈ <b>${N(rd(th,1))} °С</b>.<br>Простое среднее (${t1} + ${t2})/2 = ${N((t1+t2)/2)} — неверно: массы разные, и θ ближе к температуре той воды, которой больше (${m1>m2?'горячей':'холодной'}).`,
+explain2:`Проверим баланс числами: горячая остыла на ${t1} − ${N(rd(th,2))} = ${N(rd(t1-th,2))}°, отдала ${m1}·${N(rd(t1-th,2))} = ${N(rd(m1*(t1-th),2))} «кг·градусов». Холодная нагрелась на ${N(rd(th-t2,2))}°, получила ${m2}·${N(rd(th-t2,2))} = ${N(rd(m2*(th-t2),2))}. Совпадает ✓ (умножь на 4200 — получишь джоули).`});}});
+G(6,()=>{for(;;){const V=pick([100,120,150,160,200]);const th=pick([36,37,38,40]);const th_=pick([60,65,70,75,80]);const tc=pick([8,10,12,15]);const Vh=V*(th-tc)/(th_-tc);
+if(Math.abs(Vh*10-Math.round(Vh*10))>1e-9)continue;
+return NUM(`Для ванны нужно ${V} л воды при ${th} °С. Из горячего крана течёт вода при ${th_} °С, из холодного — при ${tc} °С. Сколько литров горячей воды нужно налить? (1 л воды = 1 кг, потерь нет). Ответ в литрах.`,Vh,1,
+{hint:'Пусть горячей x л, тогда холодной (V − x) л. Составь баланс.',short:`x·(${th_} − ${th}) = (${V} − x)·(${th} − ${tc}) → x = ${N(Vh)} л.`,
+explain:`Пусть горячей воды x л, холодной — (${V} − x) л.<br>Горячая отдаёт: c·x·(${th_} − ${th}) = c·${th_-th}x.<br>Холодная получает: c·(${V} − x)·(${th} − ${tc}) = c·${th-tc}(${V} − x).<br>${th_-th}x = ${th-tc}·${V} − ${th-tc}x → ${th_-tc}x = ${NN((th-tc)*V)} → x = <b>${N(Vh)} л</b>. Холодной — ${N(V-Vh)} л.`,
+explain2:`«Правило рычага»: θ = ${th}° делит путь от ${tc}° до ${th_}° на куски ${th-tc} и ${th_-th}. Воды берут <b>обратно</b> этим кускам: горячей : холодной = ${th-tc} : ${th_-th}. Всего ${th_-tc} частей, горячей ${th-tc} из них: ${V} · ${th-tc}/${th_-tc} = ${N(Vh)} л.`});}});
+G(6,()=>{for(;;){const m1=pick([0.2,0.3,0.4,0.5]);const t1=pick([80,90,100]);const t2=pick([10,15,20]);const th=pick([30,35,40,45,50]);const m2=m1*(t1-th)/(th-t2);if(Math.abs(m2*100-Math.round(m2*100))>1e-6)continue;
+return NUM(`В ${N(m1*1000)} г горячей воды при ${t1} °С долили холодную воду при ${t2} °С. Установилась температура ${th} °С. Сколько граммов холодной воды долили? Потерь нет.`,m2*1000,0,
+{short:`m₂ = ${N(m1*1000)} · (${t1} − ${th}) / (${th} − ${t2}) = ${N(m2*1000)} г.`,
+explain:`Баланс: c·m₁·(${t1} − ${th}) = c·m₂·(${th} − ${t2}).<br>c сокращается, массы можно оставить в граммах (обе части в одних единицах):<br>${N(m1*1000)} · ${t1-th} = m₂ · ${th-t2}<br>m₂ = ${NN(m1*1000*(t1-th))} : ${th-t2} = <b>${N(m2*1000)} г</b>.`,
+explain2:`Горячая вода остыла на ${t1-th}°, холодная нагрелась на ${th-t2}°. Тот, кто меняет температуру <b>меньше</b>, должен быть <b>тяжелее</b> во столько же раз: ${t1-th} : ${th-t2} = ${N(rd((t1-th)/(th-t2),3))}. Холодной воды в ${N(rd((t1-th)/(th-t2),3))} раза больше: ${N(m1*1000)} · ${N(rd((t1-th)/(th-t2),3))} = ${N(m2*1000)} г.`});}});
+G(6,()=>{const t1=pick([70,80,90]);const t2=pick([10,20,30]);const tt=pick([0,1]);const m=pick([1,2,3]);
+const th=(t1+t2)/2;
+return CH(`Смешали ${m} кг воды при ${t1} °С и столько же воды при ${t2} °С. Какая температура установится (без потерь)?`,N(th)+' °С',[N(t1+t2)+' °С',N(t1-t2)+' °С',N(t1)+' °С'],{
+short:`Равные массы → посередине: (${t1} + ${t2}) / 2 = ${N(th)} °С.`,
+explain:`При равных массах горячая вода остывает ровно на столько, на сколько нагревается холодная: ${t1} − θ = θ − ${t2}, θ = (${t1} + ${t2}) / 2 = <b>${N(th)} °С</b>.<br>${N(t1+t2)} °С — невозможно: смесь не бывает горячее самой горячей воды.`,
+explain2:`Отметь ${t2}° и ${t1}° на линейке термометра — ответ ровно посередине, в ${N(th)}°. Горячая остыла на ${N(t1-th)}°, холодная нагрелась на ${N(th-t2)}° — поровну, ведь масс поровну.`});});
+
+/* L7 — разные вещества, калориметр */
+RULE(7,'Горячий медный брусок опустили в столько же (по массе) холодной воды. Что верно?','Брусок остынет гораздо сильнее, чем нагреется вода',['Брусок остынет ровно на столько, на сколько нагреется вода','Вода нагреется сильнее, чем остынет брусок','Температура смеси — среднее арифметическое'],
+{short:'Q одинаковое, а c меди в 10,5 раза меньше — её Δt в 10,5 раза больше.',
+explain:'По балансу брусок отдаёт столько, сколько получает вода: c<sub>м</sub>·m·Δt<sub>м</sub> = c<sub>в</sub>·m·Δt<sub>в</sub>. Массы равны, значит Δt<sub>м</sub> : Δt<sub>в</sub> = c<sub>в</sub> : c<sub>м</sub> = 4200 : 400 = 10,5. Медь остынет в 10,5 раза сильнее, чем нагреется вода. Среднее арифметическое подходит только для одинаковых веществ и масс.',
+explain2:'Вода — «тепловой гигант». Положи раскалённую монету в стакан воды — вода едва потеплеет, а монета остынет почти до температуры воды.'});
+G(7,()=>{for(;;){const k=pick(METALS);const s=SUB[k];const mm=pick([0.2,0.3,0.5,0.8,1]);const tm=pick([100,150,200,250]);const mw=pick([0.2,0.25,0.3,0.4,0.5]);const tw=pick([10,15,20]);
+const Cm=s.c*mm,Cw=4200*mw;const th=(Cm*tm+Cw*tw)/(Cm+Cw);if(th-tw<3)continue;
+return NUM(`Брусок из вещества «${s.n}» массой ${N(mm)} кг, нагретый до ${tm} °С, опустили в ${N(mw)} кг воды при ${tw} °С. Какая установится температура? Потерь нет. ${cOf(k)}, ${cOf('water')}. Ответ в °С.`,th,1,
+{hint:'Посчитай C = c·m для бруска и для воды, потом θ = (C₁t₁ + C₂t₂)/(C₁ + C₂).',short:`θ = (${NN(Cm)}·${tm} + ${NN(Cw)}·${tw}) / (${NN(Cm)} + ${NN(Cw)}) ≈ ${N(rd(th,1))} °С.`,
+explain:`Теплоёмкость бруска: C₁ = ${NN(s.c)} · ${N(mm)} = ${NN(Cm)} Дж/°С; воды: C₂ = 4200 · ${N(mw)} = ${NN(Cw)} Дж/°С.<br>Баланс: ${NN(Cm)}·(${tm} − θ) = ${NN(Cw)}·(θ − ${tw}).<br>${NN(Cm*tm)} + ${NN(Cw*tw)} = (${NN(Cm)} + ${NN(Cw)})·θ<br>θ = ${NN(Cm*tm+Cw*tw)} : ${NN(Cm+Cw)} ≈ <b>${N(rd(th,1))} °С</b>.<br>Проверка: ${tw} < ${N(rd(th,1))} < ${tm} ✓.`,
+explain2:`Проверим, сошлось ли: брусок остыл на ${N(rd(tm-th,2))}° и отдал ${NN(Cm)}·${N(rd(tm-th,2))} ≈ ${NN(rd(Cm*(tm-th),0))} Дж; вода нагрелась на ${N(rd(th-tw,2))}° и получила ${NN(Cw)}·${N(rd(th-tw,2))} ≈ ${NN(rd(Cw*(th-tw),0))} Дж. Равны ✓. Вот почему вода нагрелась слабо — её C = ${NN(Cw)} больше, чем у бруска (${NN(Cm)}).`});}});
+G(7,()=>{for(;;){const k=pick(['al','cu','fe']);const s=SUB[k];const mm=pick([0.1,0.2,0.25,0.4,0.5]);const mw=pick([0.2,0.3,0.4,0.5]);const tw=pick([15,20]);const th=pick([22,25,26,28,30,35]);
+const tm=th+4200*mw*(th-tw)/(s.c*mm);if(tm>400||Math.abs(tm*10-Math.round(tm*10))>1e-6)continue;
+return NUM(`Деталь из вещества «${s.n}» массой ${N(mm*1000)} г вынули из печи и опустили в ${N(mw*1000)} г воды при ${tw} °С. Вода нагрелась до ${th} °С. Какой была температура печи (детали)? Потерь нет. ${cOf(k)}, ${cOf('water')}. Ответ в °С.`,tm,1,
+{short:`${NN(s.c)}·${N(mm)}·(t − ${th}) = 4200·${N(mw)}·${th-tw} → t = ${N(tm)} °С.`,
+explain:`1) Вода получила: Q = 4200 · ${N(mw)} · (${th} − ${tw}) = ${NN(4200*mw*(th-tw))} Дж.<br>2) Столько же отдала деталь: ${NN(s.c)} · ${N(mm)} · (t − ${th}) = ${NN(4200*mw*(th-tw))}.<br>3) t − ${th} = ${NN(4200*mw*(th-tw))} : ${NN(s.c*mm)} = ${N(rd(tm-th,2))}, t = <b>${N(tm)} °С</b>.<br>Массы переведены в кг: ${N(mm*1000)} г = ${N(mm)} кг, ${N(mw*1000)} г = ${N(mw)} кг.`,
+explain2:`Сначала посчитай, сколько энергии «пришло» в воду (${NN(4200*mw*(th-tw))} Дж) — это всё энергия детали. Чтобы деталь остыла на 1°, ей нужно отдать ${NN(s.c*mm)} Дж. Значит, остыла она на ${NN(4200*mw*(th-tw))} : ${NN(s.c*mm)} = ${N(rd(tm-th,2))}° — от ${N(tm)} до ${th} °С.`});}});
+G(7,()=>{for(;;){const k=pick(['al','cu','fe','pb']);const s=SUB[k];const mm=pick([0.1,0.2,0.4,0.5]);const tm=100;const mw=pick([0.1,0.15,0.2,0.25]);const tw=pick([15,20]);
+const th=rd((s.c*mm*tm+4200*mw*tw)/(s.c*mm+4200*mw),1);const c=4200*mw*(th-tw)/(mm*(tm-th));if(th-tw<2)continue;
+return NUM(`Лабораторная работа. Металлический цилиндр массой ${N(mm*1000)} г нагрели в кипящей воде до 100 °С и опустили в ${N(mw*1000)} г воды при ${tw} °С. Температура стала ${N(th)} °С. Найди удельную теплоёмкость металла (в ${U}). ${cOf('water')}, потерь нет.`,c,0,
+{short:`c = 4200·${N(mw)}·${N(rd(th-tw,1))} / (${N(mm)}·${N(rd(tm-th,1))}) ≈ ${NN(rd(c,0))} — похоже на «${s.n}».`,
+explain:`Вода получила: 4200 · ${N(mw)} · (${N(th)} − ${tw}) = ${NN(rd(4200*mw*(th-tw),2))} Дж.<br>Металл отдал: c · ${N(mm)} · (100 − ${N(th)}) = c · ${N(rd(mm*(tm-th),4))}.<br>c = ${NN(rd(4200*mw*(th-tw),2))} : ${N(rd(mm*(tm-th),4))} ≈ <b>${NN(rd(c,0))} ${U}</b>. По таблице ближе всего — ${s.n} (${NN(s.c)}): небольшое расхождение из-за округления температуры.`,
+explain2:`Это задача «в обратную сторону»: известны все температуры, а неизвестна c. Пиши баланс как обычно, а c оставь буквой: Q<sub>воды</sub> = c · m<sub>мет</sub> · Δt<sub>мет</sub>. Дальше просто деление: ${NN(rd(4200*mw*(th-tw),2))} / ${N(rd(mm*(tm-th),4))} ≈ ${NN(rd(c,0))}.`});}});
+G(7,()=>{for(;;){const mk=pick([0.1,0.12,0.14,0.15,0.2]);const mw=pick([0.15,0.2,0.25,0.3]);const t0=pick([15,18,20]);const k=pick(['fe','cu']);const s=SUB[k];const mb=pick([0.1,0.2,0.3]);const tb=100;
+const C1=920*mk,C2=4200*mw,C3=s.c*mb;const th=(C1*t0+C2*t0+C3*tb)/(C1+C2+C3);if(th-t0<2)continue;
+return NUM(`В алюминиевом калориметре массой ${N(mk*1000)} г — ${N(mw*1000)} г воды при ${t0} °С. В него опустили брусок (${s.n}) массой ${N(mb*1000)} г при ${tb} °С. Какая установится температура? ${cOf('al')}, ${cOf('water')}, ${cOf(k)}. Ответ в °С.`,th,1,
+{hint:'Калориметр нагревается вместе с водой — это третье тело.',short:`θ = (${NN(C1+C2)}·${t0} + ${NN(C3)}·${tb}) / ${NN(C1+C2+C3)} ≈ ${N(rd(th,1))} °С.`,
+explain:`Тепло отдаёт брусок, получают <b>вода и калориметр</b> (оба при ${t0} °С).<br>Теплоёмкости: калориметр 920 · ${N(mk)} = ${NN(C1)} Дж/°С, вода 4200 · ${N(mw)} = ${NN(C2)} Дж/°С, брусок ${NN(s.c)} · ${N(mb)} = ${NN(C3)} Дж/°С.<br>${NN(C3)}·(${tb} − θ) = (${NN(C1)} + ${NN(C2)})·(θ − ${t0})<br>θ = (${NN(C3*tb)} + ${NN((C1+C2)*t0)}) : ${NN(C1+C2+C3)} ≈ <b>${N(rd(th,1))} °С</b>.<br>Если забыть калориметр, получится ${N(rd((C2*t0+C3*tb)/(C2+C3),1))} °С — завышено.`,
+explain2:`Представь, что калориметр — это «ещё немного воды». Его C = ${NN(C1)} Дж/°С — столько же, сколько у ${N(rd(C1/4200*1000,1))} г воды. Значит, задача как будто про ${N(rd(mw*1000+C1/4.2,1))} г воды и брусок: получаем те же ${N(rd(th,1))} °С.`});}});
+
+/* L8 — ★ */
+RULE(8,'Что такое теплоёмкость <b>тела</b> C (не удельная)?','Количество теплоты, нужное, чтобы нагреть всё тело на 1 °С: C = c·m',['То же, что удельная теплоёмкость c','Количество теплоты на 1 кг тела','Самая высокая температура, которую выдержит тело'],
+{short:'C = c·m, единица — Дж/°С.',
+explain:'Удельная теплоёмкость c — «на 1 кг и 1 °С», это свойство вещества. Теплоёмкость <b>тела</b> C = c·m — сколько нужно всему телу на 1 °С, единица Дж/°С. В олимпиадных задачах удобно работать с C: тогда Q = C·Δt и θ = ΣCt / ΣC.',
+explain2:'Пример: алюминиевая кастрюля 0,5 кг. c = 920 (на каждый килограмм), а C = 920 · 0,5 = 460 Дж/°С (на всю кастрюлю). Чтобы нагреть её на 10°, нужно 460 · 10 = 4600 Дж.'});
+G(8,()=>{for(;;){const d1=R(4,9),d2=R(2,d1-1);const r=2*d2/(d1-d2);const u=d1*(r+1);const d3=(u-d1-d2)/(r+3);if(r>12||u>80||d3<0.3)continue;
+return NUM(`★ В калориметр с водой (её температура t₀) влили ложку горячей воды — температура выросла на ${d1} °С. После второй такой же ложки (той же горячей воды) — ещё на ${d2} °С. На сколько градусов повысится температура после третьей ложки? Потерь нет, теплоёмкостью калориметра пренебречь.`,d3,2,
+{hint:'Обозначь C — теплоёмкость воды в калориметре, q — одной ложки, u = T − t₀. Составь баланс для первой и второй ложки.',
+short:`C/q = ${N(rd(r,3))}, T − t₀ = ${N(rd(u,2))}°, третий скачок ≈ ${N(rd(d3,2))} °С.`,
+explain:`Пусть C — теплоёмкость воды в калориметре, q — одной ложки, T — температура горячей воды, u = T − t₀.<br>1-я ложка: q·(u − ${d1}) = C·${d1}.<br>2-я ложка: теперь в калориметре C + q, температура t₀ + ${d1}: q·(u − ${d1} − ${d2}) = (C + q)·${d2}.<br>Пусть r = C/q. Из 1-й: u = ${d1}(r + 1). Из 2-й: u − ${d1+d2} = ${d2}(r + 1). Подставим u: ${d1}r + ${d1} − ${d1+d2} = ${d2}r + ${d2} → ${d1-d2}r = ${2*d2} → r = ${N(rd(r,3))}, u = ${N(rd(u,3))}°.<br>3-я ложка: q·(u − ${d1+d2} − x) = (C + 2q)·x → x = (u − ${d1+d2}) / (r + 3) = ${N(rd(u-d1-d2,3))} / ${N(rd(r+3,3))} ≈ <b>${N(rd(d3,2))} °С</b>.`,
+explain2:`Почему скачки уменьшаются? С каждой ложкой разница между горячей водой и калориметром становится меньше (было ${N(rd(u,2))}°, потом ${N(rd(u-d1,2))}°, потом ${N(rd(u-d1-d2,2))}°), а воды в калориметре всё больше. Оба эффекта уменьшают скачок: ${d1} → ${d2} → ${N(rd(d3,2))}.`,
+explain3:`Проверка числами: возьмём q = 1, C = ${N(rd(r,3))}, t₀ = 0, T = ${N(rd(u,3))}. После 1-й: (${N(rd(r,3))}·0 + 1·${N(rd(u,3))}) / ${N(rd(r+1,3))} = ${N(rd(u/(r+1),3))} ✓ (= ${d1}). После 2-й: (${N(rd(r+1,3))}·${d1} + ${N(rd(u,3))}) / ${N(rd(r+2,3))} = ${N(rd(((r+1)*d1+u)/(r+2),3))} ✓ (= ${d1+d2}). После 3-й: (${N(rd(r+2,3))}·${d1+d2} + ${N(rd(u,3))}) / ${N(rd(r+3,3))} ≈ ${N(rd(((r+2)*(d1+d2)+u)/(r+3),3))}.`});}},{star:true});
+G(8,()=>{for(;;){const t1=pick([60,70,80,90]);const t2=pick([10,20,30]);const t3=pick([0,5,15,25]);if(t3===t2)continue;
+const k1=pick([0.5,1,2,3]);const k3=pick([0.5,1,2,4]);// C1=k1*C2, C3=k3*C2
+const th12=(k1*t1+t2)/(k1+1),th23=(t2+k3*t3)/(1+k3);if(Math.abs(th12*2-Math.round(th12*2))>1e-9||Math.abs(th23*2-Math.round(th23*2))>1e-9)continue;
+const th=(k1*t1+t2+k3*t3)/(k1+1+k3);
+return NUM(`★ Есть три разные жидкости (не реагируют друг с другом) при температурах t₁ = ${t1} °С, t₂ = ${t2} °С, t₃ = ${t3} °С. Если смешать всю первую и всю вторую, получится ${N(th12)} °С. Если смешать всю вторую и всю третью — ${N(th23)} °С. Какой будет температура, если смешать все три жидкости сразу? Потерь нет. Ответ в °С.`,th,1,
+{hint:'Обозначь теплоёмкости C₁, C₂, C₃. Из каждого опыта найди C₁/C₂ и C₃/C₂.',
+short:`C₁ = ${N(k1)}C₂, C₃ = ${N(k3)}C₂; θ = (${N(k1)}·${t1} + ${t2} + ${N(k3)}·${t3}) / ${N(k1+1+k3)} ≈ ${N(rd(th,1))} °С.`,
+explain:`1) Опыт 1: C₁(${t1} − ${N(th12)}) = C₂(${N(th12)} − ${t2}) → C₁/C₂ = ${N(th12-t2)}/${N(t1-th12)} = ${N(k1)}.<br>2) Опыт 2: C₂(${t2} − ${N(th23)}) = C₃(${N(th23)} − ${t3}) → C₃/C₂ = ${N(rd(t2-th23,3))}/${N(rd(th23-t3,3))} = ${N(k3)}${t2<t3?' (здесь вторая жидкость холоднее третьей, знаки обеих скобок отрицательные — отношение то же)':''}.<br>3) Возьмём C₂ = 1: θ = (C₁t₁ + C₂t₂ + C₃t₃)/(C₁ + C₂ + C₃) = (${N(k1*t1)} + ${t2} + ${N(k3*t3)}) / ${N(k1+1+k3)} ≈ <b>${N(rd(th,1))} °С</b>.`,
+explain2:`Главная идея: массы и c не нужны, нужны только <b>отношения</b> теплоёмкостей. Представь жидкости «порциями»: первой — ${N(k1)} порции, второй — 1, третьей — ${N(k3)} (в каждой порции одинаковая теплоёмкость). Тогда θ — обычное среднее «по порциям»: (${N(k1)}·${t1} + 1·${t2} + ${N(k3)}·${t3}) / ${N(k1+1+k3)} ≈ ${N(rd(th,1))}.`});}},{star:true});
+G(8,()=>{for(;;){const t0=pick([10,15,20]);const T=pick([80,90,100]);const th1=pick([30,35,40,45]);const k=(th1-t0)/(T-th1);// Cb/Cw
+const th2=(T*k+th1*(1+k))/(1+2*k);if(k>1.5)continue;
+return NUM(`★ Нагретый до ${T} °С брусок опустили в воду при ${t0} °С — установилась температура ${th1} °С. Затем, не вынимая первый брусок, туда же опустили второй такой же брусок, тоже нагретый до ${T} °С. Какая установится температура? Потерь нет. Ответ в °С.`,th2,1,
+{hint:'Найди отношение теплоёмкостей бруска и воды из первого опыта.',
+short:`C<sub>б</sub>/C<sub>в</sub> = ${N(th1-t0)}/${N(T-th1)}; θ₂ ≈ ${N(rd(th2,1))} °С.`,
+explain:`1) Первый брусок: C<sub>б</sub>(${T} − ${th1}) = C<sub>в</sub>(${th1} − ${t0}) → C<sub>б</sub> = ${N(th1-t0)}/${N(T-th1)} · C<sub>в</sub> = ${N(rd(k,4))}C<sub>в</sub>.<br>2) Второй брусок отдаёт тепло воде <b>и первому бруску</b> (оба при ${th1} °С): C<sub>б</sub>(${T} − θ) = (C<sub>в</sub> + C<sub>б</sub>)(θ − ${th1}).<br>3) Подставим C<sub>в</sub> = 1, C<sub>б</sub> = ${N(rd(k,4))}: θ = (${N(rd(k,4))}·${T} + ${N(rd(1+k,4))}·${th1}) / ${N(rd(1+2*k,4))} ≈ <b>${N(rd(th2,1))} °С</b>.<br>Ошибка: «ещё +${th1-t0}°» — нет, вода уже тёплая и тяжелее «по теплоёмкости».`,
+explain2:`Можно и так: мысленно опустим оба бруска сразу в исходную воду. θ = (C<sub>в</sub>·${t0} + 2C<sub>б</sub>·${T})/(C<sub>в</sub> + 2C<sub>б</sub>) = (${t0} + ${N(rd(2*k,4))}·${T})/${N(rd(1+2*k,4))} ≈ ${N(rd((t0+2*k*T)/(1+2*k),1))} °С — то же самое! Без потерь порядок не важен.`});}},{star:true});
+G(8,()=>{for(;;){const Ct=pick([2,3,4,5]);// J/°C thermometer
+const t0=pick([18,20,22]);const mw=pick([5,8,10,12,15])/1000;const shown=pick([40,45,50,55,60]);const tw=shown+Ct*(shown-t0)/(4200*mw);
+return NUM(`★ Термометр с теплоёмкостью ${Ct} Дж/°С показывал температуру воздуха ${t0} °С. Его опустили в ${N(mw*1000)} г воды, и он показал ${shown} °С. Какой была температура воды до измерения? ${cOf('water')}, потерь нет. Ответ в °С.`,tw,1,
+{hint:'Термометр — тоже тело: он нагрелся от ' +t0+' до '+shown+' °С за счёт воды.',
+short:`4200·${N(mw)}·(t − ${shown}) = ${Ct}·(${shown} − ${t0}) → t ≈ ${N(rd(tw,1))} °С.`,
+explain:`Термометр нагрелся от ${t0} до ${shown} °С и забрал у воды Q = ${Ct} · ${shown-t0} = ${Ct*(shown-t0)} Дж.<br>Вода остыла: 4200 · ${N(mw)} · (t − ${shown}) = ${Ct*(shown-t0)}, то есть ${N(rd(4200*mw,2))}·(t − ${shown}) = ${Ct*(shown-t0)}.<br>t − ${shown} = ${N(rd(Ct*(shown-t0)/(4200*mw),3))}, t ≈ <b>${N(rd(tw,1))} °С</b>.<br>Термометр «врёт» на ${N(rd(tw-shown,1))}°: чем меньше воды, тем сильнее.`,
+explain2:`Вода тут — «маленькая порция»: её теплоёмкость всего 4200 · ${N(mw)} = ${N(rd(4200*mw,1))} Дж/°С, а у термометра ${Ct} Дж/°С. Термометр нагрелся на ${shown-t0}° — значит, вода остыла в ${N(rd(4200*mw,1))} : ${Ct} = ${N(rd(4200*mw/Ct,2))} раза меньше: на ${N(rd(tw-shown,2))}°.`});}},{star:true});
+G(8,()=>{for(;;){const ms=[R(1,5),R(1,5),R(1,5)];const ts=[pick([80,90,70]),pick([40,50,30]),pick([5,10,15])];const th=(ms[0]*ts[0]+ms[1]*ts[1]+ms[2]*ts[2])/(ms[0]+ms[1]+ms[2]);
+return NUM(`★ В большой бак вылили три ведра воды: ${ms[0]} л при ${ts[0]} °С, ${ms[1]} л при ${ts[1]} °С и ${ms[2]} л при ${ts[2]} °С. Какая установится температура? Потерь нет. Ответ в °С.`,th,1,
+{hint:'Без потерь можно считать, что смешивают всё сразу: θ = Σmt / Σm.',
+short:`θ = (${ms[0]}·${ts[0]} + ${ms[1]}·${ts[1]} + ${ms[2]}·${ts[2]}) / ${ms[0]+ms[1]+ms[2]} ≈ ${N(rd(th,1))} °С.`,
+explain:`Сумма полученного = сумме отданного. Записав баланс для всех трёх (кто-то отдаёт, кто-то получает), после сокращения c получаем:<br>θ = (${ms[0]}·${ts[0]} + ${ms[1]}·${ts[1]} + ${ms[2]}·${ts[2]}) / (${ms[0]} + ${ms[1]} + ${ms[2]}) = ${ms[0]*ts[0]+ms[1]*ts[1]+ms[2]*ts[2]} / ${ms[0]+ms[1]+ms[2]} ≈ <b>${N(rd(th,1))} °С</b>.<br>Не важно, какая вода «отдаёт», а какая «получает» — формула одна.`,
+explain2:`Смешаем по очереди. Первые два ведра: (${ms[0]}·${ts[0]} + ${ms[1]}·${ts[1]}) / ${ms[0]+ms[1]} = ${N(rd((ms[0]*ts[0]+ms[1]*ts[1])/(ms[0]+ms[1]),3))} °С. Теперь это ${ms[0]+ms[1]} л — добавим третье: (${ms[0]+ms[1]}·${N(rd((ms[0]*ts[0]+ms[1]*ts[1])/(ms[0]+ms[1]),3))} + ${ms[2]}·${ts[2]}) / ${ms[0]+ms[1]+ms[2]} ≈ ${N(rd(th,1))} °С. То же самое!`});}},{star:true});
+G(8,()=>{for(;;){const n=pick([2,3,4,5]);const T=pick([60,80,100]);const t0=pick([0,10,20]);const k=pick([0.25,0.5,1]);// each portion Cp = k*C (calorimeter)
+// add n equal portions of hot water one by one; final temp equals mixing all
+const th=(t0+n*k*T)/(1+n*k);
+return NUM(`★ В калориметре вода при ${t0} °С. В него по очереди вливают ${n} одинаковые порции горячей воды при ${T} °С, каждый раз дожидаясь равновесия. Масса каждой порции — ${k===1?'такая же, как':k===0.5?'вдвое меньше, чем':'вчетверо меньше, чем'} масса воды, что была в калориметре сначала. Какой станет температура после последней порции? Теплоёмкостью калориметра и потерями пренебречь. Ответ в °С.`,th,1,
+{hint:'Без потерь результат не зависит от того, вливали по очереди или сразу.',
+short:`θ = (1·${t0} + ${n}·${N(k)}·${T}) / (1 + ${N(n*k)}) ≈ ${N(rd(th,1))} °С.`,
+explain:`Пусть масса воды в калориметре — 1 часть, тогда каждая порция — ${N(k)} части, всего долили ${N(n*k)} части. Энергия сохраняется на каждом шаге, поэтому итог такой же, как если бы влили всё сразу:<br>θ = (1·${t0} + ${N(n*k)}·${T}) / (1 + ${N(n*k)}) ≈ <b>${N(rd(th,1))} °С</b>.`,
+explain2:`Проверим по шагам. ${range(1,n).map(i=>`После ${i}-й порции: ${N(rd((t0+i*k*T)/(1+i*k),2))} °С`).join('; ')}. Каждый шаг — обычное смешивание: (масса·температура + порция·${T}) / новая масса. Итог совпадает с «всё сразу».`});}},{star:true});
+
+window.TOPIC={id:'p8_heat',title:'Теплота',subtitle:'Физика · 8 класс',
+intro:`<p>Почему металл на морозе кажется холоднее дерева, как работает термос и сколько энергии нужно, чтобы вскипятить чайник. Внутренняя энергия, три вида теплопередачи, формула Q = cmΔt, уравнение теплового баланса и калориметр. Есть живая модель смешивания воды, а в конце — олимпиадные задачи.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Внутренняя энергия','Работа и теплопередача','Три вида теплопередачи','Количество теплоты Q = cmΔt','Выражаем c, m и Δt','Нагреватели и графики','Тепловой баланс: смешиваем воду','Разные вещества и калориметр','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
