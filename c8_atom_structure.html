@@ -262,7 +262,7 @@ H.sameSet=function(userArr,ansArr){
 
 H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
   let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
-H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
 H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
 H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
 H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
@@ -996,6 +996,10 @@ explain:`Металлы: <b>${it.filter(x=>x[1]).map(x=>x[0].s).join(', ')}</b> 
 explain2:'Металлы 1–20: Li, Be, Na, Mg, Al, K, Ca. Все Cr, Mn, Fe, Cu, Zn, Ag, Au, Hg, а также Sn, Pb, Ba — металлы. Неметаллы: H, B, C, N, O, F, Si, P, S, Cl, Br, I.'};});
 
 /* L8 ★ */
+RULE(8,'Чему равно общее число частиц (p + n + e) в атоме с массовым числом A и порядковым номером Z?','A + Z',['A','A − Z','2A'],
+{short:'p + n = A, и ещё Z электронов: A + Z.',
+explain:'Протоны + нейтроны = A (массовое число). Электронов в атоме столько же, сколько протонов, — Z. Всего: <b>A + Z</b>. Например, ²³Na: 23 + 11 = 34 частицы.',
+explain2:'Проверим на ⁴He: 2 протона, 2 нейтрона, 2 электрона — 6 частиц. A + Z = 4 + 2 = 6 ✓.'});
 G(8,()=>{const e=pick(E20.filter(x=>x.z>2));const sh=shells(e.z);
 return {type:'text',q:`★ У атома элемента <b>${sh.length}</b> ${H.plural(sh.length,'энергетический уровень','энергетических уровня','энергетических уровней')}, а на внешнем — <b>${sh[sh.length-1]}</b> ${H.plural(sh[sh.length-1],'электрон','электрона','электронов')}. Какой это элемент? Напиши знак.`,ans:[e.s],check:r=>H.normChem(r).toLowerCase()===e.s.toLowerCase()||H.normTok(r)===e.n,right:e.s,ansText:`${e.s} (${e.n})`,
 hint:'Уровни → период, внешние электроны → группа.',short:`${sh.length} период, ${e.g} группа → ${e.s}.`,

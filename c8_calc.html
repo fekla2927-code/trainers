@@ -262,7 +262,7 @@ H.sameSet=function(userArr,ansArr){
 
 H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
   let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
-H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
 H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
 H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
 H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
@@ -998,6 +998,9 @@ G(7,()=>{const P=[['zn','Zn','ZnCl2','H2'],['mg','Mg','MgCl2','H2'],['fe','Fe','
  explain2:`Закон сохранения массы: всё, что положили в стакан (металл + раствор), осталось в нём, кроме газа. Ошибка — забыть вычесть ${N(rd(mg,2))} г H₂ или не прибавить массу металла.`});});
 
 /* ---- L8 ★ ---- */
+RULE(8,'Смесь двух металлов, каждый из которых вытесняет водород из кислоты, растворили в кислоте. Даны масса смеси и объём водорода. Как найти состав смеси?','Обозначить моли металлов x и y и решить систему из двух уравнений: по массе смеси и по количеству водорода',['Разделить объём водорода пополам между металлами','Считать по одному металлу, второй не влияет','Сложить молярные массы металлов и поделить массу смеси на эту сумму'],
+{short:'Два неизвестных — два уравнения: M₁x + M₂y = m и h₁x + h₂y = n(H₂).',explain:'Неизвестных два (сколько моль каждого металла), значит нужны два уравнения. Первое — по массе: M₁x + M₂y = m(смеси). Второе — по водороду: каждый металл даёт свою порцию H₂ по своему уравнению (Mg, Zn, Fe — 1 моль H₂ на моль, Al — 1,5 моль). Делить газ «поровну» нельзя: металлы дают разное количество водорода на грамм.',
+explain2:'Это как задача «куры и кролики»: известно число голов и ног — составляем два уравнения. Здесь «головы» — граммы смеси, «ноги» — моли водорода.'});
 const MIX=[['Mg','Zn','mg','zn'],['Mg','Al','mg','al'],['Zn','Fe','zn','fe'],['Al','Fe','al','fe'],['Al','Zn','al','zn'],['Mg','Fe','mg','fe']];
 const hOf=m=>m==='Al'?1.5:1;
 G(8,()=>{const mx=pick(MIX);const x=pick([0.05,0.1,0.15,0.2,0.3]),y=pick([0.05,0.1,0.15,0.2,0.3]);const M1=AM[mx[0]],M2=AM[mx[1]];const m=x*M1+y*M2;if(!Number.isInteger(rd(m*100,6)))return null;const nh=x*hOf(mx[0])+y*hOf(mx[1]);const V=nh*22.4;const w1=x*M1/m*100;

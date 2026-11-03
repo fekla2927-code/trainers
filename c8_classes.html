@@ -262,7 +262,7 @@ H.sameSet=function(userArr,ansArr){
 
 H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
   let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
-H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
 H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
 H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
 H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
@@ -1079,6 +1079,9 @@ G(7,()=>{const tgt=pick(['NaOH','HCl']);const Y={NaOH:['HCl','H2SO4','HNO3','CO2
  explain2:tgt==='NaOH'?'Щёлочь — «основная». Она дружит с «кислотными» (кислоты, кислотные оксиды), с амфотерными и с солями, если получится осадок. Не дружит с «основными» (основные оксиды, другие щёлочи) и с металлами вроде Cu, Fe.':'Кислота — «кислотная». Она дружит с «основными» (металлы до H, основные оксиды, основания) и с солями, если выйдет газ или осадок. Не реагирует с кислотными оксидами, другими кислотами и с Cu, Ag.'};});
 
 /* ---- L8 ★ ---- */
+RULE(8,'Как обнаружить в растворе сульфат-ион SO₄²⁻?','Добавить раствор соли бария — выпадет белый осадок BaSO₄',['Добавить фенолфталеин — раствор станет малиновым','Добавить соляную кислоту — выделится газ','Добавить нитрат серебра — выпадет голубой осадок'],
+{short:'Качественная реакция на SO₄²⁻ — ион Ba²⁺: белый осадок BaSO₄.',explain:`Качественная реакция на сульфат-ион — ионы бария: ${EQ(['Na2SO4','BaCl2'],['BaSO4↓','NaCl']).html}. BaSO₄ — белый осадок, нерастворимый даже в кислотах. Газ с кислотой даёт карбонат (CO₂), фенолфталеин показывает щёлочь, а Ag⁺ — реактив на хлорид-ион (белый, а не голубой осадок AgCl).`,
+explain2:'Пары «ион — реактив» запоминают как ключ и замок: SO₄²⁻ ↔ Ba²⁺ (белый осадок), Cl⁻ ↔ Ag⁺ (белый творожистый), CO₃²⁻ ↔ H⁺ (газ), Cu²⁺ ↔ OH⁻ (голубой осадок).'});
 const CHAINS=[
  [['Ca','O2'],['CaO'],['CaO','H2O'],['Ca(OH)2'],['Ca(OH)2','CO2'],['CaCO3','H2O'],['CaCO3','HCl'],['CaCl2','H2O','CO2']],
  [['Cu','O2'],['CuO'],['CuO','HCl'],['CuCl2','H2O'],['CuCl2','NaOH'],['Cu(OH)2','NaCl'],['Cu(OH)2'],['CuO','H2O']],

@@ -262,7 +262,7 @@ H.sameSet=function(userArr,ansArr){
 
 H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
   let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
-H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
 H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
 H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
 H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
@@ -896,9 +896,6 @@ G(3,()=>{const f=pick(SUBST['ковалентная полярная']);const m=
 return CH(`В молекуле ${C(f)} связь ковалентная полярная. К какому атому смещены общие электронные пары?`,`К ${hi}`,[`К ${lo}`,'Пара посередине'],{short:`ЭО(${hi}) &gt; ЭО(${lo}).`,
 explain:`Сравниваем ЭО по ряду: ${hi} стоит раньше ${lo}, значит, ЭО(${hi}) &gt; ЭО(${lo}). Пары смещены <b>к ${hi}</b>: на ${hi} δ−, на ${lo} δ+.${f==='OF2'?' Интересно: здесь кислород — «слабый» партнёр, потому что фтор ещё электроотрицательнее.':''}${f==='CH4'?' Да, углерод чуть электроотрицательнее водорода.':''}`,
 explain2:`Не смотри на индексы — только на ряд ЭО: F &gt; O &gt; N &gt; Cl &gt; Br &gt; I &gt; S &gt; C &gt; H &gt; P &gt; Si. Ответ: к ${hi}.`});});
-G(3,()=>{const c=pick(SUBST['ковалентная полярная']);const wr=[pick(SUBST['ионная']),pick(SUBST['ковалентная неполярная']),pick(SUBST['металлическая'])];
-return CH('В каком веществе связь <b>ковалентная полярная</b>?',C(c),wr.map(C),{short:why(c)+'.',
-explain:`${why(c)}. Остальные: ${wr.map(x=>why(x)).join('; ')}.`,explain2:'Полярная = два <b>разных неметалла</b>. Если есть металл — это уже ионная или металлическая связь.'});});
 G(3,()=>{const S=pick([['H–F','H–Cl','H–Br','H–I'],['O–H','N–H','C–H'],['H–O','H–S'],['C–F','C–Cl','C–Br']]);const top=S[0];const opts=shuffle(S.slice());
 return {type:'choice',q:'Какая связь <b>самая полярная</b>?',opts,ans:opts.indexOf(top),short:`${top}: наибольшая разница ЭО.`,
 explain:`Полярность тем больше, чем больше <b>разница ЭО</b> связанных атомов. Один партнёр во всех связях одинаковый, а второй тем сильнее «тянет» пару, чем ближе он к фтору в ряду ЭО (F &gt; O &gt; N &gt; Cl &gt; Br &gt; I &gt; S &gt; C &gt; H). Поэтому полярность убывает так: ${S.join(' &gt; ')}. Самая полярная — <b>${top}</b>.`,
@@ -987,8 +984,11 @@ explain:`${hi?`Высшая степень окисления = номер гр�
 explain2:`Примеры для ${p[0]}: высшая ${ox(p[2])} (${p[0]==='S'?C('SO3'):p[0]==='N'?C('HNO3'):p[0]==='Cl'?C('Cl2O7'):p[0]==='C'?C('CO2'):p[0]==='P'?C('P2O5'):C('SiO2')}), низшая ${ox(p[3])} (${p[0]==='S'?C('H2S'):p[0]==='N'?C('NH3'):p[0]==='Cl'?'HCl':p[0]==='C'?C('CH4'):p[0]==='P'?C('PH3'):C('Mg2Si')}).`};});
 
 /* L8 вычисляем */
+RULE(8,'Как найти неизвестную степень окисления элемента в соединении?','Составить уравнение: сумма степеней окисления всех атомов (с индексами) равна 0, а для иона — его заряду',['Взять номер группы элемента','Сложить индексы всех атомов','Взять заряд ядра атома'],
+{short:'Σ (с.о. × индекс) = 0 или заряду иона.',
+explain:`Известные степени окисления (H +1, O −2, металлы IA +1, IIA +2) умножаем на индексы, неизвестную обозначаем x и приравниваем сумму к <b>0</b> (молекула) или к <b>заряду иона</b>. Номер группы — лишь <b>высшая</b> степень окисления, она бывает не всегда: в ${C('H2S')} у серы −2, а не +6.`,
+explain2:`${C('SO2')}: x + 2·(−2) = 0 → x = +4.`});
 G(8,()=>{const p=pick(OXB);return oxTask(p[0],p[1],p[2]);});
-G(8,()=>{const p=pick(OXB.filter(x=>parse(x[0])[x[2]]>1||Object.keys(parse(x[0])).length>2));return oxTask(p[0],p[1],p[2]);});
 G(8,()=>{const p=pick(OXI);return oxTask(p[0],p[1],p[2]);});
 G(8,()=>{for(;;){const el=pick(['S','N','C','Cl','P']);const pool=OXB.concat(OXI).filter(x=>x[2]===el).map(x=>[x,solve(x[0],x[1],x[2]).x]);const vals=[...new Set(pool.map(x=>x[1]))];if(vals.length<3)continue;
 const v=pick(vals);const good=pick(pool.filter(x=>x[1]===v));const bad=sample(pool.filter(x=>x[1]!==v),3);if(bad.length<3)continue;const L=x=>F(x[0][0],x[0][1]);
@@ -1002,6 +1002,10 @@ explain:`${pool.map(x=>`${L(x)}: ${el} ${ox(x[1])}`).join('; ')}. Наиболь
 explain2:`Высшая возможная для ${el} — номер группы (${ox({S:6,N:5,C:4,Cl:7}[el])}). Ищи частицу, где ${el} окружён большим числом атомов кислорода и у неё нет «лишнего» водорода или отрицательного заряда.`});});
 
 /* L9 ★ */
+RULE(9,'Какая степень окисления у кислорода в <b>пероксидах</b> (H₂O₂, Na₂O₂)?','−1',['−2','+2','0'],
+{short:'В пероксидах O −1 (связь O–O).',
+explain:`В пероксидах два атома кислорода связаны друг с другом (–O–O–), поэтому каждый «забирает» только один электрон: <b>−1</b>. Проверка: ${C('H2O2')}: 2·(+1) + 2·(−1) = 0 ✓. +2 у кислорода только в ${C('OF2')}.`,
+explain2:'Перекись водорода из аптечки — это и есть H₂O₂. Обычный оксид — O −2, пероксид — O −1.'});
 G(9,()=>oxTask('KMnO4',0,'Mn',{star:true,name:'(марганцовка)'}),{star:true});
 G(9,()=>pick([oxTask('Cr2O7',-2,'Cr',{star:true}),oxTask('K2Cr2O7',0,'Cr',{star:true,name:'(дихромат калия)'})]),{star:true});
 G(9,()=>{const p=pick([['H2O2',0,'O'],['Na2O2',0,'O'],['BaO2',0,'O'],['OF2',0,'O']]);const known=Object.assign({},KNOWN);delete known.O;

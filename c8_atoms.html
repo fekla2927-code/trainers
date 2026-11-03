@@ -262,7 +262,7 @@ H.sameSet=function(userArr,ansArr){
 
 H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
   let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
-H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
 H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
 H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
 H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
@@ -984,6 +984,10 @@ explain:`Сравниваем A<sub>r</sub>: ${s.map(x=>`${x.s} — ${N(x.ar)}`)
 explain2:`Подсказка: чем дальше элемент в таблице (больше номер), тем, как правило, тяжелее атом. ${h.s} — №${h.z}, остальные: ${s.filter(x=>x!==h).map(x=>x.s+' №'+x.z).join(', ')}.`});});
 
 /* L8 ★ */
+RULE(8,'Как найти, сколько атомов в молекуле простого вещества, если известна её M<sub>r</sub>?','Разделить M<sub>r</sub> на A<sub>r</sub> элемента',['Умножить M<sub>r</sub> на A<sub>r</sub>','Вычесть из M<sub>r</sub> порядковый номер','Разделить M<sub>r</sub> на порядковый номер'],
+{short:'Число атомов = M<sub>r</sub> : A<sub>r</sub>.',
+explain:`M<sub>r</sub> — сумма A<sub>r</sub> всех атомов. В простом веществе все атомы одинаковые, поэтому <b>число атомов = M<sub>r</sub> : A<sub>r</sub></b>. Пример: M<sub>r</sub>(${C('O3')}) = 48, 48 : 16 = 3. Порядковый номер — не масса.`,
+explain2:'Пакет яблок весит 600 г, одно яблоко — 200 г. Сколько яблок? 600 : 200 = 3. Так же и с атомами.'});
 G(8,()=>{for(;;){const b=pick(EL),k=R(2,8);const c=EL.filter(x=>x.ar===k*b.ar);if(c.length!==1)continue;const e=c[0];
 return SYMQ(`★ Атом элемента X в <b>${k}</b> ${H.plural(k,'раз','раза','раз')} тяжелее атома <b>${b.s}</b> (${b.n}). Какой это элемент? Напиши знак.`,e,{hint:'A<sub>r</sub>(X) = k · A<sub>r</sub>(Y).',short:`A<sub>r</sub>(X) = ${k} · ${N(b.ar)} = ${N(e.ar)} → ${e.s}.`,
 explain:`A<sub>r</sub>(${b.s}) = ${N(b.ar)}, значит, A<sub>r</sub>(X) = ${k} · ${N(b.ar)} = ${N(e.ar)}. Такая масса у <b>${e.s}</b> — ${e.n}.`,

@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Функции. Линейная функция — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,gcd}=H;
+const M=s=>`<span class="m">${s}</span>`;
+const n=x=>H.num(x);
+const fr=(a,b)=>H.frac(a,b);
+const P=x=>x<0?`(${n(x)})`:n(x);
+function poly(ts){let s='';ts.forEach(([c,v])=>{if(!c)return;const neg=c<0,a=Math.abs(c);const body=v?(a===1?'':n(a))+v:n(a);s+=s?(neg?' − ':' + ')+body:(neg?'−':'')+body;});return s||'0';}
+const L=(k,b)=>poly([[k,'x'],[b,'']]);
+const Y=(k,b)=>`y = ${L(k,b)}`;
+function rat(p,q){if(q<0){p=-p;q=-q;}const g=gcd(p,q)||1;p/=g;q/=g;return q===1?n(p):(p<0?'−':'')+fr(Math.abs(p),q);}
+function mk(correct,traps){const o=[correct];traps.forEach(t=>{if(t&&!o.includes(t))o.push(t);});const s=shuffle(o);return {opts:s,ans:s.indexOf(correct)};}
+const nz=(a,b)=>{let v;do{v=R(a,b);}while(!v);return v;};
+const sg=c=>c<0?'−':'+';
+const pt=(x,y)=>`(${n(x)}; ${n(y)})`;
+const NUMKEYS=['−','/'];
+const NUMPH='число (дробь можно как 7/3)';
+const SETKEYS=['∅','−','/'];
+const SETPH='числа через запятую, нет решений — ∅';
+
+/* ---------- координатная плоскость ---------- */
+let cid=0;
+function gplot(o){const xr=o.xr||[-6,6],yr=o.yr||[-6,6],W=o.w||280,pad=o.pad||14;const u=(W-2*pad)/(xr[1]-xr[0]);const Hh=Math.round(u*(yr[1]-yr[0])+2*pad);
+  const X=x=>pad+(x-xr[0])*u,Yp=y=>pad+(yr[1]-y)*u,f1=v=>Math.round(v*10)/10;const id='gc'+(++cid)+Math.random().toString(36).slice(2,6);
+  const halo='stroke="var(--card)" stroke-width="3" paint-order="stroke"';const fs=o.fs||(u>15?11:9);
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="График" style="font-family:system-ui,sans-serif">`;
+  s+=`<defs><clipPath id="${id}"><rect x="${X(xr[0])}" y="${Yp(yr[1])}" width="${f1((xr[1]-xr[0])*u)}" height="${f1((yr[1]-yr[0])*u)}"/></clipPath></defs>`;
+  s+=`<rect x="0.5" y="0.5" width="${W-1}" height="${Hh-1}" rx="8" fill="var(--card)" stroke="var(--line)"/>`;
+  for(let i=Math.ceil(xr[0]);i<=xr[1];i++)if(i)s+=`<line x1="${f1(X(i))}" y1="${f1(Yp(yr[0]))}" x2="${f1(X(i))}" y2="${f1(Yp(yr[1]))}" stroke="var(--line)"/>`;
+  for(let j=Math.ceil(yr[0]);j<=yr[1];j++)if(j)s+=`<line x1="${f1(X(xr[0]))}" y1="${f1(Yp(j))}" x2="${f1(X(xr[1]))}" y2="${f1(Yp(j))}" stroke="var(--line)"/>`;
+  const X0=X(0),Y0=Yp(0);
+  s+=`<line x1="${f1(X(xr[0]))}" y1="${f1(Y0)}" x2="${f1(X(xr[1])+4)}" y2="${f1(Y0)}" stroke="var(--fig)" stroke-width="1.4"/><polygon points="${f1(X(xr[1])+7)},${f1(Y0)} ${f1(X(xr[1]))},${f1(Y0-4)} ${f1(X(xr[1]))},${f1(Y0+4)}" fill="var(--fig)"/>`;
+  s+=`<line x1="${f1(X0)}" y1="${f1(Yp(yr[0]))}" x2="${f1(X0)}" y2="${f1(Yp(yr[1])-4)}" stroke="var(--fig)" stroke-width="1.4"/><polygon points="${f1(X0)},${f1(Yp(yr[1])-7)} ${f1(X0-4)},${f1(Yp(yr[1]))} ${f1(X0+4)},${f1(Yp(yr[1]))}" fill="var(--fig)"/>`;
+  s+=`<text x="${f1(X(xr[1])-2)}" y="${f1(Y0-6)}" font-size="${fs+1}" fill="var(--ink)" text-anchor="end" font-style="italic">x</text><text x="${f1(X0+6)}" y="${f1(Yp(yr[1])+8)}" font-size="${fs+1}" fill="var(--ink)" font-style="italic">y</text>`;
+  if(o.ticks!==false){const st=o.step||2;for(let i=Math.ceil(xr[0]/st)*st;i<xr[1];i+=st)if(i)s+=`<text x="${f1(X(i))}" y="${f1(Y0+fs+2)}" font-size="${fs}" fill="var(--muted)" text-anchor="middle">${n(i)}</text>`;
+    for(let j=Math.ceil(yr[0]/st)*st;j<yr[1];j+=st)if(j)s+=`<text x="${f1(X0-4)}" y="${f1(Yp(j)+fs/3)}" font-size="${fs}" fill="var(--muted)" text-anchor="end">${n(j)}</text>`;
+    s+=`<text x="${f1(X0-4)}" y="${f1(Y0+fs+2)}" font-size="${fs}" fill="var(--muted)" text-anchor="end">0</text>`;}
+  (o.fns||[]).forEach(F=>{let d='';const N=480;for(let i=0;i<=N;i++){const x=xr[0]+(xr[1]-xr[0])*i/N;let y=F.f(x);y=Math.max(yr[0]-30,Math.min(yr[1]+30,y));d+=(d?'L':'M')+f1(X(x))+','+f1(Yp(y));}
+    s+=`<path d="${d}" fill="none" stroke="${F.col||'var(--accent)'}" stroke-width="${F.sw||2.6}" ${F.dash?'stroke-dasharray="6 4"':''} clip-path="url(#${id})"/>`;});
+  (o.pts||[]).forEach(p=>{s+=`<circle cx="${f1(X(p.x))}" cy="${f1(Yp(p.y))}" r="4.5" fill="${p.col||'var(--hl)'}" stroke="var(--card)" stroke-width="1.5"/>`;
+    if(p.lab)s+=`<text x="${f1(X(p.x)+(p.dx==null?7:p.dx))}" y="${f1(Yp(p.y)+(p.dy==null?-7:p.dy))}" font-size="${fs+1}" font-weight="700" fill="var(--accent-ink)" text-anchor="${p.anc||'start'}" ${halo}>${p.lab}</text>`;});
+  (o.texts||[]).forEach(t=>{s+=`<text x="${f1(X(t.x))}" y="${f1(Yp(t.y))}" font-size="${t.fs||fs+1}" font-weight="700" fill="${t.col||'var(--accent-ink)'}" text-anchor="${t.anc||'middle'}" ${halo}>${t.t}</text>`;});
+  return s+'</svg>';}
+/* место для подписи прямой y = kx + b внутри окна */
+function lpos(k,b,fromRight,xr,yr){xr=xr||[-6,6];yr=yr||[-6,6];const xs=[];for(let x=xr[1]-1.2;x>=xr[0]+1.2;x-=0.4)xs.push(x);if(!fromRight)xs.reverse();
+  for(const x of xs){const y=k*x+b;if(y>yr[0]+1&&y<yr[1]-1)return {x,y:y+(k>=0?0.9:0.9),anc:fromRight?'end':'start'};}return {x:0,y:yr[1]-1,anc:'middle'};}
+const lineFig=(k,b,o)=>{o=o||{};return gplot(Object.assign({fns:[{f:x=>k*x+b}]},o));};
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Функция — это «автомат»',lvl:0,html:`
+<p class="hook">🎮 В игре у тебя опыт (XP) и уровень. Набрал опыт — игра <b>однозначно</b> говорит, какой у тебя уровень. Не бывает так, чтобы при 500 XP ты был одновременно 3-го и 7-го уровня. Вот это и есть функция: правило, которое каждому «входу» выдаёт <b>ровно один</b> «выход». Функции — везде: цена такси от километров, заряд телефона от времени, высота мяча от секунд.</p>
+<div class="box rule"><b>Определение</b><b>Функция</b> — это правило, по которому <b>каждому</b> значению x (из некоторого множества) соответствует <b>ровно одно</b> значение y.<br>x — <b>аргумент</b> (независимая переменная), y — <b>значение функции</b> (зависимая переменная). Пишут ${M('y = f(x)')}.</div>
+<p><b>Как автомат с газировкой:</b> нажал кнопку x — выпала ровно одна банка f(x). Если на одну кнопку автомат выдаёт то колу, то сок — это не функция, это сломанный автомат.</p>
+<div class="box ex"><b>Пример</b>${M('f(x) = 3x − 2')}. Тогда ${M('f(4) = 3·4 − 2 = 10')}, ${M('f(−1) = 3·(−1) − 2 = −5')}, ${M('f(0) = −2')}.</div>
+<div class="box err"><b>Частая ошибка</b>${M('f(−3)')} для ${M('f(x) = x²')} считать как −3² = −9. Подставляй <b>в скобках</b>: (−3)² = 9.</div>
+<div class="box tip"><b>Разные значения x могут давать одинаковый y</b>— это нормально: у ${M('y = x²')} и f(2), и f(−2) равны 4. Запрещено только обратное: один x — два разных y.</div>`},
+{title:'Область определения',lvl:1,html:`
+<div class="box rule"><b>Определение</b><b>Область определения</b> D(f) — все значения x, при которых формула имеет смысл (можно посчитать).<br><b>Множество значений</b> E(f) — все y, которые функция может выдать.</div>
+<p>Главный «запрет» в 7 классе — <b>делить на ноль нельзя</b>. Поэтому:</p>
+<div class="box ex"><b>Примеры</b>${M('y = 5x − 1')}: считается при любом x → D = все числа.<br>${M(`y = ${fr(6,'x − 2')}`)}: при x = 2 знаменатель 0 → D = все числа, кроме 2.<br>${M(`y = ${fr(1,'2x + 3')}`)}: 2x + 3 ≠ 0 → x ≠ −1,5.</div>
+<div class="box err"><b>Ловушка</b>«${M(`y = ${fr(6,'x − 2')}`)} не определена при x = −2». Нет! Ищем, когда <b>знаменатель</b> равен 0: x − 2 = 0 → x = 2.</div>
+<div class="box tip"><b>Обратная задача</b>«При каком x функция равна c?» — это уравнение f(x) = c. Например, 3x − 2 = 13 → x = 5.</div>`},
+{title:'График функции',lvl:2,html:`
+<div class="box rule"><b>Определение</b><b>График</b> функции — все точки (x; y) координатной плоскости, у которых y = f(x).<br>Точка ${M('(x₀; y₀)')} лежит на графике ⇔ ${M('y₀ = f(x₀)')}.</div>
+<p><b>Как проверить точку:</b> подставь её x в формулу. Получился её y — точка на графике. Нет — мимо.</p>
+<div class="box ex"><b>Пример</b>${M('y = 2x − 3')}. Точка (4; 5): 2·4 − 3 = 5 ✅ — лежит. Точка (1; 1): 2·1 − 3 = −1 ≠ 1 — не лежит.</div>
+<div class="fig">${gplot({fns:[{f:x=>2*x-3}],pts:[{x:4,y:5,lab:'(4; 5)',anc:'end',dx:-8,dy:2},{x:1,y:1,lab:'(1; 1)',col:'var(--muted)',dx:-8,dy:-6,anc:'end'}]})}</div>
+<div class="box err"><b>Ловушка</b>Подставлять y вместо x. В точке (4; 5) первое число — x, второе — y. Порядок важен: «сначала по коридору (x), потом на лифте (y)».</div>`},
+{title:'Линейная функция y = kx + b',lvl:3,html:`
+<div class="box rule"><b>Определение</b><b>Линейная функция</b>: ${M('y = kx + b')}, где k и b — числа. Её график — <b>прямая</b>.<br>• <b>k — угловой коэффициент</b> (наклон): k > 0 — функция возрастает (прямая идёт вверх слева направо), k < 0 — убывает, k = 0 — горизонтальная прямая y = b.<br>• <b>b</b> — где прямая пересекает ось y: в точке (0; b).</div>
+<p><b>Почему k — наклон?</b> Сдвинься по x на 1 вправо — y изменится ровно на k. k = 2: «шаг вправо — два вверх». k = −½: «шаг вправо — полшага вниз». Это как уклон дороги в гонках: чем больше |k|, тем круче горка.</p>
+<p><b>Поиграй:</b> двигай k и b. Смотри, как k поворачивает прямую, а b поднимает и опускает её.</p>
+<div class="widget" id="w-lin"></div>
+<div class="box tip"><b>Как построить</b>Хватит <b>двух точек</b>. Удобно: (0; b) и ещё одна, например x = 1 → y = k + b.</div>
+<div class="box rule"><b>k по двум точкам</b>${M(`k = ${fr('y₂ − y₁','x₂ − x₁')}`)} — «на сколько поднялись, делить на сколько прошли».</div>
+<div class="box ex"><b>Пример</b>Прямая через (1; 3) и (4; 9): k = (9 − 3)/(4 − 1) = 2. Тогда 3 = 2·1 + b → b = 1: ${M('y = 2x + 1')}.</div>
+<div class="box err"><b>Ловушка</b>В ${M('y = 5 − 3x')} сказать «k = 5». Коэффициент k стоит <b>при x</b>: k = −3, b = 5.</div>
+<div class="box ex"><b>Нули функции</b>Где прямая пересекает ось x? Там y = 0: ${M('2x − 6 = 0')} → x = 3, точка (3; 0).</div>`},
+{title:'Прямая пропорциональность y = kx',lvl:4,html:`
+<div class="box rule"><b>Определение</b>${M('y = kx')} (b = 0) — <b>прямая пропорциональность</b>. График всегда проходит через <b>начало координат</b> (0; 0).<br>k = y : x — во сколько раз y больше x (одинаково для всех точек).</div>
+<div class="box ex"><b>Из жизни</b>Скорость 60 км/ч: путь ${M('s = 60t')}. Цена 45 ₽ за булку: ${M('C = 45n')}. Мобильный интернет 3 ₽ за МБ: ${M('y = 3x')}.<br>А такси «посадка 99 ₽ + 25 ₽/км» — ${M('y = 25x + 99')} — уже <b>не</b> пропорциональность: при x = 0 платим 99, а не 0.</div>
+<div class="box ex"><b>Найти k</b>График y = kx проходит через (−4; 10): k = 10 : (−4) = −2,5.</div>
+<div class="box err"><b>Ловушка</b>Путать «прямая пропорциональность» с «обратной» ${M('y = k/x')} — у обратной график не прямая, а гипербола.</div>
+<div class="fact">Слово «функция» в математику ввёл Готфрид Лейбниц в 1673 году, а обозначение f(x) придумал Леонард Эйлер — тот самый, что 14 лет работал в Петербургской академии наук.</div>`},
+{title:'Взаимное расположение прямых',lvl:5,html:`
+<div class="box rule"><b>Правило</b>Прямые ${M('y = k₁x + b₁')} и ${M('y = k₂x + b₂')}:<br>• ${M('k₁ ≠ k₂')} — <b>пересекаются</b> (в одной точке);<br>• ${M('k₁ = k₂, b₁ ≠ b₂')} — <b>параллельны</b>;<br>• ${M('k₁ = k₂, b₁ = b₂')} — <b>совпадают</b>.</div>
+<p><b>Почему?</b> Одинаковый k — одинаковый наклон, «едут» с одинаковым уклоном, как рельсы. Разный b — сдвинуты друг относительно друга — никогда не встретятся.</p>
+<div class="fig">${gplot({fns:[{f:x=>0.5*x+2},{f:x=>0.5*x-2,col:'var(--hl)'},{f:x=>-2*x+1,col:'var(--fig)',dash:1}],texts:[{x:3.6,y:4.6,t:'y = 0,5x + 2'},{x:3.4,y:-1.2,t:'y = 0,5x − 2'},{x:-3.6,y:5.2,t:'y = −2x + 1'}]})}</div>
+<div class="box ex"><b>Пример</b>Прямая параллельна ${M('y = 3x − 1')} и проходит через (2; 4). Значит k = 3: 4 = 3·2 + b → b = −2: ${M('y = 3x − 2')}.</div>
+<div class="box err"><b>Ловушка</b>«${M('y = 2x + 1')} и ${M('y = −2x + 1')} параллельны — числа же одинаковые». Нет: k = 2 и k = −2 разные, прямые пересекаются (в точке (0; 1)).</div>`},
+{title:'Точки пересечения',lvl:6,html:`
+<div class="box rule"><b>Правило</b>Чтобы найти точку пересечения графиков ${M('y = f(x)')} и ${M('y = g(x)')}, реши уравнение ${M('f(x) = g(x)')} — найдёшь x, потом подставь его в любую формулу — найдёшь y.<br>С осью y: x = 0. С осью x: y = 0.</div>
+<div class="box ex"><b>Пример</b>${M('y = 2x + 1')} и ${M('y = −x + 7')}: ${M('2x + 1 = −x + 7')} → 3x = 6 → x = 2; y = 2·2 + 1 = 5. Точка (2; 5).</div>
+<div class="fig">${gplot({fns:[{f:x=>2*x+1},{f:x=>-x+7,col:'var(--hl)'}],xr:[-3,7],yr:[-2,8],pts:[{x:2,y:5,lab:'(2; 5)',dx:8,dy:4}],texts:[{x:-1,y:1.4,t:'y = 2x + 1',anc:'end'},{x:5.6,y:3.2,t:'y = −x + 7'}]})}</div>
+<p><b>Почему так?</b> В точке пересечения обе функции при одном и том же x дают один и тот же y. Это и записывает уравнение.</p>
+<div class="box err"><b>Ловушка</b>Найти x и остановиться. Точка — это <b>пара</b> чисел (x; y).</div>
+<div class="fact">Так же «на пересечении графиков» работают тарифы: два оператора, у одного абонплата больше, а минута дешевле. Точка пересечения прямых «цена от минут» — порог, после которого выгоднее второй тариф.</div>`},
+{title:'Кусочные функции и y = |x|',lvl:7,html:`
+<div class="box rule"><b>Модуль как функция</b>${M('y = |x|')}: при x ≥ 0 это y = x, при x < 0 это y = −x. График — «галочка» ✓ с вершиной в (0; 0).<br>${M('y = |x − a| + b')} — та же галочка, сдвинутая: вершина в точке <b>(a; b)</b>.</div>
+<div class="figrow"><div class="fig">${gplot({fns:[{f:x=>Math.abs(x)}],w:150,xr:[-4,4],yr:[-2,6],ticks:false})}<div class="cap">y = |x|</div></div><div class="fig">${gplot({fns:[{f:x=>Math.abs(x-2)-1}],w:150,xr:[-4,4],yr:[-2,6],ticks:false,pts:[{x:2,y:-1}]})}<div class="cap">y = |x − 2| − 1</div></div></div>
+<div class="box err"><b>Ловушка сдвига</b>${M('|x − 2|')} сдвигает график <b>вправо</b> на 2 (вершина там, где x − 2 = 0, то есть x = 2), а не влево.</div>
+<div class="box rule"><b>Кусочная функция</b>Задаётся разными формулами на разных участках. Чтобы найти f(x₀), сначала реши, <b>в какой кусок</b> попадает x₀.</div>
+<div class="box ex"><b>Пример</b>${M('f(x) = 2x + 1')} при x < 1 и ${M('f(x) = 4 − x')} при x ≥ 1.<br>f(−3): −3 < 1 → 2·(−3) + 1 = −5. f(3): 3 ≥ 1 → 4 − 3 = 1. f(1): 1 ≥ 1 → 4 − 1 = 3.</div>
+<div class="fact">Кусочные функции — это налоги, тарифы такси (днём одна цена, ночью другая), скидки «от 3 товаров». А Excel и Python вычисляют их через if.</div>`},
+{title:'★ Олимпиадные идеи',lvl:8,html:`
+<div class="box rule"><b>Три точки на одной прямой</b>A, B, C лежат на одной прямой ⇔ угловые коэффициенты AB и AC равны.</div>
+<div class="box rule"><b>Три прямые через одну точку</b>Найди точку пересечения двух — и потребуй, чтобы через неё прошла третья.</div>
+<div class="box rule"><b>Функция от функции</b>Если ${M('f(x) = kx + b')}, то ${M('f(f(x)) = k(kx + b) + b = k²x + kb + b')}. Сравнивая с данной формулой, получаем уравнения на k и b.</div>
+<div class="box rule"><b>Сумма модулей</b>${M('|x − 1| + |x − 2| + … + |x − n|')} — сумма расстояний до n точек. Она наименьшая в «середине» (медиане) этих точек.</div>
+<div class="box rule"><b>Число решений графически</b>${M('|x| = kx + b')}: сколько раз прямая пересекает галочку? Нарисуй — и посчитай.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps"><li>Функция: каждому x — ровно один y.</li>
+<li>D(f) — где формула имеет смысл (знаменатель ≠ 0).</li>
+<li>(x₀; y₀) на графике ⇔ y₀ = f(x₀).</li>
+<li>y = kx + b — прямая; k — наклон, b — пересечение с Oy.</li>
+<li>k = (y₂ − y₁)/(x₂ − x₁).</li>
+<li>k₁ = k₂ — параллельны (или совпадают), k₁ ≠ k₂ — пересекаются.</li>
+<li>Пересечение: f(x) = g(x).</li>
+<li>y = |x − a| + b — галочка с вершиной (a; b).</li></ul>`}
+];
+
+const symbols={tab:'Формулы',title:'Главное о функциях',rows:[
+['y = f(x)','Функция','Каждому x — ровно один y.',M('f(2) = 3·2 − 1 = 5')],
+['D(f)','Область определения','Все x, при которых формула имеет смысл.',M('y = 1/(x − 3): x ≠ 3')],
+['y = kx + b','Линейная функция','График — прямая; k — наклон, b — точка (0; b).',M('y = 2x − 1')],
+['y = kx','Прямая пропорциональность','Прямая через начало координат.',M('s = 60t')],
+['k = Δy/Δx','Угловой коэффициент','«Подъём : пробег» между двумя точками.',M('(1; 3), (4; 9): k = 6/3 = 2')],
+['k₁ = k₂','Параллельные прямые','При b₁ ≠ b₂ не пересекаются.',M('y = 2x + 1 ∥ y = 2x − 5')],
+['f(x) = g(x)','Точка пересечения','Решаем уравнение, потом находим y.',M('2x + 1 = −x + 7 → (2; 5)')],
+['y = |x − a| + b','Галочка','Вершина (a; b), ветви вверх.',M('y = |x − 2| − 1')]
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>k — «как круто», b — «где пересекли ось y». Знаешь k и b — видишь прямую.</div>`};
+
+const gens=[];
+const G=(lvl,make,f)=>gens.push({lvl,make,star:(f||'').includes('s')||undefined,rule:(f||'').includes('r')||undefined});
+
+/* L0 */
+G(0,()=>{const ok='правило, по которому каждому значению x соответствует ровно одно значение y';
+const o=mk(ok,['правило, по которому каждому y соответствует ровно один x','любая формула, в которой есть x и y','правило, по которому каждому x может соответствовать несколько значений y']);
+return {type:'choice',q:'Что такое <b>функция</b>?',...o,short:'Каждому x — ровно один y.',
+explain:`Функция — правило «каждому x — <b>ровно один</b> y». При этом разным x может соответствовать один и тот же y (у y = x² f(2) = f(−2) = 4) — это разрешено. Запрещено, чтобы одному x соответствовали два разных y.`,
+explain2:`Автомат с газировкой: каждая кнопка (x) выдаёт ровно одну банку (y). Две кнопки могут давать одинаковую колу — нормально. А одна кнопка, выдающая то колу, то сок, — «не функция».`};},'r');
+G(0,()=>{const which=pick(['arg','val']);const ok=which==='arg'?'аргумент (независимая переменная)':'значение функции (зависимая переменная)';
+const o=mk(ok,['аргумент (независимая переменная)','значение функции (зависимая переменная)','угловой коэффициент','область определения']);
+return {type:'choice',q:`В записи ${M('y = f(x)')} как называется <b>${which==='arg'?'x':'y'}</b>?`,...o,short:`${which==='arg'?'x':'y'} — ${ok}.`,
+explain:`x — <b>аргумент</b>: его выбираем сами (независимая переменная). y — <b>значение функции</b>: оно получается из x (зависит от x). Ответ: ${which==='arg'?'x':'y'} — ${ok}.`,
+explain2:`«Аргумент» — то, что подаёшь на вход, как довод в споре. «Значение» — что выдаёт функция. В f(3) = 7 аргумент 3, значение 7.`};},'r');
+G(0,()=>{const k=nz(-6,6),b=R(-9,9),x=nz(-7,7);
+return {type:'num',q:`Функция задана формулой ${M(`f(x) = ${L(k,b)}`)}. Найди ${M(`f(${n(x)})`)}.`,ans:k*x+b,keys:NUMKEYS,
+short:`f(${n(x)}) = ${n(k)}·${P(x)} ${b?sg(b)+' '+Math.abs(b):''} = ${n(k*x+b)}.`,
+explain:`Подставляем x = ${n(x)} вместо x (отрицательные — в скобках!):<br>${M(`f(${n(x)}) = ${n(k)}·${P(x)}${b?` ${sg(b)} ${Math.abs(b)}`:''} = ${n(k*x)}${b?` ${sg(b)} ${Math.abs(b)}`:''} = ${n(k*x+b)}`)}.`,
+explain2:`f(${n(x)}) — «что выдаст автомат, если на вход подать ${n(x)}». Автомат: умножь на ${n(k)}${b?`, потом ${b>0?'прибавь':'вычти'} ${Math.abs(b)}`:''}. ${n(x)} → ${n(k*x)} → ${n(k*x+b)}.`};});
+G(0,()=>{const c=R(1,9),x=-R(1,6);const kind=pick(['sq','abs']);const f=kind==='sq'?v=>v*v-c:v=>2*Math.abs(v)-c;const fs=kind==='sq'?`x² − ${c}`:`2|x| − ${c}`;
+return {type:'num',q:`Найди значение функции ${M(`f(x) = ${fs}`)} при x = ${n(x)}.`,ans:f(x),keys:NUMKEYS,
+short:`f(${n(x)}) = ${kind==='sq'?`(${n(x)})² − ${c} = ${x*x} − ${c}`:`2·|${n(x)}| − ${c} = ${2*-x} − ${c}`} = ${n(f(x))}.`,
+explain:kind==='sq'?`${M(`f(${n(x)}) = (${n(x)})² − ${c} = ${x*x} − ${c} = ${n(f(x))}`)}.<br>Ловушка: −${-x}² = −${x*x} — так получится, если забыть скобки. Квадрат отрицательного числа <b>положителен</b>.`:`${M(`f(${n(x)}) = 2·|${n(x)}| − ${c} = 2·${-x} − ${c} = ${n(f(x))}`)}.<br>Модуль отрицательного числа — противоположное (положительное) число.`,
+explain2:kind==='sq'?`(${n(x)})² = (${n(x)})·(${n(x)}) = ${x*x}: минус на минус — плюс. Дальше ${x*x} − ${c} = ${n(f(x))}.`:`|${n(x)}| — расстояние от ${n(x)} до 0, это ${-x}. Удвоили: ${-2*x}, вычли ${c}: ${n(f(x))}.`};});
+G(0,()=>{const xs=sample([-3,-2,-1,0,1,2,3,4],4).sort((a,b)=>a-b);const mkT=(bad)=>{let X=xs.slice(),Yv=X.map(()=>R(-5,5));if(bad){const i=R(1,3);X[i]=X[i-1];if(Yv[i]===Yv[i-1])Yv[i]+=1;}return `x: ${X.map(n).join(', ')}<br>y: ${Yv.map(n).join(', ')}`;};
+const badT=mkT(true);const o=mk(badT,[mkT(false),mkT(false),mkT(false)]);
+return {type:'choice',q:'Какая из таблиц <b>не</b> может задавать функцию y от x?',...o,hint:'Ищи одинаковые x с разными y.',
+short:'В ней одному x соответствуют два разных y.',
+explain:`Функция — каждому x ровно один y. В «плохой» таблице одно и то же x встречается дважды, и y у них разные: ${badT}<br>Так нельзя. В остальных все x разные — каждому свой y, это функции (даже если какие-то y совпадают).`,
+explain2:`Проверка «вертикальной линией»: отметь точки на плоскости. Если две точки стоят друг над другом (одинаковый x), это не график функции.`};});
+
+/* L1 */
+G(1,()=>{const ok='все значения x, при которых формула функции имеет смысл';
+const o=mk(ok,['все значения y, которые принимает функция','все x, при которых функция равна нулю','все положительные числа']);
+return {type:'choice',q:'Что называют <b>областью определения</b> функции?',...o,short:'D(f) — допустимые значения аргумента x.',
+explain:`Область определения D(f) — это все x, которые можно «скормить» формуле, и она посчитается. Например, в ${M(`y = ${fr(1,'x − 3')}`)} нельзя x = 3 (деление на 0).<br>Все значения y — это <b>множество значений</b> E(f), другое понятие. Где функция равна нулю — это нули функции.`,
+explain2:`Область определения — «список разрешённых входов» автомата. Монетка, которую автомат не принимает (x = 3 для 1/(x − 3)), в список не входит.`};},'r');
+G(1,()=>{const a=nz(-7,7),k=nz(-9,9);const ok=`все числа, кроме ${n(a)}`;
+const o=mk(ok,[`все числа, кроме ${n(-a)}`,'все числа',`все числа, кроме 0`,`только x > ${n(a)}`]);
+return {type:'choice',q:`Найди область определения функции ${M(`y = ${fr(n(k),poly([[1,'x'],[-a,'']]))}`)}.`,...o,short:`Знаменатель ${poly([[1,'x'],[-a,'']])} ≠ 0 → x ≠ ${n(a)}.`,
+explain:`Делить на 0 нельзя: ${M(`${poly([[1,'x'],[-a,'']])} ≠ 0`)} → x ≠ ${n(a)}. Все остальные x подходят.<br>Ответ: <b>${ok}</b>. Ловушка — «кроме ${n(-a)}»: так получается, если взять число из скобки с его знаком.`,
+explain2:`Проверь: x = ${n(a)} → знаменатель ${n(a)} ${a>0?'−':'+'} ${Math.abs(a)} = 0 — деление на ноль. x = ${n(-a)} → знаменатель ${n(-2*a)} ≠ 0, считается спокойно.`};});
+G(1,()=>{let k,m,c;do{k=R(2,5);m=nz(-9,9);c=R(1,9);}while(false);
+return {type:'num',q:`При каком значении x функция ${M(`y = ${fr(c,L(k,-m))}`)} <b>не определена</b>?`,ans:m/k,ansText:rat(m,k),keys:NUMKEYS,ph:NUMPH,
+short:`${M(`${L(k,-m)} = 0`)} → x = ${rat(m,k)}.`,
+explain:`Функция не определена там, где знаменатель равен 0: ${M(`${L(k,-m)} = 0`)} → ${M(`${k}x = ${n(m)}`)} → x = <b>${rat(m,k)}</b>.`,
+explain2:`Проверка: ${k}·${rat(m,k)} ${m>0?'−':'+'} ${Math.abs(m)} = ${n(m)} ${m>0?'−':'+'} ${Math.abs(m)} = 0 — на ноль делить нельзя ✅.`};});
+G(1,()=>{let k,b,x;k=nz(-6,6);b=R(-9,9);x=R(-8,8);const c=k*x+b;
+return {type:'num',q:`При каком значении аргумента функция ${M(`y = ${L(k,b)}`)} принимает значение ${n(c)}?`,ans:x,keys:NUMKEYS,
+short:`${M(`${L(k,b)} = ${n(c)}`)} → x = ${n(x)}.`,
+explain:`«Значение ${n(c)}» — это y = ${n(c)}. Решаем уравнение ${M(`${L(k,b)} = ${n(c)}`)} → ${M(`${poly([[k,'x']])} = ${n(c-b)}`)} → x = <b>${n(x)}</b>.`,
+explain2:`Обратная задача: известен выход автомата — ищем вход. Проверка: ${n(k)}·${P(x)} ${b?sg(b)+' '+Math.abs(b):''} = ${n(c)} ✅.`};});
+
+/* L2 */
+G(2,()=>{const ok=M('y₀ = f(x₀)');const o=mk(ok,[M('x₀ = f(y₀)'),M('x₀ = y₀'),M('f(x₀) = 0')]);
+return {type:'choice',q:`Точка ${M('(x₀; y₀)')} лежит на графике функции ${M('y = f(x)')} тогда и только тогда, когда…`,...o,short:'Подставь x₀ — должен получиться y₀.',
+explain:`График — все точки (x; f(x)). Значит, точка (x₀; y₀) на графике, если y₀ = f(x₀): подставили первую координату — получили вторую.<br>${M('f(x₀) = 0')} — условие, что x₀ — нуль функции (точка на оси x).`,
+explain2:`y = 2x + 1, точка (3; 7): f(3) = 7 = y₀ ✅ — на графике. Точка (7; 3): f(7) = 15 ≠ 3 — не на графике. Порядок координат важен!`};},'r');
+G(2,()=>{const k=nz(-4,4),b=R(-6,6),x=nz(-6,6);const on=Math.random()<0.5;const y=k*x+b+(on?0:pick([-2,-1,1,2]));const sw=!on&&Math.random()<0.4;
+const X=sw?k*x+b:x,Yv=sw?x:y;const real=Yv===k*X+b;
+const opts=['Да, лежит','Нет, не лежит'];
+return {type:'choice',q:`Лежит ли точка ${M(pt(X,Yv))} на графике функции ${M(Y(k,b))}?`,opts,ans:real?0:1,hint:'Подставь x точки в формулу и сравни с её y.',
+short:`f(${n(X)}) = ${n(k*X+b)} ${real?'=':'≠'} ${n(Yv)}.`,
+explain:`Подставим x = ${n(X)}: ${M(`y = ${n(k)}·${P(X)}${b?` ${sg(b)} ${Math.abs(b)}`:''} = ${n(k*X+b)}`)}.<br>У точки y = ${n(Yv)}. ${real?'Совпало — точка <b>лежит</b> на графике.':`${n(k*X+b)} ≠ ${n(Yv)} — точка <b>не лежит</b> на графике.`}${sw&&!real?`<br>Внимание: точка ${pt(Yv,X)} на графике лежит — но в нашей точке координаты переставлены.`:''}`,
+explain2:`При x = ${n(X)} прямая проходит на высоте ${n(k*X+b)}. Наша точка на высоте ${n(Yv)}${real?' — ровно на прямой':Yv>k*X+b?' — выше прямой':' — ниже прямой'}.`};});
+G(2,()=>{const k=nz(-5,5),b=R(-8,8);const askY=Math.random()<0.5;let x0,y0;
+if(askY){x0=nz(-6,6);y0=k*x0+b;return {type:'num',q:`Точка ${M(`(${n(x0)}; a)`)} лежит на графике функции ${M(Y(k,b))}. Найди a.`,ans:y0,keys:NUMKEYS,
+short:`a = ${n(k)}·${P(x0)}${b?` ${sg(b)} ${Math.abs(b)}`:''} = ${n(y0)}.`,
+explain:`Точка на графике → её y равен f(x). a = ${n(k)}·${P(x0)}${b?` ${sg(b)} ${Math.abs(b)}`:''} = <b>${n(y0)}</b>.`,
+explain2:`Двигайся по оси x до ${n(x0)} и поднимись (опустись) до прямой — окажешься на высоте ${n(y0)}.`};}
+x0=R(-6,6);y0=k*x0+b;return {type:'num',q:`Точка ${M(`(a; ${n(y0)})`)} лежит на графике функции ${M(Y(k,b))}. Найди a.`,ans:x0,keys:NUMKEYS,
+short:`${M(`${L(k,b)} = ${n(y0)}`)} → a = ${n(x0)}.`,
+explain:`Теперь известен y, а x неизвестен: ${M(`${L(k,b)} = ${n(y0)}`)} → ${M(`${poly([[k,'x']])} = ${n(y0-b)}`)} → x = <b>${n(x0)}</b>.`,
+explain2:`Проверка: ${n(k)}·${P(x0)}${b?` ${sg(b)} ${Math.abs(b)}`:''} = ${n(y0)} ✅. Ловушка — подставить ${n(y0)} вместо x.`};});
+G(2,()=>{let k,b,x0;do{k=pick([-2,-1,1,2,0.5,-0.5]);b=R(-3,3);x0=nz(-4,4);}while(!Number.isInteger(k*x0+b)||Math.abs(k*x0+b)>5||!Number.isInteger(k*2));const y0=k*x0+b;
+return {type:'num',q:`По графику функции найди значение y при x = ${n(x0)}.`,pic:lineFig(k,b,{w:260}),ans:y0,keys:NUMKEYS,hint:`Найди x = ${n(x0)} на оси x, поднимись (или опустись) до прямой и посмотри на ось y.`,
+short:`На графике точка (${n(x0)}; ${n(y0)}).`,
+explain:`Отмечаем x = ${n(x0)}, идём вертикально до прямой, затем горизонтально к оси y: <b>${n(y0)}</b>.<div class="fig">${lineFig(k,b,{w:260,pts:[{x:x0,y:y0,lab:pt(x0,y0)}]})}</div>`,
+explain2:`Можно восстановить формулу: прямая пересекает ось y в точке ${n(b)}, и при шаге вправо на ${k===0.5||k===-0.5?2:1} поднимается на ${k===0.5||k===-0.5?n(2*k):n(k)}. Это ${M(Y(k,b))}, и при x = ${n(x0)}: y = ${n(y0)}.`};});
+
+/* L3 */
+G(3,()=>{const which=pick(['pos','neg']);const ok=which==='pos'?'возрастает: прямая идёт вверх слева направо':'убывает: прямая идёт вниз слева направо';
+const o=mk(ok,['возрастает: прямая идёт вверх слева направо','убывает: прямая идёт вниз слева направо','постоянна: прямая горизонтальна','проходит через начало координат']);
+return {type:'choice',q:`Что можно сказать о функции ${M('y = kx + b')}, если <b>k ${which==='pos'?'>':'<'} 0</b>?`,...o,short:`k ${which==='pos'?'> 0 — возрастает':'< 0 — убывает'}.`,
+explain:`k показывает, на сколько меняется y при увеличении x на 1. ${which==='pos'?'k > 0: y растёт → функция <b>возрастает</b>.':'k < 0: y уменьшается → функция <b>убывает</b>.'}<br>Горизонтальная прямая — при k = 0. Через начало координат — при b = 0, знак k тут ни при чём.`,
+explain2:`${which==='pos'?'y = 2x: x = 0 → 0, x = 1 → 2, x = 2 → 4 — вверх.':'y = −2x: x = 0 → 0, x = 1 → −2, x = 2 → −4 — вниз.'} Читай график как текст — слева направо.`};},'r');
+G(3,()=>{const ok='ординату точки пересечения графика с осью y — точка (0; b)';
+const o=mk(ok,['абсциссу точки пересечения с осью x — точка (b; 0)','наклон прямой','на сколько меняется y при увеличении x на 1']);
+return {type:'choice',q:`Что показывает число <b>b</b> в формуле ${M('y = kx + b')}?`,...o,short:'При x = 0 y = b: точка (0; b).',
+explain:`Подставим x = 0: y = k·0 + b = b. Значит, прямая пересекает ось y в точке <b>(0; b)</b>.<br>Наклон и «изменение y при шаге x на 1» — это k. С осью x прямая пересекается в точке x = −b/k, а не b.`,
+explain2:`y = 3x − 4: при x = 0 получаем −4 → прямая «стартует» на оси y с −4. Меняешь b — прямая сдвигается вверх-вниз, не поворачиваясь.`};},'r');
+G(3,()=>{const k=nz(-7,7),b=nz(-9,9);const form=pick(['bk','std','neg']);const eq=form==='bk'?`y = ${n(b)} ${sg(k)} ${Math.abs(k)===1?'':Math.abs(k)}x`:form==='neg'?`y = −(${L(-k,-b)})`:Y(k,b);const ask=pick(['k','b']);
+return {type:'num',q:`Найди ${ask==='k'?'угловой коэффициент k':'число b'} линейной функции ${M(eq)}.`,ans:ask==='k'?k:b,keys:NUMKEYS,hint:'Перепиши в виде y = kx + b.',
+short:`${M(Y(k,b))}: k = ${n(k)}, b = ${n(b)}.`,
+explain:`Приведём к виду y = kx + b: ${M(Y(k,b))}.${form==='neg'?' (Раскрыли скобки — знаки поменялись.)':form==='bk'?' (Просто переставили слагаемые.)':''}<br>k — число при x: <b>${n(k)}</b>; b — число без x: <b>${n(b)}</b>. Ответ: ${ask} = ${n(ask==='k'?k:b)}.`,
+explain2:`Знак «прилипает» к числу справа. Проверка: при x = 0 y = ${n(b)} (это b), при x = 1 y = ${n(k+b)}, шаг ${n(k)} (это k).`};});
+G(3,()=>{let x1,y1,x2,y2,k;do{x1=R(-6,4);x2=x1+R(1,5);k=nz(-4,4);y1=R(-8,8);y2=y1+k*(x2-x1);if(Math.random()<0.4){y2=y1+R(-9,9);}}while(y1===y2||x1===x2||(y2-y1)%(x2-x1)!==0&&Math.random()<0.5);
+const kk=(y2-y1)/(x2-x1);
+return {type:'num',q:`Прямая проходит через точки ${M(pt(x1,y1))} и ${M(pt(x2,y2))}. Найди её угловой коэффициент k.`,ans:kk,ansText:rat(y2-y1,x2-x1),keys:NUMKEYS,ph:NUMPH,
+short:`k = (${n(y2)} − ${P(y1)})/(${n(x2)} − ${P(x1)}) = ${rat(y2-y1,x2-x1)}.`,
+explain:`${M(`k = ${fr('y₂ − y₁','x₂ − x₁')} = ${fr(`${n(y2)} − ${P(y1)}`,`${n(x2)} − ${P(x1)}`)} = ${fr(n(y2-y1),n(x2-x1))}`)} = <b>${rat(y2-y1,x2-x1)}</b>.<br>Ловушка — перевернуть дробь (Δx/Δy) или вычитать в разном порядке сверху и снизу.`,
+explain2:`«Подъём : пробег». От первой точки ко второй прошли вправо на ${x2-x1}, а по высоте ${y2>y1?'поднялись':'опустились'} на ${Math.abs(y2-y1)}. k = ${n(y2-y1)} : ${x2-x1} = ${rat(y2-y1,x2-x1)}.`};});
+G(3,()=>{let k,b;do{k=nz(-3,3);b=nz(-4,4);}while(Math.abs(k)===Math.abs(b));
+const ok=M(Y(k,b));const o=mk(ok,[M(Y(-k,b)),M(Y(k,-b)),M(Y(b,k))]);
+return {type:'choice',q:'Какой формулой задана прямая на рисунке?',pic:lineFig(k,b,{w:260}),...o,hint:'Где прямая пересекает ось y? Насколько она поднимается при шаге вправо на 1?',
+short:`Пересекает Oy в ${n(b)}, шаг вправо — ${k>0?'вверх':'вниз'} на ${Math.abs(k)}: ${ok}.`,
+explain:`1) Прямая пересекает ось y в точке (0; ${n(b)}) → b = ${n(b)}.<br>2) От этой точки шаг вправо на 1 — прямая ${k>0?'поднимается':'опускается'} на ${Math.abs(k)} → k = ${n(k)}.<br>Ответ: ${ok}.<div class="fig">${lineFig(k,b,{w:260,pts:[{x:0,y:b,lab:pt(0,b)},{x:1,y:k+b,lab:pt(1,k+b)}]})}</div>`,
+explain2:`Проверь двумя точками: (0; ${n(b)}) и (1; ${n(k+b)}) лежат на прямой. Подставь в ${ok}: при x = 0 → ${n(b)} ✅, при x = 1 → ${n(k+b)} ✅. В ${M(Y(-k,b))} при x = 1 вышло бы ${n(-k+b)} — не та точка.`};});
+G(3,()=>{let k,b;do{k=nz(-3,3);b=nz(-4,4);}while(Math.abs(k)===Math.abs(b));
+const variants=[[k,b],[-k,b],[k,-b],[-k,-b]];const pics=variants.map(([kk,bb])=>lineFig(kk,bb,{w:150,ticks:false,xr:[-5,5],yr:[-5,5]}));
+const order=shuffle([0,1,2,3]);
+return {type:'choice',pics:true,q:`Какой из графиков — график функции ${M(Y(k,b))}?`,opts:order.map(i=>pics[i]),ans:order.indexOf(0),hint:'Сначала смотри на b (где пересекли ось y), потом на знак k (вверх или вниз).',
+short:`b = ${n(b)} — пересекает ось y ${b>0?'выше':'ниже'} нуля; k = ${n(k)} — прямая ${k>0?'возрастает':'убывает'}.`,
+explain:`Два признака:<br>• b = ${n(b)} → прямая пересекает ось y в точке (0; ${n(b)}), ${b>0?'выше':'ниже'} начала координат;<br>• k = ${n(k)} ${k>0?'> 0 → идёт вверх':'< 0 → идёт вниз'} слева направо.<br>Подходит только один график. Остальные — с другим знаком k или b.`,
+explain2:`Отметь две точки: (0; ${n(b)}) и (1; ${n(k+b)}). Прямая на нужном графике проходит через обе.<div class="fig">${lineFig(k,b,{w:220,pts:[{x:0,y:b},{x:1,y:k+b}]})}</div>`};});
+G(3,()=>{let k,b;do{k=nz(-6,6);b=nz(-12,12);}while(false);
+return {type:'num',q:`Найди абсциссу точки пересечения графика функции ${M(Y(k,b))} с осью x.`,ans:-b/k,ansText:rat(-b,k),keys:NUMKEYS,ph:NUMPH,hint:'На оси x y = 0.',
+short:`${M(`${L(k,b)} = 0`)} → x = ${rat(-b,k)}.`,
+explain:`На оси x все точки имеют y = 0. Решаем ${M(`${L(k,b)} = 0`)} → ${M(`${poly([[k,'x']])} = ${n(-b)}`)} → x = <b>${rat(-b,k)}</b>.<br>Точка пересечения: (${rat(-b,k)}; 0).`,
+explain2:`Ловушка — ответить ${n(b)}: это пересечение с осью <b>y</b> (при x = 0). С осью x — когда y = 0. Проверка: ${n(k)}·${rat(-b,k)} ${sg(b)} ${Math.abs(b)} = ${n(-b)} ${sg(b)} ${Math.abs(b)} = 0 ✅.`};});
+
+/* L4 */
+G(4,()=>{const o=mk('через начало координат (0; 0)',['через точку (0; 1)','через точку (1; 0)','параллельно оси x']);
+return {type:'choice',q:`График прямой пропорциональности ${M('y = kx')} (k ≠ 0) всегда проходит…`,...o,short:'x = 0 → y = k·0 = 0.',
+explain:`Подставим x = 0: y = k·0 = 0 при любом k. Значит, точка (0; 0) всегда на графике. Через (1; 0) проходит, только если k = 0, а параллельно оси x прямая лишь при k = 0.`,
+explain2:`Ноль километров за ноль часов, ноль рублей за ноль булок — в пропорциональности «ничего на входе — ничего на выходе».`};},'r');
+G(4,()=>{let x,y;do{x=nz(-8,8);y=nz(-12,12);}while(Math.abs(x)===1);
+return {type:'num',q:`График функции ${M('y = kx')} проходит через точку ${M(pt(x,y))}. Найди k.`,ans:y/x,ansText:rat(y,x),keys:NUMKEYS,ph:NUMPH,
+short:`k = ${n(y)} : ${P(x)} = ${rat(y,x)}.`,
+explain:`Подставляем точку: ${M(`${n(y)} = k·${P(x)}`)} → k = ${fr(n(y),n(x))} = <b>${rat(y,x)}</b>.`,
+explain2:`В прямой пропорциональности k = y : x для любой точки графика (кроме начала координат). ${n(y)} : ${P(x)} = ${rat(y,x)}. Ловушка — разделить наоборот: ${n(x)} : ${P(y)} = ${rat(x,y)}.`};});
+G(4,()=>{let k,x0,x1;do{k=nz(-5,5);x0=nz(-6,6);x1=nz(-9,9);}while(x0===x1);const y0=k*x0;
+return {type:'num',q:`Прямая пропорциональность проходит через точку ${M(pt(x0,y0))}. Чему равно y при x = ${n(x1)}?`,ans:k*x1,keys:NUMKEYS,
+short:`k = ${n(y0)} : ${P(x0)} = ${n(k)}; y = ${n(k)}·${P(x1)} = ${n(k*x1)}.`,
+explain:`1) k = ${n(y0)} : ${P(x0)} = ${n(k)}, функция ${M(`y = ${poly([[k,'x']])}`)}.<br>2) y(${n(x1)}) = ${n(k)}·${P(x1)} = <b>${n(k*x1)}</b>.`,
+explain2:`Пропорция: x увеличился в ${rat(x1,x0)} раза — y тоже: ${n(y0)}·${rat(x1,x0)} = ${n(k*x1)}.`};});
+G(4,()=>{const k=nz(-5,5),c=nz(1,6);const ok=M(`y = ${poly([[k,'x']])}`);const o=mk(ok,[M(Y(k,c)),M(`y = ${fr(n(k),'x')}`),M(`y = ${poly([[k,'x²']])}`)]);
+return {type:'choice',q:'Какая из функций — <b>прямая пропорциональность</b>?',...o,short:`${ok} — вида y = kx.`,
+explain:`Прямая пропорциональность — ровно ${M('y = kx')}: x умножается на число, и больше ничего.<br>• ${M(Y(k,c))} — линейная, но b = ${c} ≠ 0, через (0; 0) не проходит.<br>• ${M(`y = ${fr(n(k),'x')}`)} — <b>обратная</b> пропорциональность (гипербола).<br>• ${M(`y = ${poly([[k,'x²']])}`)} — парабола.`,
+explain2:`Тест: увеличь x вдвое — y должен увеличиться вдвое. Для ${ok}: x = 1 → ${n(k)}, x = 2 → ${n(2*k)} ✅. Для ${M(Y(k,c))}: ${n(k+c)} и ${n(2*k+c)} — не вдвое.`};});
+
+/* L5 */
+G(5,()=>{const o=mk('k₁ = k₂ и b₁ ≠ b₂',['k₁ ≠ k₂','b₁ = b₂','k₁ = −k₂']);
+return {type:'choice',q:`Прямые ${M('y = k₁x + b₁')} и ${M('y = k₂x + b₂')} <b>параллельны</b>, когда…`,...o,short:'Одинаковый наклон, разный сдвиг.',
+explain:`Параллельные прямые — одинаково наклонены (k₁ = k₂), но сдвинуты (b₁ ≠ b₂). Если k₁ ≠ k₂ — пересекаются. Если b₁ = b₂ (при разных k) — пересекаются на оси y. k₁ = −k₂ — «зеркальные», тоже пересекаются.`,
+explain2:`Рельсы: одинаковый уклон, разные места. y = 2x + 1 и y = 2x − 3 — параллельны; y = 2x + 1 и y = −2x + 1 — пересекаются в (0; 1).`};},'r');
+G(5,()=>{const kind=pick(['cross','par','same','cross']);const k1=nz(-5,5),b1=R(-6,6);let k2,b2;
+if(kind==='par'){k2=k1;do{b2=R(-6,6);}while(b2===b1);}else if(kind==='same'){k2=k1;b2=b1;}else{do{k2=pick([-k1,nz(-5,5)]);}while(k2===k1);b2=pick([b1,R(-6,6)]);}
+const f2=kind==='same'&&Math.random()<0.6?`y = ${n(b2)} ${sg(k2)} ${Math.abs(k2)===1?'':Math.abs(k2)}x`:Y(k2,b2);const f2s=b2===0?Y(k2,b2):f2;
+const opts=['пересекаются','параллельны','совпадают'];const right={cross:0,par:1,same:2}[kind];
+return {type:'choice',q:`Как расположены прямые ${M(Y(k1,b1))} и ${M(f2s)}?`,opts,ans:right,hint:'Сравни угловые коэффициенты, потом свободные члены.',
+short:`k: ${n(k1)} и ${n(k2)}; b: ${n(b1)} и ${n(b2)} → ${opts[right]}.`,
+explain:`k₁ = ${n(k1)}, k₂ = ${n(k2)}${f2s!==Y(k2,b2)?` (вторая прямая — это ${M(Y(k2,b2))})`:''}.<br>${k1!==k2?`k₁ ≠ k₂ → прямые <b>пересекаются</b>${b1===b2?` (в точке (0; ${n(b1)}) на оси y)`:''}.`:b1!==b2?`k₁ = k₂, b₁ = ${n(b1)} ≠ b₂ = ${n(b2)} → <b>параллельны</b>.`:`k₁ = k₂ и b₁ = b₂ → это одна и та же прямая: <b>совпадают</b>.`}`,
+explain2:`${k1!==k2?'Разный наклон — рано или поздно прямые встретятся, как две дороги под разным уклоном.':b1!==b2?'Одинаковый наклон, разная высота старта — как два лифта, едущие с одной скоростью: расстояние между ними не меняется.':'Одна формула, записанная по-разному: переставь слагаемые — получишь то же самое.'}`};});
+G(5,()=>{const m=nz(-6,6),q=R(-6,6);let p;do{p=R(-6,6);}while(p===q);
+return {type:'num',q:`При каком значении k прямая ${M(`y = kx ${sg(p)} ${Math.abs(p)}`)} параллельна прямой ${M(Y(m,q))}?`,ans:m,keys:NUMKEYS,
+short:`k = ${n(m)} (и ${n(p)} ≠ ${n(q)}).`,
+explain:`Параллельны ⇔ угловые коэффициенты равны, а b разные. Значит, k = <b>${n(m)}</b>; свободные члены ${n(p)} и ${n(q)} разные — прямые не совпадут.`,
+explain2:`Одинаковый наклон ${n(m)} — прямые «бегут» одинаково. Сдвиг по оси y между ними ${Math.abs(p-q)} — так и останется.`};});
+G(5,()=>{const k=nz(-5,5),c=R(-6,6);let x0,y0,b;do{x0=nz(-5,5);y0=R(-8,8);b=y0-k*x0;}while(b===c);
+return {type:'num',q:`Прямая параллельна прямой ${M(Y(k,c))} и проходит через точку ${M(pt(x0,y0))}. Найди b в её уравнении ${M('y = kx + b')}.`,ans:b,keys:NUMKEYS,
+short:`k = ${n(k)}; ${n(y0)} = ${n(k)}·${P(x0)} + b → b = ${n(b)}.`,
+explain:`Параллельна → тот же k = ${n(k)}: ${M(`y = ${poly([[k,'x']])} + b`)}.<br>Подставим точку: ${M(`${n(y0)} = ${n(k)}·${P(x0)} + b`)} → ${M(`${n(y0)} = ${n(k*x0)} + b`)} → b = <b>${n(b)}</b>.<br>Уравнение: ${M(Y(k,b))}.`,
+explain2:`Проверка: ${n(k)}·${P(x0)} ${sg(b)} ${Math.abs(b)} = ${n(y0)} ✅, k одинаковые, b разные (${n(b)} и ${n(c)}) → параллельны ✅.`};});
+
+/* L6 */
+G(6,()=>{const o=mk(M('приравнять правые части: k₁x + b₁ = k₂x + b₂, найти x, затем y'),[M('сложить уравнения и найти x'),M('приравнять k₁ = k₂'),M('подставить x = 0 в обе формулы')]);
+return {type:'choice',q:'Как найти точку пересечения прямых y = k₁x + b₁ и y = k₂x + b₂?',...o,short:'В точке пересечения y одинаковые → f(x) = g(x).',
+explain:`В точке пересечения у обеих прямых <b>один и тот же x и один и тот же y</b>. Значит, ${M('k₁x + b₁ = k₂x + b₂')}: решаем — получаем x, подставляем в любую формулу — получаем y.<br>x = 0 даёт только точки на оси y; k₁ = k₂ — это условие параллельности.`,
+explain2:`Две машины на карте «высота от x». Встретились — значит, в одном месте на одной высоте. Высота первой = высоте второй — это уравнение.`};},'r');
+G(6,()=>{let k1,b1,k2,b2,x0,y0;do{k1=nz(-5,5);k2=nz(-5,5);x0=R(-6,6);y0=R(-8,8);b1=y0-k1*x0;b2=y0-k2*x0;}while(k1===k2||Math.abs(b1)>12||Math.abs(b2)>12);const ask=pick(['x','y']);
+return {type:'num',q:`Найди ${ask==='x'?'абсциссу (x)':'ординату (y)'} точки пересечения прямых ${M(Y(k1,b1))} и ${M(Y(k2,b2))}.`,ans:ask==='x'?x0:y0,keys:NUMKEYS,
+short:`${M(`${L(k1,b1)} = ${L(k2,b2)}`)} → x = ${n(x0)}, y = ${n(y0)}.`,
+explain:`Приравниваем: ${M(`${L(k1,b1)} = ${L(k2,b2)}`)} → ${M(`${poly([[k1-k2,'x']])} = ${n(b2-b1)}`)} → x = ${n(x0)}.<br>y = ${n(k1)}·${P(x0)}${b1?` ${sg(b1)} ${Math.abs(b1)}`:''} = ${n(y0)}.<br>Точка (${n(x0)}; ${n(y0)}). Ответ: <b>${ask==='x'?n(x0):n(y0)}</b>.`,
+explain2:`Проверим во второй формуле: ${n(k2)}·${P(x0)}${b2?` ${sg(b2)} ${Math.abs(b2)}`:''} = ${n(k2*x0+b2)} ✅ — тот же y.${Math.abs(x0)<=5&&Math.abs(y0)<=5?`<div class="fig">${gplot({fns:[{f:x=>k1*x+b1},{f:x=>k2*x+b2,col:'var(--hl)'}],pts:[{x:x0,y:y0,lab:pt(x0,y0)}],w:240})}</div>`:''}`};});
+G(6,()=>{const k=nz(-6,6),b=nz(-9,9);const which=pick(['y','x']);
+const ok=which==='y'?`(0; ${n(b)})`:`(${rat(-b,k)}; 0)`;const o=mk(ok,which==='y'?[`(${n(b)}; 0)`,`(0; ${n(k)})`,`(0; ${n(-b)})`]:[`(0; ${rat(-b,k)})`,`(${rat(b,k)}; 0)`,`(${n(b)}; 0)`]);
+return {type:'choice',q:`В какой точке график функции ${M(Y(k,b))} пересекает ось <b>${which}</b>?`,...o,short:which==='y'?`x = 0 → y = ${n(b)}.`:`y = 0 → x = ${rat(-b,k)}.`,
+explain:which==='y'?`На оси y все точки имеют x = 0: y = ${n(k)}·0 ${sg(b)} ${Math.abs(b)} = ${n(b)}. Точка <b>(0; ${n(b)})</b>. Первая координата — x, она 0.`:`На оси x все точки имеют y = 0: ${M(`${L(k,b)} = 0`)} → x = ${rat(-b,k)}. Точка <b>(${rat(-b,k)}; 0)</b>.`,
+explain2:`Запомни: на оси y — «x равен нулю», на оси x — «y равен нулю». Ось — это место, где другая координата обнулилась.`};});
+G(6,()=>{let k1,k2,x0,c,b,y0;do{k1=nz(-4,4);k2=nz(-4,4);x0=nz(-5,5);c=R(-6,6);y0=k2*x0+c;b=y0-k1*x0;}while(k1===k2||Math.abs(b)>20);
+return {type:'num',q:`При каком значении b прямые ${M(`y = ${poly([[k1,'x']])} + b`)} и ${M(Y(k2,c))} пересекаются в точке с абсциссой ${n(x0)}?`,ans:b,keys:NUMKEYS,
+short:`y(${n(x0)}) = ${n(y0)} у второй; ${n(y0)} = ${n(k1*x0)} + b → b = ${n(b)}.`,
+explain:`Точка пересечения лежит на второй прямой: y = ${n(k2)}·${P(x0)}${c?` ${sg(c)} ${Math.abs(c)}`:''} = ${n(y0)}. Точка (${n(x0)}; ${n(y0)}).<br>Она же лежит на первой: ${M(`${n(y0)} = ${n(k1)}·${P(x0)} + b`)} → b = ${n(y0)} − ${P(k1*x0)} = <b>${n(b)}</b>.`,
+explain2:`Проверка: при b = ${n(b)} обе прямые при x = ${n(x0)} дают y = ${n(y0)}: ${n(k1*x0)} ${sg(b)} ${Math.abs(b)} = ${n(y0)} ✅.`};});
+
+/* L7 */
+G(7,()=>{const o=mk(M('|x| = x при x ≥ 0 и |x| = −x при x < 0'),[M('|x| = x при любом x'),M('|x| = −x при x ≥ 0 и |x| = x при x < 0'),M('|x| = x² при любом x')]);
+return {type:'choice',q:'Как раскрывается модуль в функции y = |x|?',...o,short:'Неотрицательное — без изменений, отрицательное — меняет знак.',
+explain:`Модуль — расстояние до нуля, всегда ≥ 0. Неотрицательное число остаётся собой: |5| = 5. Отрицательное меняет знак: |−5| = −(−5) = 5. Поэтому y = |x| — «галочка»: справа y = x, слева y = −x.`,
+explain2:`«−x при x < 0» пугает, но при x = −3 это −(−3) = 3 — положительное. Минус «снимает» минус.`};},'r');
+G(7,()=>{let c,k1,b1,k2,b2,x0;c=R(-2,3);k1=nz(-3,3);b1=R(-5,5);k2=nz(-3,3);b2=R(-5,5);x0=pick([c,c-R(1,4),c+R(1,4)]);
+const val=x0<c?k1*x0+b1:k2*x0+b2;
+return {type:'num',q:`Функция задана так: ${M(`f(x) = ${L(k1,b1)}`)} при x < ${n(c)} и ${M(`f(x) = ${L(k2,b2)}`)} при x ≥ ${n(c)}. Найди f(${n(x0)}).`,ans:val,keys:NUMKEYS,hint:`Сначала реши, ${n(x0)} < ${n(c)} или ${n(x0)} ≥ ${n(c)}.`,
+short:`${n(x0)} ${x0<c?'<':'≥'} ${n(c)} → f = ${n(val)}.`,
+explain:`Сравниваем: ${n(x0)} ${x0<c?'<':'≥'} ${n(c)} → работает формула ${M(x0<c?L(k1,b1):L(k2,b2))}.<br>f(${n(x0)}) = ${x0<c?`${n(k1)}·${P(x0)}${b1?` ${sg(b1)} ${Math.abs(b1)}`:''}`:`${n(k2)}·${P(x0)}${b2?` ${sg(b2)} ${Math.abs(b2)}`:''}`} = <b>${n(val)}</b>.${x0===c?`<br>Внимание: x = ${n(c)} — граница. Знак «≥» говорит, что граница относится ко второму куску.`:''}`,
+explain2:`Кусочная функция — как тариф: «до ${n(c)} — одна цена, от ${n(c)} — другая». Сначала выбираешь тариф, потом считаешь. По другой формуле вышло бы ${n(x0<c?k2*x0+b2:k1*x0+b1)} — это ошибка выбора куска.`};});
+G(7,()=>{let a,b;do{a=nz(-3,3);b=nz(-3,3);}while(false);
+const fs=[[a,b],[-a,b],[a,-b]];const lab=([aa,bb])=>`y = |x ${aa>0?'−':'+'} ${Math.abs(aa)}| ${bb>0?'+':'−'} ${Math.abs(bb)}`;
+const pics=[...fs.map(([aa,bb])=>gplot({fns:[{f:x=>Math.abs(x-aa)+bb}],w:150,ticks:false,xr:[-5,5],yr:[-5,5]})),gplot({fns:[{f:x=>-Math.abs(x-a)+b}],w:150,ticks:false,xr:[-5,5],yr:[-5,5]})];
+const order=shuffle([0,1,2,3]);
+return {type:'choice',pics:true,q:`Какой из графиков — график функции ${M(lab([a,b]))}?`,opts:order.map(i=>pics[i]),ans:order.indexOf(0),hint:'Найди вершину галочки: x — где выражение под модулем равно 0, y — число снаружи.',
+short:`Вершина (${n(a)}; ${n(b)}), ветви вверх.`,
+explain:`Вершина галочки там, где ${M(`x ${a>0?'−':'+'} ${Math.abs(a)} = 0`)}, то есть x = ${n(a)}; y = ${n(b)}. Вершина <b>(${n(a)}; ${n(b)})</b>, ветви вверх (перед модулем «+»).<br>Ловушки: сдвиг ${a>0?'влево':'вправо'} (перепутан знак под модулем), вершина на высоте ${n(-b)}, перевёрнутая галочка (это −|x − a| + b).<div class="fig">${gplot({fns:[{f:x=>Math.abs(x-a)+b}],w:220,xr:[-5,5],yr:[-5,5],pts:[{x:a,y:b,lab:pt(a,b),dy:16,dx:6}]})}</div>`,
+explain2:`Начни с y = |x| (вершина в 0). ${M(`|x ${a>0?'−':'+'} ${Math.abs(a)}|`)} — сдвиг <b>${a>0?'вправо':'влево'}</b> на ${Math.abs(a)} (минус — вправо, это нужно запомнить!). «${b>0?'+':'−'} ${Math.abs(b)}» снаружи — сдвиг ${b>0?'вверх':'вниз'} на ${Math.abs(b)}.`};});
+G(7,()=>{const a=nz(-6,6),b=R(-8,8);
+return {type:'num',q:`Найди наименьшее значение функции ${M(`y = |x ${a>0?'−':'+'} ${Math.abs(a)}| ${b>=0?'+':'−'} ${Math.abs(b)}`)}.`,ans:b,keys:NUMKEYS,
+short:`|…| ≥ 0, минимум при x = ${n(a)}: y = ${n(b)}.`,
+explain:`Модуль ≥ 0, и он равен 0 при x = ${n(a)}. Значит, y ≥ 0 ${b>=0?'+':'−'} ${Math.abs(b)} = ${n(b)}, и это значение достигается. Наименьшее значение: <b>${n(b)}</b> (в вершине галочки).`,
+explain2:`Ловушка — ответить ${n(a)}: это x, при котором достигается минимум, а спрашивают сам y. Вершина (${n(a)}; ${n(b)}) — нижняя точка галочки.`};});
+G(7,()=>{const a=nz(-4,4),c=R(-1,7);const ans=c>0?[a-c,a+c]:c===0?[a]:[];
+return {type:'set',q:`При каких x функция ${M(`y = |x ${a>0?'−':'+'} ${Math.abs(a)}|`)} принимает значение ${n(c)}?`,ans,keys:SETKEYS,ph:SETPH,
+short:c>0?`x ${a>0?'−':'+'} ${Math.abs(a)} = ±${c} → x = ${n(a-c)}, ${n(a+c)}.`:c===0?`x = ${n(a)}.`:'модуль не бывает отрицательным: ∅.',
+explain:`${M(`|x ${a>0?'−':'+'} ${Math.abs(a)}| = ${n(c)}`)}.<br>${c>0?`x ${a>0?'−':'+'} ${Math.abs(a)} = ${c} → x = ${n(a+c)}; x ${a>0?'−':'+'} ${Math.abs(a)} = −${c} → x = ${n(a-c)}. Ответ: <b>{${n(a-c)}, ${n(a+c)}}</b>.`:c===0?`Модуль равен 0 только в вершине: x = <b>${n(a)}</b>.`:`Модуль не бывает отрицательным → таких x <b>нет</b> (∅).`}`,
+explain2:`На графике: горизонтальная прямая y = ${n(c)} ${c>0?'пересекает галочку в двух точках':c===0?'касается галочки в вершине':'проходит ниже галочки — пересечений нет'}.<div class="fig">${gplot({fns:[{f:x=>Math.abs(x-a)},{f:()=>c,col:'var(--hl)',dash:1}],w:220,xr:[-6,6],yr:[-3,9],pts:ans.map(x=>({x,y:c}))})}</div>`};});
+
+/* L8 */
+G(8,()=>{const o=mk('угловые коэффициенты прямых AB и AC равны',['AB = AC','у точек одинаковые суммы координат','точки имеют одинаковые абсциссы']);
+return {type:'choice',q:'Три точки A, B, C (с разными абсциссами) лежат на одной прямой тогда и только тогда, когда…',...o,short:'k(AB) = k(AC).',
+explain:`Прямая — это одинаковый наклон везде. Если путь от A к B и от A к C идёт с одним и тем же наклоном k = Δy/Δx, то B и C на одной прямой с A. Пример: A(0; 1), B(1; 3), C(3; 7): k = 2 и k = 6/3 = 2 ✅.`,
+explain2:`Если бы наклоны были разные, из A «вышли» бы две разные прямые, и B с C лежали бы на разных.`};},'r');
+G(8,()=>{let x0,a,c,k1,k2,b1,b2,y0;do{x0=nz(-4,4);a=nz(-5,5);c=nz(-6,6);y0=a*x0+c;k1=nz(-4,4);k2=nz(-4,4);b1=y0-k1*x0;b2=y0-k2*x0;}while(k1===k2||k1===a||k2===a||Math.abs(b1)>12||Math.abs(b2)>12);
+return {type:'num',q:`При каком значении a прямые ${M(Y(k1,b1))}, ${M(Y(k2,b2))} и ${M(`y = ax ${sg(c)} ${Math.abs(c)}`)} пересекаются в одной точке?`,ans:a,keys:NUMKEYS,hint:'Найди точку пересечения первых двух и подставь её в третью.',
+short:`Первые две пересекаются в (${n(x0)}; ${n(y0)}); ${n(y0)} = a·${P(x0)} ${sg(c)} ${Math.abs(c)} → a = ${n(a)}.`,
+explain:`${M(`${L(k1,b1)} = ${L(k2,b2)}`)} → ${M(`${poly([[k1-k2,'x']])} = ${n(b2-b1)}`)} → x = ${n(x0)}, y = ${n(y0)}.<br>Третья прямая должна пройти через (${n(x0)}; ${n(y0)}): ${M(`${n(y0)} = a·${P(x0)} ${sg(c)} ${Math.abs(c)}`)} → ${M(`${n(x0)}a = ${n(y0-c)}`)} → a = <b>${n(a)}</b>.`,
+explain2:`Проверка: ${n(a)}·${P(x0)} ${sg(c)} ${Math.abs(c)} = ${n(y0)} ✅. Третья прямая проходит через (0; ${n(c)}) и (${n(x0)}; ${n(y0)}) — её наклон (${n(y0)} − ${P(c)}) : ${P(x0)} = ${n(a)}.`};},'s');
+G(8,()=>{let k,b,x0;do{k=pick([1,2,3,4,0.5,-1,-2,-3,-0.5,1.5]);b=nz(-8,8);x0=-b/k;}while(!Number.isInteger(x0)||Math.abs(x0)>12);const S=Math.abs(b*x0)/2;
+return {type:'num',q:`Найди площадь треугольника, который прямая ${M(Y(k,b))} отсекает от координатных осей.`,ans:S,keys:NUMKEYS,
+short:`Отрезки на осях: |${n(b)}| и |${n(x0)}| → S = ${n(Math.abs(b))}·${n(Math.abs(x0))} : 2 = ${n(S)}.`,
+explain:`С осью y: (0; ${n(b)}). С осью x: ${M(`${L(k,b)} = 0`)} → x = ${n(x0)}, точка (${n(x0)}; 0).<br>Треугольник прямоугольный, катеты ${n(Math.abs(b))} и ${n(Math.abs(x0))}: S = ${fr(`${n(Math.abs(b))}·${n(Math.abs(x0))}`,2)} = <b>${n(S)}</b>.`,
+explain2:`${Math.abs(b)<=6&&Math.abs(x0)<=6?`<div class="fig">${gplot({fns:[{f:x=>k*x+b}],w:220,pts:[{x:0,y:b},{x:x0,y:0}]})}</div>`:''}Длины — по модулю: координаты могут быть отрицательными, а стороны — нет.`};},'s');
+G(8,()=>{const k0=pick([2,3,4]);const m=k0===2?3:k0===3?4:15;const C=m*nz(-4,4);const b1=C/(k0+1),b2=C/(1-k0);
+const ok=[];for(const kk of [-k0,k0]){const bb=C/(kk+1);if(Number.isInteger(bb)){const ff=x=>kk*x+bb;if([0,1,2].every(x=>ff(ff(x))===k0*k0*x+C))ok.push(kk+bb);}}
+return {type:'set',q:`Линейная функция ${M('f(x) = kx + b')} такова, что ${M(`f(f(x)) = ${L(k0*k0,C)}`)} при всех x. Найди все возможные значения f(1).`,ans:ok,keys:SETKEYS,ph:SETPH,hint:'f(f(x)) = k(kx + b) + b = k²x + kb + b. Сравни коэффициенты.',
+short:`k = ${k0}, b = ${n(b1)} или k = −${k0}, b = ${n(b2)} → f(1) = ${ok.map(n).join(' или ')}.`,
+explain:`${M('f(f(x)) = k(kx + b) + b = k²x + (k + 1)b')}. Сравниваем с ${M(L(k0*k0,C))}:<br>${M(`k² = ${k0*k0}`)} → k = ${k0} или k = −${k0}; ${M(`(k + 1)b = ${n(C)}`)}.<br>• k = ${k0}: ${k0+1}b = ${n(C)} → b = ${n(b1)}, f(1) = ${n(k0+b1)}.<br>• k = −${k0}: ${1-k0}b = ${n(C)} → b = ${n(b2)}, f(1) = ${n(-k0+b2)}.<br>Ответ: <b>{${ok.map(n).join(', ')}}</b>.`,
+explain2:`Проверка второго случая: f(x) = −${k0}x ${sg(b2)} ${Math.abs(b2)}, f(f(x)) = −${k0}(−${k0}x ${sg(b2)} ${Math.abs(b2)}) ${sg(b2)} ${Math.abs(b2)} = ${L(k0*k0,-k0*b2+b2)} ✅. Ловушка — забыть отрицательный корень k² = ${k0*k0}.`};},'s');
+G(8,()=>{const N=R(3,9);let best=1e9,bx=[];for(let x=-5;x<=N+5;x+=0.5){let s=0;for(let i=1;i<=N;i++)s+=Math.abs(x-i);if(s<best-1e-9){best=s;bx=[x];}else if(Math.abs(s-best)<1e-9)bx.push(x);}
+const med=N%2?`x = ${(N+1)/2}`:`любом x от ${N/2} до ${N/2+1}`;
+return {type:'num',q:`Найди наименьшее значение функции ${M(`y = |x − 1| + |x − 2| + … + |x − ${N}|`)}.`,ans:best,hint:'Это сумма расстояний от x до точек 1, 2, …, '+N+'. Где её выгодно поставить?',
+short:`Минимум в середине (${med}): ${n(best)}.`,
+explain:`y — сумма расстояний от точки x до ${N} точек 1, 2, …, ${N}. Разобьём их на пары «крайних»: (1; ${N}), (2; ${N-1}), … Для пары (i; j) сумма расстояний ≥ j − i, и равна ей, когда x между ними. Все пары «вложены», поэтому в середине все минимумы достигаются одновременно.<br>Минимум достигается при ${med}: y = ${H.range(1,Math.floor(N/2)).map(i=>N+1-2*i).join(' + ')} = <b>${n(best)}</b>.`,
+explain2:`Представь: ${N} друзей живут в домах 1…${N} на одной улице. Где назначить встречу, чтобы суммарно пройти меньше всего? В «серединном» доме: каждый шаг от середины в сторону приближает к меньшему числу друзей, чем удаляет. Это свойство <b>медианы</b>.`};},'s');
+G(8,()=>{let k,b,roots,inf;do{k=pick([-2,-1.5,-1,-0.5,0,0.5,1,1.5,2]);b=pick([-2,-1,1,2,3]);roots=[];inf=false;
+  if(k!==1){const x=b/(1-k);if(x>=0)roots.push(x);}else if(b===0)inf=true;
+  if(k!==-1){const x=-b/(1+k);if(x<0)roots.push(x);}else if(b===0)inf=true;}while(inf);
+const cnt=roots.length;
+let bf=0;for(let i=-4000;i<=4000;i++){}/* проверка ниже */
+const chk=roots.every(x=>Math.abs(Math.abs(x)-(k*x+b))<1e-9);
+return {type:'num',q:`Сколько корней имеет уравнение ${M(`|x| = ${poly([[k,'x'],[b,'']])}`)}?`,ans:chk?cnt:cnt,hint:'Нарисуй галочку y = |x| и прямую. Или раскрой модуль: x ≥ 0 и x < 0.',
+short:`Корни: ${roots.length?roots.map(n).join(', '):'нет'} → ${cnt}.`,
+explain:`• x ≥ 0: ${M(`x = ${poly([[k,'x'],[b,'']])}`)} → ${k===1?`0 = ${n(b)} — нет решений`:`${M(`${n(1-k)}x = ${n(b)}`)} → x = ${n(b/(1-k))} ${b/(1-k)>=0?'≥ 0 — подходит ✅':'< 0 — не подходит ❌'}`}.<br>• x < 0: ${M(`−x = ${poly([[k,'x'],[b,'']])}`)} → ${k===-1?`0 = ${n(b)} — нет решений`:`${M(`${n(-1-k)}x = ${n(b)}`)} → x = ${n(-b/(1+k))} ${-b/(1+k)<0?'< 0 — подходит ✅':'≥ 0 — не подходит ❌'}`}.<br>Всего корней: <b>${cnt}</b>.`,
+explain2:`Графически: галочка y = |x| и прямая ${M(`y = ${poly([[k,'x'],[b,'']])}`)} пересекаются в ${cnt} ${plural(cnt,'точке','точках','точках')}.<div class="fig">${gplot({fns:[{f:x=>Math.abs(x)},{f:x=>k*x+b,col:'var(--hl)'}],w:220,pts:roots.filter(x=>Math.abs(x)<6).map(x=>({x,y:Math.abs(x)}))})}</div>`};},'s');
+G(8,()=>{let p,q,c,A,cnt,pts;do{q=pick([2,3,4,5]);p=nz(-5,5);c=R(-5,5);A=R(6,20);cnt=0;pts=[];for(let x=-A;x<=A;x++){const y=p*x/q+c;if(Math.abs(y-Math.round(y))<1e-9){cnt++;}}}while(gcd(p,q)!==1);
+return {type:'num',q:`Сколько точек с <b>целыми</b> координатами лежит на графике функции ${M(`y = ${fr(n(p),q)}x ${sg(c)} ${Math.abs(c)}`.replace(' + 0','').replace(' − 0',''))} при ${M(`−${A} ≤ x ≤ ${A}`)}?`,ans:cnt,hint:`y целый ⇔ ${n(p)}x делится на ${q}.`,
+short:`x кратно ${q}: ${cnt} ${plural(cnt,'значение','значения','значений')}.`,
+explain:`y = ${fr(`${n(p)}x`,q)} ${sg(c)} ${Math.abs(c)} — целое ⇔ ${n(p)}x делится на ${q}. Так как ${Math.abs(p)} и ${q} взаимно просты, x должен делиться на ${q}.<br>Кратные ${q} на отрезке [−${A}; ${A}]: от ${-Math.floor(A/q)*q} до ${Math.floor(A/q)*q} — это ${Math.floor(A/q)} отрицательных, ${Math.floor(A/q)} положительных и 0. Всего <b>${cnt}</b>.`,
+explain2:`Двигаясь по прямой, «узлы сетки» встречаются через каждые ${q} шагов по x (и ${Math.abs(p)} по y): (0; ${n(c)}), (${q}; ${n(p+c)}), (${2*q}; ${n(2*p+c)}), … Ловушка — забыть точку x = 0 или отрицательные x.`};},'s');
+
+/* ---------- widget ---------- */
+function onTheory(root){const el=root.querySelector('#w-lin');if(!el)return;
+  el.innerHTML=`<label>k = <output id="ok">1</output><input type="range" id="sk" min="-3" max="3" step="0.5" value="1"></label>
+<label>b = <output id="ob">2</output><input type="range" id="sb" min="-5" max="5" step="1" value="2"></label>
+<div class="fig" id="wpic"></div><div id="wtx" style="text-align:center;line-height:1.6"></div>`;
+  const g=id=>el.querySelector(id);
+  const upd=()=>{const k=+g('#sk').value,b=+g('#sb').value;g('#ok').textContent=n(k);g('#ob').textContent=n(b);
+    const pts=[{x:0,y:b,lab:`(0; ${n(b)})`,dx:-8,anc:'end'}];if(k){const x0=-b/k;if(Math.abs(x0)<=6&&x0!==0)pts.push({x:x0,y:0,col:'var(--accent)',lab:`(${n(Math.round(x0*100)/100)}; 0)`,dy:16});}
+    g('#wpic').innerHTML=gplot({fns:[{f:x=>k*x+b}],pts,w:300});
+    g('#wtx').innerHTML=`${M(`y = ${k?poly([[k,'x'],[b,'']]):n(b)}`)}<br>${k>0?'k > 0 → функция <b>возрастает</b> ↗':k<0?'k < 0 → функция <b>убывает</b> ↘':'k = 0 → прямая <b>горизонтальна</b>, y всегда '+n(b)}${b===0?'<br>b = 0 → проходит через начало координат (прямая пропорциональность)':''}`;};
+  ['#sk','#sb'].forEach(id=>g(id).addEventListener('input',upd));upd();}
+
+window.TOPIC={id:'a7_func_linear',title:'Функции. Линейная функция',subtitle:'Алгебра · 7 класс',
+intro:`<p>Функция — это «автомат»: подал x — получил ровно один y. Здесь ты разберёшься с областью определения и графиками, поймёшь, что значат k и b в ${M('y = kx + b')}, научишься находить точки пересечения прямых и работать с «галочкой» ${M('y = |x|')}. Есть живой график: двигай k и b и смотри, как поворачивается и сдвигается прямая.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Функция: вход → выход','Область определения','График функции','Линейная функция y = kx + b','Прямая пропорциональность','Взаимное расположение прямых','Точки пересечения','Кусочные функции и y = |x|','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
