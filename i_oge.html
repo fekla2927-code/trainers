@@ -1,0 +1,1259 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>10. Задачи ОГЭ и олимпиад — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const C=s=>`<pre class="code">${esc(s)}</pre>`;
+const ic=s=>`<code>${esc(s)}</code>`;
+const J=a=>a.map(String).join('\n');
+const rl=(n,a,b)=>Array.from({length:n},()=>R(a,b));
+const minus=v=>v<0?'−'+(-v):String(v);
+const pyMod=(a,b)=>((a%b)+b)%b;
+
+/* ======================= theory ======================= */
+const theory=[
+{title:'Что мы уже умеем',lvl:0,html:`
+<p>В модуле «9. Алгоритмы» ты научился искать элемент, находить максимум и сортировать. Ещё раньше — читать ввод, считать в циклах, писать условия, работать со строками, списками и функциями. Ты знаешь <b>весь базовый Python</b>. Теперь проверим его в бою — на задачах, как на экзамене и на олимпиаде.</p>
+<p class="hook">🏆 На олимпиаде твою программу проверяет не учитель, а <b>робот-проверяльщик</b>. Он запускает её на 20–50 тестах, которых ты не видишь, и сравнивает каждый символ ответа. Перепутал одну букву, забыл случай «чисел нет», программа думает дольше секунды — тест не засчитан. Звучит строго? Зато честно: если программа прошла все тесты, она правда работает. Здесь ты научишься писать именно такие программы.</p>
+<div class="fact">Codeforces — один из самых популярных сайтов олимпиадного программирования в мире. Его создал Михаил Мирзаянов из Саратовского университета в 2010 году. Там регулярно проходят соревнования, в которых одновременно участвуют десятки тысяч школьников и студентов из разных стран.</div>
+<p>Задачи на этом сайте и на ОГЭ похожи по устройству: дано условие, формат ввода и вывода, примеры. Твоя программа должна читать ввод и печатать <b>ровно</b> то, что просят.</p>`},
+{title:'Стратегия: 4 шага к решению',lvl:0,html:`
+<p>Самая частая ошибка — сразу бросаться печатать код. Сильные олимпиадники делают наоборот: сначала думают, потом пишут.</p>
+<div class="box rule"><b>Правило четырёх шагов</b>
+1) <b>Прочитай условие</b> до конца. Что дано на входе? Что надо вывести? Какие ограничения (сколько чисел, какие они)?<br>
+2) <b>Придумай на примере</b>: реши задачу руками на маленьком примере. Как ты сам это считал? Это и есть алгоритм.<br>
+3) <b>Напиши</b> программу по этому алгоритму.<br>
+4) <b>Проверь на крайних случаях</b>: одно число, все одинаковые, подходящих чисел нет, ноль, самое большое число.</div>
+<div class="box ex"><b>Пример</b>«Дано n чисел. Сколько из них чётных?»<br>
+1) Вход: n, потом n чисел по одному в строке. Выход: одно число.<br>
+2) Пример: 3, 8, 5, 10 → чётные 8 и 10 → ответ 2. Как я считал? Смотрел на каждое число и ставил галочку, если чётное. Галочки = счётчик.<br>
+3) Код ниже.<br>
+4) Крайние случаи: n = 1; все нечётные (ответ 0); все чётные.</div>
+<pre class="run" data-input="4\\n3\\n8\\n5\\n10">n = int(input())
+count = 0
+for i in range(n):
+    x = int(input())
+    if x % 2 == 0:
+        count += 1
+print(count)</pre>
+<p>Поменяй ввод на <code>1</code> и <code>7</code> (одно нечётное число) — должно получиться 0. Это и есть проверка крайнего случая.</p>
+<div class="box tip"><b>Как запомнить</b>«Прочитал — посчитал руками — написал — сломал». Последний шаг — попробуй <b>сломать</b> свою программу хитрым тестом, пока этого не сделал проверяющий робот.</div>`},
+{title:'Как устроено задание ОГЭ на программирование',lvl:1,html:`
+<p>Во второй части ОГЭ по информатике есть задание, где нужно написать программу на компьютере (обычно это задание 15; номера иногда меняются — точный формат смотри в демоверсии на сайте ФИПИ). Почти всегда это <b>обработка последовательности чисел</b>.</p>
+<div class="box rule"><b>Два формата ввода</b>
+<b>Формат А.</b> Сначала количество чисел n, потом n чисел, каждое в своей строке → цикл <code>for i in range(n)</code>.<br>
+<b>Формат Б.</b> Количество неизвестно, последовательность <b>заканчивается числом 0</b> (0 — это «стоп», его не обрабатывают) → цикл <code>while x != 0</code>.</div>
+<p>Формат А:</p>
+<pre class="run" data-input="3\\n12\\n7\\n30">n = int(input())
+s = 0
+for i in range(n):
+    x = int(input())
+    s += x
+print(s)</pre>
+<p>Формат Б — читаем первое число <b>до</b> цикла, а следующее — <b>в конце</b> тела цикла:</p>
+<pre class="run" data-input="12\\n7\\n30\\n0">s = 0
+x = int(input())
+while x != 0:
+    s += x
+    x = int(input())
+print(s)</pre>
+<div class="box err"><b>Частая ошибка</b>Забыть <code>x = int(input())</code> внутри while. Тогда x никогда не меняется, условие всегда верно — <b>бесконечный цикл</b>. Проверь: удали последнюю строку тела цикла и запусти (тренажёр остановит программу через 6 секунд).</div>
+<div class="fact">В задании ОГЭ обычно пишут ограничения вроде «количество чисел не превышает 1000, числа не превышают 30 000». Это не просто так: они подсказывают, каким числом можно начать поиск минимума (30 001 точно больше любого числа).</div>`},
+{title:'Несколько чисел в одной строке: split',lvl:1,html:`
+<p>На олимпиадах (и на Codeforces) числа часто дают <b>в одной строке через пробел</b>: <code>3 17 4</code>. Обычный <code>int(input())</code> тут сломается — он получит текст «3 17 4», а это не одно число.</p>
+<div class="box rule"><b>Новый приём</b><code>a, b, c = map(int, input().split())</code><br>
+• <code>input()</code> — читает строку «3 17 4»;<br>
+• <code>.split()</code> — режет её по пробелам: ['3', '17', '4'] (ты знаешь это из модуля про строки);<br>
+• <code>map(int, …)</code> — превращает каждый кусочек в число;<br>
+• <code>a, b, c = …</code> — раскладывает три числа по трём коробкам.</div>
+<pre class="run" data-input="3 17 4">a, b, c = map(int, input().split())
+print(a + b + c)
+print(a * b * c)</pre>
+<p>Если чисел в строке много и их количество заранее неизвестно, собери их в список:</p>
+<pre class="run" data-input="5 1 9 2 7">nums = list(map(int, input().split()))
+print(len(nums), max(nums), sum(nums))</pre>
+<div class="box err"><b>Ошибка</b>Если слева 2 переменные, а чисел в строке 3, Python скажет <code>ValueError: too many values to unpack</code>. Число переменных должно совпадать с числом чисел.</div>`},
+{title:'Счётчик и сумма с условием',lvl:2,html:`
+<p>Классика ОГЭ: «Сколько чисел кратны 4 и оканчиваются на 6?», «Найдите сумму чисел, кратных 7». Всё строится на остатке <code>%</code>.</p>
+<div class="box rule"><b>Шпаргалка по %</b>
+• <code>x % k == 0</code> — x <b>кратно</b> k (делится без остатка);<br>
+• <code>x % 10</code> — <b>последняя цифра</b> числа: 1236 % 10 = 6;<br>
+• <code>x % 100</code> — две последние цифры; <code>x // 10 % 10</code> — предпоследняя (цифра десятков);<br>
+• <code>x % 2 == 1</code> — нечётное.</div>
+<pre class="run" data-input="5\\n16\\n36\\n26\\n40\\n116">n = int(input())
+count = 0
+for i in range(n):
+    x = int(input())
+    if x % 4 == 0 and x % 10 == 6:
+        count += 1
+print(count)</pre>
+<p>Числа 16, 36, 116 подходят, 26 не делится на 4, 40 оканчивается на 0. Ответ 3. Поменяй <code>and</code> на <code>or</code> и посмотри, как изменится ответ (станет 5: подойдут все, у кого выполнено хотя бы одно условие).</p>
+<div class="box err"><b>Ловушка с отрицательными</b>В Python остаток всегда того же знака, что и делитель: <code>-17 % 10</code> равно <b>3</b>, а не −7 и не 7 (ведь −17 = 10·(−2) + 3). Поэтому последняя цифра отрицательного числа — это <code>abs(x) % 10</code>. В ОГЭ числа обычно натуральные, но на олимпиаде эта ловушка встречается.</div>
+<pre class="run">print(-17 % 10)
+print(abs(-17) % 10)
+print(17 % 10)</pre>`},
+{title:'Минимум и максимум по условию',lvl:3,html:`
+<p>«Найдите минимальное число, оканчивающееся на 3». Идея как в модуле «Алгоритмы»: держим «чемпиона» и сравниваем с каждым новым числом. Но <b>не каждое число участвует</b> — только подходящие.</p>
+<div class="box rule"><b>С чего начинать чемпиона</b>
+• Для <b>минимума</b> — число <b>больше любого возможного</b>: если числа ≤ 30 000, бери <code>m = 30001</code>.<br>
+• Для <b>максимума</b> натуральных чисел — <code>mx = 0</code> (любое натуральное больше).<br>
+• Если подходящих чисел может не оказаться — после цикла проверь, изменился ли чемпион.</div>
+<pre class="run" data-input="5\\n43\\n13\\n20\\n93\\n7">n = int(input())
+m = 30001
+for i in range(n):
+    x = int(input())
+    if x % 10 == 3 and x < m:
+        m = x
+print(m)</pre>
+<div class="box err"><b>Главная ошибка</b><code>m = 0</code> для минимума. Ни одно натуральное число не меньше 0, поэтому m так и останется 0 — программа «найдёт» число, которого во вводе не было. Проверь: поставь 0 вместо 30001 и запусти.</div>
+<div class="box tip"><b>Ещё вариант</b>Если ограничения неизвестны, используй «флаг»: <code>m = -1</code> означает «ещё ничего не нашли», а условие пиши так: <code>if x % 10 == 3 and (m == -1 or x &lt; m)</code>.</div>`},
+{title:'Анализ программы: трассировка',lvl:4,html:`
+<p>Задания «Что выведет программа?» решаются <b>трассировкой</b>: ты становишься компьютером и аккуратно записываешь значения всех переменных после каждого шага в таблицу.</p>
+<div class="box rule"><b>Как трассировать</b>
+1) Нарисуй таблицу: столбец на каждую переменную + столбец «условие».<br>
+2) Выполняй строки строго по порядку, как компьютер. Не «угадывай» результат.<br>
+3) Перед каждым витком цикла проверяй условие. Как только оно ложно — цикл закончен.<br>
+4) Напечатай то, что стоит в print, <b>после</b> цикла.</div>
+<p>Подвигай ползунок и посмотри, как программа шаг за шагом считает:</p>
+<div class="widget" id="w-trace"></div>
+<div class="box tip"><b>Заметил закономерность?</b>s после шагов: 1, 4, 9, 16, 25… — это квадраты! Сумма первых нечётных чисел 1 + 3 + 5 + … всегда квадрат. На олимпиаде такие наблюдения позволяют ответить, не трассируя сто шагов.</div>
+<div class="box err"><b>Частая ошибка</b>Забыть, что после последнего витка переменные уже изменились. Здесь печатается k <b>после</b> цикла — она на 2 больше, чем «последнее прибавленное».</div>`},
+{title:'Запуски программы с условием',lvl:5,html:`
+<p>Ещё один формат ОГЭ (в первой части): дана программа с двумя числами s и t и <b>список запусков</b> — пары (s, t). Надо посчитать, сколько раз программа напечатала «YES».</p>
+<pre class="run" data-input="11\\n2">s = int(input())
+t = int(input())
+if s > 10 or t > 10:
+    print("YES")
+else:
+    print("NO")</pre>
+<div class="box rule"><b>and и or</b>
+• <code>A and B</code> — верно, только если <b>оба</b> условия верны.<br>
+• <code>A or B</code> — верно, если <b>хотя бы одно</b> верно.<br>
+• <code>not A</code> — меняет верно ↔ неверно.</div>
+<div class="box ex"><b>Пример</b>Пары: (1, 2), (11, 2), (1, 12), (11, 12), (−11, −12), (10, 10).<br>
+Условие <code>s > 10 or t > 10</code>: (11, 2) — да; (1, 12) — да; (11, 12) — да; остальные — нет (10 > 10 неверно!). Ответ: 3.</div>
+<div class="box err"><b>Ловушка</b>Строгое и нестрогое сравнение: 10 &gt; 10 — <b>ложь</b>, а 10 &gt;= 10 — истина. Половина ошибок в этом задании — именно здесь.</div>
+<div class="box tip"><b>Обратная задача</b>«При каком наименьшем A программа напечатает NO для пары (5, 8) с условием <code>s > A or t > A</code>?» NO будет, когда оба условия ложны: 5 ≤ A и 8 ≤ A, то есть A ≥ 8. Наименьшее A = 8.</div>`},
+{title:'Крайние случаи и поиск ошибок',lvl:6,html:`
+<p>Робот-проверяльщик обожает крайние случаи. Пройдись по списку <b>перед</b> отправкой решения:</p>
+<div class="box rule"><b>Чек-лист крайних случаев</b>
+1) Одно число (n = 1).<br>
+2) Все числа одинаковые.<br>
+3) Подходящих чисел нет (ответ 0 или «NO»).<br>
+4) Все числа подходят.<br>
+5) Нужное число стоит <b>первым</b> или <b>последним</b>.<br>
+6) Граница условия: ровно 10 при «больше 10».<br>
+7) Самые большие числа из ограничений.</div>
+<p>Найди ошибку в этой программе (она должна считать сумму n чисел). Запусти с вводом 3, 5, 5, 5:</p>
+<pre class="run" data-input="3\\n5\\n5\\n5">n = int(input())
+s = 0
+for i in range(1, n):
+    x = int(input())
+    s += x
+print(s)</pre>
+<p>Выводит 10, а надо 15: <code>range(1, n)</code> даёт только n − 1 повторение (1 и 2). Исправь на <code>range(n)</code>.</p>
+<div class="box err"><b>Топ-4 ошибок на ОГЭ</b>
+• <code>range(1, n)</code> вместо <code>range(n)</code> — теряется одно число;<br>
+• <code>or</code> вместо <code>and</code> (или наоборот);<br>
+• минимум начинают с 0;<br>
+• в формате «до нуля» ноль тоже обрабатывают как число или забывают читать новое число в цикле.</div>`},
+{title:'★ Олимпиада: формула вместо перебора',lvl:7,html:`
+<p>Задачи уровня Codeforces A и школьного этапа ВсОШ обычно короткие, но с подвохом: большие числа, хитрые границы. Часто вместо цикла нужна <b>формула</b>.</p>
+<div class="box ex"><b>Задача «Театральная площадь»</b> (по мотивам Codeforces 1A — самой первой задачи сайта). Площадь n × m метров замостить квадратными плитками a × a. Плитки можно не резать, они могут выходить за край. Сколько плиток нужно?<br>
+<b>Придумываем на примере:</b> 6 × 6, плитка 4. По одной стороне 6 / 4 = 1,5 → нужно <b>2</b> плитки (половинку не положишь). По другой тоже 2. Итого 2 · 2 = 4.</div>
+<div class="box rule"><b>Деление с округлением вверх</b>Сколько коробок по b штук нужно для a предметов: <code>(a + b - 1) // b</code>.<br>Проверка: a = 6, b = 4 → (6 + 3) // 4 = 2 ✅; a = 8, b = 4 → 11 // 4 = 2 ✅ (ровно, лишней коробки нет).</div>
+<pre class="run" data-input="6 6 4">n, m, a = map(int, input().split())
+print(((n + a - 1) // a) * ((m + a - 1) // a))</pre>
+<p>Попробуй ввод <code>1000000000 1000000000 1</code>. Ответ — 10¹⁸, и Python спокойно считает такие числа. (В C++ или Pascal здесь легко получить переполнение — и это любимая ловушка составителей.)</p>
+<div class="box tip"><b>Почему формула, а не цикл</b>Цикл на миллиард повторений Python будет крутить несколько минут, а лимит времени на олимпиаде — обычно 1–2 секунды. Формула считает мгновенно.</div>
+<div class="fact">Задачу «Watermelon» (Codeforces 4A, «Арбуз»: можно ли разрезать арбуз весом w на две чётные части) решили сотни тысяч человек. Многие с первого раза получают «неверный ответ» на тесте w = 2: 2 чётное, но 1 + 1 — нечётные части!</div>`},
+{title:'★ Олимпиада: строки и серии',lvl:8,html:`
+<p>Второй любимый тип — обработка строк и последовательностей «подряд».</p>
+<div class="box ex"><b>Задача «Камни на столе»</b> (по мотивам Codeforces 266A). В ряд лежат камни, цвет каждого — буква R, G или B. Сколько камней убрать, чтобы соседние камни были разного цвета?<br>
+<b>На примере:</b> RRGBBB — пары соседей: RR (одинаковые), RG, GB, BB (одинаковые), BB (одинаковые). Три одинаковые пары → убрать 3 камня.</div>
+<pre class="run" data-input="RRGBBB">s = input()
+k = 0
+for i in range(1, len(s)):
+    if s[i] == s[i - 1]:
+        k += 1
+print(k)</pre>
+<div class="box rule"><b>Приём «сравни с предыдущим»</b>Цикл с <code>i</code> от 1, сравниваем <code>s[i]</code> и <code>s[i - 1]</code>. Так же ищут серии одинаковых чисел подряд: храни <code>prev</code> (предыдущее) и длину текущей серии <code>cur</code>.</div>
+<pre class="run" data-input="5\\n5\\n2\\n2\\n2\\n7\\n0">best = 0
+cur = 0
+prev = 0
+x = int(input())
+while x != 0:
+    if x == prev:
+        cur += 1
+    else:
+        cur = 1
+    if cur > best:
+        best = cur
+    prev = x
+    x = int(input())
+print(best)</pre>
+<p>Самая длинная серия — три двойки. Добавь перед нулём ещё четыре семёрки: серия семёрок станет длиной 5, и ответ должен смениться на 5. Проверь!</p>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>4 шага: прочитать условие → решить руками на примере → написать → проверить крайние случаи.</li>
+<li>Формат «n, потом n чисел» → <code>for i in range(n)</code>. Формат «до нуля» → <code>while x != 0</code>, новое число читаем в конце тела.</li>
+<li>Числа в одной строке → <code>a, b = map(int, input().split())</code>.</li>
+<li>Кратно k → <code>x % k == 0</code>; последняя цифра → <code>x % 10</code>; в Python <code>-17 % 10 == 3</code>.</li>
+<li>Минимум начинаем с числа больше любого (30001), не с 0.</li>
+<li>«Что выведет» → трассировка в таблице, строго по шагам.</li>
+<li>Округление вверх: <code>(a + b - 1) // b</code>. Большие числа — формула вместо цикла.</li></ul>`},
+{title:'Что дальше',html:`
+<p>Ты прошёл путь от <code>print("Привет")</code> до задач, которые решают на экзамене и олимпиаде. Это уже серьёзно: многие взрослые программисты начинали именно с таких задач на Codeforces.</p>
+<p>Что можно делать дальше: решать задачи на Codeforces (раздел Problemset, сложность 800 — это как раз уровень A), участвовать в школьном этапе ВсОШ по информатике (он проходит осенью, часто онлайн) и в олимпиадах вроде «Технокубка» или Открытой олимпиады школьников.</p>
+<p>А в следующем, последнем модуле — <b>«11. Как работают нейросети»</b> — мы заглянем внутрь искусственного интеллекта. Окажется, что «искусственный нейрон» — это всего лишь функция с умножением, сложением и одним <code>if</code>. Ты уже умеешь написать её сам. А обучение нейросети — это цикл, который понемногу подкручивает числа. Посмотрим, как из таких простых кирпичиков получаются программы, которые узнают лица и пишут тексты.</p>`}
+];
+
+/* ======================= symbols ======================= */
+const symbols={tab:'Приёмы',title:'Приёмы для ОГЭ и олимпиад',rows:[
+[ic('for i in range(n)'),'Формат «сначала n»','Прочитать ровно n чисел','n = 3 → три input()'],
+[ic('while x != 0'),'Формат «до нуля»','Читать, пока не встретится 0; 0 не обрабатывать','12, 7, 30, 0 → три числа'],
+[ic('map(int, input().split())'),'Числа в одной строке','Разрезать строку по пробелам и превратить куски в числа','«3 17 4» → 3, 17, 4'],
+[ic('x % k == 0'),'Кратность','x делится на k без остатка','36 % 4 == 0 → да'],
+[ic('x % 10'),'Последняя цифра','Остаток от деления на 10','1236 % 10 = 6'],
+[ic('x // 10 % 10'),'Цифра десятков','Отбросили последнюю цифру и взяли новую последнюю','1236 // 10 % 10 = 3'],
+[ic('m = 30001'),'Старт минимума','Число больше любого из ограничения','потом if x < m: m = x'],
+[ic('(a + b - 1) // b'),'Деление вверх','Сколько коробок по b для a предметов','(6 + 3) // 4 = 2'],
+[ic('s[i] == s[i - 1]'),'Сравнить с предыдущим','Серии одинаковых подряд','RRG → одна пара'],
+[ic('and / or / not'),'Логика','and — оба; or — хотя бы одно; not — наоборот','10 > 10 — ложь']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Перед отправкой — крайние случаи: одно число, подходящих нет, граница условия.</div>`};
+
+/* ======================= widget ======================= */
+function onTheory(root){const el=root.querySelector('#w-trace');if(!el)return;
+  el.innerHTML=`<pre class="code" style="margin:0 0 8px">s = 0
+k = 1
+while s &lt; <span id="tN">10</span>:
+    s = s + k
+    k = k + 2
+print(k)</pre>
+<label>N = <output id="oN">10</output><input type="range" id="sN" min="1" max="60" step="1" value="10"></label>
+<div class="tbl" id="tTbl"></div><div id="tOut" style="margin-top:6px"></div>`;
+  const g=s=>el.querySelector(s);
+  const upd=()=>{const N=+g('#sN').value;g('#oN').textContent=N;g('#tN').textContent=N;
+    let s=0,k=1,step=0;let rows=`<tr><td>старт</td><td>${s}</td><td>${k}</td><td>${s} &lt; ${N}? ${s<N?'да':'нет'}</td></tr>`;
+    while(s<N){s+=k;k+=2;step++;rows+=`<tr><td>виток ${step}</td><td>${s}</td><td>${k}</td><td>${s} &lt; ${N}? ${s<N?'да → ещё виток':'<b>нет → выход</b>'}</td></tr>`;}
+    g('#tTbl').innerHTML=`<table class="sym"><thead><tr><th>шаг</th><th>s</th><th>k</th><th>условие</th></tr></thead><tbody>${rows}</tbody></table>`;
+    g('#tOut').innerHTML=`Программа напечатает <b>${k}</b> (витков цикла: ${step}).`;};
+  g('#sN').addEventListener('input',upd);upd();}
+
+/* ======================= generators ======================= */
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,make,star:o.star,rule:o.rule});};
+
+/* ---------- L0: стратегия ---------- */
+G(0,()=>{const ok='прочитать условие → решить на примере руками → написать код → проверить крайние случаи';
+const bad=['сразу написать код → запустить на примере из условия → отправить','написать код → прочитать условие → проверить крайние случаи → решить на примере','решить на примере → отправить ответ → прочитать условие → написать код'];
+const opts=shuffle([ok,...bad]);
+return {type:'choice',q:'Какой порядок действий при решении задачи на программирование правильный?',opts,ans:opts.indexOf(ok),
+short:'Сначала понять и придумать, потом писать, потом пытаться сломать.',
+explain:`Правило четырёх шагов: <b>${ok}</b>.<br>Почему не «сразу код»: пока ты не решил задачу руками, ты не знаешь алгоритма — код получится наугад. А пример из условия обычно самый простой; ошибки прячутся в крайних случаях (одно число, подходящих нет, граница условия).`,
+explain2:'Представь, что строишь шалаш. Сначала смотришь, что просят (прочитать условие), рисуешь план на бумажке (пример руками), строишь (код) и потом трясёшь его, проверяя, не развалится ли (крайние случаи). Строить без плана — долго и криво.'};},{rule:true});
+G(0,()=>{const ok='тест на границе возможного: одно число, все одинаковые, подходящих нет, ноль, самое большое число';
+const bad=['любой длинный тест со случайными числами','тест из примера в условии задачи','тест, на котором программа точно работает'];
+const opts=shuffle([ok,...bad]);
+return {type:'choice',q:'Что такое <b>крайний случай</b> (крайний тест)?',opts,ans:opts.indexOf(ok),
+short:'Крайний случай — «на краю»: самый маленький, пустой, одинаковый, граничный ввод.',
+explain:`Крайний случай — это ввод <b>на краю</b> того, что разрешено условием: ${ok}. Именно на них ломается большинство программ: например, минимум, начатый с 0, или <code>range(1, n)</code>, теряющий одно число.<br>Пример из условия — обычно «удобный», он ошибку часто не показывает.`,
+explain2:'Мост проверяют не пешеходом, а самым тяжёлым грузовиком, который по правилам может по нему ехать. Крайний тест — это «самый тяжёлый грузовик» для программы: минимум данных, максимум данных, граница условия.'};},{rule:true});
+G(0,()=>{const sc=pick([
+ {t:'Найти минимальное из n чисел.',ok:'n = 1 (одно число)',bad:['n = 5, числа 3, 8, 1, 9, 4','n = 4, числа 10, 20, 30, 40, но в другом порядке','n = 3, числа 2, 4, 6'],why:'одно число — сам себе минимум; программа, которая где-то делает «n − 1» сравнений неправильно, сломается'},
+ {t:'Посчитать, сколько чисел кратны 7.',ok:'ни одно число не кратно 7 (ответ 0)',bad:['числа 7, 14, 3, 21','числа 14, 28, 5','числа 70, 1, 2'],why:'ответ 0 — особый случай: надо убедиться, что программа печатает 0, а не ничего'},
+ {t:'Найти максимальное чётное число; если чётных нет, вывести NO.',ok:'все числа нечётные',bad:['числа 4, 8, 2','числа 10, 3, 6','числа 2, 7, 12'],why:'именно здесь должно напечататься NO — ветка, которую обычные примеры не проверяют'},
+ {t:'Сколько чисел больше 10?',ok:'среди чисел есть ровно 10',bad:['числа 1, 2, 3','числа 50, 60, 70','числа 11, 25, 3'],why:'10 — граница: «больше 10» не включает само 10. Перепутаешь > и >= — этот тест поймает'}]);
+const opts=shuffle([sc.ok,...sc.bad]);
+return {type:'choice',q:`Задача: «${sc.t}» Какой тест здесь — <b>крайний случай</b>, который обязательно стоит проверить?`,opts,ans:opts.indexOf(sc.ok),
+short:`«${sc.ok}» — ${sc.why}.`,
+explain:`Крайний тест — тот, что стоит на границе условия. Здесь это <b>${sc.ok}</b>: ${sc.why}.<br>Остальные варианты — обычные «средние» тесты: программа с типичной ошибкой их, скорее всего, пройдёт.`,
+explain2:`Спроси себя: «На каком вводе моя программа <b>может повести себя не так, как обычно</b>?» Обычно это пустой результат, одно значение или граница. Для этой задачи — ${sc.ok}.`};});
+G(0,()=>{const k=pick([3,4,5,7]);let a;do{a=rl(6,1,40);}while(!a.some(x=>x%k===0));const good=a.filter(x=>x%k===0);
+return {type:'num',q:`Шаг 2 стратегии — реши руками на примере. Задача: «Сколько чисел кратны ${k}?» Пример ввода: ${a.join(', ')}. Какой должен быть ответ?`,ans:good.length,
+short:`Кратны ${k}: ${good.join(', ')} — всего ${good.length}.`,
+explain:`Проверяем каждое число — делится ли на ${k} без остатка:<br>${a.map(x=>`${x} — ${x%k===0?'делится ✅':`остаток ${x%k} ❌`}`).join('<br>')}<br>Подходят ${good.join(', ')} → ответ <b>${good.length}</b>. Именно так будет работать и программа: перебирает числа и увеличивает счётчик.`,
+explain2:`Ставь галочку возле каждого числа из таблицы умножения на ${k} (${range(1,9).map(i=>k*i).join(', ')}, …). Галочки: ${good.join(', ')}. Их ${good.length}. Счётчик в программе — это и есть «количество галочек».`};});
+
+/* ---------- L1: ввод ---------- */
+G(1,()=>{const ok='n = int(input())\nfor i in range(n):\n    x = int(input())';
+const b1='n = int(input())\nfor i in range(1, n):\n    x = int(input())';
+const b2='n = int(input())\nfor i in range(n):\n    x = input()';
+const b3='n = int(input())\nwhile n != 0:\n    x = int(input())';
+const all=shuffle([ok,b1,b2,b3]);
+return {type:'choice',q:'Вход: сначала количество чисел n, потом n чисел, каждое в своей строке. Какой фрагмент правильно читает все числа?',opts:all.map(C),ans:all.indexOf(ok),
+short:'range(n) — ровно n повторений, int() — превращает текст в число.',
+explain:`Правильно:${C(ok)}• <code>range(n)</code> даёт ровно n повторений (0, 1, …, n − 1).<br>• <code>range(1, n)</code> — только n − 1 повторение, одно число потеряется.<br>• <code>x = input()</code> без int — x будет <b>текстом</b>, и <code>x % 4</code> выдаст ошибку.<br>• <code>while n != 0</code> — n внутри не меняется, цикл бесконечный.`,
+explain2:'Проверь каждый вариант на маленьком вводе: n = 2, числа 5 и 7. Сколько раз выполнится input() внутри цикла? В правильном — 2 раза, и оба раза получится число. В range(1, 2) — 1 раз. В варианте с while — бесконечно.'};},{rule:true});
+G(1,()=>{const ok='читает строку, режет её по пробелам и превращает кусочки в числа a и b';
+const bad=['читает два числа из двух разных строк','складывает два введённых числа','читает одно число и делит его пополам'];
+const opts=shuffle([ok,...bad]);
+return {type:'choice',q:`Что делает строка ${ic('a, b = map(int, input().split())')}?`,opts,ans:opts.indexOf(ok),
+short:'input() — строка, split() — по пробелам, map(int, …) — в числа.',
+explain:`Разбираем по кусочкам: <code>input()</code> читает <b>одну строку</b>, например «3 17»; <code>.split()</code> режет её по пробелам → ['3', '17']; <code>map(int, …)</code> делает из каждого кусочка число; <code>a, b =</code> раскладывает: a = 3, b = 17.<br>Из двух разных строк она читать <b>не</b> умеет — для этого нужны два input().`,
+explain2:'Представь батон: input() — весь батон, split() — нож, который режет по пробелам, map(int, …) — превращает каждый кусочек из «текста» в «число», а a, b = — раскладывает два кусочка по двум тарелкам.'};},{rule:true});
+G(1,()=>{const k=pick([2,3,5]);let a;do{a=rl(R(4,7),1,30);}while(!a.some(x=>x%k===0)||a.every(x=>x%k===0));
+const cnt=a.filter(x=>x%k===0).length;
+const code=`c = 0\nx = int(input())\nwhile x != 0:\n    if x % ${k} == 0:\n        c += 1\n    x = int(input())\nprint(c)`;
+return {type:'num',q:`Что выведет программа, если ввести числа ${a.join(', ')}, 0 (каждое в своей строке)?${C(code)}`,ans:cnt,
+short:`Кратны ${k}: ${a.filter(x=>x%k===0).join(', ')} → ${cnt}. Ноль — «стоп», он не считается.`,
+explain:`Программа читает числа, пока не встретит 0, и считает те, что делятся на ${k}:<br>${a.map(x=>`${x}: ${x%k===0?'c += 1':'не кратно'}`).join('<br>')}<br>0: условие <code>x != 0</code> ложно → выход из цикла. Печатается <b>${cnt}</b>.`,
+explain2:`Сам 0 в цикл не попадает: его прочитали в последней строке тела, потом проверили условие while — и вышли. Поэтому, хотя 0 % ${k} == 0, он не посчитан. Остаются только ${a.join(', ')}; из них на ${k} делятся ${cnt}.`};});
+G(1,()=>{const k=pick([3,4,6,7]);
+const mk=()=>{const n=R(4,8);const a=rl(n,1,200);if(!a.some(x=>x%k===0))a[R(0,n-1)]=k*R(1,20);return a;};
+const ins=[mk(),mk(),[k*R(2,9)],[k+1,k*2+1],mk()];
+const tests=ins.map(a=>({in:J(a.concat([0])),out:String(a.filter(x=>x%k===0).length)}));
+return {type:'code',q:`<b>Формат «до нуля».</b> Программа получает на вход натуральные числа, каждое в своей строке. Количество чисел неизвестно, последовательность заканчивается числом 0 (0 — признак конца, его не учитывают). Выведи, сколько среди них чисел, <b>кратных ${k}</b>.<br>Пример: ввод ${k}, ${k+1}, ${2*k}, 0 → вывод 2.`,
+starter:`count = 0\nx = int(input())\nwhile x != 0:\n    # проверь x и увеличь count, если нужно\n\n    x = int(input())\nprint(count)`,
+solution:`count = 0\nx = int(input())\nwhile x != 0:\n    if x % ${k} == 0:\n        count += 1\n    x = int(input())\nprint(count)`,tests,
+hint:`Внутри цикла нужно одно условие: <code>if x % ${k} == 0:</code> и под ним <code>count += 1</code>.`,
+explain:`Идея: перебираем числа, пока не встретим 0, и ставим «галочку» за каждое кратное ${k}.<br>1) Первое число читаем до цикла.<br>2) <code>while x != 0</code> — пока не стоп.<br>3) <code>if x % ${k} == 0: count += 1</code>.<br>4) В конце тела читаем следующее число — иначе цикл станет бесконечным.<br>5) После цикла печатаем count. Важный тест: «подходящих нет» — должно напечататься 0.`,
+explain2:`Сравни с форматом «сначала n»: там цикл for знает, сколько раз крутиться. Здесь мы не знаем, поэтому крутимся «пока не 0». Схема всегда одна: <b>прочитал → while x != 0 → обработал → прочитал следующее</b>. Обработка здесь — проверка кратности ${k} через остаток.`};});
+G(1,()=>{const tests=[['23 50','20','0 10'],['10 0','0','10 0'],['0 0','1440','0 0'],['12 30','45','13 15'],['5 5','3000','7 5'],['23 59','1','0 0']].map(t=>({in:t[0]+'\n'+t[1],out:t[2]}));
+return {type:'code',q:`<b>Часы</b> (по мотивам школьного этапа ВсОШ). В первой строке через пробел — часы h и минуты m (сейчас h:m, 24-часовой формат). Во второй строке — число k минут. Выведи через пробел, сколько часов и минут покажут часы через k минут.<br>Пример: ввод «23 50» и «20» → вывод «0 10».`,
+starter:`h, m = map(int, input().split())\nk = int(input())\n# переведи всё в минуты от полуночи\n`,
+solution:`h, m = map(int, input().split())\nk = int(input())\nt = (h * 60 + m + k) % 1440\nprint(t // 60, t % 60)`,tests,
+hint:'Переведи время в минуты от полуночи: h·60 + m. Прибавь k. В сутках 1440 минут — возьми остаток. Потом обратно: часы = t // 60, минуты = t % 60.',
+explain:`Стратегия «на примере»: 23:50 — это 23·60 + 50 = 1430 минут от полуночи. Плюс 20 → 1450. В сутках 24·60 = 1440 минут, поэтому 1450 % 1440 = 10 минут от полуночи → 0 ч 10 мин.<br>Код: <code>t = (h * 60 + m + k) % 1440</code>, затем <code>print(t // 60, t % 60)</code>.<br>Крайние случаи: k = 0; k ровно сутки (1440); k больше двух суток (3000).`,
+explain2:'Часы — это «круг» из 1440 минут. Остаток от деления на 1440 как раз и делает круг: дошёл до конца — начинаешь с нуля. Это тот же приём, что и последняя цифра числа (% 10), только круг длиннее.'};});
+
+/* ---------- L2: счётчик и сумма ---------- */
+G(2,()=>{const d=R(1,9);const ok=`x % 10 == ${d}`;const opts=shuffle([ok,`x // 10 == ${d}`,`x % ${d} == 0`,`x / 10 == ${d}`]);
+return {type:'choice',q:`Как в Python проверить, что число x <b>оканчивается на ${d}</b>?`,opts:opts.map(ic),ans:opts.indexOf(ok),
+short:`x % 10 — последняя цифра числа.`,
+explain:`Остаток от деления на 10 — это <b>последняя цифра</b>: например, 12${d} % 10 = ${d}. Поэтому условие: <code>${esc(ok)}</code>.<br>• <code>x // 10</code> — число <b>без</b> последней цифры (12${d} // 10 = 12).<br>• <code>x % ${d} == 0</code> — кратность ${d}, совсем другое.<br>• <code>x / 10</code> — дробное деление (12${d} / 10 = 12,${d}).`,
+explain2:`Раздели 12${d} конфет по 10 в пакет: получится 12 полных пакетов (это // 10) и ${d} конфет останется (это % 10). Оставшиеся — и есть последняя цифра.`};},{rule:true});
+G(2,()=>{const a=R(11,89);const r=pyMod(-a,10);
+return {type:'num',q:`Что напечатает Python: ${ic(`print(-${a} % 10)`)}?`,ans:r,
+short:`−${a} = 10·(${-Math.ceil(a/10)}) + ${r}, остаток ${r}.`,
+explain:`В Python остаток всегда того же знака, что делитель (здесь 10 — положительный), то есть от 0 до 9.<br>Ищем: −${a} = 10·q + r, где 0 ≤ r ≤ 9. Берём q = ${-Math.ceil(a/10)}: 10·(${-Math.ceil(a/10)}) = −${10*Math.ceil(a/10)}, и −${a} − (−${10*Math.ceil(a/10)}) = ${r}.<br>Ответ: <b>${r}</b>. Поэтому последнюю цифру отрицательного числа берут как <code>abs(x) % 10</code> (это было бы ${a%10}).`,
+explain2:`Представь числовую прямую с отметками через 10: …, −${10*Math.ceil(a/10)}, −${10*Math.ceil(a/10)-10}, … Число −${a} лежит между ними. Остаток в Python — это расстояние от отметки <b>слева</b> (−${10*Math.ceil(a/10)}) до числа: ${r}.`};},{rule:true});
+G(2,()=>{const pr=pick([[4,6],[3,7],[6,4],[7,1],[8,2],[3,1]]);const k=pr[0],d=pr[1];
+const goods=range(1,3000).filter(x=>x%k===0&&x%10===d);
+const mk=(n,m)=>{const a=rl(n,1,3000);for(let j=0;j<m;j++)a[R(0,n-1)]=pick(goods);return a;};
+const ins=[mk(6,2),mk(8,3),[pick(goods)],[k*10],mk(5,0).map(x=>x%k===0&&x%10===d?x+1:x),Array.from({length:4},()=>pick(goods))];
+const f=a=>a.filter(x=>x%k===0&&x%10===d).length;
+const tests=ins.map(a=>({in:J([a.length].concat(a)),out:String(f(a))}));
+return {type:'code',q:`<b>Как в ОГЭ.</b> Напиши программу, которая в последовательности натуральных чисел определяет количество чисел, <b>кратных ${k} и оканчивающихся на ${d}</b>. Сначала вводится количество чисел n, затем n чисел, каждое в своей строке. Числа не превышают 30 000.<br>Пример: n = 3, числа ${goods[0]}, ${goods[0]+1}, ${goods[1]} → вывод 2.`,
+starter:`n = int(input())\ncount = 0\nfor i in range(n):\n    x = int(input())\n    # допиши условие\n\nprint(count)`,
+solution:`n = int(input())\ncount = 0\nfor i in range(n):\n    x = int(input())\n    if x % ${k} == 0 and x % 10 == ${d}:\n        count += 1\nprint(count)`,tests,
+hint:`Два условия сразу — через <code>and</code>: <code>x % ${k} == 0 and x % 10 == ${d}</code>.`,
+explain:`1) Читаем n, счётчик = 0.<br>2) n раз читаем число x.<br>3) Кратно ${k} — <code>x % ${k} == 0</code>; оканчивается на ${d} — <code>x % 10 == ${d}</code>. Нужны <b>оба</b> условия → <code>and</code>.<br>4) Печатаем счётчик после цикла (без отступа!).<br>Проверка на примере: ${goods[0]} — подходит, ${goods[0]+1} — нет, ${goods[1]} — подходит → 2.`,
+explain2:`Частые ошибки в этой задаче: <code>or</code> вместо <code>and</code> (посчитаются числа, у которых выполнено только одно условие), <code>print</code> с отступом внутри цикла (напечатается n раз), <code>range(1, n)</code> (потеряется одно число). Пройди свою программу по примеру из условия глазами, строка за строкой.`};});
+G(2,()=>{const d=R(1,9);
+const mk=(n)=>rl(n,1,500);
+const ins=[mk(6),mk(7),[10+d],[20,30,40],mk(5),[d,d,d]];
+ins.forEach((a,i)=>{if(i!==3&&!a.some(x=>x%10===d))a[0]=a[0]-a[0]%10+d;});
+const f=a=>{const g=a.filter(x=>x%10===d);return g.length+'\n'+g.reduce((p,q)=>p+q,0);};
+const tests=ins.map(a=>({in:J([a.length].concat(a)),out:f(a)}));
+return {type:'code',q:`Даны n и затем n натуральных чисел (каждое в своей строке). Найди, <b>сколько</b> чисел оканчиваются на ${d}, и их <b>сумму</b>. Выведи два числа, каждое в своей строке: сначала количество, потом сумму. Если таких чисел нет — выведи 0 и 0.`,
+starter:`n = int(input())\ncount = 0\ns = 0\nfor i in range(n):\n    x = int(input())\n\nprint(count)\nprint(s)`,
+solution:`n = int(input())\ncount = 0\ns = 0\nfor i in range(n):\n    x = int(input())\n    if x % 10 == ${d}:\n        count += 1\n        s += x\nprint(count)\nprint(s)`,tests,
+hint:`Под одним <code>if x % 10 == ${d}:</code> — сразу две строки: увеличить count и прибавить x к s.`,
+explain:`Нам нужны два «накопителя»: счётчик (прибавляем 1) и сумма (прибавляем само число). Оба меняются, только если последняя цифра ${d}:<pre class="code">if x % 10 == ${d}:\n    count += 1\n    s += x</pre>Тест «20, 30, 40» проверяет крайний случай: подходящих нет → 0 и 0.`,
+explain2:`Сравни: счётчик — это «сколько галочек», сумма — «сложи числа с галочками». Например, для 1${d}, 7, 2${d}: галочки у 1${d} и 2${d} → count = 2, s = ${10+d+20+d}.`};});
+G(2,()=>{const a=R(1,5),b=a+R(8,14),k=pick([2,3,4]);let s=0;const used=[];for(let i=a;i<b;i++)if(i%k===0){s+=i;used.push(i);}
+const code=`s = 0\nfor i in range(${a}, ${b}):\n    if i % ${k} == 0:\n        s += i\nprint(s)`;
+return {type:'num',q:`Что выведет программа?${C(code)}`,ans:s,
+short:`i от ${a} до ${b-1}; кратные ${k}: ${used.join(' + ')} = ${s}.`,
+explain:`<code>range(${a}, ${b})</code> — это числа от ${a} до <b>${b-1}</b> (правая граница не входит!).<br>Из них кратны ${k}: ${used.join(', ')}.<br>Сумма: ${used.join(' + ')} = <b>${s}</b>.`,
+explain2:`Выпиши все i подряд и подчеркни подходящие: ${range(a,b-1).map(i=>i%k===0?`<b>${i}</b>`:i).join(', ')}. Число ${b} не пишем — range останавливается перед ним. Сложи подчёркнутые: ${s}.`};});
+
+/* ---------- L3: минимум / максимум ---------- */
+G(3,()=>{const ok='ни одно натуральное число не меньше 0, поэтому m останется 0 — а такого числа во вводе нет';
+const bad=['0 — это не число, Python выдаст ошибку','с 0 программа работает правильно, просто медленнее','минимум надо начинать с 1, потому что числа натуральные'];
+const opts=shuffle([ok,...bad]);
+return {type:'choice',q:`Ищем минимум из натуральных чисел. Почему нельзя начинать с ${ic('m = 0')}?`,opts,ans:opts.indexOf(ok),
+short:'m = 0 никогда не обновится: x < 0 для натуральных всегда ложно.',
+explain:`Условие обновления — <code>if x &lt; m</code>. При m = 0 для натуральных x оно <b>всегда ложно</b>, и программа напечатает 0, которого во вводе не было.<br>Правильно — начать с числа, большего любого возможного (если числа ≤ 30 000, то <code>m = 30001</code>), или с первого прочитанного числа.<br>Вариант «начать с 1» тоже неверный: если все числа больше 1, ответ будет 1.`,
+explain2:'Представь соревнование «кто ниже ростом». Если поставить в «чемпионы» гнома ростом 0 см, его никто не победит — и победителем объявят гнома, хотя он даже не участвовал. Начальный чемпион должен быть «великаном», которого победит первый же участник.'};},{rule:true});
+G(3,()=>{const d=pick([3,7,9]);
+const code=`n = int(input())\nm = 0\nfor i in range(n):\n    x = int(input())\n    if x % 10 == ${d} and x < m:\n        m = x\nprint(m)`;
+const opts=shuffle(['строка 2: m = 0','строка 1: n = int(input())','строка 4: x = int(input())','строка 7: print(m)']);
+return {type:'choice',q:`Программа должна найти минимальное число, оканчивающееся на ${d} (числа натуральные, не больше 30 000, такое число точно есть). В какой строке ошибка?${C(code)}`,opts,ans:opts.indexOf('строка 2: m = 0'),
+short:'m = 0 — условие x < m никогда не выполнится. Нужно m = 30001.',
+explain:`Пусть ввод: 3, числа 1${d}, 5${d}, 8. Трассировка: m = 0; 1${d} &lt; 0? нет; 5${d} &lt; 0? нет; 8 — не оканчивается на ${d}. Печатается <b>0</b> — неверно, правильный ответ 1${d}.<br>Ошибка в <b>строке 2</b>: начать надо с числа больше любого возможного: <code>m = 30001</code>.`,
+explain2:'Остальные строки — стандартный шаблон «формата А»: прочитать n, n раз прочитать x, в конце напечатать. А вот стартовое значение минимума — классическая ловушка: начинать надо с «великана», а не с нуля.'};});
+G(3,()=>{const d=R(1,9);
+const mk=n=>{const a=rl(n,1,30000);a[R(0,n-1)]=R(1,2999)*10+d;return a;};
+const ins=[mk(6),mk(8),[30000-10+d],[d,d+10,d+20],mk(5),[29990+d,5,6,15000+d]];
+const f=a=>Math.min(...a.filter(x=>x%10===d));
+const tests=ins.map(a=>({in:J([a.length].concat(a)),out:String(f(a))}));
+return {type:'code',q:`<b>Как в ОГЭ.</b> Напиши программу, которая в последовательности натуральных чисел определяет <b>минимальное число, оканчивающееся на ${d}</b>. Сначала вводится n, затем n чисел (каждое в своей строке). Числа не превышают 30 000. Гарантируется, что хотя бы одно число оканчивается на ${d}.`,
+starter:`n = int(input())\nm = 0\nfor i in range(n):\n    x = int(input())\n    if x % 10 == ${d} and x < m:\n        m = x\nprint(m)`,
+solution:`n = int(input())\nm = 30001\nfor i in range(n):\n    x = int(input())\n    if x % 10 == ${d} and x < m:\n        m = x\nprint(m)`,tests,
+hint:'В заготовке спрятана классическая ошибка в стартовом значении m. Найди и исправь.',
+explain:`Алгоритм: «чемпион» m, сравниваем только подходящие числа (оканчиваются на ${d}).<br>Ключевая строка — <code>m = 30001</code>: это больше любого числа из ограничения, поэтому первое же подходящее число станет чемпионом.<br>С <code>m = 0</code> условие <code>x &lt; m</code> никогда не выполнится, и программа напечатает 0.<br>Тест «${29990+d}, 5, 6, ${15000+d}» проверяет, что числа, не оканчивающиеся на ${d}, не участвуют (5 и 6 меньше, но не подходят).`,
+explain2:`Можно и по-другому: <code>m = -1</code> («ещё не нашли») и условие <code>if x % 10 == ${d} and (m == -1 or x &lt; m)</code>. Это работает, даже если ограничение на числа неизвестно.`};});
+G(3,()=>{
+const mk=n=>rl(n,1,1000);
+const ins=[mk(6),[1,3,5,7],[8],mk(7),[5,2],[999,1001,3]];
+const f=a=>{const e=a.filter(x=>x%2===0);return e.length?String(Math.max(...e)):'NO';};
+const tests=ins.map(a=>({in:J([a.length].concat(a)),out:f(a)}));
+return {type:'code',q:`Даны n и n натуральных чисел. Выведи <b>максимальное чётное</b> число. Если чётных чисел нет, выведи <b>NO</b>.`,
+starter:`n = int(input())\nmx = 0\nfor i in range(n):\n    x = int(input())\n`,
+solution:`n = int(input())\nmx = 0\nfor i in range(n):\n    x = int(input())\n    if x % 2 == 0 and x > mx:\n        mx = x\nif mx == 0:\n    print("NO")\nelse:\n    print(mx)`,tests,
+hint:'Для максимума натуральных чисел можно начать с mx = 0. Если после цикла mx всё ещё 0 — значит, ни одного чётного не встретилось.',
+explain:`1) <code>mx = 0</code> — любое натуральное чётное число больше нуля, поэтому первое же чётное станет чемпионом.<br>2) В цикле: <code>if x % 2 == 0 and x &gt; mx: mx = x</code>.<br>3) После цикла: если mx так и остался 0 — чётных не было → <code>print("NO")</code>, иначе печатаем mx.<br>Крайние тесты: все нечётные (1, 3, 5, 7) → NO; одно число 8 → 8.`,
+explain2:'Здесь 0 работает как «флаг»: он означает «пока ничего не нашли». Это возможно, потому что 0 не бывает ответом (числа натуральные). Если бы числа могли быть отрицательными, понадобился бы другой флаг.'};});
+G(3,()=>{
+const mk=n=>rl(n,1,500);
+const ins=[mk(6),[7],[4,4,4],mk(8),[100,1],[3,900,2,899]];
+const tests=ins.map(a=>({in:J(a.concat([0])),out:String(Math.max(...a)-Math.min(...a))}));
+return {type:'code',q:`<b>Формат «до нуля».</b> Вводятся натуральные числа (не больше 30 000), каждое в своей строке; конец — число 0. Чисел хотя бы одно. Выведи <b>разность между максимальным и минимальным</b> числом.<br>Пример: 5, 9, 2, 0 → 9 − 2 = 7.`,
+starter:`mx = 0\nmn = 30001\nx = int(input())\nwhile x != 0:\n    # обнови mx и mn\n\n    x = int(input())\n`,
+solution:`mx = 0\nmn = 30001\nx = int(input())\nwhile x != 0:\n    if x > mx:\n        mx = x\n    if x < mn:\n        mn = x\n    x = int(input())\nprint(mx - mn)`,tests,
+hint:'Два независимых if: один обновляет максимум, другой — минимум. Не elif! Первое число должно обновить оба.',
+explain:`Держим двух чемпионов сразу: mx (старт 0) и mn (старт 30001).<br>Для каждого x: <code>if x &gt; mx: mx = x</code> и отдельно <code>if x &lt; mn: mn = x</code>.<br>Почему не <code>elif</code>: первое число должно стать и максимумом, и минимумом одновременно. С elif оно обновит только mx, и для ввода «7, 0» получится 7 − 30001.<br>В конце <code>print(mx - mn)</code>. Тест «4, 4, 4» → 0.`,
+explain2:`Трассировка на 5, 9, 2: x=5 → mx=5, mn=5; x=9 → mx=9; x=2 → mn=2. Итог 9 − 2 = 7. Одно число 7 → mx = mn = 7 → 0.`};});
+
+/* ---------- L4: анализ программы ---------- */
+G(4,()=>{const ok='выполнять программу «вручную» по шагам, записывая значения переменных в таблицу';
+const bad=['запустить программу много раз с разными числами','угадать ответ по виду программы','переписать программу на другой язык'];
+const opts=shuffle([ok,...bad]);
+return {type:'choice',q:'Что такое <b>трассировка</b> программы?',opts,ans:opts.indexOf(ok),
+short:'Трассировка — ты сам становишься компьютером и ведёшь таблицу значений.',
+explain:`Трассировка — это <b>${ok}</b>. Для каждой переменной — столбец, для каждого шага — строка. Перед каждым витком цикла проверяешь условие.<br>На экзамене компьютера для запуска нет, поэтому это единственный надёжный способ ответить «что выведет программа».`,
+explain2:'Это как следить за шариком в напёрстках: не угадывать, а аккуратно отслеживать каждое движение. Каждое присваивание — «движение шарика», которое ты записываешь.'};},{rule:true});
+G(4,()=>{const st=R(2,5),N=R(15,40);let s=0,k=0;while(s<N){s+=st;k++;}
+const code=`s = 0\nk = 0\nwhile s < ${N}:\n    s = s + ${st}\n    k = k + 1\nprint(k)`;
+const rows=[];{let ss=0,kk=0;while(ss<N){ss+=st;kk++;rows.push(`виток ${kk}: s = ${ss}, k = ${kk}`);}}
+return {type:'num',q:`Что выведет программа?${C(code)}`,ans:k,
+short:`s растёт на ${st}: остановится, когда s = ${s} ≥ ${N}; витков ${k}.`,
+explain:`Трассируем: s = 0, k = 0.<br>${rows.length>8?rows.slice(0,3).join('<br>')+'<br>…<br>'+rows.slice(-2).join('<br>'):rows.join('<br>')}<br>Теперь ${s} &lt; ${N}? Нет → выход. Печатается k = <b>${k}</b>.`,
+explain2:`Без таблицы: цикл крутится, пока s &lt; ${N}, и каждый раз s увеличивается на ${st}. Сколько раз нужно прибавить ${st}, чтобы дойти до ${N} или перешагнуть? ${N} / ${st} ≈ ${(N/st).toFixed(1).replace('.',',')} → округляем вверх: ${k}.`};});
+G(4,()=>{const n=R(1000,99999);let m=n,s=0,c=0;const ds=[];while(m>0){ds.push(m%10);s+=m%10;m=Math.floor(m/10);c++;}
+const what=pick(['s','c']);
+const code=`n = ${n}\ns = 0\nc = 0\nwhile n > 0:\n    s = s + n % 10\n    c = c + 1\n    n = n // 10\nprint(${what})`;
+const ans=what==='s'?s:c;
+return {type:'num',q:`Что выведет программа?${C(code)}`,ans,
+short:what==='s'?`Сумма цифр числа ${n}: ${ds.slice().reverse().join(' + ')} = ${s}.`:`c — количество цифр числа ${n}: ${c}.`,
+explain:`Каждый виток: <code>n % 10</code> — последняя цифра, <code>n // 10</code> — отрезает её. Цифры отрезаются справа налево: ${ds.join(', ')}.<br>s накапливает сумму цифр: ${ds.join(' + ')} = ${s}. c считает витки: ${c}.<br>Печатается ${what} = <b>${ans}</b>.`,
+explain2:`Таблица: ${(()=>{let m2=n,s2=0,c2=0,o=[];while(m2>0){s2+=m2%10;c2++;m2=Math.floor(m2/10);o.push(`n=${m2}, s=${s2}, c=${c2}`);}return o.join('; ');})()}. Когда n стало 0, цикл закончился.`};});
+G(4,()=>{const a=pick([2,3,4]);let b;do{b=pick([3,5,6,7]);}while(b===a||b%a===0);const N=R(15,30);let c=0;const L=[];for(let i=1;i<=N;i++)if(i%a===0||i%b===0){c++;L.push(i);}
+const code=`c = 0\nfor i in range(1, ${N+1}):\n    if i % ${a} == 0 or i % ${b} == 0:\n        c = c + 1\nprint(c)`;
+return {type:'num',q:`Что выведет программа?${C(code)}`,ans:c,
+short:`Числа от 1 до ${N}, кратные ${a} или ${b}: ${c} штук.`,
+explain:`i пробегает от 1 до ${N} (до ${N+1}, не включая). Считаем числа, кратные ${a} <b>или</b> ${b} (хотя бы одному):<br>${L.join(', ')}.<br>Всего <b>${c}</b>.`,
+explain2:`Можно формулой: кратных ${a}: ${N} // ${a} = ${Math.floor(N/a)}; кратных ${b}: ${Math.floor(N/b)}; кратных обоим (то есть ${a*b/H.gcd(a,b)}): ${Math.floor(N/(a*b/H.gcd(a,b)))} — их посчитали дважды. ${Math.floor(N/a)} + ${Math.floor(N/b)} − ${Math.floor(N/(a*b/H.gcd(a,b)))} = ${c}.`};});
+G(4,()=>{const w=pick(['программирование','информатика','олимпиада','алгоритм','переменная','компьютер','клавиатура','трассировка']);const V='аеёиоуыэюя';
+const k=[...w].filter(ch=>V.includes(ch)).length;
+const code=`s = "${w}"\nk = 0\nfor ch in s:\n    if ch in "аеёиоуыэюя":\n        k = k + 1\nprint(k)`;
+return {type:'num',q:`Что выведет программа?${C(code)}`,ans:k,
+short:`Гласные в «${w}»: ${[...w].filter(ch=>V.includes(ch)).join(', ')} → ${k}.`,
+explain:`Цикл перебирает буквы слова «${w}» и считает те, что есть в строке гласных:<br>${[...w].map(ch=>V.includes(ch)?`<b>${ch}</b>`:ch).join(' ')}<br>Гласных: <b>${k}</b>.`,
+explain2:`<code>ch in "аеёиоуыэюя"</code> — проверка «эта буква есть среди гласных?». Пройди по слову пальцем и считай: ${[...w].filter(ch=>V.includes(ch)).map((ch,i)=>`${i+1}) ${ch}`).join(', ')}.`};});
+
+/* ---------- L5: запуски ---------- */
+G(5,()=>{const v=pick([{c:'A and B',ok:'когда верны оба условия A и B',bad:['когда верно хотя бы одно из условий','когда оба условия ложны','когда верно ровно одно из условий']},{c:'A or B',ok:'когда верно хотя бы одно из условий A, B (или оба)',bad:['только когда верны оба условия','только когда верно ровно одно условие','когда оба условия ложны']},{c:'not A',ok:'когда условие A ложно',bad:['когда условие A верно','всегда','никогда']}]);
+const opts=shuffle([v.ok,...v.bad]);
+return {type:'choice',q:`Когда выражение ${ic(v.c)} истинно?`,opts,ans:opts.indexOf(v.ok),
+short:`${v.c}: ${v.ok}.`,
+explain:`<b>and</b> — «и»: нужны оба. <b>or</b> — «или»: хватит одного (оба тоже можно). <b>not</b> — «не»: переворачивает.<br>Значит, <code>${esc(v.c)}</code> истинно, ${v.ok}.`,
+explain2:'Пример из жизни: «Пойду гулять, если тепло <b>и</b> нет дождя» — нужны оба. «Возьму зонт, если дождь <b>или</b> снег» — хватит одного. «Если <b>не</b> устал — пойду на тренировку».'};},{rule:true});
+const pairsGen=()=>{const ps=[];while(ps.length<9){const p=[R(-12,14),R(-12,14)];if(!ps.some(q=>q[0]===p[0]&&q[1]===p[1]))ps.push(p);}return ps;};
+const condV=[
+ {txt:(A,B)=>`s > ${A} or t > ${B}`,f:(s,t,A,B)=>s>A||t>B},
+ {txt:(A,B)=>`s > ${A} and t < ${B}`,f:(s,t,A,B)=>s>A&&t<B},
+ {txt:(A,B)=>`not (s < ${A}) and t > ${B}`,f:(s,t,A,B)=>!(s<A)&&t>B},
+ {txt:(A,B)=>`s >= ${A} or t == ${B}`,f:(s,t,A,B)=>s>=A||t===B}];
+const runGen=(variants)=>()=>{let cv,A,B,ps,yes;do{cv=pick(variants);A=R(0,10);B=R(0,10);ps=pairsGen();
+ if(cv.txt(A,B).includes('==')){ps[R(0,8)][1]=B;}
+ if(Math.random()<0.6)ps[R(0,8)][0]=A;
+ yes=ps.filter(p=>cv.f(p[0],p[1],A,B));}while(yes.length<2||yes.length>7);
+ const code=`s = int(input())\nt = int(input())\nif ${cv.txt(A,B)}:\n    print("YES")\nelse:\n    print("NO")`;
+ const P=p=>`(${minus(p[0])}, ${minus(p[1])})`;
+ return {type:'num',q:`Программу запустили 9 раз. Пары (s, t): ${ps.map(P).join('; ')}. Сколько раз она напечатала «YES»?${C(code)}`,ans:yes.length,
+ short:`YES для: ${yes.map(P).join('; ')} — ${yes.length} ${plural(yes.length,'раз','раза','раз')}.`,
+ explain:`Проверяем условие <code>${esc(cv.txt(A,B))}</code> для каждой пары:<br>${ps.map(p=>`${P(p)} → ${cv.f(p[0],p[1],A,B)?'<b>YES</b>':'NO'}`).join('<br>')}<br>Итого YES: <b>${yes.length}</b>.`,
+ explain2:`Разбей условие на части и проверяй каждую отдельно, потом соединяй: <b>and</b> — нужны обе части, <b>or</b> — хватит одной, <b>not</b> переворачивает. Особое внимание — парам, где число <b>равно</b> границе: s = ${A} или t = ${B}. Там важно, стоит ли &gt; или &gt;=.`};};
+G(5,runGen([condV[0],condV[1]]));
+G(5,runGen([condV[2],condV[3]]));
+G(5,()=>{const s=R(-5,20),t=R(-5,20);const kind=pick(['orNO','andYES']);let code,ask,ans;
+ if(kind==='orNO'){code=`s = ${s}\nt = ${t}\nif s > A or t > A:\n    print("YES")\nelse:\n    print("NO")`;ask='напечатает «NO»';for(let A=-100;A<=100;A++){if(!(s>A||t>A)){ans=A;break;}}}
+ else{code=`s = ${s}\nt = ${t}\nif s < A and t < A:\n    print("YES")\nelse:\n    print("NO")`;ask='напечатает «YES»';for(let A=-100;A<=100;A++){if(s<A&&t<A){ans=A;break;}}}
+ const mx=Math.max(s,t);
+ return {type:'num',q:`Укажи <b>наименьшее</b> целое значение A, при котором программа ${ask}.${C(code)}`,ans,
+ short:kind==='orNO'?`NO, когда ${minus(s)} ≤ A и ${minus(t)} ≤ A, то есть A ≥ ${minus(mx)}.`:`YES, когда A > ${minus(s)} и A > ${minus(t)}, то есть A ≥ ${minus(mx+1)}.`,
+ explain:kind==='orNO'?`NO печатается, когда условие <code>s &gt; A or t &gt; A</code> <b>ложно</b>, то есть <b>оба</b> сравнения ложны: ${minus(s)} ≤ A и ${minus(t)} ≤ A. Значит, A ≥ ${minus(mx)}. Наименьшее A = <b>${minus(ans)}</b>.<br>Проверка: при A = ${minus(ans-1)} получим ${minus(mx)} &gt; ${minus(ans-1)} — верно → YES, не подходит.`:`YES печатается, когда оба условия верны: ${minus(s)} &lt; A и ${minus(t)} &lt; A. Значит, A больше большего из чисел, ${minus(mx)}. Строго больше! Наименьшее целое: <b>${minus(ans)}</b>.<br>Проверка: при A = ${minus(mx)} условие ${minus(mx)} &lt; ${minus(mx)} ложно → NO.`,
+ explain2:`Можно просто перебирать A по одному около чисел ${minus(s)} и ${minus(t)} и подставлять в условие: ${[ans-2,ans-1,ans].map(A=>`A = ${minus(A)} → ${kind==='orNO'?((s>A||t>A)?'YES':'NO'):((s<A&&t<A)?'YES':'NO')}`).join('; ')}. Первое A, при котором получилось нужное, — ответ.`};});
+
+/* ---------- L6: крайние случаи, ошибки ---------- */
+G(6,()=>{const cand=[{t:'одно число (n = 1)',ok:true},{t:'подходящих чисел нет',ok:true},{t:'число, равное границе условия (например, ровно 10 при «больше 10»)',ok:true},{t:'нужное число стоит последним',ok:true},{t:'тест из примера в условии (уже проверен в задаче)',ok:false},{t:'тест, где все числа разные и «удобные»',ok:false}];
+const opts=shuffle(sample(cand.filter(c=>c.ok),3).concat(sample(cand.filter(c=>!c.ok),2)));
+return {type:'multi',q:'Какие из этих тестов — <b>крайние случаи</b> из чек-листа? Выбери все.',opts:opts.map(o=>o.t),ans:opts.map((o,i)=>o.ok?i:-1).filter(i=>i>=0),
+short:'Крайние: одно число, подходящих нет, граница условия, нужное число первое/последнее.',
+explain:`Чек-лист: одно число; все одинаковые; подходящих нет; все подходят; нужное число первое или последнее; граница условия; самые большие числа.<br>${opts.map(o=>`• ${o.t} — ${o.ok?'<b>крайний</b>':'обычный'}`).join('<br>')}`,
+explain2:'Крайний тест «давит» на слабое место программы: стартовое значение (одно число, нет подходящих), сравнение (граница), начало и конец цикла (первое и последнее число). «Удобные» тесты ни на что не давят.'};},{rule:true});
+G(6,()=>{const k=pick([4,6,8]),d=pick([2,6]);let y=d+10;while(y%k===0)y+=10;
+const code=`n = int(input())\nc = 0\nfor i in range(n):\n    x = int(input())\n    if x % ${k} == 0 or x % 10 == ${d}:\n        c += 1\nprint(c)`;
+const ok=`в условии нужно and вместо or`;
+const opts=shuffle([ok,'range(n) надо заменить на range(1, n)','c надо начинать с 1','print(c) надо сдвинуть внутрь цикла']);
+return {type:'choice',q:`Программа должна считать числа, кратные ${k} <b>и</b> оканчивающиеся на ${d}. На вводе 2, числа ${k*10}, ${y} она печатает неверный ответ. В чём ошибка?${C(code)}`,opts,ans:opts.indexOf(ok),
+short:'«И» — это and. С or посчитаются числа, у которых выполнено только одно условие.',
+explain:`Условие «кратно ${k} <b>и</b> оканчивается на ${d}» — нужны оба, значит <code>and</code>.<br>С <code>or</code>: ${k*10} кратно ${k}, но оканчивается на 0 — всё равно посчитано. Число ${y} оканчивается на ${d}, но не кратно ${k} — тоже посчитано. Программа выдаст 2 вместо 0.<br>Остальные «исправления» сломают правильные части: range(1, n) потеряет число, c = 1 даст лишнюю единицу, print внутри цикла напечатает много строк.`,
+explain2:'Переведи условие задачи на Python дословно: «кратно … И оканчивается …» → <code>x % k == 0 and x % 10 == d</code>. Слово «и» в условии почти всегда означает and, «или» / «хотя бы одно» — or.'};});
+G(6,()=>{const code=`s = 0\nx = int(input())\nwhile x != 0:\n    s = s + x\nprint(s)`;
+const ok='внутри цикла не читается новое число — цикл бесконечный';
+const opts=shuffle([ok,'s нужно начинать с 1','условие должно быть x == 0','первую строку input() нужно убрать']);
+return {type:'choice',q:`Программа должна сложить числа до нуля. Что с ней не так?${C(code)}`,opts,ans:opts.indexOf(ok),
+short:'Без x = int(input()) в теле цикла x не меняется — while крутится вечно.',
+explain:`Если первое число 5, то условие 5 != 0 верно, s = 5, потом снова 5 != 0, s = 10, … x <b>никогда не меняется</b>, поэтому цикл бесконечный.<br>Исправление — последней строкой тела цикла: <code>x = int(input())</code>.`,
+explain2:'В цикле while что-то обязательно должно меняться так, чтобы условие когда-нибудь стало ложным. Тут условие зависит от x — значит, x должен меняться внутри цикла. Спроси себя у каждого while: «Что здесь меняется и когда это закончится?»'};});
+G(6,()=>{
+const mk=n=>rl(n,1,30000).map(x=>x-x%3);
+const ins=[mk(5).map(x=>x||3),[3],[30000,29997],[9,10,11,6],mk(7).map(x=>x||3),[1,2,4,27]];
+const f=a=>Math.min(...a.filter(x=>x%3===0));
+const tests=ins.map(a=>({in:J([a.length].concat(a)),out:String(f(a))}));
+return {type:'code',q:`<b>Найди и исправь ошибку.</b> Программа должна находить минимальное число, кратное 3, из n натуральных чисел (числа ≤ 30 000, хотя бы одно кратно 3). Запусти заготовку на тестах — она ошибается. Исправь.`,
+starter:`n = int(input())\nm = 0\nfor i in range(n):\n    x = int(input())\n    if x % 3 == 0 and x < m:\n        m = x\nprint(m)`,
+solution:`n = int(input())\nm = 30001\nfor i in range(n):\n    x = int(input())\n    if x % 3 == 0 and x < m:\n        m = x\nprint(m)`,tests,
+hint:'Посмотри на результаты тестов: программа всё время печатает одно и то же число. Откуда оно берётся?',
+explain:`Заготовка всегда печатает 0: условие <code>x &lt; m</code> при m = 0 не выполняется ни для одного натурального x.<br>Исправление: <code>m = 30001</code> — больше любого числа из ограничения. Тест «30000, 29997» — крайний: числа близки к границе, проверяет, что старт действительно больше всех.`,
+explain2:'Подход «отладчика»: запусти на самом простом тесте (одно число 3). Ожидается 3, печатается 0. Трассируй: m = 0, x = 3, 3 &lt; 0? Нет. Значит, проблема в стартовом значении.'};});
+
+/* ---------- L7: ★ формулы ---------- */
+G(7,()=>{const a=R(10,60),b=pick([3,4,6,7,8]);const ans=Math.floor((a+b-1)/b);const ok='(a + b - 1) // b';
+const opts=shuffle([ok,'a // b','a // b + 1','(a - 1) // b']);
+return {type:'choice',q:`Сколько коробок по b штук нужно для a предметов (лишние места можно оставить пустыми)? Какая формула всегда верна?`,opts:opts.map(ic),ans:opts.indexOf(ok),
+short:`(a + b − 1) // b — деление с округлением вверх. Например, a = ${a}, b = ${b}: ${ans}.`,
+explain:`Нужно деление <b>с округлением вверх</b>: <code>(a + b - 1) // b</code>.<br>Пример: a = ${a}, b = ${b} → (${a} + ${b-1}) // ${b} = ${ans}.<br>• <code>a // b</code> = ${Math.floor(a/b)} — округляет вниз, остатку предметов не хватит коробки${a%b===0?' (здесь случайно верно, потому что делится нацело)':''}.<br>• <code>a // b + 1</code> — неверно, когда делится нацело: 8 предметов по 4 → 3 коробки вместо 2.<br>• <code>(a - 1) // b</code> — ещё меньше, чем a // b.`,
+explain2:'Почему работает: прибавив b − 1, мы «докладываем» почти полную коробку. Если был хоть один лишний предмет, он вместе с добавкой заполнит новую коробку целиком, и // её посчитает. Если остатка не было, добавки b − 1 не хватит на новую коробку — лишней не будет.'};},{star:true,rule:true});
+G(7,()=>{const tests=[['6 6 4','4'],['1 1 1','1'],['2 1 1','2'],['1000000000 1000000000 1','1000000000000000000'],['12 13 4','12'],['3 3 5','1'],['7 1 3','3']].map(t=>({in:t[0],out:t[1]}));
+return {type:'code',q:`<b>★ Театральная площадь</b> (по мотивам Codeforces 1A). Площадь — прямоугольник n × m метров. Её мостят квадратными плитками a × a. Плитки нельзя резать, но можно выходить за края площади. Какое наименьшее число плиток нужно? Ввод: n, m, a в одной строке через пробел (1 ≤ n, m, a ≤ 10⁹).<br>Пример: «6 6 4» → 4.`,
+starter:`n, m, a = map(int, input().split())\n`,
+solution:`n, m, a = map(int, input().split())\nprint(((n + a - 1) // a) * ((m + a - 1) // a))`,tests,
+hint:'По каждой стороне отдельно: сколько плиток нужно на сторону n? Это деление с округлением вверх. Потом перемножь.',
+explain:`На сторону n нужно ⌈n / a⌉ плиток (округление вверх), на сторону m — ⌈m / a⌉. Всего — произведение.<br>В Python: <code>((n + a - 1) // a) * ((m + a - 1) // a)</code>.<br>Крайние тесты: плитка больше площади (3 3 5 → 1); огромная площадь 10⁹ × 10⁹ при a = 1 → 10¹⁸ (цикл тут бы не успел, а формула мгновенна).`,
+explain2:`Не используй <code>/</code> и round: <code>/</code> даёт дробь, а для огромных чисел дробь хранится неточно. Целочисленная формула с <code>//</code> всегда точна. Пример 12 × 13, a = 4: по 12 → 3 плитки, по 13 → (13 + 3) // 4 = 4 плитки, итого 12.`};},{star:true});
+G(7,()=>{const tests=[['3 17 4','13'],['2 100 3','0'],['1 0 1','1'],['1000 0 1000','500500000'],['5 15 2','0'],['10 1 3','59']].map(t=>({in:t[0],out:t[1]}));
+return {type:'code',q:`<b>★ Солдат и бананы</b> (по мотивам Codeforces 546A). Солдат хочет купить w бананов. Первый стоит k рублей, второй — 2k, третий — 3k, и так далее (i-й банан стоит i·k). У него n рублей. Сколько рублей ему нужно занять у друга? Если денег хватает — выведи 0. Ввод: k, n, w в одной строке.<br>Пример: «3 17 4» → цена 3 + 6 + 9 + 12 = 30, занять 30 − 17 = 13.`,
+starter:`k, n, w = map(int, input().split())\n`,
+solution:`k, n, w = map(int, input().split())\ncost = k * w * (w + 1) // 2\nprint(max(0, cost - n))`,tests,
+hint:'Цена всех бананов: k·(1 + 2 + … + w). Сумма 1 + … + w = w·(w + 1) / 2 — или посчитай циклом. Не забудь случай, когда денег хватает.',
+explain:`1) Цена: k + 2k + … + wk = k·(1 + 2 + … + w) = k·w·(w + 1) / 2. В Python: <code>k * w * (w + 1) // 2</code> (произведение w·(w + 1) всегда чётное, деление точное).<br>2) Занять: цена − n, но не меньше нуля: <code>max(0, cost - n)</code>.<br>Крайний тест «2 100 3»: цена 12, денег 100 → 0, а не −88!`,
+explain2:'Можно и циклом: <code>for i in range(1, w + 1): cost += i * k</code> — при w ≤ 1000 это быстро. Главная ловушка задачи не в формуле, а в отрицательном ответе: если денег больше, чем нужно, занимать надо 0.'};},{star:true});
+G(7,()=>{const tests=[['8','YES'],['2','NO'],['1','NO'],['3','NO'],['100','YES'],['4','YES'],['7','NO']].map(t=>({in:t[0],out:t[1]}));
+return {type:'code',q:`<b>★ Арбуз</b> (по мотивам Codeforces 4A). Петя и Вася купили арбуз весом w килограммов (w — целое, 1 ≤ w ≤ 100). Они хотят разрезать его на две части так, чтобы <b>каждая</b> часть весила чётное число килограммов (больше нуля). Можно ли это сделать? Выведи YES или NO.<br>Пример: 8 → YES (2 + 6 или 4 + 4).`,
+starter:`w = int(input())\nif w % 2 == 0:\n    print("YES")\nelse:\n    print("NO")`,
+solution:`w = int(input())\nif w % 2 == 0 and w > 2:\n    print("YES")\nelse:\n    print("NO")`,tests,
+hint:'Заготовка почти верная, но падает на одном крайнем тесте. Подумай про самый маленький чётный вес.',
+explain:`Если w нечётное — две чётные части в сумме дадут чётное число, значит, нельзя. Если w чётное — можно 2 + (w − 2), но только если w − 2 &gt; 0, то есть <b>w &gt; 2</b>.<br>w = 2: 2 = 1 + 1 (нечётные) или 2 + 0 (ноль не годится) → NO.<br>Условие: <code>w % 2 == 0 and w &gt; 2</code>.`,
+explain2:'Это тот самый «тест-убийца» из стратегии: самое маленькое значение, которое подходит под общее правило «чётное → YES», но на самом деле — исключение. Проверяй всегда самые маленькие входы: 1, 2, 3.'};},{star:true});
+
+/* ---------- L8: ★ строки и серии ---------- */
+G(8,()=>{const pr=pick([[2,3],[3,5],[2,5],[3,7],[4,6]]);const a=pr[0],b=pr[1];const N=R(100,999);let c=0;for(let i=1;i<=N;i++)if(i%a===0||i%b===0)c++;const l=a*b/H.gcd(a,b);
+return {type:'num',q:`<b>★</b> Сколько натуральных чисел от 1 до ${N} делятся на ${a} <b>или</b> на ${b} (хотя бы на одно)? Реши формулой, без цикла.`,ans:c,
+hint:`Посчитай кратные ${a}, кратные ${b} и вычти тех, кого посчитал дважды — кратных ${l}.`,
+short:`${N} // ${a} + ${N} // ${b} − ${N} // ${l} = ${Math.floor(N/a)} + ${Math.floor(N/b)} − ${Math.floor(N/l)} = ${c}.`,
+explain:`Кратных ${a} от 1 до ${N}: ${N} // ${a} = ${Math.floor(N/a)}.<br>Кратных ${b}: ${N} // ${b} = ${Math.floor(N/b)}.<br>Числа, кратные обоим (то есть кратные НОК(${a}, ${b}) = ${l}), попали в оба списка: ${N} // ${l} = ${Math.floor(N/l)}. Вычитаем их один раз.<br>Ответ: ${Math.floor(N/a)} + ${Math.floor(N/b)} − ${Math.floor(N/l)} = <b>${c}</b>.`,
+explain2:`Проверка на маленьком примере: от 1 до ${l}: кратные ${a} — ${range(a,l,a).join(', ')}; кратные ${b} — ${range(b,l,b).join(', ')}. Число ${l} есть в обоих списках — без вычитания его посчитали бы дважды. Это формула включений-исключений, как в задачах про кружки и секции.`};},{star:true});
+G(8,()=>{const tests=[['4\nword\nlocalization\ninternationalization\npneumonoultramicroscopicsilicovolcanoconiosis','word\nl10n\ni18n\np43s'],['1\nabcdefghij','abcdefghij'],['1\nabcdefghijk','a9k'],['2\nпрограммирование\nкот','п14е\nкот'],['3\na\nкомпьютерный\nxx','a\nк10й\nxx']].map(t=>({in:t[0],out:t[1]}));
+return {type:'code',q:`<b>★ Слишком длинные слова</b> (по мотивам Codeforces 71A). Слово считается слишком длинным, если в нём <b>строго больше 10</b> букв. Такое слово заменяют сокращением: первая буква + количество букв между первой и последней + последняя буква. Например, «localization» → «l10n». Короткие слова выводят без изменений. Ввод: n, затем n слов (каждое в своей строке).`,
+starter:`n = int(input())\nfor i in range(n):\n    w = input()\n    print(w)`,
+solution:`n = int(input())\nfor i in range(n):\n    w = input()\n    if len(w) > 10:\n        print(w[0] + str(len(w) - 2) + w[-1])\n    else:\n        print(w)`,tests,
+hint:'Первая буква — w[0], последняя — w[-1], букв между ними — len(w) − 2. Число превращаем в текст через str().',
+explain:`Для каждого слова: если <code>len(w) &gt; 10</code> → печатаем <code>w[0] + str(len(w) - 2) + w[-1]</code>, иначе — само слово.<br>На примере: «localization» — 12 букв, между первой и последней 12 − 2 = 10 → «l10n».<br>Крайние тесты: ровно 10 букв (не сокращаем!) и 11 букв (сокращаем: «a9k»).`,
+explain2:'Частые ошибки: <code>len(w) &gt;= 10</code> (слово из 10 букв сократится, а не должно), <code>len(w) - 1</code> вместо − 2 (между первой и последней на две буквы меньше, чем всего), склеивание числа с текстом без str() — TypeError.'};},{star:true});
+G(8,()=>{const cols='RGB';const mk=n=>Array.from({length:n},()=>pick([...cols])).join('');
+const f=s=>{let k=0;for(let i=1;i<s.length;i++)if(s[i]===s[i-1])k++;return k;};
+const ins=[mk(8),'R','RRRRR','RGBRGB',mk(12),'RRGBBB'];
+const tests=ins.map(s=>({in:s.length+'\n'+s,out:String(f(s))}));
+return {type:'code',q:`<b>★ Камни на столе</b> (по мотивам Codeforces 266A). В ряд лежат n камней, цвет каждого — R, G или B. Какое наименьшее число камней надо убрать, чтобы любые два соседних камня были разного цвета? Ввод: n, затем строка из n букв.<br>Пример: 6 и RRGBBB → 3.`,
+starter:`n = int(input())\ns = input()\nk = 0\n`,
+solution:`n = int(input())\ns = input()\nk = 0\nfor i in range(1, n):\n    if s[i] == s[i - 1]:\n        k += 1\nprint(k)`,tests,
+hint:'Каждая пара одинаковых соседей требует убрать один камень. Сравни s[i] и s[i − 1] для i от 1.',
+explain:`Если два соседа одного цвета, один из них лишний. Значит, ответ — <b>количество пар соседей одного цвета</b>.<br>Цикл <code>for i in range(1, n)</code> (с 1, чтобы у s[i] был сосед слева) и <code>if s[i] == s[i - 1]: k += 1</code>.<br>Крайние: один камень → 0; RRRRR → 4 (оставить один); RGBRGB → 0.`,
+explain2:'Почему не нужно «по-настоящему» удалять камни: в серии из одинаковых камней длины L убрать надо L − 1, а одинаковых соседних пар в ней как раз L − 1. Задача сводится к простому счётчику — так часто бывает на олимпиадах: подумай, прежде чем моделировать.'};},{star:true});
+G(8,()=>{
+const mk=n=>{const a=[];while(a.length<n){const v=R(1,5);const L=R(1,4);for(let j=0;j<L&&a.length<n;j++)a.push(v);}return a;};
+const f=a=>{let best=0,cur=0,prev=0;for(const x of a){cur=x===prev?cur+1:1;if(cur>best)best=cur;prev=x;}return best;};
+const ins=[mk(10),[7],[3,3,3,3],[1,2,3,4],[5,5,2,2,2,7,7,7,7],mk(15)];
+const tests=ins.map(a=>({in:J(a.concat([0])),out:String(f(a))}));
+return {type:'code',q:`<b>★ Самая длинная серия</b> (школьный этап ВсОШ, адаптировано). Вводятся натуральные числа, каждое в своей строке, конец — 0. Найди длину самой длинной серии <b>одинаковых чисел, идущих подряд</b>.<br>Пример: 5, 5, 2, 2, 2, 7, 0 → 3.`,
+starter:`best = 0\ncur = 0\nprev = 0\nx = int(input())\nwhile x != 0:\n    # сравни x с prev\n\n    x = int(input())\nprint(best)`,
+solution:`best = 0\ncur = 0\nprev = 0\nx = int(input())\nwhile x != 0:\n    if x == prev:\n        cur += 1\n    else:\n        cur = 1\n    if cur > best:\n        best = cur\n    prev = x\n    x = int(input())\nprint(best)`,tests,
+hint:'Если x равно предыдущему — серия продолжается (cur += 1), иначе начинается новая (cur = 1). После этого обнови best и запомни prev = x.',
+explain:`Храним три вещи: prev — предыдущее число, cur — длина текущей серии, best — рекорд.<br>Для каждого x: если <code>x == prev</code> → <code>cur += 1</code>, иначе <code>cur = 1</code>. Затем <code>if cur &gt; best: best = cur</code>, и <code>prev = x</code>.<br>prev = 0 в начале работает, потому что 0 не бывает среди чисел.<br>Крайние: одно число → 1; все одинаковые; самая длинная серия в самом конце (поэтому best обновляем на каждом шаге, а не только при смене числа).`,
+explain2:`Трассировка 5, 5, 2, 2, 2, 7: x=5 (≠0) cur=1 best=1; x=5 cur=2 best=2; x=2 cur=1; x=2 cur=2; x=2 cur=3 best=3; x=7 cur=1. Ответ 3. Типичная ошибка — обновлять best только когда серия «оборвалась»: тогда последняя серия не учтётся.`};},{star:true});
+
+window.TOPIC={id:'i_oge',title:'10. Задачи ОГЭ и олимпиад',subtitle:'Программирование · Python',
+intro:`<p>Здесь ты применишь весь Python, который уже знаешь, к задачам как на ОГЭ и олимпиадах: обработка последовательностей, «что выведет программа», запуски с условиями и олимпиадные задачи с подвохом. Главное — научиться <b>стратегии</b>: прочитать, придумать на примере, написать, проверить на крайних случаях.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Стратегия решения','Ввод данных: два формата и split','Счётчики и суммы по условию','Минимум и максимум по условию','Анализ программы: что выведет','Запуски программы с условием','Крайние случаи и поиск ошибок','★ Олимпиада: формулы и подвохи','★ Олимпиада: строки и серии'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

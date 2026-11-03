@@ -1,0 +1,1201 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>9. Алгоритмы — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const C=s=>`<pre class="code">${esc(s)}</pre>`;
+const RUN=(code,inp)=>`<pre class="run"${inp!=null?` data-input="${esc(inp).replace(/"/g,'&quot;')}"`:''}>${esc(code)}</pre>`;
+const pyl=a=>'['+a.join(', ')+']';
+const lst=(n,lo,hi)=>{const a=[];for(let i=0;i<n;i++)a.push(R(lo,hi));return a;};
+const T=(inp,out)=>({in:inp,out:String(out)});
+const lines=a=>a.join('\n');
+const choiceOf=(right,wrongs)=>{const o=[right];for(const w of wrongs){if(!o.includes(w))o.push(w);}const opts=shuffle(o);return {opts,ans:opts.indexOf(right)};};
+const isPrime=n=>{if(n<2)return false;for(let d=2;d*d<=n;d++)if(n%d===0)return false;return true;};
+const primesTo=n=>range(2,n).filter(isPrime);
+const dsum=n=>String(n).split('').reduce((s,c)=>s+ +c,0);
+function binSteps(a,x){let l=0,r=a.length-1,s=0;const tr=[];while(l<=r){const m=Math.floor((l+r)/2);s++;tr.push({l,r,m,v:a[m]});if(a[m]===x)break;else if(a[m]<x)l=m+1;else r=m-1;}return {s,tr};}
+function bubblePass(a){a=a.slice();let sw=0;for(let j=0;j<a.length-1;j++)if(a[j]>a[j+1]){[a[j],a[j+1]]=[a[j+1],a[j]];sw++;}return {a,sw};}
+function inversions(a){let k=0;for(let i=0;i<a.length;i++)for(let j=i+1;j<a.length;j++)if(a[i]>a[j])k++;return k;}
+function selSteps(a,k){a=a.slice();for(let i=0;i<k;i++){let m=i;for(let j=i+1;j<a.length;j++)if(a[j]<a[m])m=j;[a[i],a[m]]=[a[m],a[i]];}return a;}
+const guesses=N=>Math.floor(Math.log2(N))+1;
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Что мы уже умеем',lvl:0,html:`
+<p>В модуле «8. Функции» ты научился делать свои команды с <code>def</code> и <code>return</code>, а раньше — списки, циклы и условия. Это все кирпичики. Теперь научимся строить из них <b>умные</b> решения.</p>
+<p class="hook">Загадай число от 1 до 1000. Я угадаю его не больше чем за <b>10 вопросов</b> вида «больше или меньше?». А для чисел до миллиона хватит 20 вопросов. Как? Это и есть алгоритм — и сегодня ты научишься делать так же.</p>`},
+{title:'Алгоритм и линейный поиск',lvl:0,html:`
+<div class="box rule"><b>Правило</b><b>Алгоритм</b> — точная последовательность шагов, которая для любых допустимых входных данных за конечное число шагов приводит к ответу. Как рецепт, но такой точный, что его может выполнить даже робот.</div>
+<p>Самый простой алгоритм поиска — <b>линейный</b>: смотрим элементы по очереди, пока не найдём.</p>
+${RUN(`a = [7, 3, 9, 4, 8, 1]
+x = 4
+pos = -1
+for i in range(len(a)):
+    if a[i] == x:
+        pos = i
+        break
+print("Индекс:", pos)`)}
+<p>Поменяй x на 5 — его нет, и программа напечатает −1. Это договорённость: «−1 значит не нашли».</p>
+<div class="box tip"><b>Сколько это стоит</b>Если элементов n, то в худшем случае (элемента нет или он последний) нужно <b>n сравнений</b>. Для 1000 элементов — 1000, для миллиарда — миллиард.</div>
+<div class="box err"><b>Ошибка</b>Не печатай «не найдено» внутри цикла в else — это ты помнишь из модуля про списки. Решение — после цикла.</div>`},
+{title:'Бинарный поиск: игра «угадай число»',lvl:1,html:`
+<p>Попробуй сам: компьютер загадал число от 1 до 1000.</p>
+<div class="widget" id="w-guess"></div>
+<div class="box rule"><b>Правило</b><b>Бинарный поиск</b> (поиск делением пополам) работает только в <b>отсортированном</b> списке. Смотрим на середину: если искомое больше — выкидываем левую половину, если меньше — правую. Каждый шаг вдвое уменьшает область поиска.</div>
+<p>Почему 10 вопросов для 1000? После каждого вопроса остаётся половина: 1000 → 500 → 250 → 125 → 63 → 32 → 16 → 8 → 4 → 2 → 1. Нужно столько шагов, сколько раз можно делить 1000 пополам до 1. Так как 2¹⁰ = 1024 ≥ 1000, хватает 10.</p>
+${RUN(`a = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]
+x = 23
+left = 0
+right = len(a) - 1
+steps = 0
+while left <= right:
+    mid = (left + right) // 2
+    steps += 1
+    print("смотрю a[", mid, "] =", a[mid])
+    if a[mid] == x:
+        print("Нашёл на месте", mid, "за", steps, "шага")
+        break
+    elif a[mid] < x:
+        left = mid + 1
+    else:
+        right = mid - 1`)}
+<p>Поменяй x на 91, на 2, на 50 (его нет). Сколько шагов в каждом случае?</p>
+<div class="box err"><b>Частые ошибки</b>
+• Список не отсортирован — бинарный поиск даёт чепуху.<br>
+• <code>left = mid</code> вместо <code>mid + 1</code> — может получиться вечный цикл.<br>
+• <code>while left &lt; right</code> вместо <code>&lt;=</code> — пропустим последний кандидат.</div>
+<div class="fact">Бинарный поиск используют повсюду: в словарях и базах данных, в git (команда git bisect ищет, в каком из тысячи изменений появилась ошибка), даже ты сам ищешь слово в бумажном словаре, открывая его посередине.</div>`},
+{title:'Сортировка пузырьком',lvl:2,html:`
+<div class="box rule"><b>Правило</b>Идём по списку и сравниваем <b>соседей</b>: если левый больше правого — меняем их местами. После первого прохода самый большой элемент «всплывает» в конец, как пузырёк. Повторяем проходы n − 1 раз.</div>
+<div class="widget" id="w-sort"></div>
+${RUN(`a = [5, 2, 9, 1, 7]
+n = len(a)
+for p in range(n - 1):
+    for j in range(n - 1 - p):
+        if a[j] > a[j + 1]:
+            a[j], a[j + 1] = a[j + 1], a[j]
+    print("после прохода", p + 1, ":", a)`)}
+<p>Строка <code>a[j], a[j + 1] = a[j + 1], a[j]</code> меняет два элемента местами одной командой.</p>
+<p>Почему <code>n - 1 - p</code>? После прохода p в конце уже стоят p самых больших — их сравнивать незачем. А <code>- 1</code> — чтобы <code>a[j + 1]</code> не вышел за край списка.</p>
+<div class="box tip"><b>Сколько работы</b>Сравнений: (n − 1) + (n − 2) + … + 1 = n(n − 1)/2. Для 1000 элементов — почти полмиллиона, для миллиона — полтриллиона. Медленно!</div>`},
+{title:'Сортировка выбором',lvl:3,html:`
+<div class="box rule"><b>Правило</b>На шаге i находим <b>минимум</b> среди элементов с i-го до конца и меняем его местами с a[i]. После шага i первые i + 1 элементов стоят на своих местах.</div>
+<p>Так раскладывают карты: ищешь самую маленькую и кладёшь первой, потом из оставшихся снова самую маленькую…</p>
+${RUN(`a = [5, 2, 9, 1, 7]
+n = len(a)
+for i in range(n - 1):
+    m = i
+    for j in range(i + 1, n):
+        if a[j] < a[m]:
+            m = j
+    a[i], a[m] = a[m], a[i]
+    print("шаг", i + 1, ":", a)`)}
+<p>Переключи в виджете выше режим на «Выбором» и сравни, сколько обменов делает каждая сортировка.</p>
+<div class="box tip"><b>Пузырёк или выбор?</b>Сравнений у обеих примерно n²/2. Но выбором делает не больше n − 1 обменов, а пузырёк — может очень много. Обе считаются медленными; настоящие сортировки (как sorted в Python) делают примерно n · log₂ n сравнений.</div>`},
+{title:'Сложность: считаем операции на пальцах',lvl:4,html:`
+<p class="hook">Две программы решают одну задачу. Одна — за секунду, другая — за 30 лет. Код при этом может быть почти одинаковой длины! Всё решает, <b>сколько операций</b> делает алгоритм.</p>
+<div class="box rule"><b>Правило</b>Сложность — как растёт число операций, когда растёт n (размер данных).<br>
+• Один цикл до n — примерно <b>n</b> операций.<br>
+• Цикл в цикле, оба до n — <b>n · n = n²</b>.<br>
+• Деление пополам, пока не станет 1 — примерно <b>log₂ n</b> (сколько раз можно поделить на 2).</div>
+${RUN(`n = 1000
+k1 = 0
+for i in range(n):
+    k1 += 1
+k2 = 0
+for i in range(n):
+    for j in range(n):
+        k2 += 1
+k3 = 0
+m = n
+while m > 1:
+    m = m // 2
+    k3 += 1
+print(k1, k2, k3)`)}
+<p>Поменяй n на 2000. Во сколько раз выросло каждое число?</p>
+<div class="tbl"><table class="sym"><thead><tr><th>n</th><th>log₂ n</th><th>n</th><th>n²</th></tr></thead><tbody>
+<tr><td>10</td><td>≈ 3</td><td>10</td><td>100</td></tr>
+<tr><td>1000</td><td>≈ 10</td><td>1000</td><td>1 000 000</td></tr>
+<tr><td>1 000 000</td><td>≈ 20</td><td>1 000 000</td><td>10¹²</td></tr></tbody></table></div>
+<div class="box tip"><b>Правило олимпиадника</b>Python делает примерно 10 миллионов простых операций в секунду. Если n = 100 000, то n² = 10¹⁰ — это больше 15 минут. А на олимпиаде лимит обычно 1–2 секунды. Поэтому перед тем как писать код, прикинь число операций!</div>`},
+{title:'Перебор: проверим все варианты',lvl:5,html:`
+<p>Иногда проще всего — проверить <b>все</b> варианты. Компьютер не устаёт: тысячу вариантов он проверит за миг.</p>
+<div class="box rule"><b>Все пары</b>Чтобы перебрать все пары разных элементов (без повторов), второй цикл начинают с <code>i + 1</code>:<br><code>for i in range(n):</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;for j in range(i + 1, n):</code><br>Пар получается n(n − 1)/2.</div>
+${RUN(`a = [3, 8, 1, 6]
+for i in range(len(a)):
+    for j in range(i + 1, len(a)):
+        print(a[i], "+", a[j], "=", a[i] + a[j])`)}
+<h3>Все трёхзначные числа</h3>
+${RUN(`k = 0
+for n in range(100, 1000):
+    a = n // 100
+    b = n // 10 % 10
+    c = n % 10
+    if a + b + c == 5:
+        k += 1
+print("Трёхзначных с суммой цифр 5:", k)`)}
+<p>Поменяй 5 на 27 — такое число одно. Какое?</p>
+<div class="box err"><b>Ошибка</b><code>for j in range(n)</code> вместо <code>range(i + 1, n)</code> — каждая пара посчитается дважды (a, b) и (b, a), да ещё и пары элемента с самим собой.</div>
+<div class="fact">Перебором в 1976 году доказали знаменитую теорему о четырёх красках (любую карту можно раскрасить четырьмя цветами так, чтобы соседние страны были разного цвета): компьютер проверил почти 2000 особых случаев. Это было первое крупное доказательство с помощью компьютера.</div>`},
+{title:'Решето Эратосфена',lvl:6,html:`
+<p class="hook">Эратосфен — тот самый, который больше 2000 лет назад измерил размер Земли с помощью палки и тени. Он же придумал, как быстро найти <b>все</b> простые числа до n — «просеять» их через решето.</p>
+<div class="box rule"><b>Правило</b>Выписываем числа от 2 до n. Берём первое невычеркнутое — 2 — оно простое; вычёркиваем все его кратные. Следующее невычеркнутое — 3 — простое; вычёркиваем кратные 3. И так далее. Вычёркивать кратные p можно начинать с <b>p · p</b>: меньшие кратные уже вычеркнуты раньше. Что осталось — простые.</div>
+${RUN(`n = 50
+is_p = [True] * (n + 1)
+is_p[0] = False
+is_p[1] = False
+p = 2
+while p * p <= n:
+    if is_p[p]:
+        for k in range(p * p, n + 1, p):
+            is_p[k] = False
+    p += 1
+print([i for i in range(n + 1) if is_p[i]])`)}
+<p><code>[True] * (n + 1)</code> — список из n + 1 значений True: «пока все считаем простыми». Поменяй n на 1000 и посчитай их через <code>len(…)</code> — должно быть 168.</p>
+<div class="box tip"><b>Почему это быстро</b>Проверять каждое число делением — долго. Решето для n = 1 000 000 делает всего несколько миллионов простых шагов — меньше секунды.</div>`},
+{title:'Олимпиадные идеи',lvl:7,html:`
+<h3>Максимальная сумма подряд (алгоритм Кадане)</h3>
+<p>Идём по списку и держим лучшую сумму отрезка, <b>заканчивающегося</b> здесь: <code>cur = max(x, cur + x)</code> — либо продолжаем отрезок, либо начинаем заново. Один проход вместо перебора всех отрезков!</p>
+${RUN(`a = [2, -5, 3, 4, -1, 2, -6, 1]
+cur = a[0]
+best = a[0]
+for x in a[1:]:
+    cur = max(x, cur + x)
+    best = max(best, cur)
+print(best)`)}
+<h3>Сначала оцени, потом пиши</h3>
+<p>Если n ≤ 1000 — можно n² (миллион операций). Если n ≤ 100 000 — нужно что-то вроде n или n · log n. Если ответ ищется среди 10¹⁸ вариантов — только бинарный поиск или формула.</p>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>Линейный поиск: до n сравнений, работает всегда.</li>
+<li>Бинарный поиск: только в отсортированном, ≈ log₂ n шагов (1000 → 10, миллион → 20).</li>
+<li>Пузырёк: меняем соседей; выбор: минимум на место i. Обе ≈ n²/2 сравнений.</li>
+<li>Цикл в цикле — n²; деление пополам — log₂ n.</li>
+<li>Все пары: <code>for j in range(i + 1, n)</code>, пар n(n − 1)/2.</li>
+<li>Решето: вычёркиваем кратные p, начиная с p·p.</li></ul>`},
+{title:'Что дальше',html:`
+<p>Ты знаешь главные идеи алгоритмов: поиск, сортировку, перебор, оценку скорости. Это то, что отличает программиста от человека, который просто знает команды.</p>
+<p>В модуле <b>«10. Задачи ОГЭ и олимпиад»</b> соберём всё вместе и порешаем задачи в том виде, как они бывают на экзамене и олимпиаде: с вводом, жёсткими тестами и ограничением по времени.</p>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Алгоритмы',title:'Алгоритмы и их скорость',rows:[
+['Линейный поиск','Смотрим по очереди','Работает для любого списка.','≈ n шагов'],
+['Бинарный поиск','Делим пополам','Только для отсортированного списка.','≈ log₂ n шагов: 1000 → 10'],
+['Пузырёк','Меняем соседей','Большие «всплывают» в конец.','≈ n²/2 сравнений'],
+['Выбор','Минимум — на место i','Не больше n − 1 обменов.','≈ n²/2 сравнений'],
+['sorted / sort','Встроенная сортировка','Timsort, очень быстрая.','≈ n · log₂ n'],
+['Все пары','i &lt; j','Второй цикл с i + 1.','n(n − 1)/2 пар'],
+['Решето','Эратосфен','Вычёркиваем кратные, начиная с p·p.','быстро до миллионов'],
+['a[i], a[j] = a[j], a[i]','Обмен','Поменять два элемента местами.','<code>a[0], a[1] = a[1], a[0]</code>']],
+after:'<div class="box tip"><b>Как запомнить</b>log₂ n — «сколько раз можно разрезать пополам». 1000 → 10, 1 000 000 → 20, 1 000 000 000 → 30.</div>'};
+
+/* ---------- widgets ---------- */
+function guessWidget(w){
+  let secret=R(1,1000),tries=0,done=false;
+  w.innerHTML=`<div class="small"><b>Угадай число от 1 до 1000.</b> Подсказка: начни с 500.</div>
+  <div class="row"><input type="number" id="wg-in" min="1" max="1000" style="width:110px;font-size:17px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)"><button class="btn sbtn" id="wg-go">Проверить</button><button class="btn ghost sbtn" id="wg-new">Новое число</button><button class="btn ghost sbtn" id="wg-pc">Пусть угадает компьютер</button></div>
+  <div id="wg-out" class="small" style="margin-top:6px"></div>`;
+  const inp=w.querySelector('#wg-in'),out=w.querySelector('#wg-out');
+  w.querySelector('#wg-go').onclick=()=>{if(done)return;const g=parseInt(inp.value,10);if(!(g>=1&&g<=1000)){out.innerHTML='Введи число от 1 до 1000.';return;}tries++;
+    if(g===secret){done=true;out.innerHTML=`<b>Угадал за ${tries} ${plural(tries,'попытку','попытки','попыток')}!</b> ${tries<=10?'Отлично — бинарный поиск в действии.':'Попробуй каждый раз называть середину оставшегося отрезка — хватит 10.'}`;}
+    else out.innerHTML=`Попытка ${tries}: загаданное число <b>${secret>g?'больше':'меньше'}</b> ${g}.`;inp.select();};
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')w.querySelector('#wg-go').click();});
+  w.querySelector('#wg-new').onclick=()=>{secret=R(1,1000);tries=0;done=false;out.innerHTML='Загадано новое число.';inp.value='';};
+  w.querySelector('#wg-pc').onclick=()=>{let l=1,r=1000,k=0;const log=[];while(l<=r){const m=Math.floor((l+r)/2);k++;if(m===secret){log.push(`${m} — угадал!`);break;}if(m<secret){log.push(`${m}? больше`);l=m+1;}else{log.push(`${m}? меньше`);r=m-1;}}
+    done=true;out.innerHTML=`Компьютер искал ${secret}: ${log.join(' → ')}<br><b>${k} ${plural(k,'вопрос','вопроса','вопросов')}</b> (никогда не больше 10).`;};
+}
+function sortWidget(w){
+  let mode='bubble',base=[],frames=[],pos=0,timer=null;
+  w.innerHTML=`<div class="small"><b>Посмотри, как сортирует компьютер.</b> Жёлтым — сравниваемые элементы, зелёным — уже на своём месте.</div>
+  <div class="row"><button class="btn sbtn" id="wsr-b">Пузырьком</button><button class="btn ghost sbtn" id="wsr-s">Выбором</button></div>
+  <div id="wsr-svg"></div><div id="wsr-msg" class="small" style="min-height:2.6em"></div>
+  <div class="row"><button class="btn sbtn" id="wsr-step">Шаг ▶</button><button class="btn ghost sbtn" id="wsr-auto">Авто ⏩</button><button class="btn ghost sbtn" id="wsr-mix">Перемешать</button></div>`;
+  const sv=w.querySelector('#wsr-svg'),msg=w.querySelector('#wsr-msg'),bB=w.querySelector('#wsr-b'),bS=w.querySelector('#wsr-s');
+  function build(){const a=base.slice();const n=a.length;frames=[];let cmp=0,sw=0;
+    const F=(hi,done,m)=>frames.push({a:a.slice(),hi,done:done.slice(),m,cmp,sw});
+    const done=[];F([],done,'Начало. Нажимай «Шаг».');
+    if(mode==='bubble'){for(let p=0;p<n-1;p++){for(let j=0;j<n-1-p;j++){cmp++;if(a[j]>a[j+1]){[a[j],a[j+1]]=[a[j+1],a[j]];sw++;F([j,j+1],done,`${a[j+1]} &gt; ${a[j]} — меняем местами.`);}else F([j,j+1],done,`${a[j]} ≤ ${a[j+1]} — оставляем.`);}done.push(n-1-p);F([],done,`Проход ${p+1} закончен: ${a[n-1-p]} всплыл на своё место.`);}done.push(0);}
+    else{for(let i=0;i<n-1;i++){let m=i;for(let j=i+1;j<n;j++){cmp++;F([m,j],done,`Ищем минимум с места ${i}: сравниваем ${a[m]} и ${a[j]}.`);if(a[j]<a[m])m=j;}if(m!==i){[a[i],a[m]]=[a[m],a[i]];sw++;}done.push(i);F([i],done,`Минимум ${a[i]} ставим на место ${i}.`);}done.push(n-1);}
+    F([],done.concat(range(0,n-1)),`Готово! Сравнений: ${cmp}, обменов: ${sw}.`);pos=0;draw();}
+  function draw(){const f=frames[pos];const n=f.a.length;const bw=34,gap=6,W=n*(bw+gap)+gap,Hh=150;
+    let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${Math.min(340,W)}" role="img" aria-label="Сортировка">`;
+    f.a.forEach((v,i)=>{const h=v*11;const x=gap+i*(bw+gap);const hi=f.hi.includes(i),dn=f.done.includes(i);
+      s+=`<rect x="${x}" y="${Hh-22-h}" width="${bw}" height="${h}" rx="4" fill="${hi?'var(--hl)':dn?'var(--ok,#2a9d5c)':'var(--accent)'}" fill-opacity="${hi?0.9:dn?0.55:0.35}" stroke="var(--fig)" stroke-width="${hi?2:1}"/>`;
+      s+=`<text x="${x+bw/2}" y="${Hh-6}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">${v}</text>`;});
+    s+='</svg>';sv.innerHTML=s;msg.innerHTML=`${f.m}<br><span class="small">Сравнений: ${f.cmp} · обменов: ${f.sw}</span>`;}
+  function mix(){base=shuffle(range(1,10)).slice(0,8);build();}
+  function setMode(m){mode=m;bB.classList.toggle('ghost',m!=='bubble');bS.classList.toggle('ghost',m!=='sel');stop();build();}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  bB.onclick=()=>setMode('bubble');bS.onclick=()=>setMode('sel');
+  w.querySelector('#wsr-step').onclick=()=>{stop();if(pos<frames.length-1)pos++;draw();};
+  w.querySelector('#wsr-auto').onclick=()=>{if(timer){stop();return;}timer=setInterval(()=>{if(pos>=frames.length-1){stop();return;}pos++;draw();},350);};
+  w.querySelector('#wsr-mix').onclick=()=>{stop();mix();};
+  mix();
+}
+function onTheory(root){const g=root.querySelector('#w-guess');if(g)guessWidget(g);const s=root.querySelector('#w-sort');if(s)sortWidget(s);}
+
+/* ---------- generators ---------- */
+const gens=[];
+const G=(lvl,make,o)=>gens.push(Object.assign({lvl,make},o||{}));
+const RULE={rule:true},STAR={star:true};
+
+/* L0 */
+G(0,()=>{const c=choiceOf('Точная последовательность шагов, которая за конечное число шагов приводит к ответу',['Любая программа на Python','Набор случайных действий, который иногда даёт ответ','Список команд, который может выполняться бесконечно']);
+return {type:'choice',q:'Что такое <b>алгоритм</b>?',...c,
+short:'Алгоритм: точно, по шагам, конечно.',
+explain:'Алгоритм — это <b>точная</b> (исполнитель не должен угадывать), <b>пошаговая</b> инструкция, которая <b>заканчивается</b> и даёт ответ для любых допустимых данных. Случайные действия и бесконечные циклы — не алгоритм. А программа — это запись алгоритма на языке программирования.',
+explain2:'Хороший рецепт торта — алгоритм: «взбей 3 яйца, добавь 200 г сахара, выпекай 30 минут». Плохой: «добавь сахара по вкусу и пеки, пока не будет готово» — неточно.'};},RULE);
+G(0,()=>{const n=pick([10,50,100,1000,5000]);const c=choiceOf(String(n),[String(Math.ceil(Math.log2(n))),String(n/2),'1']);
+return {type:'choice',q:`В <b>неотсортированном</b> списке ${n} чисел. Сколько сравнений понадобится линейному поиску в <b>худшем</b> случае?`,...c,
+short:`Худший случай — проверить все ${n}.`,
+explain:`Линейный поиск смотрит элементы по очереди. Худший случай — искомого нет или он последний: придётся проверить <b>все ${n}</b>. Бинарный поиск (≈ ${Math.ceil(Math.log2(n))} шагов) здесь нельзя — список не отсортирован.`,
+explain2:`Ищешь носок в куче белья без порядка — в худшем случае перебираешь всю кучу.`};},RULE);
+G(0,()=>{const a=sample(range(1,30),R(6,8));const has=Math.random()<0.75;const x=has?pick(a):pick(range(1,30).filter(v=>!a.includes(v)));const k=has?a.indexOf(x)+1:a.length;
+return {type:'num',q:`Что напечатает программа?${C(`a = ${pyl(a)}\nx = ${x}\nk = 0\nfor v in a:\n    k += 1\n    if v == x:\n        break\nprint(k)`)}`,ans:k,
+short:has?`${x} — ${k}-й по счёту, на нём break.`:`${x} нет — проверили все ${k}.`,
+explain:has?`k считает, сколько элементов просмотрено. Просматриваем: ${a.slice(0,k).join(', ')} — на ${x} срабатывает break. Просмотрено <b>${k}</b>.`:`Числа ${x} в списке нет, break не сработает, цикл пройдёт все ${a.length} элементов. k = <b>${k}</b> — это худший случай линейного поиска.`,
+explain2:`k += 1 стоит <b>до</b> проверки, поэтому найденный элемент тоже считается. ${has?`Позиция ${x} — индекс ${k-1}, значит просмотрено ${k}.`:`Не нашли — значит просмотрели весь список.`}`};});
+G(0,()=>{const tests=[];const add=(a,x)=>tests.push(T(`${a.join(' ')}\n${x}`,a.indexOf(x)));
+add([7,3,9,4],4);add([7,3,9,4],5);add([1,1,1],1);add([5],5);add([2,8,2,8],8);{const a=lst(10,1,9);add(a,R(1,9));}
+return {type:'code',q:'В первой строке — числа, во второй — число <b>x</b>. Выведи индекс <b>первого</b> вхождения x (с нуля) или <code>-1</code>, если x нет. Встроенные index и in не используй — напиши линейный поиск сам.',
+starter:`a = list(map(int, input().split()))\nx = int(input())\n`,tests,
+solution:`a = list(map(int, input().split()))\nx = int(input())\npos = -1\nfor i in range(len(a)):\n    if a[i] == x:\n        pos = i\n        break\nprint(pos)`,
+hint:'pos = -1 до цикла. Нашёл — pos = i и break.',
+explain:'До цикла <code>pos = -1</code> («пока не нашли»). Идём по индексам; при совпадении запоминаем <code>pos = i</code> и <b>break</b> — чтобы не перезаписать первый найденный последующими. После цикла печатаем pos.',
+explain2:'Без break для [2, 8, 2, 8] и x = 8 получился бы 3 (последнее вхождение), а нужно 1.'};});
+G(0,()=>{const tests=[];const add=(a,x)=>tests.push(T(`${a.join(' ')}\n${x}`,a.lastIndexOf(x)));
+add([2,8,2,8],8);add([7,3,9,4],5);add([1,1,1],1);add([5],5);add([4,6,9],4);{const a=lst(10,1,5);add(a,R(1,5));}
+return {type:'code',q:'В первой строке — числа, во второй — число <b>x</b>. Выведи индекс <b>последнего</b> вхождения x или <code>-1</code>, если x нет.',
+starter:`a = list(map(int, input().split()))\nx = int(input())\n`,tests,
+solution:`a = list(map(int, input().split()))\nx = int(input())\npos = -1\nfor i in range(len(a)):\n    if a[i] == x:\n        pos = i\nprint(pos)`,
+hint:'Тот же поиск, но без break: каждое новое совпадение перезапишет pos.',
+explain:'Идём по всему списку <b>без break</b>: каждое совпадение перезаписывает pos, поэтому в конце останется последнее. Другой способ — идти с конца <code>range(len(a) - 1, -1, -1)</code> и остановиться на первом совпадении.',
+explain2:'[2, 8, 2, 8], x = 8: на i = 1 pos = 1, на i = 3 pos = 3. Ответ 3.'};});
+
+/* L1 */
+G(1,()=>{const c=choiceOf('Список должен быть отсортирован',['Список должен быть короче 1000 элементов','В списке не должно быть повторов','Искомое число должно быть в списке']);
+return {type:'choice',q:'Какое условие <b>обязательно</b> для бинарного поиска?',...c,
+short:'Без сортировки бинарный поиск не работает.',
+explain:'Бинарный поиск выкидывает половину списка по одному сравнению с серединой: «искомое больше — значит, слева его точно нет». Это верно только если список <b>отсортирован</b>. Длина любая, повторы не мешают, а если элемента нет — поиск просто сообщит об этом.',
+explain2:'В словаре слова по алфавиту — поэтому можно открыть посередине и понять, в какую сторону листать. В куче несортированных карточек так не выйдет.'};},RULE);
+G(1,()=>{const c=choiceOf('В 2 раза',['На 1 элемент','В 10 раз','Не уменьшается, просто сдвигается']);
+return {type:'choice',q:'Во сколько раз уменьшается область поиска за один шаг бинарного поиска?',...c,
+short:'Каждый шаг — пополам.',
+explain:'Сравнили с серединой — и отбросили одну из половин. Значит, за шаг область уменьшается <b>в 2 раза</b>. Отсюда и название: binary — «двоичный», «на две части». Линейный поиск, наоборот, за шаг убирает лишь 1 элемент.',
+explain2:'1000 → 500 → 250 → 125 → … Через 10 шагов останется 1 вариант.'};},RULE);
+G(1,()=>{const N=pick([10,20,50,100,200,500,1000,2000,5000,10000,1000000]);const k=guesses(N);
+return {type:'num',q:`Я загадал целое число от 1 до ${N.toLocaleString('ru-RU')}. На каждую попытку я отвечаю «больше», «меньше» или «угадал». Какое <b>наименьшее</b> число попыток гарантированно хватит, если играть оптимально?`,ans:k,
+hint:'Каждая попытка делит оставшееся пополам. Сколько раз можно делить N пополам, пока не останется 1?',
+short:`2^${k-1} = ${2**(k-1)} &lt; ${N} ≤ ${2**k - 1} = 2^${k} − 1 → ${k}.`,
+explain:`Оптимально каждый раз называть середину оставшегося отрезка. За k попыток так можно различить до 2^k − 1 чисел (1, 3, 7, 15, 31, …). Нужно 2^k − 1 ≥ ${N}: 2^${k-1} − 1 = ${2**(k-1)-1} — мало, 2^${k} − 1 = ${2**k-1} — хватает. Ответ <b>${k}</b>.`,
+explain2:`Дели пополам: ${(()=>{let x=N,s=[x];while(x>1){x=Math.floor(x/2);s.push(x);}return s.join(' → ');})()}. Делений ${k-1}, и ещё одна попытка, чтобы назвать последнее оставшееся число: ${k}.`};});
+G(1,()=>{const a=sample(range(1,99),15).sort((x,y)=>x-y);const has=Math.random()<0.7;const x=has?pick(a):pick(range(1,99).filter(v=>!a.includes(v)));const {s,tr}=binSteps(a,x);
+return {type:'num',q:`Сколько шагов (значение steps) сделает бинарный поиск?${C(`a = ${pyl(a)}\nx = ${x}\nleft = 0\nright = len(a) - 1\nsteps = 0\nwhile left <= right:\n    mid = (left + right) // 2\n    steps += 1\n    if a[mid] == x:\n        break\n    elif a[mid] < x:\n        left = mid + 1\n    else:\n        right = mid - 1\nprint(steps)`)}`,ans:s,
+hint:'Начни с left = 0, right = 14, mid = 7. Записывай left, right, mid на каждом шаге.',
+short:`Проверены индексы ${tr.map(t=>t.m).join(', ')} → ${s}.`,
+explain:`Распишем шаги:<br>${tr.map((t,i)=>`${i+1}) left = ${t.l}, right = ${t.r}, mid = ${t.m}, a[mid] = ${t.v} — ${t.v===x?'нашли!':t.v<x?`меньше ${x}, left = ${t.m+1}`:`больше ${x}, right = ${t.m-1}`}`).join('<br>')}${has?'':`<br>left &gt; right — цикл закончился, ${x} в списке нет.`}<br>Ответ: <b>${s}</b>.`,
+explain2:`Для 15 элементов бинарный поиск никогда не делает больше 4 шагов (2⁴ − 1 = 15). Каждый раз смотрим середину оставшегося куска и выбрасываем половину.`};});
+G(1,()=>{const c=choiceOf('left = mid + 1',['left = mid','right = mid + 1','left = left + 1']);
+return {type:'choice',q:`Какую строку нужно вставить вместо <code>???</code>?${C(`while left <= right:\n    mid = (left + right) // 2\n    if a[mid] == x:\n        break\n    elif a[mid] < x:\n        ???\n    else:\n        right = mid - 1`)}`,...c,
+short:'a[mid] < x → искомое правее mid: left = mid + 1.',
+explain:'Если a[mid] &lt; x, то x может быть только <b>правее</b> mid. Сам mid уже проверен, поэтому новая левая граница — <code>mid + 1</code>. Вариант <code>left = mid</code> опасен: когда left = right − 1, mid = left, и граница перестанет двигаться — вечный цикл. <code>left = left + 1</code> работает, но превращает поиск в медленный линейный.',
+explain2:'Симметрия: при «больше» пишут right = mid − 1, при «меньше» — left = mid + 1. Всегда отбрасываем и сам mid — он уже проверен.'};});
+G(1,()=>{const tests=[];const isq=n=>{let lo=0n,hi=2000000000n;while(lo<hi){const m=(lo+hi+1n)/2n;if(m*m<=n)lo=m;else hi=m-1n;}return lo;};
+['0','1','15','16','1000000','999999999999999999','1000000000000000000',String(R(2,99999999))].forEach(s=>tests.push(T(s,isq(BigInt(s)).toString())));
+return {type:'code',q:'Дано целое n (0 ≤ n ≤ 10<sup>18</sup>). Найди наибольшее целое k, такое что k · k ≤ n («целый корень»). Перебор k = 0, 1, 2, … не успеет: корень может быть около миллиарда. Используй <b>бинарный поиск</b> по ответу.',
+starter:`n = int(input())\n`,tests,
+solution:`n = int(input())\nleft = 0\nright = 2 * 10 ** 9\nwhile left < right:\n    mid = (left + right + 1) // 2\n    if mid * mid <= n:\n        left = mid\n    else:\n        right = mid - 1\nprint(left)`,
+hint:'Ищи k на отрезке [0, 2·10⁹]. Если mid·mid ≤ n — ответ не меньше mid (left = mid), иначе right = mid − 1.',
+explain:'Ответ лежит между 0 и 2·10⁹. Свойство «k·k ≤ n» верно для всех маленьких k и ложно для больших — граница и есть ответ. Бинарный поиск: если <code>mid * mid &lt;= n</code>, ответ ≥ mid → <code>left = mid</code>; иначе <code>right = mid - 1</code>. Чтобы не было вечного цикла при left = mid, середину берём «вверх»: <code>(left + right + 1) // 2</code>. Около 31 шага вместо миллиарда.',
+explain2:'Почему не <code>int(n ** 0.5)</code>? Дробные числа в компьютере неточны: для n = 999999999999999999 корень почти ровно 10⁹, и Python округлит до 1000000000, а правильный ответ 999999999. Целочисленный бинарный поиск ошибок округления не делает.'};});
+
+/* L2 */
+G(2,()=>{const c=choiceOf('Самый большой элемент оказывается в конце списка',['Самый маленький элемент оказывается в конце','Список полностью сортируется','Первые два элемента меняются местами']);
+return {type:'choice',q:'Что гарантированно происходит после <b>одного</b> прохода сортировки пузырьком (по возрастанию)?',...c,
+short:'Максимум «всплывает» в конец.',
+explain:'При проходе мы сравниваем соседей и меняем, если левый больше. Самый большой элемент, как только до него дойдём, будет «ехать» направо при каждом сравнении — до самого конца. Остальная часть списка после одного прохода обычно ещё не отсортирована.',
+explain2:'Как пузырёк воздуха в воде: самый большой (лёгкий) поднимается наверх — в конец списка — за один проход.'};},RULE);
+G(2,()=>{let a;do{a=sample(range(1,9),5);}while(bubblePass(a).sw<2);const r=bubblePass(a).a;
+const alt1=a.slice().sort((x,y)=>x-y);const alt2=(()=>{const t=a.slice();const m=t.indexOf(Math.max(...t));t.splice(m,1);t.push(Math.max(...a));return t;})();const alt3=(()=>{const t=a.slice();for(let j=0;j<4;j+=2)if(t[j]>t[j+1])[t[j],t[j+1]]=[t[j+1],t[j]];return t;})();
+const c=choiceOf(pyl(r),[pyl(alt1),pyl(alt2),pyl(alt3),pyl(a)]);
+return {type:'choice',q:`Каким станет список после <b>одного</b> прохода пузырька?${C(`a = ${pyl(a)}\nfor j in range(len(a) - 1):\n    if a[j] > a[j + 1]:\n        a[j], a[j + 1] = a[j + 1], a[j]\nprint(a)`)}`,...c,
+short:`Результат: ${pyl(r)}.`,
+explain:`Идём слева направо, сравнивая соседей:<br>${(()=>{const t=a.slice();const out=[];for(let j=0;j<4;j++){const sw=t[j]>t[j+1];if(sw)[t[j],t[j+1]]=[t[j+1],t[j]];out.push(`j=${j}: ${sw?`${t[j+1]} &gt; ${t[j]}, меняем → ${pyl(t)}`:`${t[j]} ≤ ${t[j+1]}, оставляем`}`);}return out.join('<br>');})()}<br>Ответ: <b>${pyl(r)}</b>. Максимум ${Math.max(...a)} в конце, но остальное ещё не отсортировано.`,
+explain2:'Важно: после обмена следующее сравнение идёт уже с <b>новым</b> соседом. Поэтому большой элемент «едет» вправо, пока не встретит ещё больший.'};});
+G(2,()=>{const a=sample(range(1,9),R(4,5));const k=inversions(a);
+return {type:'num',q:`Сколько <b>обменов</b> сделает полная сортировка пузырьком списка <code>${pyl(a)}</code>?`,ans:k,
+hint:'Каждый обмен соседей исправляет ровно одну «неправильную пару» (большее стоит левее меньшего). Посчитай такие пары.',
+short:`Неправильных пар (инверсий) ${k} — столько и обменов.`,
+explain:`Обмен соседей a[j] &gt; a[j+1] исправляет ровно одну пару, стоящую «не в том порядке», и не портит другие. Значит, обменов столько, сколько таких пар (их называют <b>инверсиями</b>):<br>${(()=>{const p=[];for(let i=0;i<a.length;i++)for(let j=i+1;j<a.length;j++)if(a[i]>a[j])p.push(`(${a[i]}, ${a[j]})`);return p.join(', ')||'нет';})()}<br>Всего <b>${k}</b>.`,
+explain2:`Можно и честно промоделировать проходы: ${(()=>{let t=a.slice();const s=[];let tot=0;for(let p=0;p<a.length-1;p++){const r=bubblePass(t);t=r.a;tot+=r.sw;s.push(`проход ${p+1}: ${r.sw} обм. → ${pyl(t)}`);}return s.join('; ');})()}. Итого ${k}.`};});
+G(2,()=>{const c=choiceOf('IndexError: при j = n − 1 обращение a[j + 1] выходит за край. Нужно range(n - 1)',['Список отсортируется по убыванию','Ничего, программа правильная','SyntaxError в строке обмена']);
+return {type:'choice',q:`Что не так в этом проходе пузырька?${C(`n = len(a)\nfor j in range(n):\n    if a[j] > a[j + 1]:\n        a[j], a[j + 1] = a[j + 1], a[j]`)}`,...c,
+short:'Последний j должен быть n − 2.',
+explain:'Сравниваем a[j] и a[j + 1]. Последняя пара соседей — индексы n − 2 и n − 1. С <code>range(n)</code> j дойдёт до n − 1, и <code>a[n]</code> — такого элемента нет: <code>IndexError</code>. Правильно: <code>range(n - 1)</code>.',
+explain2:'В списке из 5 элементов 4 пары соседей. Значит, j должен принимать 4 значения: 0, 1, 2, 3 — это range(4) = range(n − 1).'};});
+G(2,()=>{const tests=[];const add=a=>{let t=a.slice();const o=[];for(let p=0;p<a.length-1;p++){t=bubblePass(t).a;o.push(t.join(' '));}tests.push(T(a.join(' '),lines(o)));};
+add([5,2,9,1,7]);add([3,1]);add([1,2,3,4]);add([4,3,2,1]);add([2,2,1,2]);add(lst(7,-9,9));
+return {type:'code',q:'Отсортируй числа по возрастанию <b>пузырьком</b>. Сделай ровно n − 1 проходов (n — количество чисел, n ≥ 2) и после <b>каждого</b> прохода выводи весь список через пробел. Так тесты увидят, что это действительно пузырёк.',
+starter:`a = list(map(int, input().split()))\nn = len(a)\n`,tests,
+solution:`a = list(map(int, input().split()))\nn = len(a)\nfor p in range(n - 1):\n    for j in range(n - 1 - p):\n        if a[j] > a[j + 1]:\n            a[j], a[j + 1] = a[j + 1], a[j]\n    print(*a)`,
+hint:'Два цикла: внешний p — номер прохода, внутренний j — сравнение a[j] и a[j + 1]. print(*a) — внутри внешнего, но после внутреннего.',
+explain:'Внешний цикл <code>for p in range(n - 1)</code> — проходы. Внутренний <code>for j in range(n - 1 - p)</code> — сравнение соседей; меняем, если <code>a[j] &gt; a[j + 1]</code>. Печать <code>print(*a)</code> — с отступом внешнего цикла, чтобы печатать после каждого прохода, а не после каждого сравнения.',
+explain2:'Пример 5 2 9 1 7: проход 1 → 2 5 1 7 9; проход 2 → 2 1 5 7 9; проход 3 → 1 2 5 7 9; проход 4 → без изменений. Если используешь range(n − 1) вместо range(n − 1 − p) во внутреннем — тоже верно, просто чуть больше лишних сравнений.'};});
+
+/* L3 */
+G(3,()=>{const c=choiceOf('Находим минимум среди a[i], a[i+1], …, a[n−1] и меняем его местами с a[i]',['Меняем местами соседние a[i] и a[i+1], если они стоят неправильно','Находим максимум всего списка и ставим его на место i','Вставляем a[i] в нужное место среди первых элементов']);
+return {type:'choice',q:'Что делает <b>сортировка выбором</b> на шаге i?',...c,
+short:'Выбор: минимум из оставшихся → на место i.',
+explain:'На шаге i первые i элементов уже стоят на своих местах. Среди оставшихся <b>выбираем</b> минимум и меняем его с a[i]. Обмен соседей — это пузырёк, а «вставить в нужное место» — сортировка вставками (тоже бывает, но это другой алгоритм).',
+explain2:'Как выстроить класс по росту: ищешь самого низкого — он встаёт первым. Из оставшихся снова самый низкий — вторым. И так далее.'};},RULE);
+G(3,()=>{const a=sample(range(1,20),6);const k=R(1,3);const r=selSteps(a,k);
+const c=choiceOf(pyl(r),[pyl(selSteps(a,k+1)),pyl(selSteps(a,k-1)),pyl((()=>{let t=a.slice();for(let p=0;p<k;p++)t=bubblePass(t).a;return t;})())]);
+return {type:'choice',q:`Список сортируют выбором. Каким он будет после <b>${k}</b> ${plural(k,'шага','шагов','шагов')}?${C(`a = ${pyl(a)}\nfor i in range(${k}):\n    m = i\n    for j in range(i + 1, len(a)):\n        if a[j] < a[m]:\n            m = j\n    a[i], a[m] = a[m], a[i]\nprint(a)`)}`,...c,
+short:`После ${k} шагов на местах 0…${k-1} стоят ${k} наименьших.`,
+explain:`${range(0,k-1).map(i=>{const before=selSteps(a,i);const after=selSteps(a,i+1);const mn=Math.min(...before.slice(i));return `Шаг ${i+1}: минимум среди ${pyl(before.slice(i))} — ${mn}, ставим на место ${i} → ${pyl(after)}`;}).join('<br>')}<br>Ответ: <b>${pyl(r)}</b>.`,
+explain2:`Проверка: после ${k} шагов в начале стоят ${k} самых маленьких по порядку (${a.slice().sort((x,y)=>x-y).slice(0,k).join(', ')}), а хвост — в каком-то порядке после обменов.`};});
+G(3,()=>{const n=R(5,30);
+return {type:'num',q:`Сколько сравнений <code>a[j] &lt; a[m]</code> выполнит сортировка выбором для списка из <b>${n}</b> элементов (циклы <code>for i in range(n - 1)</code> и <code>for j in range(i + 1, n)</code>)?`,ans:n*(n-1)/2,
+hint:'При i = 0 сравнений n − 1, при i = 1 — n − 2, … при i = n − 2 — одно.',
+short:`${n-1} + ${n-2} + … + 1 = ${n}·${n-1}/2 = ${n*(n-1)/2}.`,
+explain:`При i = 0 внутренний цикл делает ${n-1} сравнений, при i = 1 — ${n-2}, …, при i = ${n-2} — 1. Сумма 1 + 2 + … + ${n-1} = ${n-1}·${n}/2 = <b>${n*(n-1)/2}</b>. Это число не зависит от того, какие числа в списке.`,
+explain2:`Сумму 1 + 2 + … + m можно найти как Гаусс: сложить первое с последним (1 + ${n-1} = ${n}), таких пар ${n-1}/2. ${n} · ${n-1} / 2 = ${n*(n-1)/2}.`};});
+G(3,()=>{const tests=[];const add=a=>{const o=[];for(let i=1;i<a.length;i++)o.push(selSteps(a,i).join(' '));tests.push(T(a.join(' '),lines(o)));};
+add([5,2,9,1,7]);add([2,1]);add([1,2,3]);add([3,3,1,1]);add([9,8,7,6,5]);add(lst(7,-20,20));
+return {type:'code',q:'Отсортируй числа по возрастанию <b>выбором</b>: на шаге i (i = 0 … n − 2) найди индекс m <b>первого</b> минимума среди a[i], …, a[n−1] и поменяй a[i] и a[m] (даже если m = i). После каждого шага выводи список через пробел.',
+starter:`a = list(map(int, input().split()))\nn = len(a)\n`,tests,
+solution:`a = list(map(int, input().split()))\nn = len(a)\nfor i in range(n - 1):\n    m = i\n    for j in range(i + 1, n):\n        if a[j] < a[m]:\n            m = j\n    a[i], a[m] = a[m], a[i]\n    print(*a)`,
+hint:'m = i; for j in range(i + 1, n): if a[j] < a[m]: m = j. Потом обмен и print(*a).',
+explain:'Внешний цикл по i (место, которое заполняем). Внутри — поиск индекса минимума m (строгий знак &lt; — чтобы взять первый из равных). Затем обмен <code>a[i], a[m] = a[m], a[i]</code> и печать. Всего n − 1 строк вывода.',
+explain2:'5 2 9 1 7: шаг 1 — минимум 1 (индекс 3) ↔ 5 → 1 2 9 5 7; шаг 2 — минимум 2 уже на месте → 1 2 9 5 7; шаг 3 — 5 ↔ 9 → 1 2 5 9 7; шаг 4 — 7 ↔ 9 → 1 2 5 7 9.'};});
+
+/* L4 — сложность */
+G(4,()=>{const c=choiceOf('Бинарный поиск: около 20 шагов против миллиона',['Линейный поиск: он проще','Одинаково, оба просматривают все элементы','Бинарный, но всего в 2 раза быстрее']);
+return {type:'choice',q:'В <b>отсортированном</b> списке 1 000 000 чисел. Какой поиск быстрее в худшем случае и насколько?',...c,
+short:'log₂(10⁶) ≈ 20 против 10⁶.',
+explain:'Линейный в худшем случае проверит все 1 000 000. Бинарный делит пополам: 2²⁰ = 1 048 576 &gt; 10⁶, значит хватит <b>20</b> шагов. Разница — в 50 000 раз! Чем больше данных, тем сильнее выигрыш.',
+explain2:'Угадай число до миллиона: «больше/меньше» — 20 вопросов. А «это 1? это 2? это 3?…» — может понадобиться миллион.'};},RULE);
+G(4,()=>{const c=choiceOf('Примерно в 4 раза',['Примерно в 2 раза','Примерно в 8 раз','Не изменится']);
+return {type:'choice',q:'Программа с двумя вложенными циклами <code>for i in range(n): for j in range(n):</code> работает 1 секунду. Во сколько раз дольше она будет работать, если n увеличить в 2 раза?',...c,
+short:'n² → (2n)² = 4n².',
+explain:'Число операций ≈ n · n = n². Если n стало 2n, то операций (2n)² = 4n² — в <b>4 раза</b> больше. Будет около 4 секунд. Для одного цикла было бы в 2 раза, для трёх вложенных — в 8.',
+explain2:'Таблица умножения 10×10 — 100 клеток. 20×20 — уже 400, а не 200.'};},RULE);
+G(4,()=>{const a=R(3,40),b=R(3,40);
+return {type:'num',q:`Что напечатает программа?${C(`k = 0\nfor i in range(${a}):\n    for j in range(${b}):\n        k += 1\nprint(k)`)}`,ans:a*b,
+short:`${a} · ${b} = ${a*b}.`,
+explain:`Внешний цикл повторяется ${a} раз, и при <b>каждом</b> его шаге внутренний делает ${b} шагов. Всего ${a} · ${b} = <b>${a*b}</b>.`,
+explain2:`Это как таблица ${a} строк на ${b} столбцов: k считает клетки.`};});
+G(4,()=>{const n=R(5,40);
+return {type:'num',q:`Что напечатает программа?${C(`n = ${n}\nk = 0\nfor i in range(n):\n    for j in range(i + 1, n):\n        k += 1\nprint(k)`)}`,ans:n*(n-1)/2,
+short:`${n}·${n-1}/2 = ${n*(n-1)/2} — число пар.`,
+explain:`При i = 0 внутренний цикл даёт ${n-1} шагов, при i = 1 — ${n-2}, …, при i = ${n-1} — 0. Сумма ${n-1} + ${n-2} + … + 1 = ${n}·${n-1}/2 = <b>${n*(n-1)/2}</b>. Это количество пар из ${n} элементов.`,
+explain2:`Сколько рукопожатий, если ${n} человек жмут руки каждый каждому? Каждый жмёт ${n-1} рук, но так каждое рукопожатие считается дважды: ${n}·${n-1}/2 = ${n*(n-1)/2}.`};});
+G(4,()=>{const n=R(20,5000);let m=n,k=0;while(m>1){m=Math.floor(m/2);k++;}
+return {type:'num',q:`Что напечатает программа?${C(`n = ${n}\nk = 0\nwhile n > 1:\n    n = n // 2\n    k += 1\nprint(k)`)}`,ans:k,
+short:`2^${k} = ${2**k} ≤ ${n} &lt; ${2**(k+1)} → ${k}.`,
+explain:`Делим нацело на 2, пока не дойдём до 1: ${(()=>{let x=n;const s=[x];while(x>1){x=Math.floor(x/2);s.push(x);}return s.join(' → ');})()}. Делений <b>${k}</b>. Это примерно log₂ ${n}.`,
+explain2:`k — это сколько раз можно разделить на 2: самая большая степень двойки, не превосходящая ${n}, — 2^${k} = ${2**k}.`};});
+G(4,()=>{const right='бинарный поиск — линейный поиск — сортировка пузырьком';
+const c=choiceOf(right,['линейный поиск — бинарный поиск — сортировка пузырьком','сортировка пузырьком — бинарный поиск — линейный поиск','бинарный поиск — сортировка пузырьком — линейный поиск']);
+return {type:'choice',q:'Расположи по возрастанию числа операций для n = 1 000 000: линейный поиск, бинарный поиск, сортировка пузырьком.',...c,
+short:'log n (20) &lt; n (10⁶) &lt; n²/2 (5·10¹¹).',
+explain:'Бинарный поиск ≈ log₂ n ≈ 20 операций. Линейный ≈ n = 1 000 000. Пузырёк ≈ n²/2 = 500 000 000 000. Порядок: <b>бинарный → линейный → пузырёк</b>.',
+explain2:'Если одна операция занимает 0,1 микросекунды: бинарный — мгновенно, линейный — 0,1 секунды, пузырёк — около 14 часов.'};});
+
+/* L5 — перебор */
+G(5,()=>{const c=choiceOf('for i in range(n):\n    for j in range(i + 1, n):',['for i in range(n):\n    for j in range(n):','for i in range(n):\n    for j in range(i, n):','for i in range(n - 1):\n    j = i + 1']);
+c.opts=c.opts.map(o=>`<code style="white-space:pre">${esc(o)}</code>`);
+return {type:'choice',q:'Какие циклы перебирают <b>все пары</b> разных индексов (i, j) ровно по одному разу (пара (1, 3) и (3, 1) — одна и та же)?',...c,
+short:'j начинается с i + 1.',
+explain:'Чтобы пара не повторялась, договоримся: i &lt; j. Тогда второй цикл начинается с <code>i + 1</code>.<br>• <code>range(n)</code> во втором цикле даст каждую пару дважды и пары (i, i).<br>• <code>range(i, n)</code> добавит пары элемента с самим собой.<br>• Без второго цикла получим только соседние пары.',
+explain2:'Рукопожатия: каждый жмёт руку только тем, кто стоит <b>правее</b> него в шеренге. Так никто не пожмёт руку дважды и сам себе.'};},RULE);
+G(5,()=>{const s=R(3,24);let k=0;for(let n=100;n<1000;n++)if(dsum(n)===s)k++;
+return {type:'num',q:`Что напечатает программа?${C(`k = 0\nfor n in range(100, 1000):\n    if n // 100 + n // 10 % 10 + n % 10 == ${s}:\n        k += 1\nprint(k)`)}`,ans:k,
+hint:'Это количество трёхзначных чисел с суммой цифр '+s+'. Перебери первую цифру a (1…9) и посчитай, сколькими способами b + c = '+s+' − a (b, c от 0 до 9).',
+short:`Трёхзначных с суммой цифр ${s}: ${k}.`,
+explain:`Программа перебирает все трёхзначные числа и считает те, у которых сумма цифр (сотни + десятки + единицы) равна ${s}.<br>Посчитаем по первой цифре a: нужно b + c = ${s} − a, где b, c от 0 до 9.<br>${range(1,9).map(a=>{const t=s-a;const w=t<0||t>18?0:(t<=9?t+1:19-t);return `a=${a}: b+c=${t} → ${w}`;}).join('; ')}.<br>Итого <b>${k}</b>.`,
+explain2:`Число способов записать t = b + c с цифрами 0…9: t + 1 при t ≤ 9 и 19 − t при 9 &lt; t ≤ 18. Складываем по всем первым цифрам: ${k}.`};});
+G(5,()=>{const n=R(5,25);const s=R(Math.floor(n/2)+2,n+3);let k=0;for(let x=1;x<=n;x++)for(let y=x+1;y<=n;y++)if(x+y===s)k++;
+return {type:'num',q:`Что напечатает программа?${C(`k = 0\nfor x in range(1, ${n+1}):\n    for y in range(x + 1, ${n+1}):\n        if x + y == ${s}:\n            k += 1\nprint(k)`)}`,ans:k,
+short:`Пары x &lt; y ≤ ${n} с суммой ${s}: ${k}.`,
+explain:`Ищем пары 1 ≤ x &lt; y ≤ ${n} с x + y = ${s}. Для каждого x число y = ${s} − x определено однозначно; нужно x &lt; y и y ≤ ${n}.<br>Подходят: ${(()=>{const p=[];for(let x=1;x<=n;x++){const y=s-x;if(y>x&&y<=n)p.push(`(${x}, ${y})`);}return p.join(', ')||'нет';})()}.<br>Итого <b>${k}</b>.`,
+explain2:`Перебор проверяет ${n*(n-1)/2} пар, но подходящих мало: x пробегает значения, пока x &lt; ${s} − x, т. е. x &lt; ${s/2}, и при этом ${s} − x ≤ ${n}.`};});
+G(5,()=>{const tests=[];const add=(a,S)=>{let k=0;for(let i=0;i<a.length;i++)for(let j=i+1;j<a.length;j++)if(a[i]+a[j]===S)k++;tests.push(T(`${a.join(' ')}\n${S}`,k));};
+add([1,4,3,2,5],6);add([3,3,3],6);add([1,2],5);add([7],7);add([-1,1,0,0],0);{const a=lst(12,1,10);add(a,R(5,15));}
+return {type:'code',q:'В первой строке — числа, во второй — число <b>S</b>. Сколько существует пар позиций i &lt; j, для которых a[i] + a[j] = S?',
+starter:`a = list(map(int, input().split()))\nS = int(input())\n`,tests,
+solution:`a = list(map(int, input().split()))\nS = int(input())\nk = 0\nn = len(a)\nfor i in range(n):\n    for j in range(i + 1, n):\n        if a[i] + a[j] == S:\n            k += 1\nprint(k)`,
+hint:'Перебор всех пар: for i in range(n): for j in range(i + 1, n).',
+explain:'Перебираем все пары позиций с i &lt; j (второй цикл с i + 1) и считаем подходящие. Важно: считаются <b>позиции</b>, а не значения: в [3, 3, 3] при S = 6 три пары: (0,1), (0,2), (1,2).',
+explain2:'Пример 1 4 3 2 5, S = 6: (1, 5), (4, 2) → 2 пары. Операций ≈ n²/2 — для n до нескольких тысяч это нормально.'};});
+G(5,()=>{const tests=[];const add=(a,b)=>{const r=[];for(let n=a;n<=b;n++){const d=String(n).split('').map(Number);if(d.reduce((s,x)=>s+x*x*x,0)===n)r.push(n);}tests.push(T(`${a} ${b}`,r.length?lines(r):'НЕТ'));};
+add(100,999);add(100,152);add(150,160);add(371,371);add(372,406);add(400,500);
+return {type:'code',q:'Число назовём <b>кубическим</b>, если оно равно сумме кубов своих цифр (например, 153 = 1³ + 5³ + 3³). Даны a и b (100 ≤ a ≤ b ≤ 999) в одной строке. Выведи все кубические числа на отрезке [a, b], каждое на своей строке, или <code>НЕТ</code>.',
+starter:`a, b = map(int, input().split())\n`,tests,
+solution:`a, b = map(int, input().split())\nfound = False\nfor n in range(a, b + 1):\n    x = n // 100\n    y = n // 10 % 10\n    z = n % 10\n    if x ** 3 + y ** 3 + z ** 3 == n:\n        print(n)\n        found = True\nif not found:\n    print("НЕТ")`,
+hint:'Перебери n от a до b. Цифры: n // 100, n // 10 % 10, n % 10.',
+explain:'Перебор: для каждого n из [a, b] находим цифры (сотни <code>n // 100</code>, десятки <code>n // 10 % 10</code>, единицы <code>n % 10</code>) и проверяем сумму кубов. Флажок found нужен, чтобы в конце напечатать «НЕТ», если ничего не нашли. Не забудь <code>b + 1</code> в range — b тоже входит.',
+explain2:'Среди всех трёхзначных таких чисел ровно четыре: 153, 370, 371, 407. Компьютер находит их перебором 900 чисел за мгновение.'};});
+G(5,()=>{const tests=[];const add=s=>{let k=0;for(let n=100;n<1000;n++)if(dsum(n)===s)k++;tests.push(T(String(s),k));};
+[1,2,5,10,27,26,14].forEach(add);
+return {type:'code',q:'Дано s (1 ≤ s ≤ 27). Сколько существует трёхзначных чисел с суммой цифр s?',
+starter:`s = int(input())\n`,tests,
+solution:`s = int(input())\nk = 0\nfor n in range(100, 1000):\n    if n // 100 + n // 10 % 10 + n % 10 == s:\n        k += 1\nprint(k)`,
+hint:'Перебери все n от 100 до 999.',
+explain:'Чистый перебор: 900 чисел, для каждого считаем сумму цифр и сравниваем с s. Вместо одного цикла можно три вложенных по цифрам: <code>for a in range(1, 10): for b in range(10): for c in range(10):</code> — это те же 900 вариантов.',
+explain2:'Проверка краёв: s = 1 — только 100 (ответ 1); s = 27 — только 999 (ответ 1); s = 2 — 101, 110, 200 (ответ 3).'};});
+
+/* L6 — решето */
+G(6,()=>{const c=choiceOf('Все меньшие кратные p (2p, 3p, …, (p − 1)·p) уже вычеркнуты как кратные меньших простых',['Потому что p · p — простое число','Это просто договорённость, можно начинать с 2p — будет быстрее','Потому что числа меньше p · p не делятся на p']);
+return {type:'choice',q:'Почему в решете Эратосфена кратные простого p вычёркивают, начиная с <b>p · p</b>?',...c,
+short:'k·p при k &lt; p уже вычеркнуто числом k (или его простым делителем).',
+explain:'Возьмём кратное k · p, где k &lt; p. У числа k есть простой делитель, меньший p, — и при его обработке k · p уже вычеркнули. Значит, первое «новое» кратное — p · p. Начинать с 2p тоже правильно, но это лишняя работа. А числа меньше p · p вполне могут делиться на p (например, 2p).',
+explain2:'Пример, p = 5: 10 вычеркнули при p = 2, 15 — при p = 3, 20 — при p = 2. Первое, которое ещё не вычеркнуто, — 25 = 5 · 5.'};},RULE);
+G(6,()=>{const c=choiceOf('Только простые числа',['Только чётные числа','Только составные числа','Все числа, кроме кратных 2 и 3']);
+return {type:'choice',q:'Какие числа остаются невычеркнутыми после работы решета Эратосфена (от 2 до n)?',...c,
+short:'Решето оставляет простые.',
+explain:'Мы вычёркиваем все числа, у которых есть делитель-простое меньше их самих, — то есть все <b>составные</b>. Остаются числа без таких делителей — <b>простые</b>. Чётные (кроме 2) как раз вычёркиваются первыми.',
+explain2:'Как сито для муки: крупные комки (составные — «склеенные» из множителей) застревают, мелкие (простые) проходят.'};},RULE);
+G(6,()=>{const N=R(20,100);const ps=primesTo(N);
+return {type:'num',q:`Сколько чисел останется невычеркнутыми, если запустить решето Эратосфена для n = ${N}?`,ans:ps.length,
+short:`Простых до ${N}: ${ps.length}.`,
+explain:`Остаются простые числа от 2 до ${N}: ${ps.join(', ')}. Всего <b>${ps.length}</b>.`,
+explain2:`Вычёркиваем кратные 2 (кроме 2), кратные 3 (кроме 3), 5, 7 — этого достаточно, ведь 11 · 11 = 121 &gt; ${N}. Остаётся ${ps.length}.`};});
+G(6,()=>{const p=pick([3,5,7]);
+return {type:'num',q:`Решето Эратосфена для n = 100. Какое число будет <b>первым</b> вычеркнуто, когда мы обрабатываем простое ${p} (начиная с p · p)?`,ans:p*p,
+short:`p · p = ${p*p}.`,
+explain:`Вычёркивание кратных ${p} начинается с ${p} · ${p} = <b>${p*p}</b>. Меньшие кратные ${range(2,p-1).map(k=>k*p).join(', ')} уже вычеркнуты раньше как кратные меньших простых.`,
+explain2:`${range(2,p-1).map(k=>`${k*p} = ${k}·${p}`).join(', ')} — каждое делится на число меньше ${p}, значит его уже убрали.`};});
+G(6,()=>{const tests=[1,2,10,100,1000,100000].map(n=>T(String(n),primesTo(n).length));
+return {type:'code',q:'Дано n (1 ≤ n ≤ 100 000). Сколько простых чисел не больше n? Используй решето Эратосфена — оно справится быстро.',
+starter:`n = int(input())\n`,tests,
+solution:`n = int(input())\nis_p = [True] * (n + 1)\nis_p[0] = False\nif n >= 1:\n    is_p[1] = False\np = 2\nwhile p * p <= n:\n    if is_p[p]:\n        for k in range(p * p, n + 1, p):\n            is_p[k] = False\n    p += 1\nprint(sum(is_p))`,
+hint:'is_p = [True] * (n + 1); 0 и 1 — не простые. Для каждого p с p·p ≤ n, если is_p[p], вычеркни p·p, p·p + p, …',
+explain:'Список флажков <code>is_p</code> длины n + 1 («индекс = число»). 0 и 1 помечаем False. Для p = 2, 3, … пока <code>p * p &lt;= n</code>: если p ещё не вычеркнуто — вычёркиваем <code>range(p * p, n + 1, p)</code>. В конце считаем True: <code>sum(is_p)</code> (True считается как 1) — или циклом.',
+explain2:'Проверка: до 10 — 4 простых (2, 3, 5, 7), до 100 — 25, до 1000 — 168, до 100 000 — 9592. Осторожно с n = 1: is_p = [True, True], оба надо пометить False, ответ 0.'};});
+G(6,()=>{const tests=[];const add=(a,b)=>tests.push(T(`${a} ${b}`,primesTo(b).filter(p=>p>=a).reduce((s,x)=>s+x,0)));
+add(1,10);add(10,20);add(14,16);add(2,2);add(1,1);add(R(100,500),R(600,1000));
+return {type:'code',q:'Даны a и b (1 ≤ a ≤ b ≤ 10 000) в одной строке. Найди <b>сумму</b> всех простых чисел на отрезке [a, b] (если их нет — 0).',
+starter:`a, b = map(int, input().split())\n`,tests,
+solution:`a, b = map(int, input().split())\nis_p = [True] * (b + 1)\nis_p[0] = False\nis_p[1] = False\np = 2\nwhile p * p <= b:\n    if is_p[p]:\n        for k in range(p * p, b + 1, p):\n            is_p[k] = False\n    p += 1\ns = 0\nfor x in range(a, b + 1):\n    if is_p[x]:\n        s += x\nprint(s)`,
+hint:'Построй решето до b, потом сложи x от a до b, у которых is_p[x] == True.',
+explain:'Строим решето до b, затем проходим отрезок [a, b] и складываем простые. Решето строится один раз для всех чисел — это быстрее, чем проверять каждое число делением.',
+explain2:'Пример: [10, 20] → 11 + 13 + 17 + 19 = 60. [14, 16] — простых нет → 0. [1, 1] → 0 (1 не простое).'};});
+
+/* L7 — ★ */
+G(7,()=>{const N=pick([1000000000,1000000,100000000]);const k=guesses(N);
+return {type:'num',q:`Бинарный поиск ищет число в отсортированном списке из ${N.toLocaleString('ru-RU')} элементов. Сколько сравнений с серединой понадобится в <b>худшем</b> случае (как в программе с <code>while left &lt;= right</code>)?`,ans:k,
+short:`2^${k} − 1 ≥ ${N.toLocaleString('ru-RU')} → ${k}.`,
+explain:`За k шагов бинарный поиск различает до 2^k − 1 позиций. 2^${k-1} − 1 = ${(2**(k-1)-1).toLocaleString('ru-RU')} — мало, 2^${k} − 1 = ${(2**k-1).toLocaleString('ru-RU')} — достаточно. Ответ <b>${k}</b>. Запомни: 2¹⁰ ≈ 1000, поэтому миллион ≈ 2²⁰, миллиард ≈ 2³⁰.`,
+explain2:`Каждые 10 шагов уменьшают область примерно в 1000 раз (2¹⁰ = 1024). Делим ${N.toLocaleString('ru-RU')} пополам, пока не останется 1, — получится ${k-1} делений, и ещё одно сравнение на последнем элементе: ${k}.`};},STAR);
+G(7,()=>{const tests=[];const add=a=>{let cur=a[0],best=a[0];for(const x of a.slice(1)){cur=Math.max(x,cur+x);best=Math.max(best,cur);}tests.push(T(a.join(' '),best));};
+add([2,-5,3,4,-1,2,-6,1]);add([-3,-1,-2]);add([5]);add([1,2,3]);add([4,-10,4]);add(lst(15,-10,10));add(lst(10,-5,8));
+return {type:'code',q:'<b>Лучший отрезок.</b> Дана последовательность целых чисел (изменения курса за дни). Найди наибольшую сумму <b>непрерывного</b> отрезка (хотя бы из одного числа). Например, для 2 −5 3 4 −1 2 −6 1 ответ 8 (отрезок 3 4 −1 2).',
+starter:`a = list(map(int, input().split()))\n`,tests,
+solution:`a = list(map(int, input().split()))\ncur = a[0]\nbest = a[0]\nfor x in a[1:]:\n    cur = max(x, cur + x)\n    best = max(best, cur)\nprint(best)`,
+hint:'cur — лучшая сумма отрезка, который заканчивается на текущем числе: max(x, cur + x).',
+explain:'Можно перебрать все отрезки (≈ n² или n³ операций). Красивее — алгоритм Кадане за один проход: <code>cur</code> — лучшая сумма отрезка, <b>заканчивающегося</b> на текущем x. Либо продолжаем прошлый отрезок (<code>cur + x</code>), либо начинаем новый с x — что больше. <code>best</code> — рекорд за всё время.',
+explain2:'Если все числа отрицательные (−3 −1 −2), ответ — самое большое из них (−1): отрезок должен быть непустым. Поэтому начальные значения — a[0], а не 0. Перебор пар (i, j) с суммой через sum(a[i:j+1]) тоже пройдёт тесты, но на 100 000 чисел будет считать вечность.'};},STAR);
+G(7,()=>{const tests=[];const add=n=>{for(const p of primesTo(n))if(isPrime(n-p)){tests.push(T(String(n),`${p} ${n-p}`));return;}};
+[4,6,10,28,98,R(50,500)*2,9998].forEach(add);
+return {type:'code',q:'<b>Гипотеза Гольдбаха</b>: каждое чётное число n ≥ 4 — сумма двух простых. Дано чётное n (4 ≤ n ≤ 10 000). Выведи через пробел два простых p и q, p ≤ q, p + q = n, с <b>наименьшим</b> возможным p.',
+starter:`n = int(input())\n`,tests,
+solution:`def is_prime(x):\n    if x < 2:\n        return False\n    d = 2\n    while d * d <= x:\n        if x % d == 0:\n            return False\n        d += 1\n    return True\n\nn = int(input())\nfor p in range(2, n):\n    if is_prime(p) and is_prime(n - p):\n        print(p, n - p)\n        break`,
+hint:'Перебирай p = 2, 3, 4, … и проверяй, простые ли p и n − p. Первый найденный — ответ.',
+explain:'Перебор с функцией is_prime: идём p = 2, 3, … и проверяем <code>is_prime(p) and is_prime(n - p)</code>. Первая найденная пара — с наименьшим p, сразу <code>break</code>. Условие p ≤ q выполнится само: подходящее p всегда находится раньше середины.',
+explain2:'Примеры: 4 = 2 + 2, 10 = 3 + 7 (не 5 + 5 — у 3 меньше p), 28 = 5 + 23. Гипотезу проверили компьютером для всех чисел до 4 · 10¹⁸, но доказать её математики не могут уже почти 300 лет (с 1742 года).'};},STAR);
+G(7,()=>{const tests=[];const ways=n=>{let k=0;for(let c=0;5*c<=n;c++)for(let b=0;5*c+2*b<=n;b++)k++;return k;};
+[1,2,5,10,0,100,R(20,80)].forEach(n=>tests.push(T(String(n),ways(n))));
+return {type:'code',q:'Сколькими способами можно набрать сумму <b>n</b> рублей монетами 1, 2 и 5 рублей (0 ≤ n ≤ 100)? Способы, отличающиеся только порядком монет, считаются одинаковыми. Например, 5 рублей: 5; 2+2+1; 2+1+1+1; 1·5 — 4 способа.',
+starter:`n = int(input())\n`,tests,
+solution:`n = int(input())\nk = 0\nfor c in range(n // 5 + 1):\n    for b in range((n - 5 * c) // 2 + 1):\n        k += 1\nprint(k)`,
+hint:'Переберём, сколько пятёрок c и сколько двушек b. Рубли добирают остаток — это всегда ровно один вариант.',
+explain:'Способ однозначно задаётся количеством пятёрок c и двушек b — рублёвых монет будет n − 5c − 2b, лишь бы это было ≥ 0. Перебираем c от 0 до n // 5 и b от 0 до (n − 5c) // 2 и считаем варианты. Порядок монет не учитывается автоматически — мы же считаем количества, а не последовательности.',
+explain2:'Можно и тремя циклами (a, b, c от 0 до n) с проверкой a + 2b + 5c == n — это честный перебор, медленнее, но для n ≤ 100 тоже успеет (≈ 10⁶ вариантов). n = 0 — один способ: не брать монет.'};},STAR);
+G(7,()=>{const a=sample(range(1,12),6);const k=inversions(a);
+return {type:'num',q:`Сколько пар индексов (i, j), i &lt; j, удовлетворяют условию a[i] &gt; a[j] для списка <code>${pyl(a)}</code>? (Это число называют количеством <b>инверсий</b> — оно показывает, насколько список «перемешан».)`,ans:k,
+short:`Инверсий ${k}.`,
+explain:`Для каждого элемента считаем, сколько <b>меньших</b> стоит правее:<br>${a.map((x,i)=>`${x}: ${a.slice(i+1).filter(y=>y<x).join(', ')||'—'} → ${a.slice(i+1).filter(y=>y<x).length}`).join('<br>')}<br>Сумма: <b>${k}</b>.`,
+explain2:`Это ровно число обменов, которые сделает пузырёк. Отсортированный список — 0 инверсий, список по убыванию из 6 элементов — 15 (все пары).`};},STAR);
+
+window.TOPIC={id:'i_algorithms',title:'9. Алгоритмы',subtitle:'Программирование · Python',
+intro:'<p>Алгоритмы — умные способы решать задачи: искать, сортировать, перебирать, не тратя лишнего времени. Поиграй с виджетами, запускай примеры и считай операции — это навык настоящего программиста.</p>',
+theory,symbols,figs:{},onTheory,
+levels:['Алгоритм. Линейный поиск','Бинарный поиск','Сортировка пузырьком','Сортировка выбором','Сложность: считаем операции','Перебор','Решето Эратосфена','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

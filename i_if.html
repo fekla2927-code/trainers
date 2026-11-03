@@ -1,0 +1,1104 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>3. Условия — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+/* ---------- helpers ---------- */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MONO='font-family:ui-monospace,Menlo,Consolas,monospace';
+const C=s=>`<pre class="code">${esc(s)}</pre>`;
+const K=s=>`<code style="${MONO};background:var(--accent-soft);padding:1px 5px;border-radius:5px">${esc(s)}</code>`;
+const O=s=>`<span style="${MONO};white-space:pre">${esc(s)}</span>`;
+const RUN=(code,inp)=>`<pre class="run"${inp!=null?` data-input="${esc(inp)}"`:''}>${esc(code)}</pre>`;
+const OUT=s=>`<pre class="code" style="background:var(--accent-soft)">${esc(s)}</pre>`;
+const IN=s=>`<div class="small">Ввод:</div>${OUT(s)}`;
+function choice(q,right,wrongs,rest){const w=[...new Set(wrongs.filter(x=>x!==right))];const opts=shuffle([right,...w.slice(0,3)]);return Object.assign({type:'choice',q,opts,ans:opts.indexOf(right)},rest);}
+const gens=[];
+const G=(lvl,make,star)=>gens.push({lvl,make,star});
+const RG=(lvl,make)=>gens.push({lvl,make,rule:true});
+const T=(ins,f)=>ins.map(a=>({in:a.join('\n'),out:String(f(...a))}));
+const B=v=>v?'True':'False';
+const TF=(q,v,rest)=>choice(q,O(B(v)),[O(B(!v)),'Ошибку'],rest);
+const pmod=(a,b)=>a-b*Math.floor(a/b);
+const OPS={'>':(a,b)=>a>b,'<':(a,b)=>a<b,'>=':(a,b)=>a>=b,'<=':(a,b)=>a<=b,'==':(a,b)=>a===b,'!=':(a,b)=>a!==b};
+const OPN={'>':'больше','<':'меньше','>=':'больше или равно','<=':'меньше или равно','==':'равно','!=':'не равно'};
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Компьютер умеет сравнивать: True и False',lvl:0,html:`
+<p class="hook">Как игра понимает, что ты проиграл? Где-то внутри есть строчка вроде ${K('if lives == 0:')} — «если жизней ноль». Каждый кадр игра задаёт себе десятки вопросов: «игрок касается лавы?», «монет хватает на меч?», «пароль верный?». Ответ на каждый — <b>да</b> или <b>нет</b>.</p>
+<div class="box rule"><b>Сравнения</b>${K('==')} равно, ${K('!=')} не равно, ${K('<')} меньше, ${K('>')} больше, ${K('<=')} меньше или равно, ${K('>=')} больше или равно.<br>Результат сравнения — <b>True</b> (правда) или <b>False</b> (ложь), тип <b>bool</b>.</div>
+${RUN('print(5 > 3)\nprint(5 == 3)\nprint(5 != 3)\nprint(7 % 2 == 0)\nprint("кот" == "кот")')}
+<p>Поменяй числа и предскажи ответ до запуска.</p>
+<div class="box err"><b>Главная ловушка: = и ==</b>${K('x = 5')} — <b>положить</b> 5 в x (присваивание).<br>${K('x == 5')} — <b>спросить</b>: «в x лежит 5?» (сравнение, ответ True/False).<br>Одно «равно» — действие, два — вопрос.</div>
+<div class="box tip"><b>Как запомнить знаки</b>${K('<=')} и ${K('>=')} пишутся так, как читаются: «меньше или равно». ${K('!=')} — восклицательный знак в программировании часто значит «НЕ».</div>`},
+{title:'if: развилка',lvl:1,html:`
+<p>Условие — как развилка в игре: «Если у тебя есть ключ — открой дверь». Python проверяет условие и выполняет блок команд <b>только если оно True</b>.</p>
+${RUN('age = int(input())\nif age >= 12:\n    print("Можно смотреть фильм 12+")\nprint("Пока!")','13')}
+<p>Введи 10 вместо 13 — первая фраза исчезнет, а «Пока!» останется: эта строка <b>без отступа</b>, она не внутри if.</p>
+<div class="box rule"><b>Запись if</b>${K('if условие:')} — в конце <b>двоеточие</b>.<br>Строки, которые выполняются «если да», пишутся с <b>отступом в 4 пробела</b>. Это <b>тело</b> условия. Отступ закончился — тело закончилось.</div>
+<div class="box err"><b>Частые ошибки</b>Забыл двоеточие → SyntaxError: expected ':'.<br>Забыл отступ → IndentationError: expected an indented block.<br>${K('if x = 5:')} вместо ${K('if x == 5:')} → SyntaxError.</div>
+<div class="fact">В большинстве языков блоки отмечают фигурными скобками { }, а в Python — отступами. Автор Python решил, что так программы получаются аккуратнее: код, который выглядит вложенным, и является вложенным.</div>`},
+{title:'else: иначе',lvl:1,html:`
+<p>${K('else')} («иначе») — что делать, если условие <b>не</b> выполнилось. Выполняется <b>ровно одна</b> из двух веток.</p>
+${RUN('password = input()\nif password == "qwerty123":\n    print("Доступ разрешён")\nelse:\n    print("Доступ запрещён")','qwerty')}
+<div class="box rule"><b>if / else</b>${K('else:')} — без условия, с двоеточием, на одном уровне с ${K('if')}. Его тело тоже с отступом.</div>
+<p>Классика: чётное или нечётное.</p>
+${RUN('n = int(input())\nif n % 2 == 0:\n    print("чётное")\nelse:\n    print("нечётное")','7')}
+<div class="box err"><b>Ошибка</b>${K('else n % 2 != 0:')} — у else условия не бывает! «Иначе» значит «во всех остальных случаях».</div>`},
+{title:'elif: много вариантов',lvl:2,html:`
+<p>Когда вариантов больше двух, используем ${K('elif')} (сокращение от else if — «иначе если»).</p>
+${RUN('t = int(input())\nif t < 0:\n    print("Мороз, надень шапку")\nelif t < 15:\n    print("Прохладно")\nelif t < 25:\n    print("Тепло")\nelse:\n    print("Жарко!")','18')}
+<div class="box rule"><b>Как работает цепочка</b>Python проверяет условия <b>сверху вниз</b> и выполняет <b>первую</b> ветку, где условие True. Остальные пропускает, даже если они тоже верны. Если ни одно не подошло — выполняется else (если он есть).</div>
+<p>Подвигай ползунок и посмотри, какая ветка сработает:</p>
+<div class="widget" id="w-grade"></div>
+<div class="box err"><b>Порядок важен!</b>${K('if x > 10: … elif x > 100: …')} — для x = 500 сработает первая ветка, до второй дело не дойдёт никогда. Ставь условия от более строгого к менее строгому.</div>`},
+{title:'and, or, not: сложные условия',lvl:3,html:`
+<div class="box rule"><b>Логические операции</b>${K('A and B')} — True, только если <b>оба</b> True («и»).<br>${K('A or B')} — True, если <b>хотя бы одно</b> True («или»).<br>${K('not A')} — наоборот: True ↔ False («не»).</div>
+<div class="tbl"><table class="sym"><thead><tr><th>A</th><th>B</th><th>A and B</th><th>A or B</th></tr></thead><tbody>
+<tr><td>True</td><td>True</td><td><b>True</b></td><td><b>True</b></td></tr>
+<tr><td>True</td><td>False</td><td>False</td><td><b>True</b></td></tr>
+<tr><td>False</td><td>True</td><td>False</td><td><b>True</b></td></tr>
+<tr><td>False</td><td>False</td><td>False</td><td>False</td></tr></tbody></table></div>
+${RUN('age = 13\nmoney = 300\nif age >= 12 and money >= 350:\n    print("Идём в кино!")\nelse:\n    print("Не получится")')}
+<p>Поменяй money на 400. А потом замени and на or — что изменится?</p>
+<div class="box ex"><b>Попадает ли x в отрезок от 1 до 10?</b>${K('x >= 1 and x <= 10')}, или короче, как в математике: ${K('1 <= x <= 10')}.<br>Выходные: ${K('day == 6 or day == 7')}.</div>
+<div class="box err"><b>Частые ошибки</b>${K('if x == 6 or 7:')} — так нельзя! Python поймёт как «(x == 6) или (7)», а 7 всегда считается «правдой». Пиши полностью: ${K('x == 6 or x == 7')}.<br>Порядок: сначала ${K('not')}, потом ${K('and')}, потом ${K('or')} (как умножение раньше сложения). Сомневаешься — ставь скобки.</div>`},
+{title:'Вложенные условия',lvl:4,html:`
+<p>Внутри if может быть ещё один if — со своим, <b>ещё большим</b> отступом (8 пробелов).</p>
+${RUN('a = int(input())\nb = int(input())\nif a == b:\n    print("равны")\nelse:\n    if a > b:\n        print("первое больше")\n    else:\n        print("второе больше")','3\n8')}
+<div class="box rule"><b>Отступ показывает, кому принадлежит строка</b>else относится к тому if, с которым он стоит на <b>одном уровне</b> отступа. Внутренний if проверяется, только если сработала внешняя ветка.</div>
+<p>Часто вложенность можно заменить на elif или and — так читать проще. Эта же программа:</p>
+${RUN('a = int(input())\nb = int(input())\nif a == b:\n    print("равны")\nelif a > b:\n    print("первое больше")\nelse:\n    print("второе больше")','3\n8')}`},
+{title:'Ошибки в условиях',lvl:5,html:`
+<div class="tbl"><table class="sym"><thead><tr><th>Код</th><th>Что не так</th><th>Ошибка</th></tr></thead><tbody>
+<tr><td>${K('if x > 0')}</td><td>нет двоеточия</td><td>SyntaxError</td></tr>
+<tr><td>${K('if x = 0:')}</td><td>одно = вместо ==</td><td>SyntaxError</td></tr>
+<tr><td>${K('if x > 0:')}<br>${K('print(x)')}</td><td>нет отступа у тела</td><td>IndentationError</td></tr>
+<tr><td>${K('else x < 0:')}</td><td>у else не бывает условия</td><td>SyntaxError</td></tr>
+<tr><td>${K('x = input()')}<br>${K('if x > 0:')}</td><td>x — текст, сравниваем с числом</td><td>TypeError</td></tr>
+<tr><td>${K('if x == 1 or 2:')}</td><td>всегда True!</td><td>ошибки нет, но программа неверна</td></tr></tbody></table></div>
+${RUN('x = int(input())\nif x > 0\n    print("плюс")','5')}
+<p>Почини программу выше и запусти.</p>
+<div class="box tip"><b>Отступы</b>Используй всегда 4 пробела (или Tab — в наших окошках он вставляет 4 пробела). Внутри одного блока отступы должны быть одинаковыми, иначе IndentationError: unexpected indent.</div>
+<div class="box err"><b>Самая коварная ошибка — без сообщения</b>Если перепутать порядок elif или знак (> вместо >=), Python не скажет ни слова, просто ответ будет неверный. Поэтому проверяй программу на <b>граничных</b> значениях: ровно 0, ровно 50, одинаковые числа.</div>`},
+{title:'Классика: чётность, максимум, модуль',lvl:6,html:`
+<div class="box rule"><b>Чётность</b>${K('n % 2 == 0')} — n чётное. ${K('n % 2 != 0')} (или ${K('n % 2 == 1')}) — нечётное. Работает и для отрицательных: −4 % 2 = 0.</div>
+<h3>Максимум из двух и из трёх</h3>
+${RUN('a = int(input())\nb = int(input())\nc = int(input())\nm = a\nif b > m:\n    m = b\nif c > m:\n    m = c\nprint(m)','4\n9\n7')}
+<p>Идея «чемпиона»: считаем a лучшим, потом каждого следующего сравниваем с чемпионом — победитель становится новым чемпионом. Этот приём пригодится для списков из тысяч чисел!</p>
+<div class="box ex"><b>Модуль числа</b>Модуль — расстояние до нуля: |−7| = 7.${C('if x < 0:\n    x = -x')}В Python есть и готовые команды: ${K('abs(x)')} — модуль, ${K('max(a, b, c)')}, ${K('min(a, b)')}. Но в задачах этого модуля попробуй сначала сам, через if.</div>`},
+{title:'Високосный год, треугольник и другие задачи',lvl:7,html:`
+<h3>Високосный год</h3>
+<div class="box rule"><b>Правило (григорианский календарь)</b>Год високосный, если он делится на 4, но <b>не</b> делится на 100; <b>или</b> если он делится на 400.<br>${K('(y % 4 == 0 and y % 100 != 0) or y % 400 == 0')}</div>
+${RUN('y = int(input())\nif (y % 4 == 0 and y % 100 != 0) or y % 400 == 0:\n    print("високосный")\nelse:\n    print("обычный")','1900')}
+<p>Проверь 2024, 1900, 2000, 2100.</p>
+<div class="fact">Год на самом деле длится около 365,2422 суток. Правило «каждый 4-й год високосный» дало бы ошибку в сутки за 128 лет, поэтому в 1582 году папа Григорий XIII добавил исключения про 100 и 400. Так 1900 год не високосный, а 2000 — високосный.</div>
+<h3>Существует ли треугольник</h3>
+<div class="box rule"><b>Неравенство треугольника</b>Из отрезков a, b, c можно сложить треугольник, если каждый <b>меньше суммы двух других</b>: ${K('a < b + c and b < a + c and c < a + b')}.</div>
+${RUN('a = int(input())\nb = int(input())\nc = int(input())\nif a < b + c and b < a + c and c < a + b:\n    print("YES")\nelse:\n    print("NO")','3\n4\n8')}
+<h3>Четверть координатной плоскости</h3>
+<p>I четверть: x &gt; 0 и y &gt; 0; II: x &lt; 0 и y &gt; 0; III: x &lt; 0 и y &lt; 0; IV: x &gt; 0 и y &lt; 0.</p>`},
+{title:'Шпаргалка',lvl:8,html:`
+<ul class="steps">
+<li>Сравнения: ${K('== != < > <= >=')} → True / False. ${K('=')} — положить, ${K('==')} — спросить.</li>
+<li>${K('if усл:')} … ${K('elif усл:')} … ${K('else:')} — двоеточия, отступ 4 пробела.</li>
+<li>Выполняется только <b>первая</b> подходящая ветка.</li>
+<li>${K('and')} — оба, ${K('or')} — хотя бы одно, ${K('not')} — наоборот. ${K('x == 1 or x == 2')}, не ${K('x == 1 or 2')}.</li>
+<li>Чётное: ${K('n % 2 == 0')}. Максимум — метод «чемпиона».</li>
+<li>Проверяй граничные значения!</li></ul>`},
+{title:'Что дальше',lvl:8,html:`
+<p>Программа теперь умеет выбирать. Но если нужно напечатать числа от 1 до 1000 или проверить 100 паролей, придётся писать 1000 строк… Нет! Компьютер прекрасно умеет <b>повторять</b>.</p>
+<p>В модуле <b>«4. Цикл for»</b> мы скажем «повтори 1000 раз» одной строкой, научимся считать суммы и количества — и условия из этого модуля будут работать внутри цикла: «перебери числа и посчитай чётные».</p>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Команды',title:'Команды и знаки этого модуля',rows:[
+[K('=='),'равно?','Сравнение: True, если значения равны. Не путать с = (положить).',K('x == 5')],
+[K('!='),'не равно?','True, если значения разные.',K('3 != 4')+' → True'],
+[K('< > <= >='),'меньше, больше, …','Сравнение чисел (и текстов по алфавиту).',K('7 >= 7')+' → True'],
+[K('True / False'),'правда / ложь','Два значения типа bool.',''],
+[K('if усл:'),'если','Выполнить тело (с отступом), если условие True.',K('if x > 0:')],
+[K('elif усл:'),'иначе если','Следующее условие в цепочке; проверяется, только если предыдущие False.',K('elif x == 0:')],
+[K('else:'),'иначе','Во всех остальных случаях. Без условия!',K('else:')],
+[K('and'),'и','True, если оба условия True.',K('x > 0 and x < 10')],
+[K('or'),'или','True, если хотя бы одно True.',K('d == 6 or d == 7')],
+[K('not'),'не','Меняет True на False и наоборот.',K('not x > 5')],
+[K('a <= x <= b'),'двойное сравнение','x лежит в отрезке [a; b].',K('1 <= x <= 10')],
+['отступ','4 пробела','Показывает, какие строки входят в тело if/else.',''],
+[K('abs(x)'),'модуль','Расстояние до нуля.',K('abs(-7)')+' → 7']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Двоеточие, отступ, == в сравнении. Первая подходящая ветка — единственная.</div>`};
+
+/* ---------- widget: ветки elif ---------- */
+function onTheory(root){
+  const host=root.querySelector('#w-grade');if(!host)return;
+  const lines=['p = int(input())','if p >= 85:','    print(5)','elif p >= 70:','    print(4)','elif p >= 50:','    print(3)','else:','    print(2)'];
+  host.innerHTML=`<label class="small">Баллы p = <b class="g-v" style="color:var(--accent-ink)"></b></label><input type="range" min="0" max="100" value="72" class="g-r" style="width:100%"><div class="g-code" style="${MONO};font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:6px 0;background:var(--card);margin-top:6px"></div><p class="small g-n" style="margin:8px 0 0"></p>`;
+  const r=host.querySelector('.g-r');
+  const draw=()=>{const p=+r.value;host.querySelector('.g-v').textContent=p;
+    const conds=[[1,p>=85],[3,p>=70],[5,p>=50]];let hitLine=8,checked=[];
+    for(const [ln,v] of conds){checked.push(ln);if(v){hitLine=ln+1;break;}}
+    if(hitLine===8)checked.push(7);
+    host.querySelector('.g-code').innerHTML=lines.map((l,i)=>{const isHit=i===hitLine;const isChk=checked.includes(i);
+      const mark=isChk?(i===hitLine-1?' ✔':(i===7?' ✔':' ✘')):'';
+      return `<div style="padding:2px 10px;white-space:pre;${isHit?'background:color-mix(in srgb,var(--hl) 45%,transparent);font-weight:700':''}${!isHit&&!isChk&&i>0?';opacity:.55':''}">${esc(l)}<span style="color:var(--accent-ink)">${mark}</span></div>`;}).join('');
+    const grade=p>=85?5:p>=70?4:p>=50?3:2;
+    host.querySelector('.g-n').innerHTML=`Python проверил ${checked.length} ${plural(checked.length,'строку','строки','строк')} с условием и напечатал <b>${grade}</b>. Остальные ветки пропущены.`;};
+  r.oninput=draw;draw();
+}
+
+/* ---------- generators ---------- */
+/* L0 */
+RG(0,()=>choice('Как в Python <b>проверить</b>, что x равно 5?',K('x == 5'),[K('x = 5'),K('x === 5'),K('x := 5')],
+ {short:'== — сравнение, = — присваивание.',
+ explain:`${K('==')} (два знака) — это вопрос «равно ли?», ответ True или False. ${K('x = 5')} (один знак) — это команда «положи 5 в x», а не проверка. ${K('===')} бывает в других языках (JavaScript), в Python его нет.`,
+ explain2:'Одно «равно» — действие (положить). Два «равно» — вопрос (равно ли?). В if всегда стоит вопрос → ==.'}));
+RG(0,()=>{const it=pick([['!=','не равно'],['<=','меньше или равно'],['>=','больше или равно']]);
+ return choice(`Какой знак означает «<b>${it[1]}</b>»?`,K(it[0]),['!=','<=','>=','=<','=>','<>'].filter(x=>x!==it[0]).slice(0,3).map(K),
+ {short:`${it[0]} — ${it[1]}.`,
+ explain:`В Python: ${K('!=')} — не равно, ${K('<=')} — меньше или равно, ${K('>=')} — больше или равно. Знак «равно» всегда <b>второй</b>: пишем как читаем — «меньше (<), или равно (=)». ${K('=<')} и ${K('=>')} — ошибка, ${K('<>')} — так писали в старых языках.`,
+ explain2:'Восклицательный знак ! в программировании значит «не». != — «не равно».'});});
+G(0,()=>{const a=R(1,20);const b=pick([a,R(1,20),R(1,20)]);const op=pick(Object.keys(OPS));const v=OPS[op](a,b);
+ return TF(`Что напечатает программа?${C(`a = ${a}\nb = ${b}\nprint(a ${op} b)`)}`,v,
+ {short:`${a} ${op} ${b} — ${v?'верно':'неверно'} → ${B(v)}.`,
+ explain:`Сравнение ${K('a '+op+' b')} спрашивает: «${a} ${OPN[op]} ${b}?» ${v?'Да':'Нет'} → <b>${B(v)}</b>. Сравнение даёт значение типа bool, print его печатает.`,
+ explain2:`Подставь числа: ${a} ${op} ${b}. ${op==='<='||op==='>='?'Помни: «или равно» — равенство тоже подходит. ':''}Ответ ${B(v)}.`});});
+G(0,()=>{const n=R(-20,40);const k=pick([2,3,5]);const v=pmod(n,k)===0;
+ return TF(`Что напечатает программа?${C(`n = ${n}\nprint(n % ${k} == 0)`)}`,v,
+ {short:`${n} % ${k} = ${pmod(n,k)}, ${v?'это 0':'это не 0'} → ${B(v)}.`,
+ explain:`Сначала считается ${K(`n % ${k}`)} = ${pmod(n,k)} (остаток). Потом сравнение ${pmod(n,k)} == 0 → <b>${B(v)}</b>. Это проверка «делится ли ${n} на ${k}».`,
+ explain2:`Арифметика выполняется раньше сравнения. «n % ${k} == 0» — стандартный способ спросить «делится ли n на ${k} нацело?».`});});
+G(0,()=>{const x=R(2,9);const cands=[[`${x} > ${x}`,false],[`${x} >= ${x}`,true],[`${x} != ${x+1}`,true],[`${x} == ${x}.0`,true],[`${x*2} < ${x}`,false],[`"${x}" == ${x}`,false],[`${x} % 2 == ${x%2}`,true],[`${x} <= ${x-1}`,false]];
+ const k=R(1,3);const opts=shuffle(sample(cands.filter(c=>c[1]),k).concat(sample(cands.filter(c=>!c[1]),5-k)));
+ return {type:'multi',q:'Какие выражения дают <b>True</b>? Выбери все.',opts:opts.map(o=>K(o[0])),ans:opts.map((o,i)=>o[1]?i:-1).filter(i=>i>=0),
+ short:opts.map(o=>`${K(o[0])} → ${B(o[1])}`).join('<br>'),
+ explain:`Разберём каждое:<br>${opts.map(o=>`• ${K(o[0])} → <b>${B(o[1])}</b>`).join('<br>')}<br>Ловушки: ${K(`${x} >= ${x}`)} — True (равенство подходит); ${K(`"${x}" == ${x}`)} — False (текст никогда не равен числу); ${K(`${x} == ${x}.0`)} — True (int и float с одинаковым значением равны).`,
+ explain2:'Каждое сравнение — вопрос. Прочитай его словами: «5 больше или равно 5?» — да. «Текст "5" равен числу 5?» — нет, это разные типы.'};});
+
+/* L1 */
+RG(1,()=>choice('Что обязательно нужно в записи '+K('if')+'?','Двоеточие после условия и отступ у строк тела',['Скобки { } вокруг тела','Слово then после условия','Точка с запятой в конце'],
+ {short:'if условие: и тело с отступом 4 пробела.',
+ explain:`Правило Python: ${K('if условие:')} — двоеточие в конце, а строки, которые выполняются «если да», — с <b>отступом</b> (4 пробела). Скобок { } и слова then в Python нет — это из других языков.`,
+ explain2:'Двоеточие говорит: «дальше — что делать». Отступ показывает: «эти строки — внутри if».'}));
+RG(1,()=>choice('Когда выполняется блок '+K('else:')+'?','Когда условие в if оказалось False',['Всегда, после блока if','Когда условие в if True','Никогда, если нет elif'],
+ {short:'else — «иначе», когда условие ложно.',
+ explain:'Из if/else выполняется <b>ровно одна</b> ветка: если условие True — тело if, если False — тело else. У else нет своего условия.',
+ explain2:'«Если идёт дождь — возьми зонт, иначе — кепку». Одновременно и зонт, и кепку не берём.'}));
+G(1,()=>{const x=R(-10,20),k=R(0,10);const op=pick(['>','<','>=','==']);const v=OPS[op](x,k);const A=pick(['Да','Ура','Верно']),Bw=pick(['Нет','Увы','Неверно']);
+ return choice(`Программе ввели число ${x}. Что она напечатает?${C(`x = int(input())\nif x ${op} ${k}:\n    print("${A}")\nelse:\n    print("${Bw}")`)}`,O(v?A:Bw),[O(v?Bw:A),O(A+'\n'+Bw),'Ничего'],
+ {short:`${x} ${op} ${k} — ${B(v)}, выполняется ${v?'if':'else'}.`,
+ explain:`Проверяем условие: ${x} ${op} ${k}? ${v?'Да (True)':'Нет (False)'}. ${v?'Выполняется тело if':'Выполняется тело else'}: печатается <b>${v?A:Bw}</b>. Вторая ветка пропускается — из if/else всегда работает ровно одна.`,
+ explain2:`Подставь ${x} вместо x и прочитай как фразу: «если ${x} ${OPN[op]} ${k} — скажи ${A}, иначе — ${Bw}».`});});
+G(1,()=>{const x=R(1,20),k=R(1,20);const v=x>k;
+ const code=`x = ${x}\nif x > ${k}:\n    print("A")\n    print("B")\nprint("C")`;const out=v?'A\nB\nC':'C';
+ return choice(`Что напечатает программа?${C(code)}`,O(out),[O(v?'C':'A\nB\nC'),O(v?'A\nB':'B\nC'),O('A\nC')],
+ {short:`Условие ${B(v)}; «C» печатается всегда — у неё нет отступа.`,
+ explain:`${x} > ${k}? ${v?'Да':'Нет'}. Строки с отступом (print("A") и print("B")) — тело if, они ${v?'выполняются':'пропускаются'}. Строка print("C") <b>без отступа</b> — она уже не внутри if и выполняется всегда.${OUT(out)}`,
+ explain2:'Отступ — это «принадлежность»: строки с отступом «живут» внутри if. Строка без отступа — снаружи, ей всё равно, что там с условием.'});});
+G(1,()=>{const p=R(1000,9999);
+ return {type:'code',q:`Напиши проверку PIN-кода: на вход даётся число. Если оно равно ${p}, выведи ${O('Доступ разрешён')}, иначе ${O('Доступ запрещён')}.${IN(String(p))}Вывод: ${O('Доступ разрешён')}`,
+ starter:'pin = int(input())\nprint("Доступ разрешён")\n',
+ tests:T([[p],[p+1],[0],[p-1000],[9999===p?1234:9999]],x=>x===p?'Доступ разрешён':'Доступ запрещён'),solution:`pin = int(input())\nif pin == ${p}:\n    print("Доступ разрешён")\nelse:\n    print("Доступ запрещён")`,
+ hint:`if pin == ${p}: … else: … — не забудь двоеточия и отступы.`,
+ explain:`Заготовка всем разрешает доступ — плохая защита! Нужна развилка:${C(`pin = int(input())\nif pin == ${p}:\n    print("Доступ разрешён")\nelse:\n    print("Доступ запрещён")`)}В условии — два знака ==.`,
+ explain2:'Так устроена проверка пароля в любом приложении: сравнить введённое с правильным и пойти по одной из двух веток.'};});
+
+/* L2 */
+RG(2,()=>choice('Сколько веток выполнится в цепочке '+K('if … elif … elif … else')+', если верны сразу <b>два</b> условия?','Одна — первая, где условие True',['Две — обе верные','Все ветки по очереди','Только else'],
+ {short:'Выполняется только первая подходящая ветка.',
+ explain:'Правило: Python проверяет условия <b>сверху вниз</b> и выполняет <b>первую</b> ветку с True. Дальше он даже не смотрит — вся цепочка закончена. Поэтому порядок условий важен.',
+ explain2:'Как охранник на входе со списком: нашёл тебя в первом списке — пропустил, в остальные не заглядывает.'}));
+G(2,()=>{const t=R(-15,35);const out=t<0?'Мороз':t<15?'Прохладно':t<25?'Тепло':'Жарко';
+ return choice(`Ввели ${t}. Что напечатает программа?${C('t = int(input())\nif t < 0:\n    print("Мороз")\nelif t < 15:\n    print("Прохладно")\nelif t < 25:\n    print("Тепло")\nelse:\n    print("Жарко")')}`,O(out),['Мороз','Прохладно','Тепло','Жарко'].filter(x=>x!==out).map(O),
+ {short:`Первое верное условие даёт «${out}».`,
+ explain:`Идём сверху вниз с t = ${t}:<br>${t<0?`t < 0? Да → «Мороз», дальше не смотрим.`:`t < 0? Нет.<br>`+(t<15?`t < 15? Да → «Прохладно».`:`t < 15? Нет.<br>`+(t<25?`t < 25? Да → «Тепло».`:`t < 25? Нет.<br>Ни одно не подошло → else: «Жарко».`))}`,
+ explain2:`Можно прочитать как шкалу: меньше 0 — мороз, от 0 до 14 — прохладно, от 15 до 24 — тепло, от 25 — жарко. ${t} попадает в «${out}». Условие elif t < 15 проверяется только если t уже не меньше 0 — поэтому «от 0».`});});
+G(2,()=>{const x=pick([150,200,500,1000]);
+ return choice(`Ввели ${x}. Что напечатает программа?${C('x = int(input())\nif x > 10:\n    print("больше 10")\nelif x > 100:\n    print("больше 100")\nelse:\n    print("маленькое")')}`,O('больше 10'),[O('больше 100'),O('больше 10\nбольше 100'),O('маленькое')],
+ {short:'Первое же условие True — остальные не проверяются.',
+ explain:`${x} > 10? Да! Выполняется первая ветка — «больше 10», и цепочка <b>заканчивается</b>. До проверки x > 100 дело не доходит, хотя она тоже верна. Ветка «больше 100» не сработает <b>никогда</b>: любое число больше 100 уже больше 10. Правильно ставить сначала более строгое условие (x > 100).`,
+ explain2:'Представь сито: первое сито с крупными дырками ловит всё подряд, второе так ничего и не получает. Надо ставить сначала самое «узкое» сито.'});});
+G(2,()=>({type:'code',q:`Дано целое число. Выведи ${O('плюс')}, если оно положительное, ${O('минус')}, если отрицательное, и ${O('ноль')}, если оно равно нулю.${IN('-5')}Вывод: ${O('минус')}`,
+ starter:'x = int(input())\nif x > 0:\n    print("плюс")\nelse:\n    print("минус")\n',
+ tests:T([[-5],[7],[0],[1],[-1],[1000000]],x=>x>0?'плюс':x<0?'минус':'ноль'),solution:'x = int(input())\nif x > 0:\n    print("плюс")\nelif x < 0:\n    print("минус")\nelse:\n    print("ноль")',
+ hint:'Три варианта — нужен elif: if x > 0 … elif x < 0 … else …',
+ explain:`Заготовка для нуля печатает «минус» — ведь 0 > 0 неверно, и срабатывает else. Добавим третью ветку:${C('x = int(input())\nif x > 0:\n    print("плюс")\nelif x < 0:\n    print("минус")\nelse:\n    print("ноль")')}`,
+ explain2:'Всегда проверяй граничное значение — здесь это 0. Именно на границах чаще всего прячутся ошибки.'}));
+
+/* L3 */
+RG(3,()=>choice('Когда '+K('A and B')+' даёт True?','Когда и A, и B — True',['Когда хотя бы одно из них True','Когда оба False','Когда A и B разные'],
+ {short:'and — «и»: нужны оба.',
+ explain:`${K('and')} — True, только если <b>оба</b> условия True. Хоть одно False — всё False. «Хотя бы одно» — это ${K('or')}.`,
+ explain2:'«Пойду гулять, если сделал уроки И нет дождя». Не сделал уроки — не идёшь, даже если солнце.'}));
+RG(3,()=>choice('Когда '+K('A or B')+' даёт False?','Только когда и A, и B — False',['Когда хотя бы одно False','Когда оба True','Никогда'],
+ {short:'or — True, если хотя бы одно True; False — только если оба False.',
+ explain:`${K('or')} («или») — True, если <b>хотя бы одно</b> True (или оба). Поэтому False бывает в одном случае: оба False.`,
+ explain2:'«Выходной, если суббота ИЛИ воскресенье». Не выходной — только когда ни то, ни другое.'}));
+G(3,()=>{const a=R(-5,10),b=R(-5,10);const op=pick(['and','or']);const p1=a>0,p2=b>0;const v=op==='and'?p1&&p2:p1||p2;
+ return TF(`Что напечатает программа?${C(`a = ${a}\nb = ${b}\nprint(a > 0 ${op} b > 0)`)}`,v,
+ {short:`${B(p1)} ${op} ${B(p2)} = ${B(v)}.`,
+ explain:`Сначала сравнения: a > 0 → ${a} > 0 → ${B(p1)}; b > 0 → ${b} > 0 → ${B(p2)}.<br>Потом ${op}: ${B(p1)} ${op} ${B(p2)} = <b>${B(v)}</b> (${op==='and'?'and — нужны оба True':'or — достаточно одного True'}).`,
+ explain2:`Сравнения считаются раньше, чем and/or — как умножение раньше сложения.`});});
+G(3,()=>{const a=R(1,10),b=a+R(3,10);
+ return choice(`Какое условие проверяет, что x лежит <b>на отрезке от ${a} до ${b}</b> (включая концы)?`,K(`x >= ${a} and x <= ${b}`),[K(`x >= ${a} or x <= ${b}`),K(`x > ${a} and x < ${b}`),K(`x <= ${a} and x >= ${b}`)],
+ {short:`Нужны оба условия сразу: and. Концы включаем: >= и <=.`,
+ explain:`x на отрезке — значит <b>одновременно</b> x ≥ ${a} <b>и</b> x ≤ ${b}: нужен ${K('and')}. С ${K('or')} подойдёт любое число (каждое либо ≥ ${a}, либо ≤ ${b}). С ${K('>')} и ${K('<')} не попадут концы ${a} и ${b}. Последний вариант не выполняется никогда. Короче можно так: ${K(`${a} <= x <= ${b}`)}.`,
+ explain2:`Проверь на числах: x = ${b+5} — для варианта с or: ${b+5} >= ${a} → True, значит всё True. А ${b+5} точно не на отрезке! Значит or не подходит.`});});
+G(3,()=>{const k=pick([3,4,5]),m=R(6,8);const xs=range(1,10).filter(x=>x%k===0||x>m);
+ return {type:'set',q:`Для каких x от 1 до 10 программа напечатает «Да»? Перечисли все через запятую.${C(`if x % ${k} == 0 or x > ${m}:\n    print("Да")`)}`,ans:xs,ph:'числа через запятую',
+ short:`Делятся на ${k}: ${range(1,10).filter(x=>x%k===0).join(', ')}; больше ${m}: ${range(m+1,10).join(', ')}.`,
+ explain:`Условие с ${K('or')}: подходит x, если он делится на ${k} <b>или</b> больше ${m} (или и то, и другое).<br>• делятся на ${k}: ${range(1,10).filter(x=>x%k===0).join(', ')};<br>• больше ${m}: ${range(m+1,10).join(', ')}.<br>Объединяем без повторов: <b>${xs.join(', ')}</b>.`,
+ explain2:'Перебери x = 1, 2, …, 10 и для каждого проверь обе половинки. Если хоть одна True — пиши x в ответ.'};});
+G(3,()=>{const age=pick([12,14,16]),price=pick([300,350,400]);
+ return {type:'code',q:`В кино пускают с ${age} лет, билет стоит ${price} ₽. Даны возраст и сумма денег (на разных строках). Выведи ${O('Да')}, если можно пойти в кино, иначе ${O('Нет')}.${IN(`${age+1}\n${price-50}`)}Вывод: ${O('Нет')}`,
+ starter:`age = int(input())\nmoney = int(input())\nif age >= ${age} or money >= ${price}:\n    print("Да")\nelse:\n    print("Нет")\n`,
+ tests:T([[age+1,price-50],[age,price],[age-1,price+100],[age+5,price+5],[5,0],[age-1,price-1]],(a,m)=>a>=age&&m>=price?'Да':'Нет'),
+ solution:`age = int(input())\nmoney = int(input())\nif age >= ${age} and money >= ${price}:\n    print("Да")\nelse:\n    print("Нет")`,
+ hint:'Нужны ОБА условия сразу. Какое слово это означает?',
+ explain:`В заготовке ${K('or')} — тогда пустят и малыша с деньгами, и взрослого без денег. Нужно <b>и</b> возраст, <b>и</b> деньги — ${K('and')}:${C(`if age >= ${age} and money >= ${price}:`)}Граница: ровно ${age} лет и ровно ${price} ₽ — можно (>=).`,
+ explain2:`Проверь словами: ${age+1} лет и ${price-50} ₽ — по возрасту можно, а денег не хватает. Значит «Нет». С or вышло бы «Да» — ошибка.`};});
+
+/* L4 */
+RG(4,()=>choice('Как Python понимает, к какому '+K('if')+' относится '+K('else')+' во вложенных условиях?','По отступу: else относится к if на том же уровне отступа',['К самому первому if в программе','К ближайшему if сверху, отступ не важен','Python выбирает случайно'],
+ {short:'Отступ решает всё.',
+ explain:'В Python структуру программы задают <b>отступы</b>. else «принадлежит» тому if, который стоит на <b>том же</b> уровне отступа. Внутренний if (с отступом 4) и его else (тоже 4) — пара; внешние if и else (отступ 0) — другая пара.',
+ explain2:'Отступы — как этажи. else ищет свой if на своём этаже.'}));
+G(4,()=>{const x=R(-10,20);const k=R(5,12);
+ const code=`x = ${x}\nif x > 0:\n    if x > ${k}:\n        print("много")\n    else:\n        print("мало")\nelse:\n    print("ничего")`;
+ const out=x>0?(x>k?'много':'мало'):'ничего';
+ return choice(`Что напечатает программа?${C(code)}`,O(out),['много','мало','ничего','мало\nничего'].filter(o=>o!==out).map(O),
+ {short:`x = ${x}: ${x>0?`x > 0, затем x > ${k}? ${x>k?'да':'нет'}`:'x > 0 неверно → внешний else'}.`,
+ explain:`Внешнее условие: ${x} > 0? ${x>0?'Да — заходим внутрь.':'Нет — переходим к внешнему else (отступ 0) и печатаем «ничего». Внутренний if даже не проверяется.'}${x>0?`<br>Внутреннее: ${x} > ${k}? ${x>k?'Да → «много».':'Нет → внутренний else (отступ 4) → «мало».'}`:''}<br>Ответ: <b>${out}</b>.`,
+ explain2:'Сначала смотри только на строки с отступом 0 — это главная развилка. Потом, если зашли внутрь, — на строки с отступом 4.'});});
+G(4,()=>({type:'code',q:`Даны два целых числа (на разных строках). Выведи ${O('равны')}, если они равны, ${O('первое больше')} или ${O('второе больше')}.${IN('3\n8')}Вывод: ${O('второе больше')}`,
+ starter:'a = int(input())\nb = int(input())\nif a > b:\n    print("первое больше")\nelse:\n    print("второе больше")\n',
+ tests:T([[3,8],[8,3],[5,5],[-1,-2],[0,0],[-7,7]],(a,b)=>a===b?'равны':a>b?'первое больше':'второе больше'),
+ solution:'a = int(input())\nb = int(input())\nif a == b:\n    print("равны")\nelif a > b:\n    print("первое больше")\nelse:\n    print("второе больше")',
+ hint:'Сначала проверь равенство (==), потом сравнивай.',
+ explain:`Заготовка для равных чисел пишет «второе больше». Добавим проверку на равенство — вложенно или через elif:${C('if a == b:\n    print("равны")\nelif a > b:\n    print("первое больше")\nelse:\n    print("второе больше")')}`,
+ explain2:'Три исхода — три ветки. Для 5 и 5: a == b → «равны», дальше не проверяем.'}));
+
+/* L5 ошибки */
+RG(5,()=>choice('Python пишет '+K('IndentationError: expected an indented block')+'. Что случилось?','После строки с двоеточием (if/else) следующая строка без отступа',['Забыли кавычку','Поделили на ноль','Переменная не создана'],
+ {short:'IndentationError — проблема с отступами.',
+ explain:'После ${K("if …:")} или ${K("else:")} Python <b>ждёт</b> строки с отступом (тело). Если следующая строка начинается без отступа — тело пустое, и Python ругается: «ожидался блок с отступом».'.replace('${K("if …:")}',K('if …:')).replace('${K("else:")}',K('else:')),
+ explain2:'Двоеточие — как обещание «сейчас будет список дел». Если сразу после него ничего с отступом нет — обещание нарушено.'}));
+const BUGS=[
+ {line:2,mk:()=>'if x > 0',err:'SyntaxError',why:'нет двоеточия после условия'},
+ {line:2,mk:()=>'if x = 0:',err:'SyntaxError',why:'одно = вместо == (положить вместо сравнить)'},
+ {line:3,mk:()=>'print("плюс")',err:'IndentationError',why:'у тела if нет отступа'},
+ {line:4,mk:()=>'else x <= 0:',err:'SyntaxError',why:'у else не бывает условия'},
+ {line:1,mk:()=>'x = input()',err:'TypeError',why:'без int x — текст, а текст нельзя сравнивать с числом'}];
+G(5,()=>{const b=pick(BUGS);const L=['x = int(input())','if x > 0:','    print("плюс")','else:','    print("не плюс")'];L[b.line-1]=b.mk();
+ return {type:'num',q:`Программа должна писать «плюс» для положительных чисел и «не плюс» для остальных, но не работает. В какой строке ошибка?${C(L.join('\n'))}`,ans:b.line,
+ short:`Строка ${b.line}: ${b.why}.`,
+ explain:`Строка <b>${b.line}</b>: ${K(L[b.line-1].trim())} — ${b.why}. Python выдаст ${b.err}.${b.err==='TypeError'?' Причём сообщение укажет на строку 2 (там сравнение), а настоящая причина — в строке 1! Поэтому смотри и на строки выше.':''}<br>Правильная программа:${C('x = int(input())\nif x > 0:\n    print("плюс")\nelse:\n    print("не плюс")')}`,
+ explain2:'Чек-лист для if: 1) int у input; 2) двоеточие в конце if/elif/else; 3) == в сравнении; 4) отступы у тела; 5) у else нет условия.'};});
+G(5,()=>{const n=pick([6,7]);const other=n===6?7:6;
+ return choice(`Программа должна писать «выходной» только для дней ${n} и ${other} (суббота и воскресенье). Для какого дня d она <b>ошибётся</b>?${C(`d = int(input())\nif d == 6 or 7:\n    print("выходной")\nelse:\n    print("будний")`)}`,'Для всех будних: она всегда пишет «выходной»',['Только для d = 7','Только для d = 6','Ни для какого — всё верно'],
+ {short:'or 7 — всегда True.',
+ explain:`${K('d == 6 or 7')} Python читает как ${K('(d == 6) or 7')}. А число 7 само по себе считается «правдой» (любое ненулевое число — True). Значит условие <b>всегда</b> True, и программа для любого дня печатает «выходной». Правильно: ${K('d == 6 or d == 7')}.`,
+ explain2:'Python не понимает «сокращённую» речь. «d равно 6 или 7» по-питоновски — «d равно 6, или d равно 7». Каждое сравнение пишется полностью.'});});
+G(5,()=>({type:'code',q:`В программе три ошибки. Почини её: она должна печатать ${O('чётное')} или ${O('нечётное')}.${IN('7')}Вывод: ${O('нечётное')}`,
+ starter:'n = input()\nif n % 2 = 0\n    print("чётное")\nelse:\nprint("нечётное")\n',
+ tests:T([[7],[4],[0],[-3],[100]],n=>pmod(n,2)===0?'чётное':'нечётное'),solution:'n = int(input())\nif n % 2 == 0:\n    print("чётное")\nelse:\n    print("нечётное")',
+ hint:'Ищи: int, ==, двоеточие, отступ. (Ошибок можно насчитать даже четыре.)',
+ explain:`Ошибки: 1) ${K('input()')} без int; 2) ${K('=')} вместо ${K('==')}; 3) нет двоеточия после условия; 4) у print в else нет отступа.${C('n = int(input())\nif n % 2 == 0:\n    print("чётное")\nelse:\n    print("нечётное")')}`,
+ explain2:'Чини по одной и запускай кнопкой «Запустить» — Python каждый раз покажет следующую ошибку и номер строки.'}));
+
+/* L6 */
+RG(6,()=>choice('Какое условие верно для <b>чётного</b> n?',K('n % 2 == 0'),[K('n / 2 == 0'),K('n % 2 == 1'),K('n // 2 == 0')],
+ {short:'Чётное — остаток от деления на 2 равен 0.',
+ explain:`Чётное число делится на 2 без остатка: ${K('n % 2 == 0')}. ${K('n / 2 == 0')} верно только для n = 0. ${K('n % 2 == 1')} — нечётное. ${K('n // 2 == 0')} — только для 0 и 1.`,
+ explain2:'Раздели n конфет на двоих. Если ничего не осталось (остаток 0) — n чётное.'}));
+G(6,()=>({type:'code',q:`Дано целое число. Выведи ${O('чётное')} или ${O('нечётное')}.${IN('14')}Вывод: ${O('чётное')}`,
+ starter:'n = int(input())\n',
+ tests:T([[14],[7],[0],[-4],[-7],[1]],n=>pmod(n,2)===0?'чётное':'нечётное'),solution:'n = int(input())\nif n % 2 == 0:\n    print("чётное")\nelse:\n    print("нечётное")',
+ hint:'n % 2 == 0 — чётное.',
+ explain:`${C('n = int(input())\nif n % 2 == 0:\n    print("чётное")\nelse:\n    print("нечётное")')}0 — чётное (0 % 2 = 0). Отрицательные тоже работают: −7 % 2 = 1 в Python.`,
+ explain2:'Можно проверять и нечётность: if n % 2 == 1 — тоже верно в Python даже для отрицательных. Но с == 0 надёжнее.'}));
+G(6,()=>({type:'code',q:`Даны два целых числа. Выведи большее из них (если равны — любое). Не используй готовую команду max.${IN('3\n8')}Вывод: ${O('8')}`,
+ starter:'a = int(input())\nb = int(input())\nprint(a)\n',
+ tests:T([[3,8],[8,3],[5,5],[-1,-9],[0,-1],[-5,0]],(a,b)=>Math.max(a,b)),solution:'a = int(input())\nb = int(input())\nif a > b:\n    print(a)\nelse:\n    print(b)',
+ hint:'Если a > b — печатай a, иначе b.',
+ explain:`${C('a = int(input())\nb = int(input())\nif a > b:\n    print(a)\nelse:\n    print(b)')}Если числа равны, условие a > b ложно, и печатается b — но это то же самое число, так что всё верно.`,
+ explain2:'Отрицательные: из −1 и −9 больше −1 (оно правее на числовой прямой). Проверь, что программа это знает.'}));
+G(6,()=>({type:'code',q:`Даны три целых числа (каждое на своей строке). Выведи наибольшее. Без max!${IN('4\n9\n7')}Вывод: ${O('9')}`,
+ starter:'a = int(input())\nb = int(input())\nc = int(input())\nif a > b:\n    print(a)\nelse:\n    print(b)\n',
+ tests:T([[4,9,7],[9,4,7],[4,7,9],[5,5,5],[-1,-2,-3],[1,3,3],[0,-5,0]],(a,b,c)=>Math.max(a,b,c)),solution:'a = int(input())\nb = int(input())\nc = int(input())\nm = a\nif b > m:\n    m = b\nif c > m:\n    m = c\nprint(m)',
+ hint:'Метод «чемпиона»: m = a; если b > m, то m = b; если c > m, то m = c.',
+ explain:`Заготовка забывает про c. Метод «чемпиона»:${C('m = a\nif b > m:\n    m = b\nif c > m:\n    m = c\nprint(m)')}Здесь два <b>отдельных</b> if (не elif!): каждый претендент должен сразиться с текущим чемпионом.`,
+ explain2:'Другой способ — через and: if a >= b and a >= c: print(a) elif b >= c: print(b) else: print(c). Обрати внимание на >=: при равных числах иначе можно ничего не напечатать.'}));
+G(6,()=>({type:'code',q:`Дано целое число x. Выведи его модуль |x| (расстояние до нуля). Без abs!${IN('-7')}Вывод: ${O('7')}`,
+ starter:'x = int(input())\nprint(x)\n',
+ tests:T([[-7],[7],[0],[-1],[123456]],x=>Math.abs(x)),solution:'x = int(input())\nif x < 0:\n    x = -x\nprint(x)',
+ hint:'Если x отрицательное — поменяй знак: x = -x.',
+ explain:`${C('x = int(input())\nif x < 0:\n    x = -x\nprint(x)')}Здесь if без else: для неотрицательных x ничего менять не надо. print стоит без отступа — печатает в любом случае.`,
+ explain2:'−x для отрицательного x — положительное число: −(−7) = 7.'}));
+
+/* L7 */
+RG(7,()=>choice('Какой год <b>високосный</b> по правилу григорианского календаря?','Делится на 4 и не делится на 100, или делится на 400',['Каждый, который делится на 4','Делится на 4 или на 100','Делится на 100, но не на 400'],
+ {short:'(y % 4 == 0 and y % 100 != 0) or y % 400 == 0',
+ explain:'Правило: високосный, если делится на 4, <b>кроме</b> вековых (делящихся на 100). Но вековые, делящиеся на 400, — всё-таки високосные. 2024 — да, 1900 — нет, 2000 — да.',
+ explain2:'Три ступеньки: делится на 4 → «скорее да»; делится ещё и на 100 → «нет»; делится ещё и на 400 → «снова да».'}));
+G(7,()=>{const y=pick([1900,2000,2024,2023,2100,1600,1996,2400,1800,2026,2028]);const v=(y%4===0&&y%100!==0)||y%400===0;
+ return choice(`Високосный ли ${y} год?`,v?'Да':'Нет',[v?'Нет':'Да'],
+ {short:`${y}: ${v?'високосный':'обычный'}.`,
+ explain:`Проверяем: ${y} % 4 = ${y%4}${y%4===0?` (делится на 4); ${y} % 100 = ${y%100}${y%100===0?` (делится на 100 — вековой); ${y} % 400 = ${y%400}${y%400===0?' (делится на 400) → <b>високосный</b>':' → <b>не</b> високосный'}`:' (не вековой) → <b>високосный</b>'}`:' → не делится на 4 → <b>обычный</b>'}.`,
+ explain2:`Формула: (y % 4 == 0 and y % 100 != 0) or y % 400 == 0. Для ${y}: (${B(y%4===0)} and ${B(y%100!==0)}) or ${B(y%400===0)} = ${B(v)}.`});});
+G(7,()=>({type:'code',q:`Дан год. Выведи ${O('YES')}, если он високосный, и ${O('NO')} иначе.${IN('2024')}Вывод: ${O('YES')}`,
+ starter:'y = int(input())\nif y % 4 == 0:\n    print("YES")\nelse:\n    print("NO")\n',
+ tests:T([[2024],[2023],[1900],[2000],[2100],[2400],[4]],y=>(y%4===0&&y%100!==0)||y%400===0?'YES':'NO'),solution:'y = int(input())\nif (y % 4 == 0 and y % 100 != 0) or y % 400 == 0:\n    print("YES")\nelse:\n    print("NO")',
+ hint:'Заготовка ошибается на 1900 и 2100. Добавь исключение про 100 и 400.',
+ explain:`${C('y = int(input())\nif (y % 4 == 0 and y % 100 != 0) or y % 400 == 0:\n    print("YES")\nelse:\n    print("NO")')}Проверь на 1900 (NO) и 2000 (YES) — это главные ловушки.`,
+ explain2:'Можно и вложенными if: if y % 400 == 0: YES elif y % 100 == 0: NO elif y % 4 == 0: YES else: NO. Порядок от самого строгого условия!'}));
+G(7,()=>({type:'code',q:`Даны три натуральных числа — длины отрезков. Можно ли сложить из них треугольник? Выведи ${O('YES')} или ${O('NO')}.${IN('3\n4\n5')}Вывод: ${O('YES')}`,
+ starter:'a = int(input())\nb = int(input())\nc = int(input())\nif a + b > c:\n    print("YES")\nelse:\n    print("NO")\n',
+ tests:T([[3,4,5],[1,2,3],[3,4,8],[10,2,3],[2,10,3],[5,5,5],[1,1,1]],(a,b,c)=>a<b+c&&b<a+c&&c<a+b?'YES':'NO'),solution:'a = int(input())\nb = int(input())\nc = int(input())\nif a < b + c and b < a + c and c < a + b:\n    print("YES")\nelse:\n    print("NO")',
+ hint:'Каждая сторона меньше суммы двух других — три условия через and.',
+ explain:`Заготовка проверяет только одну сторону: для 10, 2, 3 она скажет YES (10 + 2 > 3), а треугольника нет. Нужны все три:${C('if a < b + c and b < a + c and c < a + b:')}Для 1, 2, 3 — NO: отрезки 1 и 2 лягут ровно вдоль 3, треугольник «сплющится».`,
+ explain2:'Представь палочки: если одна длиннее, чем две другие вместе, их концы не дотянутся друг до друга.'}));
+G(7,()=>{const t=pick([[85,70,50],[90,75,50],[80,60,40]]);
+ return {type:'code',q:`Оценка по баллам (0–100): от ${t[0]} — «5», от ${t[1]} — «4», от ${t[2]} — «3», меньше ${t[2]} — «2». Дано число баллов. Выведи оценку.${IN(String(t[1]+3))}Вывод: ${O('4')}`,
+ starter:`p = int(input())\nif p >= ${t[2]}:\n    print(3)\nelif p >= ${t[1]}:\n    print(4)\nelif p >= ${t[0]}:\n    print(5)\nelse:\n    print(2)\n`,
+ tests:T([[t[1]+3],[100],[t[0]],[t[0]-1],[t[1]],[t[2]],[t[2]-1],[0]],p=>p>=t[0]?5:p>=t[1]?4:p>=t[2]?3:2),
+ solution:`p = int(input())\nif p >= ${t[0]}:\n    print(5)\nelif p >= ${t[1]}:\n    print(4)\nelif p >= ${t[2]}:\n    print(3)\nelse:\n    print(2)`,
+ hint:'В заготовке условия в неправильном порядке. Начинай с самого строгого.',
+ explain:`В заготовке первое условие p >= ${t[2]} ловит и отличников — пятёрок не будет никогда. Ставим условия от самого строгого:${C(`if p >= ${t[0]}:\n    print(5)\nelif p >= ${t[1]}:\n    print(4)\nelif p >= ${t[2]}:\n    print(3)\nelse:\n    print(2)`)}`,
+ explain2:`Проверь границы: ровно ${t[0]} → 5, ${t[0]-1} → 4, ровно ${t[2]} → 3, ${t[2]-1} → 2. Тесты проверяют именно их.`};});
+G(7,()=>({type:'code',q:`Даны координаты точки x и y (не равны нулю, каждое на своей строке). Выведи номер координатной четверти (1, 2, 3 или 4).${IN('-3\n5')}Вывод: ${O('2')}`,
+ starter:'x = int(input())\ny = int(input())\nif x > 0 and y > 0:\n    print(1)\n',
+ tests:T([[3,5],[-3,5],[-3,-5],[3,-5],[1,-1],[-100,1]],(x,y)=>x>0&&y>0?1:x<0&&y>0?2:x<0&&y<0?3:4),solution:'x = int(input())\ny = int(input())\nif x > 0 and y > 0:\n    print(1)\nelif x < 0 and y > 0:\n    print(2)\nelif x < 0 and y < 0:\n    print(3)\nelse:\n    print(4)',
+ hint:'I: x>0, y>0; II: x<0, y>0; III: x<0, y<0; IV: x>0, y<0. Четверти нумеруются против часовой стрелки.',
+ explain:`Четыре случая — цепочка if/elif/else:${C('if x > 0 and y > 0:\n    print(1)\nelif x < 0 and y > 0:\n    print(2)\nelif x < 0 and y < 0:\n    print(3)\nelse:\n    print(4)')}`,
+ explain2:'Можно вложенно: сначала по y (верх/низ), потом по x (право/лево). Верх-право — 1, верх-лево — 2, низ-лево — 3, низ-право — 4.'}));
+
+/* L8 ★ */
+RG(8,()=>choice('★ В каком порядке Python выполняет '+K('not')+', '+K('and')+', '+K('or')+' без скобок?','Сначала not, потом and, потом or',['Слева направо, все одинаково','Сначала or, потом and, потом not','Сначала and, потом not, потом or'],
+ {short:'not → and → or (как «минус числа», «умножение», «сложение»).',
+ explain:`Приоритет: ${K('not')} самый сильный, потом ${K('and')}, потом ${K('or')}. Поэтому ${K('A or B and C')} = ${K('A or (B and C)')}. А все сравнения (>, == …) считаются ещё раньше.`,
+ explain2:'Аналогия: and — как умножение, or — как сложение. True or False and False = True or (False and False) = True or False = True.'}));
+G(8,()=>{const a=R(0,1)===1,b=R(0,1)===1,c=R(0,1)===1;const form=pick(['or_and','not_or','and_or']);
+ let code,v,how;
+ if(form==='or_and'){code=`print(${B(a)} or ${B(b)} and ${B(c)})`;v=a||(b&&c);how=`${B(a)} or (${B(b)} and ${B(c)}) = ${B(a)} or ${B(b&&c)} = ${B(v)}`;}
+ else if(form==='not_or'){code=`print(not ${B(a)} or ${B(b)})`;v=(!a)||b;how=`(not ${B(a)}) or ${B(b)} = ${B(!a)} or ${B(b)} = ${B(v)}`;}
+ else{code=`print(${B(a)} and ${B(b)} or ${B(c)})`;v=(a&&b)||c;how=`(${B(a)} and ${B(b)}) or ${B(c)} = ${B(a&&b)} or ${B(c)} = ${B(v)}`;}
+ return TF(`★ Что напечатает программа?${C(code)}`,v,
+ {short:how+'.',
+ explain:`Порядок: not, потом and, потом or. Расставим скобки:<br>${how}.<br>Ответ: <b>${B(v)}</b>.`,
+ explain2:'Найди and — склей его соседей в скобки. Потом or. not относится только к значению сразу после него.'});},true);
+G(8,()=>({type:'code',q:`★ Шоколадка состоит из n × m долек. Можно ли одним прямым разломом (вдоль линии между дольками, от края до края) отломить ровно k долек? Даны n, m, k (каждое на своей строке). Выведи ${O('YES')} или ${O('NO')}.${IN('4\n2\n6')}Вывод: ${O('YES')}`,
+ starter:'n = int(input())\nm = int(input())\nk = int(input())\n',
+ tests:T([[4,2,6],[2,10,7],[5,7,1],[7,4,21],[3,3,9],[3,3,6],[1,1,1],[10,10,50]],(n,m,k)=>k<n*m&&(k%n===0||k%m===0)?'YES':'NO'),
+ solution:'n = int(input())\nm = int(input())\nk = int(input())\nif k < n * m and (k % n == 0 or k % m == 0):\n    print("YES")\nelse:\n    print("NO")',
+ hint:'Разлом отделяет несколько целых рядов или целых столбцов. Значит, k делится на n или на m. И отломить всю шоколадку целиком нельзя.',
+ explain:`Прямой разлом отделяет несколько целых полосок. Полоска вдоль одной стороны содержит n долек, вдоль другой — m. Значит, k должно делиться на n <b>или</b> на m. И ещё k &lt; n · m — иначе это вся шоколадка (ломать нечего).${C('if k < n * m and (k % n == 0 or k % m == 0):')}Скобки вокруг or обязательны — and сильнее or! (Классическая задача с informatics.msk.ru.)`,
+ explain2:'Для 4 × 2 и k = 6: 6 делится на 2 → можно отломить 3 полоски по 2 дольки. Для 3 × 3 и k = 9: это вся шоколадка → NO.'}),true);
+G(8,()=>({type:'code',q:`★ Даны три целых числа. Выведи, сколько среди них совпадающих: ${O('3')}, если все равны, ${O('2')}, если равны какие-то два, ${O('0')}, если все разные.${IN('5\n2\n5')}Вывод: ${O('2')}`,
+ starter:'a = int(input())\nb = int(input())\nc = int(input())\nif a == b == c:\n    print(3)\n',
+ tests:T([[5,2,5],[1,1,1],[1,2,3],[7,7,0],[0,7,7],[-1,-1,-1],[4,5,4]],(a,b,c)=>a===b&&b===c?3:(a===b||b===c||a===c)?2:0),
+ solution:'a = int(input())\nb = int(input())\nc = int(input())\nif a == b == c:\n    print(3)\nelif a == b or b == c or a == c:\n    print(2)\nelse:\n    print(0)',
+ hint:'Сначала проверь «все равны», потом «хоть одна пара равна» (три пары: a-b, b-c, a-c).',
+ explain:`${C('if a == b == c:\n    print(3)\nelif a == b or b == c or a == c:\n    print(2)\nelse:\n    print(0)')}Порядок важен: если все три равны, то и пара равна — поэтому «3» проверяем первым. Пар три — легко забыть пару a и c (тест 5, 2, 5).`,
+ explain2:'Ответ «1» не бывает: совпадение — всегда хотя бы пара. Поэтому варианты только 3, 2, 0.'}),true);
+G(8,()=>({type:'code',q:`★ Шахматный ферзь ходит по горизонтали, вертикали и диагонали на любое число клеток. Даны координаты двух <b>разных</b> клеток (x1, y1, x2, y2 — числа от 1 до 8, каждое на своей строке). Может ли ферзь попасть с первой клетки на вторую за один ход? Выведи ${O('YES')} или ${O('NO')}.${IN('1\n1\n8\n8')}Вывод: ${O('YES')}`,
+ starter:'x1 = int(input())\ny1 = int(input())\nx2 = int(input())\ny2 = int(input())\nif x1 == x2 or y1 == y2:\n    print("YES")\nelse:\n    print("NO")\n',
+ tests:T([[1,1,8,8],[1,1,2,3],[4,4,4,8],[2,5,7,5],[3,6,6,3],[1,8,2,6],[5,5,1,1],[8,1,1,7]],(a,b,c,d)=>(a===c||b===d||Math.abs(a-c)===Math.abs(b-d))?'YES':'NO'),
+ solution:'x1 = int(input())\ny1 = int(input())\nx2 = int(input())\ny2 = int(input())\nif x1 == x2 or y1 == y2 or abs(x1 - x2) == abs(y1 - y2):\n    print("YES")\nelse:\n    print("NO")',
+ hint:'Диагональ: насколько сдвинулись по x, настолько же по y. Сравни модули разностей: abs(x1 - x2) == abs(y1 - y2).',
+ explain:`Заготовка знает только про ладью (вертикаль/горизонталь). Добавим диагональ: на диагонали сдвиг по x равен сдвигу по y по модулю.${C('if x1 == x2 or y1 == y2 or abs(x1 - x2) == abs(y1 - y2):')}abs — готовая команда модуля. Для (3, 6) и (6, 3): |3 − 6| = 3 = |6 − 3| → YES.`,
+ explain2:'Нарисуй доску: с (1, 1) по диагонали идут (2, 2), (3, 3)… — сдвиги равны. С (1, 8) на (2, 6): сдвиг 1 и 2 — не диагональ, не одна линия → NO.'}),true);
+G(8,()=>({type:'code',q:`★ Конь ходит буквой «Г»: на 2 клетки в одну сторону и на 1 в перпендикулярную. Даны координаты двух клеток (x1, y1, x2, y2, от 1 до 8). Может ли конь попасть с первой на вторую одним ходом? ${O('YES')} / ${O('NO')}.${IN('1\n1\n2\n3')}Вывод: ${O('YES')}`,
+ starter:'x1 = int(input())\ny1 = int(input())\nx2 = int(input())\ny2 = int(input())\n',
+ tests:T([[1,1,2,3],[1,1,3,2],[4,4,2,3],[4,4,5,5],[4,4,4,6],[8,8,6,7],[1,1,1,1],[5,5,3,7]],(a,b,c,d)=>Math.abs(a-c)*Math.abs(b-d)===2?'YES':'NO'),
+ solution:'x1 = int(input())\ny1 = int(input())\nx2 = int(input())\ny2 = int(input())\ndx = abs(x1 - x2)\ndy = abs(y1 - y2)\nif dx * dy == 2:\n    print("YES")\nelse:\n    print("NO")',
+ hint:'Пусть dx = abs(x1 − x2), dy = abs(y1 − y2). Ход конём — это (dx, dy) = (1, 2) или (2, 1). Есть красивый трюк с произведением.',
+ explain:`Ход коня — сдвиги (1, 2) или (2, 1). Можно так: ${K('(dx == 1 and dy == 2) or (dx == 2 and dy == 1)')}. А можно трюк: ${K('dx * dy == 2')} — ведь 2 = 1 · 2 = 2 · 1, и других разложений на неотрицательные целые нет.${C('dx = abs(x1 - x2)\ndy = abs(y1 - y2)\nif dx * dy == 2:\n    print("YES")\nelse:\n    print("NO")')}`,
+ explain2:'Проверь «ловушки»: та же клетка (dx = dy = 0) → 0 → NO; (4, 4) → (4, 6): dx = 0, dy = 2 → 0 → NO; (5, 5) → (3, 7): 2 · 2 = 4 → NO.'}),true);
+G(8,()=>{const x=R(1,15);
+ const code=`x = ${x}\nif x > 5:\n    if x > 10:\n        print("A")\nelse:\n    print("B")\nprint("C")`;
+ const out=(x>5?(x>10?'A\n':''):'B\n')+'C';
+ return choice(`★ Что напечатает программа?${C(code)}`,O(out),[...new Set(['A\nC','B\nC','C','A\nB\nC'])].filter(o=>o!==out).map(O),
+ {short:`else относится к внешнему if (одинаковый отступ).`,
+ explain:`Смотрим на отступы: ${K('else:')} стоит на уровне внешнего ${K('if x > 5:')} — значит, это его else, а не внутреннего.<br>x = ${x}: ${x>5?`${x} > 5 — заходим внутрь. ${x>10?`${x} > 10 — печатаем A.`:`${x} > 10? Нет — а у внутреннего if нет своего else, ничего не печатаем.`}`:`${x} > 5? Нет → внешний else → B.`} Потом C (без отступа — всегда).${OUT(out)}`,
+ explain2:'Ловушка «висячего else»: кажется, что else относится к ближайшему if. В Python решает только отступ.'});},true);
+
+const levels=['Сравнения: True и False','if и else, отступы','elif: много веток','and, or, not','Вложенные условия','Найди ошибку','Чётность, максимум, модуль','Год, треугольник, оценки, четверти','★ Олимпиадные задачи'];
+
+window.TOPIC={id:'i_if',title:'3. Условия',subtitle:'Программирование · Python',
+intro:`<div class="box tip"><b>Что мы уже умеем</b>В модуле «2. Переменные и ввод» программа научилась запоминать числа в переменных, спрашивать их через ${K('int(input())')} и считать с ${K('//')} и ${K('%')}. Но она всегда делала одно и то же.</div><p>Теперь программа научится <b>выбирать</b>: «если пароль верный — пустить, иначе — нет». Это ${K('if')}, ${K('elif')}, ${K('else')}, а для сложных вопросов — ${K('and')}, ${K('or')}, ${K('not')}. С ними можно проверить високосный год, существование треугольника и ход шахматного коня.</p>`,
+theory,symbols,levels,gens,onTheory};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

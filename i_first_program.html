@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>1. Первая программа — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':return H.num(t.ans);
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+/* ---------- helpers ---------- */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MONO='font-family:ui-monospace,Menlo,Consolas,monospace';
+const C=s=>`<pre class="code">${esc(s)}</pre>`;
+const K=s=>`<code style="${MONO};background:var(--accent-soft);padding:1px 5px;border-radius:5px">${esc(s)}</code>`;
+const O=s=>`<span style="${MONO};white-space:pre">${esc(s)}</span>`;
+const RUN=(code,inp)=>`<pre class="run"${inp!=null?` data-input="${esc(inp)}"`:''}>${esc(code)}</pre>`;
+const OUT=s=>`<pre class="code" style="background:var(--accent-soft)">${esc(s)}</pre>`;
+function choice(q,right,wrongs,rest){const opts=shuffle([right,...wrongs]);return Object.assign({type:'choice',q,opts,ans:opts.indexOf(right)},rest);}
+const gens=[];
+const G=(lvl,make,star)=>gens.push({lvl,make,star});
+const RG=(lvl,make)=>gens.push({lvl,make,rule:true});
+const pf=x=>Number.isInteger(x)?x+'.0':String(x);
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Компьютер — очень быстрый и очень буквальный',lvl:0,html:`
+<p class="hook">Представь робота-повара. Ты пишешь ему: «Положи масло на хлеб». Робот берёт <b>целую пачку масла</b> и кладёт её на <b>целую буханку</b>. Ты ведь не сказал «отрежь кусок»! Он сделал <b>ровно то, что написано</b>. Вот так и работает компьютер.</p>
+<p><b>Компьютер</b> — машина, которая выполняет команды. Он делает миллиарды простых действий в секунду, но <b>сам ничего не придумывает</b>: не догадывается, не «понимает, что ты имел в виду».</p>
+<div class="box rule"><b>Программа</b>Программа — это <b>точная инструкция</b> для компьютера: список команд, которые он выполняет <b>по порядку</b>, одну за другой. Как рецепт для очень послушного, но очень буквального повара.</div>
+<p>Почему так? Внутри компьютер умеет только самые простые вещи: сложить два числа, сравнить, запомнить, переслать. Всё остальное — игры, YouTube, калькулятор — это <b>огромные программы</b>, которые собраны из таких маленьких шагов. Майнкрафт — это миллионы строк команд вроде «если игрок нажал пробел — подними его на одну клетку».</p>
+<div class="box ex"><b>Плохая и хорошая инструкция</b>Плохо: «Сделай бутерброд».<br>Хорошо: «1) Возьми один кусок хлеба. 2) Возьми нож. 3) Отрежь ножом кусочек масла размером с палец. 4) Намажь его на хлеб».</div>
+<div class="box err"><b>Частая ошибка</b>Думать, что компьютер «умный» и сам поймёт. Нет: если в программе написано не то, что ты хотел, он сделает не то. Ошибка почти всегда — в нашей инструкции.</div>
+<div class="fact">Слово «баг» (жук) для ошибки в программе стало знаменитым в 1947 году: в компьютере Mark II нашли настоящую моль, застрявшую в реле. Её вклеили в журнал с подписью «первый найденный жук».</div>`},
+{title:'Язык программирования и Python',lvl:0,html:`
+<p>Компьютер внутри «говорит» только нулями и единицами. Писать так людям очень неудобно. Поэтому придумали <b>языки программирования</b> — что-то среднее между английским и математикой. Человеку их легко читать, а специальная программа (<b>интерпретатор</b>) переводит их для компьютера.</p>
+<div class="box rule"><b>Язык программирования</b>Это строгий язык с точными правилами записи команд. Одна лишняя или пропущенная кавычка — и компьютер команду не поймёт.</div>
+<p>Мы будем учить <b>Python</b> (читается «па́йтон»). На нём пишут сайты, игры, программы для роботов и нейросети — тот же ChatGPT сделан с помощью Python. И при этом он один из самых простых для новичка.</p>
+<div class="box tip"><b>Где запускать</b>Прямо здесь! В каждом сером окошке с кнопкой «▶ Запустить» — настоящий Python. Первый запуск может занять 10–30 секунд (Python загружается), потом всё мгновенно.</div>
+<div class="fact">Python назвали не в честь змеи, а в честь британского комедийного шоу «Летающий цирк Монти Пайтона». Его автор Гвидо ван Россум начал писать язык на рождественских каникулах 1989 года.</div>`},
+{title:'Первая программа: print',lvl:1,html:`
+<p>Команда <b>print</b> («принт» — «напечатай») выводит на экран то, что написано в скобках. Нажми «▶ Запустить»:</p>
+${RUN('print("Привет, мир!")')}
+<div class="box rule"><b>Как записать print</b>${K('print("текст")')}<br>• слово <b>print</b> маленькими буквами;<br>• сразу <b>круглые скобки</b>;<br>• текст внутри <b>кавычек</b> ${K('"…"')} или ${K("'…'")}.</div>
+<p>Попробуй изменить текст в кавычках на своё имя и запусти ещё раз. Каждый новый <b>print</b> печатает с <b>новой строки</b>:</p>
+${RUN('print("Я учу Python.")\nprint("Это моя первая программа.")\nprint("Ура!")')}
+<p>Допиши четвёртую строку со своим print — и запусти.</p>
+<div class="box err"><b>Частые ошибки</b>${K('Print("Привет")')} — большая буква, Python не знает такой команды.<br>${K('print("Привет)')} — потерялась закрывающая кавычка.<br>${K('print(«Привет»)')} — ёлочки «» не подходят, нужны программистские ${K('"')} (Shift + 2 на английской раскладке).</div>
+<div class="fact">Программа «Hello, world!» («Привет, мир!») — традиционная первая программа почти в любом языке. Её сделал знаменитой учебник языка C в 1978 году.</div>`},
+{title:'Текст и числа: зачем кавычки',lvl:2,html:`
+<p>Всё, что в кавычках, — это <b>текст</b> (программисты говорят «строка»). Python печатает его <b>как есть</b>, буква в букву. А числа можно писать <b>без кавычек</b> — тогда Python понимает, что это число, и умеет с ним считать.</p>
+${RUN('print("2 + 3")\nprint(2 + 3)')}
+<p>Видишь разницу? В первой строке — просто текст «2 + 3». Во второй — пример, который Python <b>посчитал</b>.</p>
+<div class="box rule"><b>Правило</b>В кавычках — текст, печатается как написано.<br>Без кавычек — число или выражение, Python его вычисляет.</div>
+<p>А если написать слово без кавычек, Python решит, что это <b>имя чего-то</b> (позже мы узнаем — имя переменной), и будет его искать:</p>
+${RUN('print(Привет)')}
+<p>Получилась ошибка <b>NameError</b>: «я не знаю имя Привет». Добавь кавычки — и всё заработает.</p>`},
+{title:'Сверху вниз, по одной строке',lvl:2,html:`
+<p>Python выполняет программу <b>строго по порядку</b>: первая строка, потом вторая, потом третья. Как ты читаешь книгу. Нельзя «перепрыгнуть» — пока мы не узнали особые команды (условия и циклы, они будут дальше).</p>
+${RUN('print("3")\nprint("2")\nprint("1")\nprint("Поехали!")')}
+<p>Поменяй строки местами (например, «Поехали!» поставь первой) и запусти. Результат изменится — компьютер не «догадается», что ты хотел обратный отсчёт.</p>
+<div class="box rule"><b>Порядок выполнения</b>Команды выполняются сверху вниз, каждая — один раз. Поменял порядок строк — поменялся результат.</div>
+<div class="box tip"><b>Пустая строка</b>${K('print()')} с пустыми скобками печатает пустую строку — удобно, чтобы сделать «отступ» в выводе.</div>
+${RUN('print("Глава 1")\nprint()\nprint("Жил-был кот.")')}`},
+{title:'Комментарии: записки для людей',lvl:2,html:`
+<p>Всё, что после знака <b>#</b> (решётка) до конца строки, Python <b>пропускает</b>. Это <b>комментарий</b> — записка для человека, который будет читать код (в том числе для тебя через неделю).</p>
+${RUN('# Эта программа здоровается\nprint("Привет!")   # печатаем приветствие\n# print("Эта строка не выполнится")')}
+<p>Убери решётку в последней строке и запусти — строка «оживёт».</p>
+<div class="box rule"><b>Комментарий</b>${K('#')} и всё правее него до конца строки Python не выполняет.</div>
+<div class="box tip"><b>Зачем это нужно</b>1) Объяснить, что делает хитрый кусок кода. 2) Временно «выключить» строку, не стирая её. Программисты делают так постоянно, когда ищут ошибку.</div>
+<div class="box err"><b>Ловушка</b>Решётка <b>внутри кавычек</b> — это просто символ текста: ${K('print("Мой тег #python")')} напечатает его целиком.</div>`},
+{title:'Несколько значений в одном print: sep и end',lvl:3,html:`
+<p>В print можно передать несколько значений <b>через запятую</b>. Python напечатает их в одну строку и поставит между ними <b>пробел</b>:</p>
+${RUN('print("Мне", 12, "лет")\nprint("2 + 3 =", 2 + 3)')}
+<div class="box rule"><b>Правило</b>${K('print(a, b, c)')} печатает a, b и c через <b>один пробел</b>, а в конце переходит на новую строку.</div>
+<h3>sep — чем разделять</h3>
+<p>Слово <b>sep</b> (от separator — «разделитель») меняет пробел на что угодно:</p>
+${RUN('print(1, 9, 2026, sep=".")\nprint("а", "б", "в", sep=" -> ")\nprint("сло", "во", sep="")')}
+<h3>end — чем закончить</h3>
+<p>Обычно после print идёт переход на новую строку. Слово <b>end</b> («конец») меняет это:</p>
+${RUN('print("Раз", end=" ")\nprint("два", end=" ")\nprint("три!")\nprint("Новая строка")')}
+<div class="box tip"><b>Как запомнить</b><b>sep</b> — что ставить <b>между</b> значениями (по умолчанию пробел).<br><b>end</b> — что ставить <b>в конце</b> (по умолчанию — переход на новую строку).<br>${K('end=""')} — «ничего не ставь», следующий print продолжит ту же строку.</div>
+<div class="box err"><b>Частая ошибка</b>Ставить запятую внутри кавычек и думать, что это разделитель: ${K('print("a, b")')} — это один текст «a, b». А ${K('print("a", "b")')} — два значения, между ними пробел.</div>`},
+{title:'Python — калькулятор',lvl:4,html:`
+<p>Без кавычек Python вычисляет выражения. Знаки действий:</p>
+<div class="box rule"><b>Арифметика</b>${K('+')} сложение, ${K('-')} вычитание, ${K('*')} умножение (звёздочка!), ${K('/')} деление.<br>Порядок как в математике: сначала <b>*</b> и <b>/</b>, потом <b>+</b> и <b>−</b>. Скобки ${K('( )')} меняют порядок.</div>
+${RUN('print(2 + 3 * 4)\nprint((2 + 3) * 4)\nprint(100 - 1 - 1)')}
+<p>Поменяй числа и проверь себя: сначала посчитай в уме, потом запусти.</p>
+<h3>Деление всегда даёт дробь</h3>
+${RUN('print(10 / 2)\nprint(7 / 2)')}
+<p>Видишь <b>5.0</b>, а не 5? Деление ${K('/')} в Python <b>всегда</b> даёт дробное число, даже если делится нацело. И дробная часть пишется через <b>точку</b>: 3.5, а не 3,5 (так принято в программировании во всём мире).</p>
+<div class="box err"><b>Частые ошибки</b>Писать × или · вместо ${K('*')}; писать ${K('3,5')} вместо ${K('3.5')} (запятая в print разделяет значения: ${K('print(3,5)')} напечатает «3 5»!); забывать, что умножение делается раньше сложения.</div>
+<h3>Текст тоже можно «складывать»</h3>
+${RUN('print("кот" + "лета")\nprint("ха" * 3)\nprint("5" + "5")\nprint(5 + 5)')}
+<div class="box rule"><b>Склейка и повтор</b>текст ${K('+')} текст — склеивает; текст ${K('*')} число — повторяет. ${K('"5" + "5"')} — это «55» (склеили два символа), а ${K('5 + 5')} — это 10.</div>
+<div class="box err"><b>Нельзя</b>${K('"5" + 5')} — текст плюс число. Python не знает, склеивать или складывать, и выдаёт ошибку <b>TypeError</b>. Попробуй!</div>
+${RUN('print("5" + 5)')}
+<div class="fact">Первые компьютеры 1940-х годов (например, ENIAC) весили 27 тонн и делали около 5000 сложений в секунду. Процессор твоего телефона делает миллиарды операций в секунду.</div>`},
+{title:'Ошибки — это нормально. Как читать сообщение',lvl:5,html:`
+<p>У всех программистов, даже самых крутых, программы часто не запускаются с первого раза. Главное — уметь <b>прочитать, что говорит Python</b>. Запусти:</p>
+${RUN('print("Строка 1")\nprint("Строка 2"\nprint("Строка 3")')}
+<div class="box rule"><b>Как читать ошибку</b>1) Найди <b>номер строки</b> (line …). 2) Посмотри <b>название ошибки</b> в последней строке сообщения. 3) Проверь эту строку <b>и строку перед ней</b> — часто ошибка там (например, не закрыли скобку на строке выше).</div>
+<div class="tbl"><table class="sym"><thead><tr><th>Ошибка</th><th>Что значит</th><th>Частая причина</th></tr></thead><tbody>
+<tr><td><b>SyntaxError</b></td><td>«Не могу прочитать запись» — нарушены правила языка</td><td>нет кавычки или скобки, ёлочки «», лишний символ</td></tr>
+<tr><td><b>NameError</b></td><td>«Не знаю такого имени»</td><td>опечатка в команде (${K('pritn')}, ${K('Print')}), текст без кавычек</td></tr>
+<tr><td><b>TypeError</b></td><td>«Так нельзя с этими данными»</td><td>${K('"5" + 5')} — текст плюс число</td></tr>
+<tr><td><b>ZeroDivisionError</b></td><td>деление на ноль</td><td>${K('print(5 / 0)')}</td></tr></tbody></table></div>
+${RUN('pritn("Привет")')}
+${RUN('print("Привет)')}
+<p>Почини обе программы, чтобы они работали.</p>
+<div class="box tip"><b>Ошибка не страшна</b>Python ничего не сломает — он просто остановится и скажет, где споткнулся. Читай сообщение, а не угадывай.</div>`},
+{title:'Рисуем символами',lvl:6,html:`
+<p>Из одних только print можно рисовать! Каждый print — одна строчка картинки. Пробелы в начале сдвигают рисунок вправо:</p>
+${RUN('print("   *")\nprint("  ***")\nprint(" *****")\nprint("*******")\nprint("   |")')}
+<p>С умножением текста рисовать ещё быстрее:</p>
+${RUN('print("#" * 10)\nprint("#" + " " * 8 + "#")\nprint("#" * 10)')}
+<p>Сделай рамку выше: добавь ещё строку с ${K('"#" + " " * 8 + "#"')}. А потом нарисуй свою картинку — ракету, кота или флаг.</p>
+<div class="box tip"><b>Совет</b>Сначала нарисуй картинку на клетчатой бумаге: каждая клетка — один символ. Потом перепиши построчно.</div>`},
+{title:'Шпаргалка',lvl:7,html:`
+<ul class="steps">
+<li>Программа — точная инструкция, выполняется <b>сверху вниз</b>.</li>
+<li>${K('print("текст")')} — печать. Маленькие буквы, скобки, кавычки.</li>
+<li>В кавычках — текст как есть; без кавычек — число/выражение, Python считает.</li>
+<li>${K('print(a, b)')} — через пробел; ${K('sep="…"')} — свой разделитель; ${K('end="…"')} — своё окончание.</li>
+<li>${K('+ - * /')}, сначала * и /; ${K('/')} всегда даёт дробь (5.0); дроби через точку.</li>
+<li>Текст + текст — склейка, текст * число — повтор.</li>
+<li>${K('#')} — комментарий. Ошибка: смотри номер строки и название.</li></ul>`},
+{title:'Что дальше',lvl:7,html:`
+<p>Сейчас наши программы всегда печатают одно и то же. Калькулятор, который умеет считать только 2 + 3, — так себе калькулятор! Хочется, чтобы программа <b>спрашивала</b> числа у человека и <b>запоминала</b> результаты.</p>
+<p>Для этого есть <b>переменные</b> — коробки с наклейками, куда программа складывает числа и текст. Об этом — модуль <b>«2. Переменные и ввод»</b>.</p>
+${RUN('# Подсмотри в будущее:\nimya = "Павел"\nprint("Привет,", imya)')}`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Команды',title:'Команды и знаки этого модуля',rows:[
+[K('print(…)'),'«принт» — напечатай','Выводит на экран значения в скобках, потом переходит на новую строку.',K('print("Привет")')],
+[K('"…"')+' '+K("'…'"),'Кавычки','Внутри — текст (строка). Печатается буква в букву.',K('print("2+2")')+' → 2+2'],
+[K(','),'Запятая в print','Разделяет несколько значений. При печати между ними пробел.',K('print("Мне", 12)')+' → Мне 12'],
+[K('sep="…"'),'separator, разделитель','Что ставить между значениями вместо пробела.',K('print(1, 2, sep="-")')+' → 1-2'],
+[K('end="…"'),'конец','Что ставить в конце вместо перехода на новую строку.',K('print("А", end="")')],
+[K('print()'),'Пустой print','Печатает пустую строку.',''],
+[K('+ - * /'),'Действия','Сложение, вычитание, умножение, деление. * и / раньше + и −.',K('print(2 + 3 * 4)')+' → 14'],
+[K('/'),'Деление','Всегда даёт дробное число.',K('print(6 / 2)')+' → 3.0'],
+[K('"ab" + "cd"'),'Склейка текста','Соединяет тексты.','→ abcd'],
+[K('"ab" * 3'),'Повтор текста','Повторяет текст несколько раз.','→ ababab'],
+[K('#'),'Комментарий','Python пропускает всё после # до конца строки.',K('# это записка')],
+['SyntaxError','Синтаксическая ошибка','Запись нарушает правила: нет скобки, кавычки, ёлочки «».',K('print("Привет)')],
+['NameError','Ошибка имени','Python не знает такого слова: опечатка или текст без кавычек.',K('pritn("Hi")')]
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Компьютер делает ровно то, что написано. Каждая кавычка и скобка важна.</div>`};
+
+/* ---------- generators ---------- */
+/* L0: компьютер и программа */
+RG(0,()=>choice('Что такое <b>программа</b>?',
+ 'Точная инструкция для компьютера: команды, которые он выполняет по порядку',
+ ['Любой файл на компьютере, например картинка или песня','Умный помощник, который сам догадывается, что ты хочешь','Экран, клавиатура и мышка'],
+ {short:'Программа — точная инструкция, команды выполняются по порядку.',
+ explain:'Программа — это <b>инструкция</b>, как рецепт: список команд, которые компьютер выполняет <b>одну за другой</b>. Компьютер сам ничего не догадывается — он делает ровно то, что написано. Картинка или песня — это данные (то, с чем работают программы), а экран и клавиатура — устройства.',
+ explain2:'Вспомни робота-повара: рецепт для него — это и есть программа. Если в рецепте не написано «отрежь кусок», он положит на хлеб всю пачку масла. Программа = рецепт, компьютер = буквальный повар.'}));
+RG(0,()=>choice('Зачем нужны <b>языки программирования</b>, например Python?',
+ 'Чтобы людям было удобно записывать команды, а специальная программа переводила их для компьютера',
+ ['Чтобы компьютер мог разговаривать с людьми голосом','Потому что компьютер понимает русский язык, но плохо','Чтобы программы работали без электричества'],
+ {short:'Язык программирования — удобная для человека и строгая запись команд.',
+ explain:'Внутри компьютер работает с нулями и единицами — людям так писать очень неудобно. Язык программирования — строгий, но понятный человеку язык. Интерпретатор Python переводит наши команды в действия компьютера. Русского языка компьютер «сам по себе» не понимает вообще.',
+ explain2:'Представь переводчика между тобой и иностранцем, который знает только язык жестов из 0 и 1. Ты говоришь на Python — переводчик (интерпретатор) переводит компьютеру. Но говорить надо очень точно: переводчик тоже буквальный.'}));
+G(0,()=>{const cmds=[];let pos=0;const n=R(4,5);for(let i=0;i<n;i++){let k=R(1,6);const fw=Math.random()<0.6||pos-k<0;if(fw){pos+=k;cmds.push(['вперёд',k]);}else{pos-=k;cmds.push(['назад',k]);}}
+ let run=0;const steps=cmds.map(([d,k])=>{run+=d==='вперёд'?k:-k;return `${d} ${k} → клетка ${run}`;});
+ return {type:'num',q:`Робот стоит на клетке <b>0</b> длинной дорожки (клетки пронумерованы 0, 1, 2, …). Он выполняет программу строго по порядку:<br>${C(cmds.map(([d,k])=>`${d} ${k}`).join('\n'))}На какой клетке он окажется?`,ans:pos,
+ hint:'Выполняй команды по одной, сверху вниз, и записывай, где робот после каждой.',
+ short:steps.join('; ')+'.',
+ explain:`Робот выполняет команды <b>по порядку</b>, как компьютер. «Вперёд» прибавляет, «назад» отнимает:<br>${steps.map((s,i)=>`${i+1}) ${s}`).join('<br>')}<br>Ответ: клетка <b>${pos}</b>.`,
+ explain2:`Можно и так: сложи все шаги вперёд (${cmds.filter(c=>c[0]==='вперёд').map(c=>c[1]).join(' + ')||'0'} = ${cmds.filter(c=>c[0]==='вперёд').reduce((s,c)=>s+c[1],0)}) и вычти все шаги назад (${cmds.filter(c=>c[0]==='назад').map(c=>c[1]).join(' + ')||'0'} = ${cmds.filter(c=>c[0]==='назад').reduce((s,c)=>s+c[1],0)}). Получится ${pos}. Но настоящий компьютер идёт именно шаг за шагом — так надёжнее.`};});
+G(0,()=>{const it=pick([
+ {t:'робот-повар готовит чай',ok:'Налей в чашку 200 мл горячей воды из чайника',bad:['Сделай чай как обычно','Налей сколько-нибудь воды','Ну ты понял, чай']},
+ {t:'робот-уборщик убирает комнату',ok:'Подними с пола все носки и положи их в корзину для белья',bad:['Наведи порядок','Убери, что лишнее','Сделай красиво']},
+ {t:'робот рисует квадрат',ok:'Нарисуй 4 линии по 5 см, после каждой поверни направо на 90°',bad:['Нарисуй что-то квадратное','Нарисуй квадрат какого-нибудь размера','Нарисуй фигуру с углами']}]);
+ return choice(`Какая команда подойдёт <b>буквальному</b> исполнителю, если ${it.t}?`,it.ok,it.bad,
+ {short:'Только эта команда точная: в ней сказано, что именно и сколько.',
+ explain:`Буквальный исполнитель (как компьютер) не умеет догадываться. Команда должна быть <b>точной</b>: что делать, с чем, сколько. «${it.ok}» — тут всё ясно. А «${it.bad[0]}» — робот не знает, что значит «${it.bad[0].toLowerCase()}», это нужно расписать по шагам.`,
+ explain2:`Проверка: можно ли выполнить команду, вообще не думая? «${it.bad[1]}» — сколько? какое? Непонятно. «${it.ok}» — выполняется без вопросов. Компьютеру нужны команды «без вопросов».`});});
+/* L1: print */
+RG(1,()=>{const w=pick(['Привет','Ура','Python','Hello']);return choice('Какая строка <b>правильно</b> печатает слово '+w+'?',K(`print("${w}")`),[K(`Print("${w}")`),K(`print(${w})`),K(`print "${w}"`)],
+ {short:'Маленькими буквами print, скобки, текст в кавычках.',
+ explain:`Правило: ${K('print("текст")')} — слово print <b>маленькими</b> буквами, круглые скобки, текст в кавычках.<br>• ${K(`Print("${w}")`)} — большая P, Python такой команды не знает (NameError).<br>• ${K(`print(${w})`)} — без кавычек Python ищет имя «${w}» и не находит.<br>• ${K(`print "${w}"`)} — нет скобок (так писали в старом Python 2, сейчас нельзя).`,
+ explain2:'Запомни три детали, как три замка: 1) print маленькими, 2) ( ) скобки, 3) " " кавычки вокруг текста. Не хватает хоть одного — дверь не откроется.'});});
+G(1,()=>{const w=pick(['Я люблю Python','Котики правят миром','Сегодня хороший день','Минecraft — это код'.replace('e','е'),'Робот готов к работе']);
+ return {type:'text',q:`Что напечатает программа?${C(`print("${w}")`)}`,ans:[w],ph:'впиши, что появится на экране',
+ short:`Текст в кавычках печатается как есть: ${w}.`,
+ explain:`print печатает текст из кавычек <b>буква в букву</b>, но <b>без самих кавычек</b>. Кавычки только показывают Python, где начинается и где заканчивается текст. На экране: <b>${esc(w)}</b>.`,
+ explain2:`Кавычки — как рамка вокруг картины. Рамка нужна, чтобы повесить картину на стену, но смотрят на саму картину. На экране будет только «${esc(w)}».`};});
+G(1,()=>{const ws=sample(['кот','пёс','ёж','лис','гусь','кит'],3);
+ const right=ws.join('\n'),w1=ws.join(' '),w2=ws.join(''),w3=ws.slice().reverse().join('\n');
+ return choice(`Что напечатает программа?${C(ws.map(w=>`print("${w}")`).join('\n'))}`,O(right),[O(w1),O(w2),O(w3)],
+ {short:'Каждый print — с новой строки, сверху вниз.',
+ explain:`Каждый print печатает своё и <b>переходит на новую строку</b>. Команды выполняются сверху вниз, поэтому слова идут в том же порядке, что и в программе, каждое на своей строке:${OUT(right)}`,
+ explain2:`Представь, что print — это «напиши и нажми Enter». Три print — три раза «написал и нажал Enter». Получается три строчки: ${ws.join(', потом ')}.`});});
+G(1,()=>{const w=pick(['Привет, Python!','Я программист','Код — это сила','Я написал программу']);
+ return {type:'code',q:`Напиши программу, которая печатает ровно эту фразу:${OUT(w)}`,starter:'# напиши здесь команду print\n',tests:[{in:'',out:w}],solution:`print("${w}")`,
+ hint:`Нужна одна команда: ${K('print("…")')}. Скопируй фразу внутрь кавычек точно, с запятыми и знаками.`,
+ explain:`Используем print, а текст ставим в кавычки:${C(`print("${w}")`)}Проверь каждую мелочь: маленькая p, скобки, кавычки с двух сторон, все знаки препинания как в задании. Компьютер сравнивает вывод буква в букву.`,
+ explain2:'Частые причины «не прошло»: пропущена запятая или восклицательный знак, лишний пробел внутри кавычек, большая буква не там. Сравни свой вывод с ожидаемым в таблице тестов.'};});
+G(1,()=>{const a=pick(['Привет!','Здравствуй!']),b=pick(['Меня зовут Python.','Я умею печатать.']),c=pick(['Пока!','До встречи!']);
+ return {type:'code',q:`Напиши программу, которая печатает три строки:${OUT(a+'\n'+b+'\n'+c)}`,starter:`print("${a}")\n`,tests:[{in:'',out:`${a}\n${b}\n${c}`}],solution:`print("${a}")\nprint("${b}")\nprint("${c}")`,
+ hint:'Каждый print печатает одну строку. Нужно три print — один под другим.',
+ explain:`Одна строка вывода — один print. Пишем их в нужном порядке:${C(`print("${a}")\nprint("${b}")\nprint("${c}")`)}`,
+ explain2:'Первая строка уже есть в заготовке. Скопируй её ещё два раза ниже и поменяй текст в кавычках.'};});
+
+/* L2: порядок, кавычки, комментарии */
+RG(2,()=>choice('В каком порядке Python выполняет строки программы?','Сверху вниз, по одной, каждую один раз',['Снизу вверх','Сначала самые короткие строки','Все строки одновременно'],
+ {short:'Сверху вниз, по очереди.',
+ explain:'Python читает программу как книгу: первая строка, вторая, третья… Каждая выполняется по очереди. (Позже мы узнаем команды, которые могут пропускать или повторять строки, — условия и циклы.)',
+ explain2:'Как очередь в столовой: кто первый в списке, того и обслуживают первым. Поменяешь строки местами — поменяется и результат.'}));
+RG(2,()=>choice('Что делает знак '+K('#')+' в программе на Python?','Всё после него до конца строки — комментарий, Python это пропускает',['Печатает решётку','Делает текст жирным','Останавливает всю программу'],
+ {short:'# — комментарий, записка для людей.',
+ explain:'Знак # начинает <b>комментарий</b>: всё правее него до конца строки Python не выполняет. Это записка для людей. Исключение — # внутри кавычек: там это просто символ текста.',
+ explain2:`Комментарий — как карандашная пометка на полях учебника: ты её видишь, а на контрольной она не считается. ${K('# print("Hi")')} — строка «выключена».`}));
+G(2,()=>{const ws=sample(['Альфа','Бета','Гамма','Дельта','Омега'],4);const off=R(0,3);
+ const lines=ws.map((w,i)=>i===off?`# print("${w}")`:`print("${w}")`);
+ const out=ws.filter((_,i)=>i!==off);const right=out.join('\n');
+ return choice(`Что напечатает программа?${C(lines.join('\n'))}`,O(right),[O(ws.join('\n')),O(out.slice().reverse().join('\n')),O(`# ${ws[off]}\n`+out.join('\n'))],
+ {short:`Строка с ${ws[off]} закомментирована — её Python пропускает.`,
+ explain:`Python идёт сверху вниз. Строка <b>${off+1}</b> начинается с #, значит это комментарий — она не выполняется, «${ws[off]}» не печатается. Остальные печатаются по порядку:${OUT(right)}`,
+ explain2:`Зачеркни мысленно строку с решёткой. Останется ${out.length} print — ${out.length} строки вывода в том же порядке.`});});
+G(2,()=>{const a=R(2,9),b=R(2,9);const quoted=Math.random()<0.5;
+ const code=quoted?`print("${a} + ${b}")`:`print(${a} + ${b})`;
+ const r=quoted?`${a} + ${b}`:String(a+b);
+ return choice(`Что напечатает программа?${C(code)}`,O(r),[O(quoted?String(a+b):`${a} + ${b}`),O(quoted?`"${a} + ${b}"`:`${a}+${b}=${a+b}`),'Ошибку'],
+ {short:quoted?'В кавычках — текст, печатается как есть.':'Без кавычек — выражение, Python его вычисляет.',
+ explain:quoted?`Выражение стоит <b>в кавычках</b>, значит это просто текст. Python не считает, а печатает буква в букву: <b>${a} + ${b}</b> (без кавычек).`:`Кавычек нет, значит ${a} + ${b} — это <b>выражение</b>. Python сначала вычисляет его: ${a} + ${b} = ${a+b}, и печатает <b>${a+b}</b>.`,
+ explain2:`Сравни две строки:${C(`print("${a} + ${b}")   # → ${a} + ${b}\nprint(${a} + ${b})     # → ${a+b}`)}Кавычки говорят: «не думай, просто перепиши». Без кавычек: «посчитай».`});});
+G(2,()=>{const n=R(3,5);const lines=[];let cnt=0;const kinds=[];
+ for(let i=0;i<n+2;i++){const k=pick(['p','p','e','c']);kinds.push(k);if(k==='p'){lines.push(`print("${pick(['мяу','гав','кря','му','ква'])}")`);cnt++;}else if(k==='e'){lines.push('print()');cnt++;}else lines.push(`# print("${pick(['тсс','шшш'])}")`);}
+ if(!kinds.includes('c')){lines[1]='# комментарий';cnt-=kinds[1]==='c'?0:1;kinds[1]='c';}
+ const why=lines.map((l,i)=>`строка ${i+1}: ${kinds[i]==='c'?'комментарий — 0':kinds[i]==='e'?'пустой print() — 1 пустая строка':'print — 1 строка'}`).join('<br>');
+ return {type:'num',q:`Сколько строк (считая пустые) напечатает программа?${C(lines.join('\n'))}`,ans:cnt,
+ hint:'Каждый работающий print, даже пустой, печатает одну строку. Комментарии не выполняются.',
+ short:`Работающих print: ${cnt}.`,
+ explain:`Каждый print печатает ровно одну строку, даже ${K('print()')} — он печатает пустую. Строки с # не выполняются.<br>${why}<br>Итого: <b>${cnt}</b>.`,
+ explain2:`Просто посчитай строки, которые начинаются со слова print (без # впереди): их ${cnt}. Каждая даёт одну строку вывода.`};});
+G(2,()=>{const n=R(3,5);const out=range(1,n).reverse().map(String).concat(['Старт!']).join('\n');
+ return {type:'code',q:`Напиши программу обратного отсчёта. Она печатает числа от ${n} до 1, каждое на своей строке, а потом слово «Старт!»:${OUT(out)}`,starter:'print("Старт!")\n',
+ tests:[{in:'',out}],solution:range(1,n).reverse().map(k=>`print(${k})`).join('\n')+'\nprint("Старт!")',
+ hint:'Порядок строк в программе = порядок строк на экране. «Старт!» должен быть в самом низу.',
+ explain:`В заготовке «Старт!» печатается первым — а нужно последним. Python выполняет сверху вниз, поэтому сначала пишем отсчёт, потом «Старт!»:${C(range(1,n).reverse().map(k=>`print(${k})`).join('\n')+'\nprint("Старт!")')}Числа можно печатать без кавычек.`,
+ explain2:`Как на запуске ракеты: ведущий говорит ${range(1,n).reverse().join(', ')} и только потом «Старт!». Сначала каждое число своим print, а print("Старт!") — последней строкой.`};});
+
+/* L3: sep и end */
+RG(3,()=>choice('Что Python ставит <b>между</b> значениями в '+K('print(a, b, c)')+', если не указан sep?','Один пробел',['Ничего','Запятую','Переход на новую строку'],
+ {short:'По умолчанию sep = " " (пробел).',
+ explain:`Если в print несколько значений через запятую, Python печатает их через <b>один пробел</b>. Запятая в коде — только разделитель для Python, сама она не печатается. Чтобы разделять чем-то другим, пишут ${K('sep="…"')}.`,
+ explain2:`${K('print("Мне", 12, "лет")')} → «Мне 12 лет». Видишь пробелы? Их добавил Python, в кавычках пробелов нет.`}));
+RG(3,()=>choice('Что означает '+K('end=""')+' в '+K('print("A", end="")')+'?','После A не переходить на новую строку — следующий print продолжит ту же строку',['Закончить программу после этой строки','Напечатать пустую строку','Поставить между значениями пустоту'],
+ {short:'end — что напечатать в конце; "" — ничего, без перехода строки.',
+ explain:`Обычно print в конце переходит на новую строку. ${K('end')} задаёт, что поставить <b>в конце</b> вместо этого. ${K('end=""')} — пустая строка, то есть ничего: курсор остаётся на той же строке. Программу end не заканчивает! А «между значениями» — это sep.`,
+ explain2:'Представь печатную машинку: print обычно в конце дёргает рычаг «новая строка». end="" — «не дёргай рычаг». Следующее слово напечатается сразу рядом.'}));
+G(3,()=>{const ws=sample(['Мама','мыла','раму','утром','быстро'],3);const nums=Math.random()<0.4;
+ const vals=nums?[R(1,30),R(1,30),R(1,30)]:ws;const code=`print(${vals.map(v=>nums?v:`"${v}"`).join(', ')})`;
+ const right=vals.join(' ');
+ return choice(`Что напечатает программа?${C(code)}`,O(right),[O(vals.join('')),O(vals.join(', ')),O(vals.join('\n'))],
+ {short:'Значения через запятую печатаются через пробел.',
+ explain:`В print три значения через запятую. Python печатает их <b>в одну строку через пробел</b> (sep по умолчанию — пробел). Запятые не печатаются:${OUT(right)}`,
+ explain2:'Запятая в коде говорит Python «вот следующее значение». На экране вместо каждой запятой — пробел, и всё на одной строке, потому что print один.'});});
+G(3,()=>{const s=pick(['-','.','/',':','*','']);const vals=[R(1,28),R(1,12),pick([2025,2026,2027])];
+ const code=`print(${vals.join(', ')}, sep="${s}")`;const right=vals.join(s);
+ const wr=[vals.join(' '),vals.join(s+' '),vals.join(s===''?'-':'')+(s===''?'':s)].filter(x=>x!==right);
+ const opts=[...new Set(wr)].slice(0,3);
+ return choice(`Что напечатает программа?${C(code)}`,O(right),opts.map(O),
+ {short:`sep="${s}" — между значениями ставится «${s||'ничего'}».`,
+ explain:`${K(`sep="${s}"`)} заменяет пробел между значениями на ${s?`«${s}»`:'пустоту (ничего)'}. Значения: ${vals.join(', ')}. Ставим разделитель <b>только между</b> ними (не в конце):${OUT(right)}`,
+ explain2:`Sep — как клей между кирпичиками. Кирпичиков 3, значит мест для клея 2: ${vals[0]}${s}${vals[1]}${s}${vals[2]}. После последнего клея нет.`});});
+G(3,()=>{const w=sample(['Раз','два','три','четыре','пять'],4);const e=[pick(['',' ','-']),'\n',pick([' ','!','']),'\n'];
+ const ends=[e[0],e[2]];
+ const code=`print("${w[0]}", end="${ends[0]}")\nprint("${w[1]}")\nprint("${w[2]}", end="${ends[1]}")\nprint("${w[3]}")`;
+ const right=`${w[0]}${ends[0]}${w[1]}\n${w[2]}${ends[1]}${w[3]}`;
+ const wrong=[w.join('\n'),`${w[0]}${ends[0]}${w[1]}${w[2]}${ends[1]}${w[3]}`,`${w[0]}\n${ends[0]}${w[1]}\n${w[2]}\n${ends[1]}${w[3]}`,`${w[0]} ${w[1]}\n${w[2]} ${w[3]}`].filter(x=>x!==right);
+ return choice(`Что напечатает программа?${C(code)}`,O(right),[...new Set(wrong)].slice(0,3).map(O),
+ {short:'end заменяет переход на новую строку.',
+ explain:`Идём по строкам:<br>1) печатаем «${w[0]}», а в конце вместо перехода строки — ${ends[0]?`«${ends[0]}»`:'ничего'};<br>2) «${w[1]}» печатается <b>на той же строке</b>, потом обычный переход;<br>3) «${w[2]}», в конце ${ends[1]?`«${ends[1]}»`:'ничего'}, строка не переводится;<br>4) «${w[3]}» — на той же строке.${OUT(right)}`,
+ explain2:'Обычный print = «текст + Enter». С end="X" = «текст + X», без Enter. Выпиши всё подряд и ставь Enter только там, где print без end.'});});
+G(3,()=>{const d=R(1,28),m=R(1,12),y=pick([2025,2026,2027]);const dd=String(d).padStart(2,'0'),mm=String(m).padStart(2,'0');
+ return {type:'code',q:`Напиши программу, которая печатает дату в виде <b>${dd}/${mm}/${y}</b>, используя один print с тремя значениями и <b>sep</b>.${OUT(`${dd}/${mm}/${y}`)}`,starter:`print("${dd}", "${mm}", ${y})\n`,
+ tests:[{in:'',out:`${dd}/${mm}/${y}`}],solution:`print("${dd}", "${mm}", ${y}, sep="/")`,
+ hint:'Заготовка печатает через пробелы. Добавь в конце скобок: , sep="/"',
+ explain:`Заготовка печатает «${dd} ${mm} ${y}» — через пробелы. Нужно заменить пробел на «/». Это делает sep:${C(`print("${dd}", "${mm}", ${y}, sep="/")`)}(День и месяц в кавычках, потому что число ${K('0'+'5')} без кавычек Python пишет просто как 5 — без нуля впереди.)`,
+ explain2:`Sep пишется внутри скобок print, после всех значений, через запятую: ${K('print(a, b, c, sep="/")')}. Не забудь кавычки вокруг "/".`};});
+
+/* L4: арифметика */
+RG(4,()=>choice('Какой знак в Python означает <b>умножение</b>?',K('*'),[K('x'),K('·'),K(':')],
+ {short:'Умножение — звёздочка *.',
+ explain:'В Python умножение пишется звёздочкой: <b>*</b>. Буква x — это просто буква (Python решит, что это имя), точку · на клавиатуре не найти, а двоеточие в Python значит совсем другое. Деление — косая черта <b>/</b>.',
+ explain2:`${K('print(3 * 4)')} → 12. Звёздочка — над цифрой 8 (Shift + 8) или на цифровой клавиатуре справа.`}));
+RG(4,()=>choice('Что напечатает '+K('print(8 / 2)')+'?',O('4.0'),[O('4'),O('4,0'),O('8 / 2')],
+ {short:'Деление / всегда даёт дробное число: 4.0.',
+ explain:'Правило: деление <b>/</b> в Python <b>всегда</b> даёт дробное число (float), даже если делится нацело. Поэтому 8 / 2 = <b>4.0</b>. Дробная часть пишется через <b>точку</b>, не через запятую.',
+ explain2:'Python как бы говорит: «я делил — значит, результат может быть дробным, поэтому запишу его как дробь». 4.0 и 4 равны по величине, но Python печатает их по-разному.'}));
+G(4,()=>{const a=R(2,9),b=R(2,9),c=R(2,9);const ans=a+b*c;
+ return {type:'num',q:`Что напечатает программа?${C(`print(${a} + ${b} * ${c})`)}`,ans,
+ hint:'Как в математике: умножение раньше сложения.',
+ short:`${b} · ${c} = ${b*c}, ${a} + ${b*c} = ${ans}.`,
+ explain:`Порядок действий в Python как в математике: <b>сначала умножение</b>, потом сложение.<br>1) ${b} * ${c} = ${b*c}<br>2) ${a} + ${b*c} = <b>${ans}</b><br>Если сложить сначала, получится ${(a+b)*c} — это ошибка (так было бы со скобками).`,
+ explain2:`Представь, что * «склеивает» числа сильнее, чем +: ${a} + <b>(${b} * ${c})</b>. Сначала считаем склеенное — ${b*c}, потом прибавляем ${a}.`};});
+G(4,()=>{const a=R(2,9),b=R(1,9),c=R(2,6),d=R(1,5);const ans=(a+b)*c-d;
+ return {type:'num',q:`Что напечатает программа?${C(`print((${a} + ${b}) * ${c} - ${d})`)}`,ans,
+ short:`(${a} + ${b}) = ${a+b}, ·${c} = ${(a+b)*c}, −${d} = ${ans}.`,
+ explain:`Сначала скобки: ${a} + ${b} = ${a+b}.<br>Потом умножение: ${a+b} * ${c} = ${(a+b)*c}.<br>Потом вычитание: ${(a+b)*c} − ${d} = <b>${ans}</b>.`,
+ explain2:`Без скобок было бы ${a} + ${b*c} − ${d} = ${a+b*c-d}. Скобки говорят Python: «это посчитай первым». Порядок: скобки → * и / → + и −.`};});
+G(4,()=>{const b=R(2,9),q=R(2,9);const a=b*q;const half=Math.random()<0.4;const A=half?b*q+b/2:a;
+ const real=half&&b%2===0?A:a;const code=`print(${real} / ${b})`;const r=real/b;
+ const right=pf(r);
+ const wr=half&&b%2===0?[String(Math.floor(r)),String(r).replace('.',','),pf(Math.floor(r))]:[String(r),`${r},0`,`${real}/${b}`];
+ return choice(`Что напечатает программа?${C(code)}`,O(right),wr.filter(x=>x!==right).map(O),
+ {short:`/ даёт дробное число: ${right}.`,
+ explain:`${real} : ${b} = ${String(r).replace('.',',')}. Но деление ${K('/')} в Python <b>всегда</b> даёт дробное число и пишет дробную часть <b>через точку</b>. Поэтому на экране: <b>${right}</b>.`,
+ explain2:`Запомни: после ${K('/')} в ответе всегда есть точка. ${K('print(10 / 5)')} → 2.0, ${K('print(7 / 2)')} → 3.5. Запятой в выводе Python не бывает.`});});
+G(4,()=>{const a=R(10,50),b=R(10,50);const op=pick(['+','-','*']);const v=op==='+'?a+b:op==='-'?a-b:a*b;
+ const code=`print("${a} ${op} ${b} =", ${a} ${op} ${b})`;const right=`${a} ${op} ${b} = ${v}`;
+ return choice(`Что напечатает программа?${C(code)}`,O(right),[O(`${a} ${op} ${b} = ${a} ${op} ${b}`),O(`${a} ${op} ${b} =${v}`),O(`"${a} ${op} ${b} =" ${v}`)],
+ {short:'Первое значение — текст как есть, второе — посчитанное число, между ними пробел.',
+ explain:`В print <b>два</b> значения:<br>1) ${K(`"${a} ${op} ${b} ="`)} — в кавычках, печатается как есть;<br>2) ${K(`${a} ${op} ${b}`)} — без кавычек, Python считает: ${v}.<br>Между ними sep — пробел:${OUT(right)}`,
+ explain2:'Так делают «красивый» вывод: текст-подпись и рядом настоящий ответ. Кавычки сами не печатаются никогда.'});});
+G(4,()=>{const n=R(2,7);return {type:'code',q:`Сколько <b>минут</b> в ${n} ${plural(n,'сутках','сутках','сутках')}? Напиши программу, которая <b>вычисляет</b> это выражением (не считай в уме!) и печатает одно число.`,starter:'print()\n',
+ tests:[{in:'',out:String(n*24*60)}],solution:`print(${n} * 24 * 60)`,
+ hint:`В сутках 24 часа, в часе 60 минут. Умножение — звёздочка *.`,
+ explain:`В одних сутках 24 часа, в каждом часе 60 минут. Значит, в ${n} сутках ${n} · 24 · 60 минут. Пусть посчитает Python:${C(`print(${n} * 24 * 60)`)}Он напечатает ${n*24*60}.`,
+ explain2:'Python — калькулятор: пиши выражение без кавычек прямо в print. Если поставишь кавычки, он напечатает выражение, а не ответ.'};});
+G(4,()=>{const p=pick([350,420,480,510]),k=R(2,4),j=pick([90,120,150]);const tot=p*k+j;
+ return {type:'code',q:`Пицца стоит ${p} ₽, вы взяли ${k} пиццы и сок за ${j} ₽. Напиши программу, которая печатает ровно:${OUT('Итого: '+tot)}Число пусть посчитает Python.`,starter:'print("Итого:")\n',
+ tests:[{in:'',out:'Итого: '+tot}],solution:`print("Итого:", ${p} * ${k} + ${j})`,
+ hint:'Два значения в print через запятую: текст "Итого:" и выражение без кавычек.',
+ explain:`Нужно два значения: подпись и ответ. Между ними Python сам поставит пробел:${C(`print("Итого:", ${p} * ${k} + ${j})`)}Python посчитает: ${p} · ${k} = ${p*k}, + ${j} = ${tot}.`,
+ explain2:`Не пиши пробел внутри кавычек после двоеточия — тогда получится два пробела («Итого:  ${tot}»), и тест не пройдёт. Пробел добавит запятая.`};});
+
+/* L5: ошибки */
+RG(5,()=>choice('Python пишет: '+K("NameError: name 'pritn' is not defined")+'. Что это значит?','Python не знает имя pritn — скорее всего, опечатка в слове print',['В программе нет кавычек','Программа выполнилась правильно','Компьютер сломался'],
+ {short:'NameError — неизвестное имя, обычно опечатка.',
+ explain:'<b>NameError</b> — «ошибка имени»: Python встретил слово, которое не знает. Здесь pritn вместо print — переставлены буквы. Так же бывает, если забыть кавычки у текста: print(Привет) → NameError: name \'Привет\' is not defined.',
+ explain2:'Python как строгий учитель: «Кто такой pritn? Такого ученика в классе нет». Исправь имя — и всё заработает.'}));
+RG(5,()=>choice('Как правильно искать ошибку по сообщению Python?','Найти номер строки и название ошибки, проверить эту строку и строку перед ней',['Переписать всю программу заново','Удалить строку с ошибкой','Запускать ещё раз, пока не заработает'],
+ {short:'Номер строки + название ошибки → смотри эту строку и предыдущую.',
+ explain:'В сообщении Python есть <b>line N</b> — номер строки, и <b>название</b> (SyntaxError, NameError…). Открой эту строку и строку перед ней: незакрытая скобка или кавычка на строке выше часто «ломает» следующую. Запускать снова без изменений бесполезно — компьютер сделает то же самое.',
+ explain2:'Сообщение об ошибке — подсказка, а не наказание. Это как навигатор: «Проблема на 3-й улице». Ищи там.'}));
+const BUGS=[
+ {k:'quote',mk:w=>`print("${w})`,err:'SyntaxError',why:'нет закрывающей кавычки — Python не понимает, где кончается текст'},
+ {k:'paren',mk:w=>`print("${w}"`,err:'SyntaxError',why:'нет закрывающей скобки'},
+ {k:'cap',mk:w=>`Print("${w}")`,err:'NameError',why:'Print с большой буквы — Python различает большие и маленькие буквы'},
+ {k:'noq',mk:w=>`print(${w})`,err:'NameError',why:'текст без кавычек — Python ищет имя и не находит'},
+ {k:'typo',mk:w=>`pirnt("${w}")`,err:'NameError',why:'опечатка: pirnt вместо print'},
+ {k:'guil',mk:w=>`print(«${w}»)`,err:'SyntaxError',why:'кавычки-ёлочки «» Python не понимает, нужны "…"'}];
+G(5,()=>{const ws=sample(['Привет','Мир','Код','Кот','Пицца'],4);const bad=R(0,3);const b=pick(BUGS);
+ const lines=ws.map((w,i)=>i===bad?b.mk(w):`print("${w}")`);
+ return {type:'num',q:`В какой строке ошибка? Впиши её номер.${C(lines.map((l,i)=>l).join('\n'))}`,ans:bad+1,
+ short:`Строка ${bad+1}: ${b.why}.`,
+ explain:`Строка <b>${bad+1}</b>: ${K(lines[bad])} — ${b.why}. Python сообщит <b>${b.err}</b>. Правильно: ${K(`print("${ws[bad]}")`)}.<br>Остальные строки записаны по правилу: print маленькими, скобки, кавычки.`,
+ explain2:`Проверяй каждую строку по трём «замкам»: 1) print маленькими и без опечаток, 2) скобки ( ) с двух сторон, 3) кавычки " " с двух сторон. Строка ${bad+1} не проходит проверку.`};});
+G(5,()=>{const a=R(2,9);const it=pick([
+ {code:`print("${a}" + ${a})`,r:'Ошибку TypeError',why:`текст "${a}" и число ${a} нельзя сложить через +`},
+ {code:`print("${a}" + "${a}")`,r:O(`${a}${a}`),why:`два текста склеиваются: "${a}" + "${a}" = "${a}${a}"`},
+ {code:`print(${a} + ${a})`,r:O(String(2*a)),why:`два числа складываются: ${a} + ${a} = ${2*a}`},
+ {code:`print("${a}" * 3)`,r:O(`${a}${a}${a}`),why:`текст * 3 — повтор три раза`},
+ {code:`print(${a} / 0)`,r:'Ошибку ZeroDivisionError',why:'делить на ноль нельзя'}]);
+ const all=['Ошибку TypeError',O(`${a}${a}`),O(String(2*a)),O(`${a}${a}${a}`),'Ошибку ZeroDivisionError',O(String(3*a))];
+ return choice(`Что выведет программа?${C(it.code)}`,it.r,sample(all.filter(x=>x!==it.r),3),
+ {short:it.why+'.',
+ explain:`Смотрим, что стоит слева и справа от знака: в кавычках — текст, без — число.<br>${K(it.code)}: ${it.why}.<br>Правила: текст + текст — склейка; число + число — сумма; текст * число — повтор; текст + число — TypeError; деление на 0 — ZeroDivisionError.`,
+ explain2:`Кавычки — как «клей для букв». "${a}" — это не число ${a}, а <b>символ</b> «${a}», картинка цифры. Картинки можно склеивать и повторять, но нельзя складывать с настоящим числом.`});});
+G(5,()=>{const w1=pick(['Я','Мы']),w2=pick(['учу Python','пишу код']);
+ const starter=`Print("${w1}")\nprint("${w2})\nprint(2 + 2`;
+ return {type:'code',q:`В программе три ошибки. Почини её, чтобы она напечатала:${OUT(`${w1}\n${w2}\n4`)}`,starter,
+ tests:[{in:'',out:`${w1}\n${w2}\n4`}],solution:`print("${w1}")\nprint("${w2}")\nprint(2 + 2)`,
+ hint:'Строка 1 — буква. Строка 2 — кавычка. Строка 3 — скобка.',
+ explain:`Ошибки:<br>1) ${K(`Print`)} — большая буква → ${K('print')};<br>2) ${K(`"${w2})`)} — нет закрывающей кавычки → ${K(`"${w2}")`)};<br>3) ${K('print(2 + 2')} — нет закрывающей скобки.${C(`print("${w1}")\nprint("${w2}")\nprint(2 + 2)`)}`,
+ explain2:'Чини по одной ошибке и запускай после каждой: Python будет показывать следующую. Так работают настоящие программисты.'};});
+
+/* L6: рисунки и программы */
+RG(6,()=>choice('Что напечатает '+K('print("ab" * 3)')+'?',O('ababab'),[O('ab3'),O('ab ab ab'),'Ошибку TypeError'],
+ {short:'Текст * число — повторение текста.',
+ explain:'Правило: <b>текст * число</b> повторяет текст столько раз. "ab" * 3 = "ab" + "ab" + "ab" = <b>ababab</b>, без пробелов. Ошибки нет: умножать текст на целое число можно (нельзя только складывать текст с числом).',
+ explain2:`Это удобно для рисунков: ${K('print("=" * 20)')} — линия из 20 знаков «=», не надо считать их вручную.`}));
+G(6,()=>{const n=R(3,6);const sym=pick(['*','#','@','+']);const out=range(1,n).map(k=>sym.repeat(k)).join('\n');
+ return {type:'code',q:`Нарисуй треугольник из ${n} строк символами «${sym}»:${OUT(out)}`,starter:`print("${sym}")\n`,tests:[{in:'',out}],
+ solution:range(1,n).map(k=>`print("${sym}" * ${k})`).join('\n'),
+ hint:`В каждой следующей строке на один символ больше. Можно писать "${sym}${sym}${sym}" или "${sym}" * 3.`,
+ explain:`Строка номер k содержит k символов. Удобно использовать повтор текста:${C(range(1,n).map(k=>`print("${sym}" * ${k})`).join('\n'))}`,
+ explain2:`Можно и без умножения, просто вписать символы: ${K(`print("${sym}${sym}")`)}, ${K(`print("${sym}${sym}${sym}")`)}… Главное — ${n} print, в каждом на один «${sym}» больше.`};});
+G(6,()=>{const pic=pick([
+ ['    *','   ***','  *****',' *******','    |'],
+ ['  ###','  # #','#######','  # #','  ###'],
+ ['+---+','|o o|','| ^ |','|___|','+---+']]);
+ const out=pic.join('\n');
+ return {type:'code',q:`Нарисуй эту картинку (пробелы в начале строк важны!):${OUT(out)}`,starter:`print("${pic[0]}")\n`,tests:[{in:'',out}],
+ solution:pic.map(l=>`print("${l}")`).join('\n'),
+ hint:'Каждая строка картинки — отдельный print. Посчитай пробелы в начале строки и впиши их внутрь кавычек.',
+ explain:`Каждая строчка картинки — один print, текст строки целиком в кавычках, вместе с пробелами в начале:${C(pic.map(l=>`print("${l}")`).join('\n'))}`,
+ explain2:'Пробелы в начале строки — тоже символы. Если пробелов меньше, строка «съедет» влево, и тест не пройдёт. Пробелы в конце строки проверка не учитывает.'};});
+G(6,()=>{const w=pick([10,12,14]);const h=R(1,3);const top='#'.repeat(w),mid='#'+' '.repeat(w-2)+'#';
+ const out=[top,...Array(h).fill(mid),top].join('\n');
+ return {type:'code',q:`Нарисуй рамку шириной ${w} символов и высотой ${h+2} строки:${OUT(out)}Подсказка: используй умножение текста.`,starter:`print("#" * ${w})\n`,tests:[{in:'',out}],
+ solution:[`print("#" * ${w})`,...Array(h).fill(`print("#" + " " * ${w-2} + "#")`),`print("#" * ${w})`].join('\n'),
+ hint:`Верх и низ — "#" * ${w}. Середина — "#", потом ${w-2} пробелов, потом "#". Склеивай через +.`,
+ explain:`Верхняя и нижняя линии — ${w} решёток: ${K(`"#" * ${w}`)}. Строка-середина: решётка, ${w-2} пробелов (${w} − 2 — по одному месту ушло на решётки по краям), решётка:${C([`print("#" * ${w})`,...Array(h).fill(`print("#" + " " * ${w-2} + "#")`),`print("#" * ${w})`].join('\n'))}`,
+ explain2:`Проверка ширины: 1 + ${w-2} + 1 = ${w}. Если взять ${w} пробелов, середина будет шире рамки.`};});
+
+/* L7 ★ */
+RG(7,()=>choice('Что напечатает '+K('print("A", "B", sep="", end="!")')+' ?',O('AB!'),[O('A B!'),O('A!B!'),O('AB')],
+ {short:'sep="" — между A и B ничего, end="!" — в конце «!».',
+ explain:'sep — то, что <b>между</b> значениями (здесь ничего), end — то, что <b>в конце</b> (здесь «!»). Получается A, ничего, B, «!» = <b>AB!</b>.',
+ explain2:'Собери строку по кусочкам: значение, sep, значение, sep, …, последнее значение, end. A + "" + B + "!" = AB!'}));
+G(7,()=>{const a=R(2,9),b=R(2,5),c=R(2,9),e=pick([2,4,5]),d=e*R(1,6);const ans=a+b*c-d/e;
+ const right=pf(ans);const w1=String(ans),w2=pf(((a+b)*c-d)/e),w3=pf(a+b*c-d);
+ return choice(`★ Что напечатает программа?${C(`print(${a} + ${b} * ${c} - ${d} / ${e})`)}`,O(right),[...new Set([w1,w2,w3,pf(ans+1)])].filter(x=>x!==right).slice(0,3).map(O),
+ {short:`${b}·${c} = ${b*c}, ${d}/${e} = ${pf(d/e)}, ${a} + ${b*c} − ${pf(d/e)} = ${right}.`,
+ explain:`Две ловушки сразу.<br>1) Порядок: сначала * и /, потом + и −. ${b} * ${c} = ${b*c}; ${d} / ${e} = ${pf(d/e)}.<br>2) ${a} + ${b*c} − ${pf(d/e)} = ${ans}. Но в выражении было деление ${K('/')}, а оно даёт дробное число — значит, и весь результат дробный: <b>${right}</b>.`,
+ explain2:`Если в выражении есть хоть одно ${K('/')}, ответ будет с точкой. Число «заражается дробностью»: 4.0 + 2 = 6.0.`});});
+G(7,()=>{const a=R(2,6),b=R(2,6);const s=pick(['*','','-']);const code=`print("*" * ${a}, "*" * ${b}, sep="${s}")`;
+ const cnt=a+b+(s==='*'?1:0);
+ return {type:'num',q:`★ Сколько звёздочек «*» напечатает программа?${C(code)}`,ans:cnt,
+ short:`${a} + ${b}${s==='*'?' + 1 (sep)':''} = ${cnt}.`,
+ explain:`Первое значение — ${a} звёздочек, второе — ${b}. Между ними sep = ${s?`«${s}»`:'ничего'}${s==='*'?' — ещё одна звёздочка!':s==='-'?' — это минус, не звёздочка':''}.<br>Итого: <b>${cnt}</b>. Вывод: ${O('*'.repeat(a)+s+'*'.repeat(b))}`,
+ explain2:`Собери строку: ${'*'.repeat(a)} + sep + ${'*'.repeat(b)}. Ловушка — забыть про разделитель${s==='*'?', который сам является звёздочкой':''}.`};},true);
+G(7,()=>{const k=R(2,4);const ws=sample(['А','Б','В','Г','Д'],k+2);const lines=[];let out='';let nl=0;
+ ws.forEach((w,i)=>{const e=i===ws.length-1?null:pick(['','\n',' ']);if(e===null||e==='\n'){lines.push(`print("${w}")`);out+=w+'\n';}else{lines.push(`print("${w}", end="${e}")`);out+=w+e;}});
+ const n=out.split('\n').length-1;
+ return {type:'num',q:`★ Сколько строк напечатает программа?${C(lines.join('\n'))}`,ans:n,
+ short:`Строку завершает только print без end. Вывод:${OUT(out.replace(/\n$/,''))}`,
+ explain:`Новая строка начинается только после print <b>без</b> end (или с обычным концом). print с end="" или end=" " продолжает ту же строку.<br>Пишем вывод по шагам:${OUT(out.replace(/\n$/,''))}Строк: <b>${n}</b>.`,
+ explain2:`Посчитай print без слова end: их ${lines.filter(l=>!l.includes('end')).length}. Каждый такой print «закрывает» строку. Значит строк ${n}.`};},true);
+G(7,()=>{const w=pick(['КОД','ЖУК','ДОМ','КИТ']);
+ return {type:'code',q:`★ Заготовка печатает буквы слова «${w}» на трёх строках. Измени её так, чтобы на экране было слово <b>одной строкой</b>: ${O(w)}. Каждая буква должна остаться в своём print.`,starter:w.split('').map(c=>`print("${c}")`).join('\n')+'\n',
+ tests:[{in:'',out:w}],solution:`print("${w[0]}", end="")\nprint("${w[1]}", end="")\nprint("${w[2]}")`,
+ hint:'Запрети первым двум print переходить на новую строку: end="".',
+ explain:`Каждый print в конце переходит на новую строку. Чтобы буквы шли подряд, первым двум скажем: «в конце ничего не ставь» — ${K('end=""')}. Последнему можно оставить обычный конец:${C(`print("${w[0]}", end="")\nprint("${w[1]}", end="")\nprint("${w[2]}")`)}`,
+ explain2:`Если поставить end=" " (с пробелом), получится «${w.split('').join(' ')}» — с пробелами, тест не пройдёт. Нужно именно пусто: две кавычки подряд "".`};},true);
+G(7,()=>{const n=pick([4,6,8]);const a='#.'.repeat(n/2),b='.#'.repeat(n/2);const out=range(1,n).map(i=>i%2?a:b).join('\n');
+ return {type:'code',q:`★ Нарисуй шахматную доску ${n}×${n}: «#» — чёрная клетка, «.» — белая. Левая верхняя клетка чёрная:${OUT(out)}Попробуй обойтись короткими строками кода, с умножением текста.`,starter:`print("#.#.")\n`,tests:[{in:'',out}],
+ solution:range(1,n).map(i=>`print("${i%2?'#.':'.#'}" * ${n/2})`).join('\n'),
+ hint:`Нечётные строки — "#." повторить ${n/2} раз(а), чётные — ".#" повторить ${n/2} раз(а).`,
+ explain:`Строки бывают двух видов, и они чередуются. Каждая — пара символов, повторённая ${n/2} раз(а): ${K(`"#." * ${n/2}`)} = ${a}, ${K(`".#" * ${n/2}`)} = ${b}.${C(range(1,n).map(i=>`print("${i%2?'#.':'.#'}" * ${n/2})`).join('\n'))}`,
+ explain2:`Посмотри на доску по столбикам: под чёрной клеткой всегда белая. Поэтому вторая строка — первая, «сдвинутая» на одну клетку. Всего ${n} строк.`};},true);
+G(7,()=>{const a=R(2,9),b=R(2,9);
+ return choice(`★ Что напечатает программа?${C(`print(${a},${b})`)}`,O(`${a} ${b}`),[O(`${a},${b}`),O(`${a}.${b}`),'Ошибку SyntaxError'],
+ {short:'Запятая разделяет два значения — это не дробь!',
+ explain:`Ловушка! Это не дробь ${a},${b}. Запятая в print разделяет <b>два значения</b>: ${a} и ${b}. Они печатаются через пробел: <b>${a} ${b}</b>. Дробь в Python пишется с точкой: ${K(`print(${a}.${b})`)} → ${a}.${b}.`,
+ explain2:'В России дробь пишут с запятой, а в программировании — с точкой. Запятая в Python всегда что-то разделяет.'});},true);
+
+const levels=['Компьютер и программа','print: печатаем текст','Порядок, кавычки и комментарии','Несколько значений: sep и end','Python-калькулятор','Ошибки: найди и почини','Рисунки и первые программы','★ Задачи на внимательность'];
+
+window.TOPIC={id:'i_first_program',title:'1. Первая программа',subtitle:'Программирование · Python · с нуля',
+intro:`<div class="box tip"><b>Что мы уже умеем</b>Пока ничего — и это здорово: курс начинается с нуля. Нужен только этот браузер.</div><p>В этом модуле ты узнаешь, что такое программа, почему компьютер такой «буквальный», и напишешь свои первые программы на Python: печать текста, рисунки из символов, вычисления. Запускай <b>каждый</b> пример и меняй его — так учатся программисты.</p>`,
+theory,symbols,levels,gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
