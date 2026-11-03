@@ -733,7 +733,7 @@ const E20=EL.filter(e=>e.z<=20);
 const MASS=e=>e.s==='Cl'?35:Math.round(e.ar);           /* mass number of the main isotope */
 const shells=z=>z<=2?[z]:z<=10?[2,z-2]:z<=18?[2,8,z-10]:[2,8,8,z-18];
 const SH=a=>a.join(', ');
-const ISO=(A,Z,s)=>`<span style="display:inline-flex;flex-direction:column;font-size:.68em;line-height:1.05;text-align:right;vertical-align:-.45em;margin-right:1px"><span>${A}</span><span>${Z}</span></span><b>${s}</b>`;
+const ISO=(A,Z,s)=>`<span style="display:inline-flex;flex-direction:column;font-size:.68em;line-height:1.05;text-align:right;vertical-align:-.28em;margin-right:1px"><span>${A}</span><span>${Z}</span></span><b>${s}</b>`;
 const ION=(s,c)=>`<span class="chem">${s}<sup>${c===0?'':(Math.abs(c)>1?Math.abs(c):'')+(c>0?'+':'−')}</sup></span>`;
 const KIND={m:'металл',n:'неметалл',g:'благородный газ'};
 const KBG={m:'var(--accent-soft)',n:'var(--warn-soft)',g:'var(--ok-soft)'};

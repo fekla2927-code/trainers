@@ -1,0 +1,1049 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Расчёты по уравнениям — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range}=H;
+const N=H.num;
+const C=f=>H.chem(f).replace(/NaN/g,'Na&#8288;N');
+const FR=H.frac;
+const rd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+const NUM=(q,v,d,extra)=>{const a=rd(v,d);if(!isFinite(a)||a<=0)return null;const exact=Math.abs(a-v)<1e-9;const tA=Math.min(0.9,Math.max(0.6*Math.pow(10,-d),0.01*a));
+  return Object.assign({type:'num',q:q+(exact?'':[' Округли до целых.',' Округли до десятых.',' Округли до сотых.'][d]),ans:a,tol:tA/a},extra||{});};
+const SV=(w,h,inner,lab)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${lab||'Рисунок'}" style="font-family:system-ui,sans-serif;max-width:100%">${inner}</svg>`;
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.fs||14}" font-weight="${o.fw||600}" fill="${o.c||'var(--ink)'}">${s}</text>`;};
+const n2=x=>N(rd(x,4));
+
+/* ---------- chemistry core ---------- */
+const AM={H:1,C:12,N:14,O:16,Na:23,Mg:24,Al:27,P:31,S:32,Cl:35.5,K:39,Ca:40,Mn:55,Fe:56,Cu:64,Zn:65,Ag:108,Ba:137,Hg:201};
+function parseGroup(s){let i=0;const num=()=>{const m=s.slice(i).match(/^\d+/);if(!m)return 1;i+=m[0].length;return +m[0];};
+  const grp=()=>{const c={};while(i<s.length&&s[i]!==')'){if(s[i]==='('){i++;const g=grp();if(s[i]!==')')throw Error('bad '+s);i++;const n=num();for(const e in g)c[e]=(c[e]||0)+g[e]*n;}else{const m=s.slice(i).match(/^[A-Z][a-z]?/);if(!m)throw Error('bad '+s);i+=m[0].length;const n=num();c[m[0]]=(c[m[0]]||0)+n;}}return c;};
+  const r=grp();if(i!==s.length)throw Error('bad '+s);return r;}
+function parseF(f){const tot={};String(f).replace(/[↑↓\s]/g,'').split(/[·*]/).forEach(p=>{let k=1;const m=p.match(/^(\d+)(.*)$/);if(m){k=+m[1];p=m[2];}const c=parseGroup(p);for(const e in c)tot[e]=(tot[e]||0)+k*c[e];});return tot;}
+const Mr=f=>{const c=parseF(f);let s=0;for(const e in c){if(!(e in AM))throw Error('no mass '+e);s+=AM[e]*c[e];}return Math.round(s*10)/10;};
+const BAL={};
+function balance(L,Rt){const key=L.join('+')+'='+Rt.join('+');if(BAL[key])return BAL[key];
+  const sp=[...L,...Rt].map(parseF);const els=[...new Set(sp.flatMap(o=>Object.keys(o)))];const n=sp.length;const c=new Array(n).fill(1);const MX=n>4?10:14;let found=null;
+  const rec=i=>{if(found)return;if(i===n){for(const e of els){let s=0;for(let j=0;j<n;j++)s+=(j<L.length?1:-1)*c[j]*(sp[j][e]||0);if(s)return;}found=c.slice();return;}for(let v=1;v<=MX&&!found;v++){c[i]=v;rec(i+1);}};
+  rec(0);if(!found)throw Error('cannot balance '+key);const g=found.reduce((a,b)=>H.gcd(a,b));found=found.map(x=>x/g);
+  for(const e of els){let s=0;for(let j=0;j<n;j++)s+=(j<L.length?1:-1)*found[j]*(sp[j][e]||0);if(s)throw Error('unbalanced '+key);}
+  BAL[key]=found;return found;}
+const GAS=['H2','O2','CO2','SO2','CH4','NH3','N2','CO'];
+const mark=(f,rx)=>f+(rx.gas&&GAS.includes(f)&&rx.R.includes(f)?'↑':'')+(rx.pp&&rx.pp.includes(f)?'↓':'');
+function EQ(rx){const c=balance(rx.L,rx.R);const t=(f,k)=>`<span style="white-space:nowrap">${k>1?k:''}${C(mark(f,rx))}</span>`;
+  const l=rx.L.map((f,j)=>t(f,c[j])).join(' + '),r=rx.R.map((f,j)=>t(f,c[rx.L.length+j])).join(' + ');
+  return l+(rx.t?` <span style="white-space:nowrap">—${rx.t}→</span> `:' → ')+r;}
+const K=(rx,f)=>{const c=balance(rx.L,rx.R);const i=[...rx.L,...rx.R].indexOf(f);if(i<0)throw Error('no '+f);return c[i];};
+
+const NM={Zn:'цинка',Mg:'магния',Al:'алюминия',Fe:'железа',Cu:'меди',Na:'натрия',HCl:'хлороводорода',H2SO4:'серной кислоты',ZnCl2:'хлорида цинка',MgCl2:'хлорида магния',AlCl3:'хлорида алюминия',FeSO4:'сульфата железа(II)',FeCl2:'хлорида железа(II)',
+ H2:'водорода',O2:'кислорода',H2O:'воды',CaCO3:'карбоната кальция',CaO:'оксида кальция (негашёной извести)',CO2:'углекислого газа',CaCl2:'хлорида кальция',C:'углерода',S:'серы',SO2:'сернистого газа',P:'фосфора',P2O5:'оксида фосфора(V)',MgO:'оксида магния',CuO:'оксида меди(II)',
+ KMnO4:'перманганата калия',K2MnO4:'манганата калия',MnO2:'оксида марганца(IV)',H2O2:'пероксида водорода',KClO3:'бертолетовой соли',KCl:'хлорида калия',CuSO4:'сульфата меди(II)',NaOH:'гидроксида натрия',NaCl:'хлорида натрия',Na2SO4:'сульфата натрия',BaCl2:'хлорида бария',BaSO4:'сульфата бария',
+ AgNO3:'нитрата серебра',AgCl:'хлорида серебра',NaNO3:'нитрата натрия','Cu(OH)2':'гидроксида меди(II)',CH4:'метана',N2:'азота',NH3:'аммиака',Fe2O3:'оксида железа(III)',CO:'угарного газа CO',HgO:'оксида ртути(II)',Hg:'ртути',FeS:'сульфида железа(II)',ZnS:'сульфида цинка'};
+const nm=f=>NM[f]||f;
+const RX={
+ zn:{L:['Zn','HCl'],R:['ZnCl2','H2'],gas:1,st:'Цинк растворяют в соляной кислоте (так получают водород в аппарате Киппа).'},
+ mg:{L:['Mg','HCl'],R:['MgCl2','H2'],gas:1,st:'Магний растворяют в соляной кислоте.'},
+ al:{L:['Al','HCl'],R:['AlCl3','H2'],gas:1,st:'Алюминиевую фольгу растворяют в соляной кислоте.'},
+ fe:{L:['Fe','H2SO4'],R:['FeSO4','H2'],gas:1,st:'Железные опилки растворяют в разбавленной серной кислоте.'},
+ caco3:{L:['CaCO3'],R:['CaO','CO2'],gas:1,t:'t°',st:'Известняк обжигают в печи, чтобы получить негашёную известь.'},
+ mel:{L:['CaCO3','HCl'],R:['CaCl2','H2O','CO2'],gas:1,st:'Мел растворяют в соляной кислоте — он «вскипает».'},
+ h2o:{L:['H2','O2'],R:['H2O'],t:'t°',st:'Водород сжигают в кислороде (так работает топливо ракеты и водородного автобуса).'},
+ c:{L:['C','O2'],R:['CO2'],gas:1,t:'t°',st:'Уголь сгорает в кислороде.'},
+ s:{L:['S','O2'],R:['SO2'],gas:1,t:'t°',st:'Сера сгорает синим пламенем.'},
+ p:{L:['P','O2'],R:['P2O5'],t:'t°',st:'Фосфор сгорает, образуя белый «дым».'},
+ mgo:{L:['Mg','O2'],R:['MgO'],t:'t°',st:'Магниевая лента сгорает ослепительным пламенем.'},
+ cuo:{L:['CuO','H2'],R:['Cu','H2O'],t:'t°',st:'Оксид меди(II) восстанавливают водородом.'},
+ kmno4:{L:['KMnO4'],R:['K2MnO4','MnO2','O2'],gas:1,t:'t°',st:'Кислород в лаборатории получают нагреванием перманганата калия (марганцовки).'},
+ h2o2:{L:['H2O2'],R:['H2O','O2'],gas:1,t:'MnO₂',st:'Аптечную перекись разлагают с катализатором MnO₂.'},
+ kclo3:{L:['KClO3'],R:['KCl','O2'],gas:1,t:'t°, MnO₂',st:'Кислород получают разложением бертолетовой соли.'},
+ fecu:{L:['Fe','CuSO4'],R:['FeSO4','Cu'],st:'Железный гвоздь опускают в раствор медного купороса — он покрывается медью.'},
+ naoh:{L:['NaOH','HCl'],R:['NaCl','H2O'],st:'Щёлочь нейтрализуют соляной кислотой.'},
+ h2so4:{L:['NaOH','H2SO4'],R:['Na2SO4','H2O'],st:'Серную кислоту нейтрализуют щёлочью.'},
+ ba:{L:['BaCl2','H2SO4'],R:['BaSO4','HCl'],pp:['BaSO4'],st:'Сливают растворы хлорида бария и серной кислоты — выпадает белый осадок.'},
+ ag:{L:['AgNO3','NaCl'],R:['AgCl','NaNO3'],pp:['AgCl'],st:'К раствору поваренной соли приливают нитрат серебра — выпадает белый творожистый осадок.'},
+ cuoh:{L:['CuSO4','NaOH'],R:['Cu(OH)2','Na2SO4'],pp:['Cu(OH)2'],st:'К раствору медного купороса приливают щёлочь — выпадает голубой осадок.'},
+ na:{L:['Na','H2O'],R:['NaOH','H2'],gas:1,st:'Кусочек натрия бросают в воду — он бегает по поверхности и шипит.'},
+ ch4:{L:['CH4','O2'],R:['CO2','H2O'],gas:1,t:'t°',st:'Природный газ метан сгорает в конфорке плиты.'},
+ nh3:{L:['N2','H2'],R:['NH3'],t:'t°, p, кат.',st:'На заводе из азота и водорода синтезируют аммиак.'},
+ domna:{L:['Fe2O3','CO'],R:['Fe','CO2'],gas:1,t:'t°',st:'В доменной печи железо восстанавливают из руды угарным газом.'},
+ hgo:{L:['HgO'],R:['Hg','O2'],gas:1,t:'t°',st:'Так Джозеф Пристли в 1774 году впервые получил кислород — нагревая оксид ртути(II).'},
+ fes:{L:['Fe','S'],R:['FeS'],t:'t°',st:'Смесь железных опилок и серы нагревают — получается сульфид железа(II).'},
+ zns:{L:['Zn','S'],R:['ZnS'],t:'t°',st:'Смесь цинка и серы поджигают — она сгорает со вспышкой.'}};
+for(const k in RX)balance(RX[k].L,RX[k].R);/* every reaction is balanced (throws otherwise) */
+const NS=[0.05,0.1,0.15,0.2,0.25,0.3,0.4,0.5,0.6,0.75,0.8,1,1.2,1.5,2,2.5,3];
+const solid=f=>!GAS.includes(f);
+const Mtxt=f=>`M(${C(f)}) = ${N(Mr(f))} г/моль`;
+/* standard solution text: given n of known, find target */
+function solve(rx,kf,tf,nk,how){const kk=K(rx,kf),kt=K(rx,tf);const nt=nk*kt/kk;
+  return {nt,steps:`1) Уравнение: ${EQ(rx)}<br>2) ${how==='V'?`n(${C(kf)}) = V / V<sub>m</sub> = ${N(rd(nk*22.4,3))} / 22,4 = ${n2(nk)} моль`:how==='n'?`n(${C(kf)}) = ${n2(nk)} моль`:`n(${C(kf)}) = m / M = ${N(rd(nk*Mr(kf),3))} / ${N(Mr(kf))} = ${n2(nk)} моль`}.<br>3) По уравнению n(${C(kf)}) : n(${C(tf)}) = ${kk} : ${kt} → n(${C(tf)}) = ${n2(nk)} · ${kt}/${kk} = ${n2(nt)} моль.`};}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Химия — это кулинария с весами',lvl:0,html:`
+<p class="hook">Сколько водорода нужно, чтобы наполнить дирижабль? Сколько железа выплавят из вагона руды? Сколько литров углекислого газа выделит шипучая таблетка? Химики отвечают на такие вопросы за минуту — с помощью уравнения реакции. Уравнение — это <b>рецепт</b>: «на 1 атом цинка — 2 молекулы HCl». А чтобы перейти от «штук» к граммам и литрам, нужен <b>моль</b>.</p>
+<div class="box rule"><b>Три главные формулы</b><span class="m">n = ${FR('m','M')}</span> &nbsp; (моль = граммы / молярная масса)<br><span class="m">V = n · V<sub>m</sub></span>, &nbsp; V<sub>m</sub> = 22,4 л/моль (газ при н.у.)<br><span class="m">Коэффициенты в уравнении = отношение количеств веществ (моль)</span></div>
+<p><b>Почему так.</b> Коэффициенты считают частицы: 2 молекулы H₂ на 1 молекулу O₂. Если взять в 6·10²³ раз больше — получится 2 моль H₂ на 1 моль O₂. Отношение сохраняется. А вот граммы — нет: молекулы разных веществ весят по-разному.</p>
+<div class="box ex"><b>Пример</b>${EQ(RX.h2o)}: 2 моль H₂ (4 г) + 1 моль O₂ (32 г) → 2 моль H₂O (36 г). Моли 2 : 1 : 2, а граммы 4 : 32 : 36.</div>
+<div class="box err"><b>Частая ошибка</b>Составлять пропорцию «по граммам и коэффициентам»: «2 г водорода на 1 г кислорода». Коэффициенты относятся только к <b>молям</b> (и к объёмам газов).</div>
+<div class="fact">Дирижабль «Гинденбург» вмещал около 200 000 м³ водорода — это почти 9 миллионов моль газа, около 18 тонн.</div>`},
+{title:'Алгоритм: от граммов к граммам',lvl:[1,3],html:`
+<ol class="steps"><li>Запиши уравнение и проверь коэффициенты.</li><li>Переведи то, что дано, в моли: n = m/M (или n = V/22,4).</li><li>По коэффициентам найди моли искомого вещества.</li><li>Переведи моли в ответ: m = n·M или V = n·22,4.</li></ol>
+<div class="box ex"><b>Пример</b>Сколько граммов водорода выделится при растворении 13 г цинка в соляной кислоте?<br>${EQ(RX.zn)}<br>n(Zn) = 13 / 65 = 0,2 моль → n(H₂) = 0,2 моль (1 : 1) → m(H₂) = 0,2 · 2 = <b>0,4 г</b>.</div>
+<div class="box tip"><b>Способ «пропорцией»</b>Над формулами пиши данные, под формулами — «по уравнению»: 13 г Zn — x г H₂; 1·65 г — 1·2 г. x = 13·2/65 = 0,4 г. Это тот же расчёт, просто короче.</div>
+<div class="box err"><b>Частая ошибка</b>Забыть коэффициент при переходе: в ${EQ(RX.al)} n(H₂) = n(Al) · 3/2, а не n(Al).</div>`},
+{title:'Газы: литры вместо граммов',lvl:2,html:`
+<div class="box rule"><b>Закон Авогадро</b>1 моль любого газа при нормальных условиях (0 °С, 1 атм) занимает <b>22,4 л</b>. Поэтому V = n · 22,4 и n = V / 22,4.</div>
+<div class="box ex"><b>Пример</b>Сколько литров CO₂ (н.у.) выделится при обжиге 50 г известняка CaCO₃?<br>${EQ(RX.caco3)}<br>n(CaCO₃) = 50/100 = 0,5 моль → n(CO₂) = 0,5 моль → V = 0,5 · 22,4 = <b>11,2 л</b>.</div>
+<div class="box rule"><b>Объёмы газов</b>Если и данное, и искомое — газы, моли можно не считать: объёмы относятся как коэффициенты (закон объёмных отношений Гей-Люссака). ${EQ(RX.ch4)}: на 10 л метана — 20 л кислорода.</div>
+<div class="box err"><b>Ловушка</b>22,4 л/моль — только для <b>газов</b>. Объём воды или железа так не считают. И только при н.у.</div>
+<div class="fact">При сгорании 1 кг бензина образуется около 3 кг углекислого газа — больше, чем весил сам бензин! Секрет — в кислороде воздуха, который тоже входит в CO₂.</div>`},
+{title:'Многостадийные расчёты',lvl:3,html:`
+<div class="box rule"><b>Цепочка реакций</b>Моли «переносят» из одного уравнения в другое: продукт первой реакции — реагент второй.</div>
+<div class="box ex"><b>Пример</b>Сколько граммов KMnO₄ нужно разложить, чтобы полученного кислорода хватило на сжигание 4,8 г магния?<br>${EQ(RX.mgo)}: n(Mg) = 4,8 / 24 = 0,2 моль → n(O₂) = 0,1 моль.<br>${EQ(RX.kmno4)}: n(KMnO₄) = 2 · 0,1 = 0,2 моль → m = 0,2 · 158 = <b>31,6 г</b>.</div>
+<div class="box tip"><b>Совет</b>Не округляй промежуточные моли — держи их в виде дробей или с запасом знаков, округляй только ответ.</div>`},
+{title:'Избыток и недостаток',lvl:4,html:`
+<div class="box rule"><b>Правило</b>Если даны количества <b>обоих</b> реагентов, сначала найди, какой из них в <b>недостатке</b>. Расчёт продукта ведут <b>по недостатку</b> — избыток останется неизрасходованным.</div>
+<p><b>Почему так.</b> Это как бутерброды: 10 кусков хлеба и 3 куска сыра дадут только 3 бутерброда с сыром. Сыр — в недостатке, он и решает. Хлеб останется.</p>
+<div class="widget" id="w-ex"></div>
+<div class="box ex"><b>Пример</b>5,6 г железа нагрели с 4,8 г серы. ${EQ(RX.fes)}<br>n(Fe) = 5,6/56 = 0,1 моль, n(S) = 4,8/32 = 0,15 моль. Нужно 1 : 1 → сера в избытке (0,05 моль лишние). FeS: 0,1 моль · 88 = <b>8,8 г</b>.</div>
+<div class="box err"><b>Частая ошибка</b>Сравнивать граммы («серы меньше по массе — значит, она в недостатке»). Сравнивают моли, делённые на коэффициенты: n/k.</div>`},
+{title:'Выход продукта',lvl:5,html:`
+<div class="box rule"><b>Выход</b>η = ${FR('m(практ.)','m(теор.)')} · 100 % &nbsp; (или по объёмам и молям). Теоретическая масса — по уравнению, практическая — то, что реально получили.</div>
+<p><b>Почему меньше 100 %.</b> Часть вещества теряется при фильтровании и пересыпании, реакция идёт не до конца, бывают побочные продукты. На заводе синтез аммиака за один проход даёт лишь 15–25 %.</p>
+<div class="box ex"><b>Пример</b>Из 10 г CaCO₃ получили 5,04 г CaO. Теоретически: 0,1 моль · 56 = 5,6 г. η = 5,04 / 5,6 = <b>90 %</b>.</div>
+<div class="box ex"><b>Обратная задача</b>Выход 80 %, теоретически 5,6 г → практически 0,8 · 5,6 = 4,48 г. А если нужно получить 5,6 г на практике, реагента надо взять в 1/0,8 = 1,25 раза больше.</div>
+<div class="box err"><b>Ловушка</b>Выход относится к <b>продукту</b>. Сначала считаем по уравнению теорию, потом умножаем (или делим) на η.</div>`},
+{title:'Примеси',lvl:6,html:`
+<div class="box rule"><b>Чистое вещество в образце</b><span class="m">m(чист.) = m(образца) · (1 − w(примесей))</span>. В реакцию вступает только чистое вещество.</div>
+<div class="box ex"><b>Пример</b>Известняк массой 200 г содержит 10 % примесей. Сколько литров CO₂ даст его обжиг? m(CaCO₃) = 200 · 0,9 = 180 г → n = 1,8 моль → V = 1,8 · 22,4 = <b>40,32 л</b>.</div>
+<div class="box err"><b>Частая ошибка</b>Подставить в n = m/M массу всего образца. Песок и глина в известняке CO₂ не выделяют!</div>
+<div class="box tip"><b>Обратная задача</b>Узнать w(примесей) по объёму газа: по газу находим массу чистого вещества, делим на массу образца, вычитаем из 100 %.</div>`},
+{title:'Реакции в растворах',lvl:7,html:`
+<div class="box rule"><b>В реакцию вступает растворённое вещество</b>Сначала m(в-ва) = w · m(р-ра), потом обычный расчёт по уравнению. Масса раствора после реакции: сумма масс всего, что слили, минус газы и осадки.</div>
+<div class="box ex"><b>Пример</b>К 104 г 10 %-го раствора BaCl₂ прилили избыток серной кислоты. m(BaCl₂) = 10,4 г → n = 10,4/208 = 0,05 моль → n(BaSO₄) = 0,05 моль → m = 0,05 · 233 = <b>11,65 г</b> осадка.</div>
+<div class="box err"><b>Частая ошибка</b>Подставить в n = m/M массу раствора (104 г). В растворе 90 % — вода, которая в этой реакции не участвует.</div>`},
+{title:'★ Смеси двух веществ',lvl:8,html:`
+<div class="box rule"><b>Метод</b>Обозначь количества веществ смеси x и y моль. Составь два уравнения: по <b>массе смеси</b> и по <b>продукту</b> (обычно объёму газа). Реши систему.</div>
+<div class="box ex"><b>Пример</b>8,9 г смеси Mg и Zn растворили в избытке HCl, выделилось 4,48 л H₂.<br>Mg + 2HCl → MgCl₂ + H₂; Zn + 2HCl → ZnCl₂ + H₂.<br>24x + 65y = 8,9; x + y = 4,48/22,4 = 0,2.<br>Из второго x = 0,2 − y → 24(0,2 − y) + 65y = 8,9 → 41y = 4,1 → y = 0,1, x = 0,1.<br>m(Mg) = 2,4 г, w(Mg) = 2,4/8,9 ≈ <b>27 %</b>.</div>
+<div class="box tip"><b>Если один компонент не реагирует</b>(медь в HCl, оксид без газа) — система не нужна: газ даёт только активный металл.</div>
+<div class="box rule"><b>Пластинка в растворе соли</b>${EQ(RX.fecu)}: на каждый моль растворившегося Fe (−56 г) оседает моль Cu (+64 г) — пластинка тяжелеет на 8 г на моль.</div>`}
+];
+const symbols={tab:'Формулы',title:'Формулы для расчётов',rows:[
+['n = m / M','количество вещества','Сколько моль в данной массе.','13/65 = 0,2&nbsp;моль'],
+['m = n · M','масса','Обратно: моль → граммы.','0,2·2 = 0,4&nbsp;г'],
+['V = n · 22,4','объём газа (н.у.)','1 моль любого газа — 22,4 л.','0,5·22,4 = 11,2&nbsp;л'],
+['n₁ : n₂ = k₁ : k₂','по уравнению','Моли относятся как коэффициенты.','2Al : 3H₂'],
+['V₁ : V₂ = k₁ : k₂','газы','Объёмы газов — как коэффициенты.','CH₄ : O₂ = 1 : 2'],
+['n/k → min','недостаток','У кого n/k меньше, тот в недостатке; по нему считаем.','Fe 0,1 &lt; S 0,15'],
+['η = m(пр)/m(теор)','выход','Сколько реально получили от теории.','5,04/5,6 = 90&nbsp;%'],
+['m(чист) = m(обр)·(1 − w)','примеси','В реакцию идёт только чистое вещество.','200·0,9 = 180&nbsp;г'],
+['m(в-ва) = w·m(р-ра)','раствор','Реагирует растворённое вещество.','0,1·104 = 10,4&nbsp;г']
+],after:`<div class="box tip" style="margin-top:14px"><b>Атомные массы (школьная таблица)</b>H 1 · C 12 · N 14 · O 16 · Na 23 · Mg 24 · Al 27 · P 31 · S 32 · Cl 35,5 · K 39 · Ca 40 · Mn 55 · Fe 56 · Cu 64 · Zn 65 · Ag 108 · Ba 137</div>`};
+
+/* ---------- widget: excess and deficiency (Mg + 2HCl) ---------- */
+function onTheory(root){const w=root.querySelector('#w-ex');if(!w)return;
+  w.innerHTML=`<div class="small" style="text-align:center">Mg + 2HCl → MgCl₂ + H₂↑</div><label>m(Mg) = <output id="o1">4,8</output> г<input type="range" id="a" min="0" max="12" step="0.6" value="4.8"></label>
+<label>m(HCl) = <output id="o2">7,3</output> г<input type="range" id="b" min="0" max="29.2" step="1.46" value="7.3"></label><div id="wS" style="display:flex;justify-content:center"></div><div id="wO" class="small" style="text-align:center"></div>`;
+  const q=s=>w.querySelector(s);
+  const draw=()=>{const ma=+q('#a').value,mb=+q('#b').value;q('#o1').textContent=N(rd(ma,2));q('#o2').textContent=N(rd(mb,2));
+    const na=ma/24,nb=mb/36.5;const ext=Math.min(na,nb/2);const W=320,bw=200,sc=bw/0.5;let s='';
+    const bar=(y,lab,have,need,col)=>T(8,y+15,lab,{a:'start',fs:13})+`<rect x="100" y="${y}" width="${Math.min(bw,have*sc).toFixed(1)}" height="20" fill="${col}" fill-opacity=".55"/><rect x="100" y="${y}" width="${Math.min(bw,need*sc).toFixed(1)}" height="20" fill="none" stroke="var(--fig)" stroke-width="2"/>`+T(100+Math.min(bw,Math.max(have,need)*sc)+6,y+15,N(rd(have,3))+' моль',{a:'start',fs:12,fw:400});
+    s+=bar(10,'Mg',na,ext,'var(--accent)')+bar(40,'HCl',nb,2*ext,'var(--hl)')+bar(70,'H₂ (продукт)',ext,ext,'var(--ok)');
+    s+=T(8,112,'рамка — сколько израсходуется',{a:'start',fs:11,fw:400,c:'var(--muted)'});
+    q('#wS').innerHTML=SV(W,120,s,'Избыток и недостаток');
+    const lim=na===0&&nb===0?'—':Math.abs(na-nb/2)<1e-9?'вещества в точном соотношении':na<nb/2?'Mg в недостатке, HCl в избытке':'HCl в недостатке, Mg в избытке';
+    q('#wO').innerHTML=`n(Mg)/1 = ${N(rd(na,3))}, n(HCl)/2 = ${N(rd(nb/2,3))} → <span class="out">${lim}</span>. V(H₂) = ${N(rd(ext,3))} · 22,4 ≈ <span class="out">${N(rd(ext*22.4,2))} л</span>`;};
+  w.querySelectorAll('input').forEach(i=>i.oninput=draw);draw();}
+
+/* =================== GENERATORS =================== */
+/* ---- L0 основы ---- */
+RULE(0,'Как найти количество вещества, если известна его масса?','n = m / M',['n = m · M','n = M / m','n = m / 22,4'],
+{short:'n = m/M: граммы делим на граммы на моль.',explain:'Количество вещества n = m / M, где M — молярная масса (г/моль). Единицы: г : (г/моль) = моль ✔ Формула n = m/22,4 — ошибка: 22,4 л/моль относится к <b>объёму газа</b>, а не к массе.',
+explain2:'Как пачки: 30 конфет по 5 в пачке — это 30/5 = 6 пачек. Масса / масса одного «моля» = число молей.'});
+RULE(0,'Что показывают коэффициенты в уравнении реакции?','Соотношение количеств веществ (моль) — и объёмов газов',['Соотношение масс веществ в граммах','Число атомов в одной молекуле','Молярные массы веществ'],
+{short:'2H₂ + O₂ → 2H₂O: 2 моль : 1 моль : 2 моль, а не 2 г : 1 г : 2 г.',explain:`Коэффициенты считают частицы, а значит и моли: в ${EQ(RX.h2o)} на 2 моль H₂ нужен 1 моль O₂. По массе это 4 г и 32 г — совсем не 2 : 1! Число атомов в молекуле показывают <b>индексы</b>, а не коэффициенты.`,
+explain2:'Рецепт «2 яйца на 1 стакан муки» — это штуки и стаканы, а не граммы. Коэффициенты — такой же рецепт в «штуках» (молях).'});
+G(0,()=>{const rx=RX[pick(['al','zn','kmno4','h2o','p','ch4','nh3','domna','kclo3','na','cuoh'])];const all=[...rx.L,...rx.R];const [a,b]=sample(all,2);const na=pick(NS);const ka=K(rx,a),kb=K(rx,b);const nb=na*kb/ka;
+ return NUM(`По уравнению ${EQ(rx)}: сколько моль ${C(b)} ${rx.L.includes(b)?'нужно (вступит в реакцию)':'образуется'}, если ${rx.L.includes(a)?'в реакцию вступило':'образовалось'} ${N(na)} моль ${C(a)}?`,nb,2,
+ {short:`n(${C(b)}) = ${N(na)} · ${kb}/${ka} = ${N(rd(nb,3))} моль.`,
+ explain:`Коэффициенты: перед ${C(a)} — ${ka}, перед ${C(b)} — ${kb}. Значит, n(${C(a)}) : n(${C(b)}) = ${ka} : ${kb}.<br>n(${C(b)}) = ${N(na)} · ${kb} / ${ka} = <b>${N(rd(nb,3))} моль</b>.`,
+ explain2:`Пропорция: по уравнению ${ka} моль ${C(a)} — ${kb} моль ${C(b)}; у нас ${N(na)} моль ${C(a)} — x. x = ${N(na)} · ${kb} / ${ka} = ${N(rd(nb,3))}. ${ka===kb?'Коэффициенты равны — и моли равны.':''}`});});
+G(0,()=>{const rx=RX[pick(['al','h2o','p','kmno4','ch4','nh3','domna','mgo','kclo3','h2so4'])];const [a,b]=sample([...rx.L,...rx.R].filter(f=>f!=='H2O'||rx===RX.h2o),2);const ka=K(rx,a),kb=K(rx,b);const g=H.gcd(ka,kb);
+ const corr=`${ka/g} : ${kb/g}`;const mr=`${N(Mr(a)*ka)} : ${N(Mr(b)*kb)}`;const wr=[`${kb/g} : ${ka/g}`,'1 : 1',`${parseF(a)[Object.keys(parseF(a))[0]]} : ${parseF(b)[Object.keys(parseF(b))[0]]}`,`${ka/g+1} : ${kb/g}`];
+ const W=[...new Set(wr)].filter(x=>x!==corr).slice(0,3);if(W.length<3)return null;
+ return CH(`В реакции ${EQ(rx)} в каком отношении находятся количества веществ n(${C(a)}) : n(${C(b)})?`,corr,W,{short:`Как коэффициенты: ${ka} : ${kb} = ${corr}.`,
+ explain:`Количества веществ относятся как коэффициенты: перед ${C(a)} стоит ${ka}, перед ${C(b)} — ${kb}. n(${C(a)}) : n(${C(b)}) = ${ka} : ${kb}${g>1?` = ${corr}`:''}.<br>А массы относятся иначе: ${ka}·${N(Mr(a))} : ${kb}·${N(Mr(b))} = ${mr}.`,
+ explain2:'Индексы внутри формулы (маленькие цифры) — про состав одной молекулы. Отношение молей в реакции дают только большие цифры перед формулами.'});});
+
+/* ---- L1 масса по массе ---- */
+RULE(1,'В каком порядке решают задачу «найди массу продукта по массе реагента»?','m(реагента) → n(реагента) → n(продукта) по коэффициентам → m(продукта)',['m(реагента) → m(продукта) по коэффициентам','n(продукта) → m(реагента) → n(реагента)','m(реагента) · коэффициент → m(продукта)'],
+{short:'Граммы → моли → моли → граммы.',explain:'Алгоритм: 1) n(реагента) = m/M; 2) по коэффициентам n(продукта); 3) m(продукта) = n·M. Перескочить сразу от граммов к граммам по коэффициентам нельзя — коэффициенты относятся к молям.',
+explain2:'Как обмен валюты через доллары: рубли → доллары → евро. Здесь «доллары» — это моли: только в них работает рецепт-уравнение.'});
+const pairs=[['zn','Zn','ZnCl2'],['zn','Zn','H2'],['mg','Mg','MgCl2'],['al','Al','AlCl3'],['fe','Fe','FeSO4'],['caco3','CaCO3','CaO'],['mel','CaCO3','CaCl2'],['p','P','P2O5'],['mgo','Mg','MgO'],['cuo','CuO','Cu'],['fecu','Fe','Cu'],['naoh','NaOH','NaCl'],['h2so4','NaOH','Na2SO4'],['ba','BaCl2','BaSO4'],['ag','AgNO3','AgCl'],['cuoh','CuSO4','Cu(OH)2'],['domna','Fe2O3','Fe'],['hgo','HgO','Hg'],['fes','Fe','FeS'],['na','Na','NaOH'],['h2o','H2','H2O'],['kclo3','KClO3','KCl']];
+G(1,()=>{const p=pick(pairs);const rx=RX[p[0]];const nk=pick(NS);const mk=nk*Mr(p[1]);if(!Number.isInteger(rd(mk*100,6)))return null;const s=solve(rx,p[1],p[2],nk);const mt=s.nt*Mr(p[2]);
+ return NUM(`${rx.st} Сколько граммов ${nm(p[2])} получится из ${N(rd(mk,2))} г ${nm(p[1])}?`,mt,1,{hint:'n = m/M → по коэффициентам → m = nM.',
+ short:`n(${C(p[1])}) = ${n2(nk)} моль → n(${C(p[2])}) = ${n2(s.nt)} моль → m = ${N(rd(mt,2))} г.`,
+ explain:`${s.steps}<br>4) m(${C(p[2])}) = n · M = ${n2(s.nt)} · ${N(Mr(p[2]))} = <b>${N(rd(mt,2))} г</b>.`,
+ explain2:`Пропорцией: ${N(rd(mk,2))} г ${C(p[1])} — x г ${C(p[2])}; по уравнению ${K(rx,p[1])}·${N(Mr(p[1]))} = ${N(K(rx,p[1])*Mr(p[1]))} г ${C(p[1])} — ${K(rx,p[2])}·${N(Mr(p[2]))} = ${N(K(rx,p[2])*Mr(p[2]))} г ${C(p[2])}.<br>x = ${N(rd(mk,2))} · ${N(K(rx,p[2])*Mr(p[2]))} / ${N(K(rx,p[1])*Mr(p[1]))} = ${N(rd(mt,2))} г.`});});
+G(1,()=>{const p=pick(pairs.filter(x=>x[2]!=='H2'));const rx=RX[p[0]];const nt=pick(NS);const mt=nt*Mr(p[2]);if(!Number.isInteger(rd(mt*100,6)))return null;const nk=nt*K(rx,p[1])/K(rx,p[2]);const mk=nk*Mr(p[1]);
+ return NUM(`${rx.st} Сколько граммов ${nm(p[1])} нужно, чтобы получить ${N(rd(mt,2))} г ${nm(p[2])}?`,mk,1,{hint:'Иди от продукта: его моли → моли реагента → масса.',
+ short:`n(${C(p[2])}) = ${n2(nt)} моль → n(${C(p[1])}) = ${n2(nk)} моль → m = ${N(rd(mk,2))} г.`,
+ explain:`1) ${EQ(rx)}<br>2) n(${C(p[2])}) = ${N(rd(mt,2))} / ${N(Mr(p[2]))} = ${n2(nt)} моль.<br>3) n(${C(p[1])}) = ${n2(nt)} · ${K(rx,p[1])}/${K(rx,p[2])} = ${n2(nk)} моль.<br>4) m(${C(p[1])}) = ${n2(nk)} · ${N(Mr(p[1]))} = <b>${N(rd(mk,2))} г</b>.`,
+ explain2:`Обратная задача решается тем же алгоритмом — просто начинаем с того, что известно (продукт). Проверка: из ${N(rd(mk,2))} г ${C(p[1])} действительно получится ${n2(nk)}·${K(rx,p[2])}/${K(rx,p[1])} = ${n2(nt)} моль ${C(p[2])} ✔`});});
+G(1,()=>{const p=pick([['al','Al','HCl'],['zn','Zn','HCl'],['mg','Mg','HCl'],['naoh','NaOH','HCl'],['h2so4','NaOH','H2SO4'],['mel','CaCO3','HCl'],['p','P','O2'],['ch4','CH4','O2'],['cuoh','CuSO4','NaOH']]);const rx=RX[p[0]];const nk=pick(NS);const mk=nk*Mr(p[1]);if(!Number.isInteger(rd(mk*100,6)))return null;const s=solve(rx,p[1],p[2],nk);const mt=s.nt*Mr(p[2]);
+ return NUM(`${rx.st} Какая масса ${nm(p[2])} потребуется для реакции с ${N(rd(mk,2))} г ${nm(p[1])}? Ответ в граммах.`,mt,1,{short:`n(${C(p[2])}) = ${n2(s.nt)} моль → m = ${N(rd(mt,2))} г.`,
+ explain:`${s.steps}<br>4) m(${C(p[2])}) = ${n2(s.nt)} · ${N(Mr(p[2]))} = <b>${N(rd(mt,2))} г</b>.`,
+ explain2:`Главное — коэффициент ${K(rx,p[2])} перед ${C(p[2])}. Если его забыть, ответ получится в ${N(rd(K(rx,p[2])/K(rx,p[1]),3))} раза ${K(rx,p[2])>K(rx,p[1])?'меньше':'больше'} правильного.`});});
+
+/* ---- L2 газы ---- */
+RULE(2,'Какой объём занимает 1 моль любого газа при нормальных условиях?','22,4 л',['1 л','22,4 мл','Зависит от молярной массы газа'],
+{short:'V<sub>m</sub> = 22,4 л/моль для любого газа при н.у. (0 °С, 1 атм).',explain:'Закон Авогадро: в равных объёмах газов при одинаковых условиях — одинаковое число молекул. Поэтому 1 моль <b>любого</b> газа (H₂, O₂, CO₂…) при н.у. занимает 22,4 л. Молярная масса влияет на массу этого объёма, а не на сам объём.',
+explain2:'Молекулы газа очень далеко друг от друга — их собственный размер почти не важен. Важно лишь, сколько их. Поэтому моль «лёгкого» водорода и моль «тяжёлого» CO₂ занимают одинаковые 22,4 л (куб с ребром ≈ 28 см).'});
+const gp=[['zn','Zn','H2'],['mg','Mg','H2'],['al','Al','H2'],['fe','Fe','H2'],['caco3','CaCO3','CO2'],['mel','CaCO3','CO2'],['kmno4','KMnO4','O2'],['h2o2','H2O2','O2'],['kclo3','KClO3','O2'],['na','Na','H2'],['c','C','CO2'],['s','S','SO2'],['hgo','HgO','O2'],['domna','Fe2O3','CO2']];
+G(2,()=>{const p=pick(gp);const rx=RX[p[0]];const nk=pick(NS);const mk=nk*Mr(p[1]);if(!Number.isInteger(rd(mk*100,6)))return null;const s=solve(rx,p[1],p[2],nk);const V=s.nt*22.4;
+ return NUM(`${rx.st} Какой объём ${nm(p[2])} (н.у.) выделится из ${N(rd(mk,2))} г ${nm(p[1])}? Ответ в литрах.`,V,2,{hint:'V = n · 22,4.',
+ short:`n(${C(p[2])}) = ${n2(s.nt)} моль → V = ${n2(s.nt)} · 22,4 = ${N(rd(V,3))} л.`,
+ explain:`${s.steps}<br>4) V(${C(p[2])}) = n · V<sub>m</sub> = ${n2(s.nt)} · 22,4 = <b>${N(rd(V,3))} л</b>.`,
+ explain2:`Пропорция: ${N(rd(mk,2))} г ${C(p[1])} — x л; ${K(rx,p[1])}·${N(Mr(p[1]))} г — ${K(rx,p[2])}·22,4 л. x = ${N(rd(mk,2))}·${N(rd(K(rx,p[2])*22.4,2))}/${N(K(rx,p[1])*Mr(p[1]))} = ${N(rd(V,3))} л.`});});
+G(2,()=>{const p=pick(gp);const rx=RX[p[0]];const nt=pick(NS);const V=nt*22.4;const nk=nt*K(rx,p[1])/K(rx,p[2]);const mk=nk*Mr(p[1]);
+ return NUM(`${rx.st} Сколько граммов ${nm(p[1])} нужно, чтобы получить ${N(rd(V,3))} л ${nm(p[2])} (н.у.)?`,mk,1,{short:`n(${C(p[2])}) = ${N(rd(V,3))}/22,4 = ${n2(nt)} моль → n(${C(p[1])}) = ${n2(nk)} моль → ${N(rd(mk,2))} г.`,
+ explain:`1) ${EQ(rx)}<br>2) n(${C(p[2])}) = ${N(rd(V,3))} / 22,4 = ${n2(nt)} моль.<br>3) n(${C(p[1])}) = ${n2(nt)} · ${K(rx,p[1])}/${K(rx,p[2])} = ${n2(nk)} моль.<br>4) m = ${n2(nk)} · ${N(Mr(p[1]))} = <b>${N(rd(mk,2))} г</b>.`,
+ explain2:`${N(rd(V,3))} л — это ${n2(nt)} «стандартных шариков» по 22,4 л. По уравнению на каждые ${K(rx,p[2])} моль газа нужно ${K(rx,p[1])} моль ${C(p[1])}.`});});
+G(2,()=>{const P=[['ch4','CH4','O2'],['ch4','CH4','CO2'],['h2o','H2','O2'],['nh3','N2','H2'],['nh3','H2','NH3'],['nh3','N2','NH3'],['domna','CO','CO2']];const p=pick(P);const rx=RX[p[0]];const V1=pick([5,10,15,20,30,50,100,120]);const V2=V1*K(rx,p[2])/K(rx,p[1]);
+ return NUM(`${rx.st} Какой объём ${nm(p[2])} ${rx.L.includes(p[2])?'потребуется для реакции с':'образуется из'} ${V1} л ${nm(p[1])}? Объёмы измерены при одинаковых условиях. Ответ в литрах.`,V2,1,{hint:'Для газов объёмы относятся как коэффициенты.',
+ short:`V(${C(p[2])}) = ${V1} · ${K(rx,p[2])}/${K(rx,p[1])} = ${N(rd(V2,2))} л.`,
+ explain:`${EQ(rx)}. Оба вещества — газы, поэтому их объёмы относятся как коэффициенты (закон объёмных отношений): V(${C(p[1])}) : V(${C(p[2])}) = ${K(rx,p[1])} : ${K(rx,p[2])}.<br>V(${C(p[2])}) = ${V1} · ${K(rx,p[2])}/${K(rx,p[1])} = <b>${N(rd(V2,2))} л</b>.`,
+ explain2:`Можно и через моли: n(${C(p[1])}) = ${V1}/22,4, n(${C(p[2])}) = n(${C(p[1])})·${K(rx,p[2])}/${K(rx,p[1])}, V = n·22,4 — 22,4 сокращается, остаётся ${V1}·${K(rx,p[2])}/${K(rx,p[1])}.`});});
+
+/* ---- L3 моли и многостадийные ---- */
+RULE(3,'Как решают задачу, где продукт первой реакции — реагент второй?','Находят моли вещества-«посредника» по первому уравнению и подставляют их во второе',['Складывают массы всех веществ из обоих уравнений','Решают только второе уравнение','Складывают коэффициенты двух уравнений'],
+{short:'Моли «посредника» — мостик между уравнениями.',explain:'В цепочке A → B → C количество вещества B, найденное по первому уравнению, — это то же самое B во втором. Поэтому: n(A) → n(B) (уравнение 1) → n(C) (уравнение 2). Массы и коэффициенты разных уравнений не складывают.',
+explain2:'Как эстафета: первый бегун передаёт палочку второму. «Палочка» — это моли вещества-посредника.'});
+G(3,()=>{const P=[['mgo','Mg','O2','kmno4','KMnO4'],['mgo','Mg','O2','h2o2','H2O2'],['mgo','Mg','O2','kclo3','KClO3'],['p','P','O2','kmno4','KMnO4'],['cuo','CuO','H2','zn','Zn'],['cuo','CuO','H2','al','Al'],['s','S','O2','hgo','HgO'],['c','C','O2','kclo3','KClO3']];
+ const p=pick(P);const r1=RX[p[0]],r2=RX[p[3]];const n1=pick(NS.filter(x=>x<=1.5));const m1=n1*Mr(p[1]);if(!Number.isInteger(rd(m1*100,6)))return null;const nmid=n1*K(r1,p[2])/K(r1,p[1]);const nfin=nmid*K(r2,p[4])/K(r2,p[2]);const mf=nfin*Mr(p[4]);
+ return NUM(`Сколько граммов ${nm(p[4])} нужно взять, чтобы ${p[2]==='O2'?'полученного из этого вещества кислорода хватило на сжигание':'полученного водорода хватило на восстановление'} ${N(rd(m1,2))} г ${nm(p[1])}?`,mf,1,{hint:`Сначала по реакции с ${p[1]} найди n(${p[2]}), потом — n(${p[4]}).`,
+ short:`n(${C(p[2])}) = ${n2(nmid)} моль → n(${C(p[4])}) = ${n2(nfin)} моль → ${N(rd(mf,2))} г.`,
+ explain:`1) ${EQ(r1)}: n(${C(p[1])}) = ${N(rd(m1,2))}/${N(Mr(p[1]))} = ${n2(n1)} моль → n(${C(p[2])}) = ${n2(n1)}·${K(r1,p[2])}/${K(r1,p[1])} = ${n2(nmid)} моль.<br>2) ${EQ(r2)}: n(${C(p[4])}) = ${n2(nmid)}·${K(r2,p[4])}/${K(r2,p[2])} = ${n2(nfin)} моль.<br>3) m(${C(p[4])}) = ${n2(nfin)} · ${N(Mr(p[4]))} = <b>${N(rd(mf,2))} г</b>.`,
+ explain2:`Можно «склеить» уравнения: на ${K(r1,p[1])} ${C(p[1])} нужно ${K(r1,p[2])} ${C(p[2])}, а на ${K(r2,p[2])} ${C(p[2])} — ${K(r2,p[4])} ${C(p[4])}. Итого на 1 моль ${C(p[1])} — ${N(rd(K(r1,p[2])/K(r1,p[1])*K(r2,p[4])/K(r2,p[2]),4))} моль ${C(p[4])}.`});});
+G(3,()=>{const p=pick([['al','Al','H2'],['al','Al','HCl'],['kclo3','KClO3','O2'],['p','P','O2'],['p','P','P2O5'],['nh3','H2','NH3'],['domna','Fe2O3','Fe'],['domna','CO','Fe'],['kmno4','KMnO4','O2'],['ch4','O2','H2O']]);const rx=RX[p[0]];const mt=pick([0.6,1.2,2.4,3,4.8,6,9.6,12]);
+ const nt=mt/Mr(p[2]);const nk=nt*K(rx,p[1])/K(rx,p[2]);if(!Number.isInteger(rd(nk*1000,6)))return null;
+ return NUM(`${rx.st} ${rx.L.includes(p[2])?'Израсходовано':'Получено'} ${N(mt)} г ${nm(p[2])}. Какое количество вещества ${nm(p[1])} ${rx.L.includes(p[1])?'вступило в реакцию':'образовалось'}? Ответ в моль.`,nk,3,{short:`n(${C(p[2])}) = ${N(mt)}/${N(Mr(p[2]))} = ${n2(nt)} → n(${C(p[1])}) = ${n2(nk)} моль.`,
+ explain:`1) ${EQ(rx)}<br>2) n(${C(p[2])}) = ${N(mt)} / ${N(Mr(p[2]))} = ${n2(nt)} моль.<br>3) n(${C(p[1])}) = ${n2(nt)} · ${K(rx,p[1])}/${K(rx,p[2])} = <b>${n2(nk)} моль</b>.`,
+ explain2:`Ответ в молях — значит, последний шаг (умножение на M) не нужен. Частая ошибка — забыть коэффициенты ${K(rx,p[1])} и ${K(rx,p[2])}: тогда вышло бы ${n2(nt)} моль.`});});
+
+/* ---- L4 избыток и недостаток ---- */
+RULE(4,'Даны массы обоих реагентов. По какому веществу считают продукт?','По веществу, которое в недостатке (у него n/коэффициент меньше)',['По веществу, которого больше по массе','По веществу в избытке','По любому — ответ одинаковый'],
+{short:'Считаем по недостатку: он закончится первым.',explain:'Реакция идёт, пока не закончится одно из веществ — то, что в <b>недостатке</b>. Его и используют для расчёта продукта. Сравнивают не массы, а n/k (моли, делённые на коэффициенты). Остаток второго вещества (избыток) в реакцию не вступит.',
+explain2:'10 колёс и 3 рамы — сколько велосипедов? Колёс на 5, рам на 3 → велосипедов 3. «Недостаток» — рамы. Сравнили «сколько комплектов хватит», а не штуки.'});
+const EXP=[['fes','Fe','S','FeS'],['zns','Zn','S','ZnS'],['mg','Mg','HCl','H2'],['zn','Zn','HCl','ZnCl2'],['h2o','H2','O2','H2O'],['cuo','CuO','H2','Cu'],['naoh','NaOH','HCl','NaCl'],['h2so4','NaOH','H2SO4','Na2SO4'],['ba','BaCl2','H2SO4','BaSO4'],['ag','AgNO3','NaCl','AgCl'],['cuoh','CuSO4','NaOH','Cu(OH)2'],['fecu','Fe','CuSO4','Cu']];
+const exMake=()=>{const p=pick(EXP);const rx=RX[p[0]];const ka=K(rx,p[1]),kb=K(rx,p[2]);const na=pick(NS.filter(x=>x<=2)),nb=pick(NS.filter(x=>x<=3));if(Math.abs(na/ka-nb/kb)<1e-9)return null;
+ const ma=na*Mr(p[1]),mb=nb*Mr(p[2]);if(!Number.isInteger(rd(ma*100,6))||!Number.isInteger(rd(mb*100,6)))return null;const lim=na/ka<nb/kb?0:1;const ext=Math.min(na/ka,nb/kb);return {p,rx,ka,kb,na,nb,ma,mb,lim,ext};};
+const exSteps=e=>`1) ${EQ(e.rx)}<br>2) n(${C(e.p[1])}) = ${N(rd(e.ma,2))}/${N(Mr(e.p[1]))} = ${n2(e.na)} моль; n(${C(e.p[2])}) = ${N(rd(e.mb,2))}/${N(Mr(e.p[2]))} = ${n2(e.nb)} моль.<br>3) Делим на коэффициенты: ${n2(e.na)}/${e.ka} = ${n2(e.na/e.ka)} и ${n2(e.nb)}/${e.kb} = ${n2(e.nb/e.kb)}. Меньше у ${C(e.p[1+e.lim])} — он в <b>недостатке</b>, ${C(e.p[2-e.lim])} — в избытке.`;
+G(4,()=>{const e=exMake();if(!e)return null;const opts=[`${nm(e.p[1])} ${C(e.p[1])}`,`${nm(e.p[2])} ${C(e.p[2])}`,'вещества взяты точно по уравнению'];
+ return {type:'choice',q:`${e.rx.st} Взяли ${N(rd(e.ma,2))} г ${C(e.p[1])} и ${N(rd(e.mb,2))} г ${C(e.p[2])}. Какое вещество в <b>избытке</b>?`,opts,ans:1-e.lim,short:`n/k: ${n2(e.na/e.ka)} и ${n2(e.nb/e.kb)} → избыток ${C(e.p[2-e.lim])}.`,
+ explain:exSteps(e)+`<br>Ответ: в избытке <b>${C(e.p[2-e.lim])}</b>.${(e.ma>e.mb)!==(e.lim===1)?'':` Заметь: по массе ${C(e.p[e.ma<e.mb?1:2])} меньше, но это ничего не значит — сравнивают моли.`}`,
+ explain2:`Проверка: чтобы прореагировали все ${n2(e.na)} моль ${C(e.p[1])}, нужно ${n2(e.na*e.kb/e.ka)} моль ${C(e.p[2])}. Есть ${n2(e.nb)} моль — это ${e.nb>e.na*e.kb/e.ka?'больше, значит '+C(e.p[2])+' в избытке':'меньше, значит '+C(e.p[2])+' в недостатке, а '+C(e.p[1])+' в избытке'}.`};});
+G(4,()=>{const e=exMake();if(!e)return null;const t=e.p[3];const nt=e.ext*K(e.rx,t);const gas=GAS.includes(t);const v=gas?nt*22.4:nt*Mr(t);
+ return NUM(`${e.rx.st} Взяли ${N(rd(e.ma,2))} г ${C(e.p[1])} и ${N(rd(e.mb,2))} г ${C(e.p[2])}. ${gas?`Какой объём ${nm(t)} (н.у.) получится? Ответ в литрах.`:`Сколько граммов ${nm(t)} получится?`}`,v,2,{hint:'Сначала найди, что в недостатке.',
+ short:`Недостаток — ${C(e.p[1+e.lim])}; n(${C(t)}) = ${n2(nt)} моль → ${N(rd(v,3))} ${gas?'л':'г'}.`,
+ explain:exSteps(e)+`<br>4) Считаем по недостатку: n(${C(t)}) = ${n2(e.ext)} · ${K(e.rx,t)} = ${n2(nt)} моль.<br>5) ${gas?`V = ${n2(nt)} · 22,4`:`m = ${n2(nt)} · ${N(Mr(t))}`} = <b>${N(rd(v,3))} ${gas?'л':'г'}</b>.`,
+ explain2:`Если посчитать по избытку (${C(e.p[2-e.lim])}), получится больше — но столько продукта не может образоваться: ${C(e.p[1+e.lim])} закончится раньше.`});});
+G(4,()=>{const e=exMake();if(!e)return null;const ex=e.p[2-e.lim];const nUsed=e.ext*K(e.rx,ex);const nLeft=(e.lim?e.na:e.nb)-nUsed;const mLeft=nLeft*Mr(ex);if(mLeft<=0)return null;
+ return NUM(`${e.rx.st} Взяли ${N(rd(e.ma,2))} г ${C(e.p[1])} и ${N(rd(e.mb,2))} г ${C(e.p[2])}. Сколько граммов вещества, взятого в избытке, останется после реакции?`,mLeft,2,{hint:'Найди недостаток, затем — сколько моль избытка израсходуется.',
+ short:`Избыток ${C(ex)}: израсходуется ${n2(nUsed)} моль, останется ${n2(nLeft)} моль = ${N(rd(mLeft,3))} г.`,
+ explain:exSteps(e)+`<br>4) ${C(ex)} израсходуется: ${n2(e.ext)} · ${K(e.rx,ex)} = ${n2(nUsed)} моль.<br>5) Останется: ${n2(e.lim?e.na:e.nb)} − ${n2(nUsed)} = ${n2(nLeft)} моль → m = ${n2(nLeft)} · ${N(Mr(ex))} = <b>${N(rd(mLeft,3))} г</b>.`,
+ explain2:`Через массы: израсходуется ${N(rd(nUsed*Mr(ex),3))} г ${C(ex)} из ${N(rd(e.lim?e.ma:e.mb,2))} г — останется ${N(rd(mLeft,3))} г.`});});
+
+/* ---- L5 выход ---- */
+RULE(5,'Что такое выход продукта η?','Отношение практически полученной массы (объёма) продукта к теоретически возможной',['Отношение массы продукта к массе реагента','Отношение теоретической массы к практической','Масса продукта, рассчитанная по уравнению'],
+{short:'η = m(практ.)/m(теор.) · 100 %.',explain:'Выход η = m(практ.) / m(теор.). Теоретическая масса — по уравнению реакции (максимум), практическая — то, что реально получили. Поэтому η ≤ 100 %. «Продукт / реагент» — это не выход: массы разных веществ сравнивать бессмысленно.',
+explain2:'Ты рассчитал, что из теста выйдет 20 печенек (теория), а получилось 18 (две сгорели) — выход 18/20 = 90 %.'});
+const YP=[['caco3','CaCO3','CaO'],['nh3','N2','NH3'],['domna','Fe2O3','Fe'],['cuo','CuO','Cu'],['ba','BaCl2','BaSO4'],['ag','AgNO3','AgCl'],['p','P','P2O5'],['fes','Fe','FeS'],['mgo','Mg','MgO'],['kclo3','KClO3','O2'],['caco3','CaCO3','CO2']];
+G(5,()=>{const p=pick(YP);const rx=RX[p[0]];const nk=pick(NS);const mk=nk*Mr(p[1]);if(!Number.isInteger(rd(mk*100,6)))return null;const s=solve(rx,p[1],p[2],nk);const eta=pick([60,70,75,80,85,90,95]);const gas=GAS.includes(p[2]);const th=gas?s.nt*22.4:s.nt*Mr(p[2]);const pr=th*eta/100;
+ return NUM(`${rx.st} Из ${N(rd(mk,2))} г ${nm(p[1])} получили ${N(rd(pr,3))} ${gas?'л':'г'} ${nm(p[2])}. Найди выход продукта. Ответ в процентах.`,eta,0,{hint:'Сначала теоретическая масса (объём) по уравнению.',
+ short:`Теория: ${N(rd(th,3))} ${gas?'л':'г'}; η = ${N(rd(pr,3))}/${N(rd(th,3))} = ${eta} %.`,
+ explain:`${s.steps}<br>4) Теоретически: ${gas?`V = ${n2(s.nt)} · 22,4`:`m = ${n2(s.nt)} · ${N(Mr(p[2]))}`} = ${N(rd(th,3))} ${gas?'л':'г'}.<br>5) η = ${N(rd(pr,3))} / ${N(rd(th,3))} = <b>${eta} %</b>.`,
+ explain2:`Выход всегда считают «практика / теория», поэтому η ≤ 100 %. Если вышло больше 100 % — перевёрнута дробь или ошибка в теории.`});});
+G(5,()=>{const p=pick(YP);const rx=RX[p[0]];const nk=pick(NS);const mk=nk*Mr(p[1]);if(!Number.isInteger(rd(mk*100,6)))return null;const s=solve(rx,p[1],p[2],nk);const eta=pick([60,70,75,80,85,90,95]);const gas=GAS.includes(p[2]);const th=gas?s.nt*22.4:s.nt*Mr(p[2]);const pr=th*eta/100;
+ return NUM(`${rx.st} Сколько ${gas?'литров (н.у.)':'граммов'} ${nm(p[2])} получится из ${N(rd(mk,2))} г ${nm(p[1])}, если выход составляет ${eta} %?`,pr,2,{short:`Теория ${N(rd(th,3))} · ${N(eta/100)} = ${N(rd(pr,3))} ${gas?'л':'г'}.`,
+ explain:`${s.steps}<br>4) Теоретически: ${N(rd(th,3))} ${gas?'л':'г'}.<br>5) Практически: ${N(rd(th,3))} · ${N(eta/100)} = <b>${N(rd(pr,3))} ${gas?'л':'г'}</b>.`,
+ explain2:`Выход ${eta} % — значит, получили ${eta} из каждых 100 частей, которые «обещало» уравнение. Ошибка — делить на ${N(eta/100)}: так ответ стал бы больше теории.`});});
+G(5,()=>{const p=pick(YP.filter(x=>!GAS.includes(x[2])));const rx=RX[p[0]];const nt=pick(NS);const eta=pick([75,80,90]);const mp=nt*Mr(p[2])*eta/100;if(!Number.isInteger(rd(mp*100,6)))return null;const nk=nt*K(rx,p[1])/K(rx,p[2]);const mk=nk*Mr(p[1]);
+ return NUM(`${rx.st} Сколько граммов ${nm(p[1])} нужно взять, чтобы на практике получить ${N(rd(mp,2))} г ${nm(p[2])}? Выход продукта — ${eta} %.`,mk,1,{hint:'Сначала найди, сколько продукта должно быть по теории: m(теор) = m(практ)/η.',
+ short:`m(теор) = ${N(rd(mp,2))}/${N(eta/100)} = ${N(rd(nt*Mr(p[2]),3))} г → n = ${n2(nt)} → m(${C(p[1])}) = ${N(rd(mk,2))} г.`,
+ explain:`1) ${EQ(rx)}<br>2) Теоретически нужно получить ${N(rd(mp,2))} / ${N(eta/100)} = ${N(rd(nt*Mr(p[2]),3))} г ${C(p[2])}, n = ${n2(nt)} моль.<br>3) n(${C(p[1])}) = ${n2(nt)} · ${K(rx,p[1])}/${K(rx,p[2])} = ${n2(nk)} моль → m = ${n2(nk)} · ${N(Mr(p[1]))} = <b>${N(rd(mk,2))} г</b>.`,
+ explain2:`Из-за потерь реагента нужно больше, чем «по уравнению», — в 1/${N(eta/100)} = ${N(rd(100/eta,3))} раза. Ошибка — умножить на ${N(eta/100)}: тогда реагента окажется меньше, и продукта не хватит.`});});
+
+/* ---- L6 примеси ---- */
+RULE(6,'Образец содержит примеси (их массовая доля w). Как найти массу чистого вещества?','m(чист.) = m(образца) · (1 − w(примесей))',['m(чист.) = m(образца) · w(примесей)','m(чист.) = m(образца) / (1 − w(примесей))','m(чист.) = m(образца) − w(примесей)'],
+{short:'Примесей 10 % → чистого 90 %: m · 0,9.',explain:'Если примесей w, то чистого вещества (1 − w): m(чист.) = m(образца) · (1 − w). Пример: 200 г известняка с 10 % примесей → 200 · 0,9 = 180 г CaCO₃. Умножить на w — значит найти массу <b>примесей</b>, а не вещества.',
+explain2:'Пакет орехов 500 г, 20 % — скорлупа. Ядер: 500 · 0,8 = 400 г. Скорлупа (примеси) — 100 г.'});
+G(6,()=>{const P=[['caco3','CaCO3','CO2','известняка'],['mel','CaCO3','CO2','мела'],['zn','Zn','H2','технического цинка'],['fe','Fe','H2','железных опилок'],['domna','Fe2O3','Fe','руды (красного железняка)'],['mg','Mg','H2','технического магния']];
+ const p=pick(P);const rx=RX[p[0]];const wi=pick([5,8,10,12,15,20,25]);const npure=pick(NS);const mpure=npure*Mr(p[1]);const msam=mpure/(1-wi/100);if(!Number.isInteger(rd(msam*100,6)))return null;
+ const s=solve(rx,p[1],p[2],npure);const gas=GAS.includes(p[2]);const v=gas?s.nt*22.4:s.nt*Mr(p[2]);
+ return NUM(`${rx.st} Взяли ${N(rd(msam,2))} г ${p[3]}, содержащего ${wi} % примесей (они не реагируют). ${gas?`Какой объём ${nm(p[2])} (н.у.) выделится? Ответ в литрах.`:`Сколько граммов ${nm(p[2])} получится?`}`,v,2,{hint:'Сначала масса чистого вещества.',
+ short:`m(${C(p[1])}) = ${N(rd(msam,2))}·${N(1-wi/100)} = ${N(rd(mpure,3))} г → ${N(rd(v,3))} ${gas?'л':'г'}.`,
+ explain:`0) Чистого ${C(p[1])}: ${N(rd(msam,2))} · (1 − ${N(wi/100)}) = ${N(rd(mpure,3))} г.<br>${s.steps}<br>4) ${gas?`V = ${n2(s.nt)} · 22,4`:`m = ${n2(s.nt)} · ${N(Mr(p[2]))}`} = <b>${N(rd(v,3))} ${gas?'л':'г'}</b>.`,
+ explain2:`Если забыть про примеси, ответ получится в 1/${N(1-wi/100)} ≈ ${N(rd(1/(1-wi/100),3))} раза больше: ${N(rd(v/(1-wi/100),3))} ${gas?'л':'г'}. Но примеси (песок, глина) ничего не выделяют.`});});
+G(6,()=>{const P=[['caco3','CaCO3','CO2','известняка'],['mel','CaCO3','CO2','мела'],['zn','Zn','H2','технического цинка'],['mg','Mg','H2','технического магния'],['al','Al','H2','технического алюминия']];
+ const p=pick(P);const rx=RX[p[0]];const wi=pick([4,5,8,10,12,15,20]);const ng=pick(NS.filter(x=>x<=2));const npure=ng*K(rx,p[1])/K(rx,p[2]);const mpure=npure*Mr(p[1]);const msam=mpure/(1-wi/100);if(!Number.isInteger(rd(msam*100,6)))return null;const V=ng*22.4;
+ return NUM(`${rx.st} Из ${N(rd(msam,2))} г ${p[3]} получили ${N(rd(V,3))} л ${nm(p[2])} (н.у.). Найди массовую долю примесей в образце. Ответ в процентах.`,wi,1,{hint:'По газу найди массу чистого вещества.',
+ short:`n(${C(p[2])}) = ${n2(ng)} → m(${C(p[1])}) = ${N(rd(mpure,3))} г → примесей ${wi} %.`,
+ explain:`1) ${EQ(rx)}<br>2) n(${C(p[2])}) = ${N(rd(V,3))}/22,4 = ${n2(ng)} моль → n(${C(p[1])}) = ${n2(npure)} моль → m = ${N(rd(mpure,3))} г.<br>3) w(${C(p[1])}) = ${N(rd(mpure,3))}/${N(rd(msam,2))} = ${N(rd(1-wi/100,4))}; w(примесей) = 1 − ${N(rd(1-wi/100,4))} = <b>${wi} %</b>.`,
+ explain2:`Масса примесей: ${N(rd(msam,2))} − ${N(rd(mpure,3))} = ${N(rd(msam-mpure,3))} г, их доля ${N(rd(msam-mpure,3))}/${N(rd(msam,2))} = ${wi} %.`});});
+G(6,()=>{const t=pick([1,2,5,10]);const w=pick([70,75,80,85,90]);const rx=RX.domna;const mFe2O3=t*w/100;const mFe=mFe2O3*112/160;
+ return NUM(`${rx.st} Руда содержит ${w} % ${C('Fe2O3')}. Сколько тонн железа можно получить из ${t} т руды?`,mFe,2,{hint:'Тонны можно не переводить: соотношение масс то же, что и в граммах.',
+ short:`${C('Fe2O3')}: ${N(rd(mFe2O3,3))} т; железа ${N(rd(mFe2O3,3))}·112/160 = ${N(rd(mFe,3))} т.`,
+ explain:`1) ${EQ(rx)}<br>2) m(${C('Fe2O3')}) = ${t} · ${N(w/100)} = ${N(rd(mFe2O3,3))} т.<br>3) Из 1 моль ${C('Fe2O3')} (160) — 2 моль Fe (2·56 = 112). m(Fe) = ${N(rd(mFe2O3,3))} · 112/160 = <b>${N(rd(mFe,3))} т</b>.`,
+ explain2:`Можно в моли: ${N(rd(mFe2O3,3))} т = ${N(rd(mFe2O3*1e6,0))} г → n = ${N(rd(mFe2O3*1e6/160,1))} моль → Fe ${N(rd(2*mFe2O3*1e6/160,1))} моль · 56 = ${N(rd(mFe*1e6,0))} г = ${N(rd(mFe,3))} т. Тот же ответ.`});});
+
+/* ---- L7 растворы ---- */
+RULE(7,'В реакцию вступает раствор вещества. Какую массу подставляют в n = m/M?','Массу растворённого вещества: m = w · m(р-ра)',['Массу всего раствора','Массу воды в растворе','Массу раствора, делённую на w'],
+{short:'Сначала m(в-ва) = w · m(р-ра), потом n = m/M.',explain:'Реагирует растворённое вещество, а вода (в обменных реакциях) — только среда. Поэтому сначала m(в-ва) = w · m(р-ра), а уже её подставляют в n = m/M. Масса раствора в 1/w раз больше — подставив её, ты получишь завышенный ответ.',
+explain2:'В 100 г 10 %-го раствора соли — 10 г соли и 90 г воды. Реакцию «чувствуют» только эти 10 г.'});
+G(7,()=>{const P=[['ba','BaCl2','BaSO4'],['ag','AgNO3','AgCl'],['ag','NaCl','AgCl'],['cuoh','CuSO4','Cu(OH)2'],['cuoh','NaOH','Cu(OH)2'],['ba','H2SO4','BaSO4']];const p=pick(P);const rx=RX[p[0]];const nk=pick([0.02,0.04,0.05,0.1,0.2,0.25]);const w=pick([5,8,10,16,20]);const ms=nk*Mr(p[1]);const msol=ms/(w/100);if(!Number.isInteger(rd(msol*10,6)))return null;
+ const s=solve(rx,p[1],p[2],nk);const mp=s.nt*Mr(p[2]);
+ return NUM(`${rx.st} Взяли ${N(rd(msol,2))} г ${w} %-го раствора ${nm(p[1])} и избыток второго реагента. Сколько граммов осадка ${nm(p[2])} выпадет?`,mp,2,{hint:'Сначала масса растворённого вещества.',
+ short:`m(${C(p[1])}) = ${N(rd(ms,3))} г → n = ${n2(nk)} → m(${C(p[2])}) = ${N(rd(mp,3))} г.`,
+ explain:`0) m(${C(p[1])}) = ${N(w/100)} · ${N(rd(msol,2))} = ${N(rd(ms,3))} г.<br>${s.steps}<br>4) m(${C(p[2])}) = ${n2(s.nt)} · ${N(Mr(p[2]))} = <b>${N(rd(mp,3))} г</b>.`,
+ explain2:`Типичная ошибка — подставить ${N(rd(msol,2))} г (весь раствор) в n = m/M. Получилось бы в ${N(rd(100/w,2))} раза больше осадка, чем вообще было вещества!`});});
+G(7,()=>{const P=[['zn','Zn','HCl'],['mg','Mg','HCl'],['al','Al','HCl'],['fe','Fe','H2SO4'],['naoh','NaOH','HCl'],['h2so4','NaOH','H2SO4'],['mel','CaCO3','HCl']];const p=pick(P);const rx=RX[p[0]];const nk=pick([0.05,0.1,0.2,0.25,0.4,0.5]);const mk=nk*Mr(p[1]);if(!Number.isInteger(rd(mk*100,6)))return null;const w=pick([5,7.3,10,14.6,20]);const s=solve(rx,p[1],p[2],nk);const ma=s.nt*Mr(p[2]);const msol=ma/(w/100);
+ return NUM(`${rx.st} Какая масса ${N(w)} %-го раствора ${p[2]==='HCl'?'соляной кислоты':'серной кислоты'} потребуется для реакции с ${N(rd(mk,2))} г ${nm(p[1])}?`,msol,1,{hint:'Найди массу чистой кислоты, затем m(р-ра) = m(в-ва)/w.',
+ short:`m(${C(p[2])}) = ${N(rd(ma,3))} г → m(р-ра) = ${N(rd(ma,3))}/${N(w/100)} = ${N(rd(msol,2))} г.`,
+ explain:`${s.steps}<br>4) m(${C(p[2])}) = ${n2(s.nt)} · ${N(Mr(p[2]))} = ${N(rd(ma,3))} г.<br>5) m(р-ра) = ${N(rd(ma,3))} / ${N(w/100)} = <b>${N(rd(msol,2))} г</b>.`,
+ explain2:`Раствор ${N(w)} %-й: в каждых 100 г — ${N(w)} г кислоты. Кислоты нужно ${N(rd(ma,3))} г — это ${N(rd(ma/w,4))} раза по ${N(w)} г, раствора ${N(rd(ma/w,4))}·100 = ${N(rd(msol,2))} г.`});});
+G(7,()=>{const P=[['zn','Zn','ZnCl2','H2'],['mg','Mg','MgCl2','H2'],['fe','Fe','FeSO4','H2']];const p=pick(P);const rx=RX[p[0]];const nk=pick([0.1,0.2,0.3,0.4]);const mk=nk*Mr(p[1]);const w=pick([7.3,10,14.6,20]);const acid=rx.L[1];
+ const ma=nk*K(rx,acid)*Mr(acid);const msol=ma/(w/100);const msalt=nk*Mr(p[2]);const mg=nk*Mr(p[3]);const mfin=mk+msol-mg;const wf=msalt/mfin*100;
+ return NUM(`${rx.st} ${N(rd(mk,2))} г ${nm(p[1])} растворили в точно необходимом количестве ${N(w)} %-го раствора ${acid==='HCl'?'соляной':'серной'} кислоты (${N(rd(msol,2))} г). Найди массовую долю соли в полученном растворе. Ответ в процентах.`,wf,1,{hint:'Масса раствора после реакции = металл + раствор кислоты − улетевший водород.',
+ short:`m(${C(p[2])}) = ${N(rd(msalt,2))} г; m(р-ра) = ${N(rd(mk,2))} + ${N(rd(msol,2))} − ${N(rd(mg,2))} = ${N(rd(mfin,2))} г; w ≈ ${N(rd(wf,1))} %.`,
+ explain:`1) ${EQ(rx)}; n(${C(p[1])}) = ${N(rd(mk,2))}/${N(Mr(p[1]))} = ${n2(nk)} моль.<br>2) n(${C(p[2])}) = n(H₂) = ${n2(nk)} моль → m(соли) = ${N(rd(msalt,2))} г, m(H₂) = ${N(rd(mg,2))} г.<br>3) m(р-ра) = ${N(rd(mk,2))} + ${N(rd(msol,2))} − ${N(rd(mg,2))} = ${N(rd(mfin,2))} г (водород улетел!).<br>4) w(соли) = ${N(rd(msalt,2))} / ${N(rd(mfin,2))} ≈ <b>${N(rd(wf,1))} %</b>.`,
+ explain2:`Закон сохранения массы: всё, что положили в стакан (металл + раствор), осталось в нём, кроме газа. Ошибка — забыть вычесть ${N(rd(mg,2))} г H₂ или не прибавить массу металла.`});});
+
+/* ---- L8 ★ ---- */
+const MIX=[['Mg','Zn','mg','zn'],['Mg','Al','mg','al'],['Zn','Fe','zn','fe'],['Al','Fe','al','fe'],['Al','Zn','al','zn'],['Mg','Fe','mg','fe']];
+const hOf=m=>m==='Al'?1.5:1;
+G(8,()=>{const mx=pick(MIX);const x=pick([0.05,0.1,0.15,0.2,0.3]),y=pick([0.05,0.1,0.15,0.2,0.3]);const M1=AM[mx[0]],M2=AM[mx[1]];const m=x*M1+y*M2;if(!Number.isInteger(rd(m*100,6)))return null;const nh=x*hOf(mx[0])+y*hOf(mx[1]);const V=nh*22.4;const w1=x*M1/m*100;
+ const ac=mx.includes('Fe')?'соляной':'соляной';
+ return NUM(`★ Смесь ${nm(mx[0])} и ${nm(mx[1])} массой ${N(rd(m,2))} г растворили в избытке ${ac} кислоты. Выделилось ${N(rd(V,3))} л водорода (н.у.). Найди массовую долю ${nm(mx[0])} в смеси. Ответ в процентах.`,w1,1,{hint:'Пусть x моль '+mx[0]+' и y моль '+mx[1]+'. Составь уравнения по массе и по водороду.',
+ short:`n(${mx[0]}) = ${N(x)}, n(${mx[1]}) = ${N(y)} моль → w = ${N(rd(x*M1,2))}/${N(rd(m,2))} ≈ ${N(rd(w1,1))} %.`,
+ explain:`${EQ(RX[mx[2]])}; ${EQ(RX[mx[3]])}.<br>Пусть n(${mx[0]}) = x, n(${mx[1]}) = y. Водорода: ${hOf(mx[0])===1?'x':'1,5x'} + ${hOf(mx[1])===1?'y':'1,5y'} = ${N(rd(V,3))}/22,4 = ${n2(nh)}.<br>Масса: ${M1}x + ${M2}y = ${N(rd(m,2))}.<br>Решаем систему: x = ${N(x)}, y = ${N(y)} (проверка: ${M1}·${N(x)} + ${M2}·${N(y)} = ${N(rd(m,2))} ✔).<br>m(${mx[0]}) = ${N(rd(x*M1,2))} г, w = ${N(rd(x*M1,2))}/${N(rd(m,2))} ≈ <b>${N(rd(w1,1))} %</b>.`,
+ explain2:`Как решить систему: из уравнения по водороду вырази ${hOf(mx[0])===1?'x = '+n2(nh)+' − '+(hOf(mx[1])===1?'y':'1,5y'):'x = ('+n2(nh)+' − '+(hOf(mx[1])===1?'y':'1,5y')+')/1,5'} и подставь в уравнение по массе — останется одно уравнение с y. Помни: алюминий трёхвалентный, 1 моль Al даёт 1,5 моль H₂.`});},{star:true});
+G(8,()=>{const act=pick(['Zn','Mg','Fe','Al']);const inert=pick(['Cu','Ag']);const n=pick([0.05,0.1,0.15,0.2,0.25]);const mAct=n*AM[act];const mIn=pick([1.6,2.2,3.2,4,5.4,6.4,10.8]);const m=mAct+mIn;const V=n*hOf(act)*22.4;
+ const rx=RX[{Zn:'zn',Mg:'mg',Fe:'fe',Al:'al'}[act]];const w=mIn/m*100;
+ return NUM(`★ ${N(rd(m,2))} г смеси порошков ${nm(act)} и ${nm(inert)} обработали избытком ${rx.L[1]==='HCl'?'соляной':'разбавленной серной'} кислоты; выделилось ${N(rd(V,3))} л газа (н.у.). Найди массовую долю ${nm(inert)} в смеси. Ответ в процентах.`,w,1,{hint:`${inert} стоит в ряду активности правее водорода.`,
+ short:`Газ даёт только ${act}: n = ${n2(n)} моль, m = ${N(rd(mAct,2))} г → w(${inert}) ≈ ${N(rd(w,1))} %.`,
+ explain:`${inert} с кислотой не реагирует (правее H в ряду активности). Газ — только от ${act}: ${EQ(rx)}.<br>n(H₂) = ${N(rd(V,3))}/22,4 = ${n2(n*hOf(act))} моль → n(${act}) = ${n2(n)} моль → m(${act}) = ${N(rd(mAct,2))} г.<br>m(${inert}) = ${N(rd(m,2))} − ${N(rd(mAct,2))} = ${N(rd(mIn,2))} г; w = ${N(rd(mIn,2))}/${N(rd(m,2))} ≈ <b>${N(rd(w,1))} %</b>.`,
+ explain2:`Ловушка — делить водород «на оба металла». Медь и серебро водород не вытесняют, поэтому система не нужна: нашли массу активного металла — остальное «инертный».`});},{star:true});
+G(8,()=>{const k=pick([1,2,3,4,5]);const dm=k*0.4;const nCu=dm/8;const mCu=nCu*64;const m0=pick([10,20,25,50]);
+ return NUM(`★ Железную пластинку массой ${m0} г опустили в раствор медного купороса. Через некоторое время её вынули, промыли и высушили — масса стала ${N(rd(m0+dm,2))} г. Сколько граммов меди осело на пластинке?`,mCu,2,{hint:'На 1 моль растворившегося железа оседает 1 моль меди: пластинка тяжелеет на 64 − 56 = 8 г.',
+ short:`Δm = ${N(dm)} г; 8 г на моль → n = ${n2(nCu)} моль → m(Cu) = ${N(rd(mCu,2))} г.`,
+ explain:`${EQ(RX.fecu)}.<br>Если растворилось x моль Fe (−56x г), осело x моль Cu (+64x г). Изменение: 64x − 56x = 8x = ${N(dm)} г → x = ${n2(nCu)} моль.<br>m(Cu) = ${n2(nCu)} · 64 = <b>${N(rd(mCu,2))} г</b> (растворилось ${N(rd(nCu*56,2))} г железа).`,
+ explain2:`Ловушка: ответ — не ${N(dm)} г! Пластинка одновременно и теряла железо, и набирала медь. ${N(dm)} г — только разница.`});},{star:true});
+G(8,()=>{const n=pick([0.05,0.1,0.15,0.2,0.25,0.3]);const mCa=n*100;const mNa=pick([4,6,7,10,12,15,20]);const m=mCa+mNa;const dm=n*44;const w=mCa/m*100;
+ return NUM(`★ Смесь карбоната кальция и хлорида натрия массой ${N(rd(m,2))} г прокалили до постоянной массы. Масса уменьшилась на ${N(rd(dm,2))} г. Найди массовую долю ${C('CaCO3')} в смеси. Ответ в процентах.`,w,1,{hint:'При прокаливании NaCl не меняется, а CaCO₃ теряет CO₂.',
+ short:`Δm = m(CO₂) → n(CaCO₃) = ${n2(n)} → ${N(rd(mCa,2))} г → w ≈ ${N(rd(w,1))} %.`,
+ explain:`${EQ(RX.caco3)}. NaCl при нагревании не разлагается, поэтому потеря массы — это улетевший CO₂.<br>n(CO₂) = ${N(rd(dm,2))}/44 = ${n2(n)} моль = n(CaCO₃) → m(CaCO₃) = ${n2(n)} · 100 = ${N(rd(mCa,2))} г.<br>w = ${N(rd(mCa,2))}/${N(rd(m,2))} ≈ <b>${N(rd(w,1))} %</b>.`,
+ explain2:`Ошибка — думать, что ${N(rd(dm,2))} г — масса карбоната. Нет, это только CO₂: на каждые 100 г CaCO₃ улетает 44 г.`});},{star:true});
+G(8,()=>{const P=[['Mg',2],['Zn',2],['Fe',2],['Al',3]];const p=pick(P);const n=pick([0.05,0.1,0.2,0.25]);const m=n*AM[p[0]];const V=n*p[1]/2*22.4;
+ const opts=['Mg','Zn','Fe','Ca','Al','Cu'].filter(x=>x!==p[0]);const wr=sample(opts,3);
+ return CH(`★ ${N(rd(m,2))} г ${p[1]===2?'двухвалентного':'трёхвалентного'} металла полностью растворили в соляной кислоте; выделилось ${N(rd(V,3))} л водорода (н.у.). Какой это металл?`,p[0],wr,{hint:'Найди n(H₂), затем n(металла) по уравнению и M = m/n.',
+ short:`n(H₂) = ${n2(n*p[1]/2)} → n(Me) = ${n2(n)} → M = ${N(rd(m,2))}/${n2(n)} = ${AM[p[0]]}: ${p[0]}.`,
+ explain:`${p[1]===2?'Me + 2HCl → MeCl₂ + H₂: n(Me) = n(H₂).':'2Me + 6HCl → 2MeCl₃ + 3H₂: n(Me) = n(H₂)·2/3.'}<br>n(H₂) = ${N(rd(V,3))}/22,4 = ${n2(n*p[1]/2)} моль → n(Me) = ${n2(n)} моль.<br>M = ${N(rd(m,2))} / ${n2(n)} = ${AM[p[0]]} г/моль → это <b>${p[0]}</b>.${p[0]==='Ca'?' (Кальций, правда, бурно реагирует и с водой кислоты — но водород всё равно 1 моль на моль металла.)':''}`,
+ explain2:`Проверь кандидатов: у ${p[0]} M = ${AM[p[0]]}, ${N(rd(m,2))} г — это ${n2(n)} моль, водорода ${n2(n*p[1]/2)} моль = ${N(rd(V,3))} л ✔ Медь вообще не реагирует с HCl.`});},{star:true});
+G(8,()=>{const vh=pick([4,6,8,10,12,20]);const vo=vh/2+pick([1,2,3,5]);const V=vh+vo;const rest=vo-vh/2;
+ return NUM(`★ ${N(V)} мл смеси водорода и кислорода взорвали. После приведения к исходным условиям (вода — жидкость) осталось ${N(rest)} мл кислорода. Каким был объём водорода в исходной смеси? Ответ в мл.`,vh,1,{hint:'2H₂ + O₂ → 2H₂O: прореагировало V − '+N(rest)+' мл газов в отношении 2 : 1.',
+ short:`Прореагировало ${N(V-rest)} мл в отношении 2 : 1 → H₂ = ${N(vh)} мл.`,
+ explain:`${EQ(RX.h2o)}. Вода — жидкость, её объём не считаем. Остался кислород, значит водород израсходован весь.<br>Прореагировало ${N(V)} − ${N(rest)} = ${N(V-rest)} мл смеси, H₂ : O₂ = 2 : 1 → V(H₂) = ${N(V-rest)} · 2/3 = <b>${N(vh)} мл</b>, V(O₂) = ${N(vh/2)} + ${N(rest)} = ${N(vo)} мл.`,
+ explain2:`Проверка: ${N(vh)} мл H₂ требуют ${N(vh/2)} мл O₂; было ${N(vo)} мл O₂, осталось ${N(vo)} − ${N(vh/2)} = ${N(rest)} мл ✔`});},{star:true});
+G(8,()=>{const x=pick([0.05,0.1,0.15,0.2]);const y=pick([0.05,0.1,0.2]);const mMg=x*24,mMgO=y*40;const m=mMg+mMgO;const V=x*22.4;const w=mMgO/m*100;const nHCl=2*x+2*y;
+ return NUM(`★ Магниевую ленту, частично окислившуюся на воздухе (смесь Mg и MgO), массой ${N(rd(m,2))} г растворили в избытке соляной кислоты. Выделилось ${N(rd(V,3))} л водорода (н.у.). Какова массовая доля MgO в образце? Ответ в процентах.`,w,1,{hint:'Водород выделяет только металлический магний; MgO реагирует с кислотой без газа.',
+ short:`n(Mg) = ${n2(x)} → ${N(rd(mMg,2))} г; MgO = ${N(rd(mMgO,2))} г → w ≈ ${N(rd(w,1))} %.`,
+ explain:`Mg + 2HCl → MgCl₂ + H₂↑ (газ); MgO + 2HCl → MgCl₂ + H₂O (без газа).<br>n(H₂) = ${N(rd(V,3))}/22,4 = ${n2(x)} моль = n(Mg) → m(Mg) = ${N(rd(mMg,2))} г.<br>m(MgO) = ${N(rd(m,2))} − ${N(rd(mMg,2))} = ${N(rd(mMgO,2))} г; w = ${N(rd(mMgO,2))}/${N(rd(m,2))} ≈ <b>${N(rd(w,1))} %</b>.`,
+ explain2:`Ловушка — считать, что MgO тоже выделяет водород. Оксид с кислотой даёт соль и воду. Поэтому по газу находим только металл, остальное — оксид.`});},{star:true});
+
+window.TOPIC={id:'c8_calc',title:'Расчёты по уравнениям',subtitle:'Химия · 8 класс',
+intro:`<p>Сколько водорода даст кусочек цинка, сколько железа выплавят из тонны руды и сколько CO₂ выделит известняк. Масса, объём и количество вещества по уравнению, избыток и недостаток, выход продукта, примеси, реакции в растворах. Есть живая модель «избыток и недостаток», а в конце — олимпиадные задачи на смеси металлов.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Моли и коэффициенты','Масса по массе','Объём газа','Многостадийные расчёты','Избыток и недостаток','Выход продукта','Примеси','Реакции в растворах','★ Смеси и олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
