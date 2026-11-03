@@ -1,0 +1,303 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Для родителя</title><style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head><body><main class="wrap" style="padding-top:20px"><p><a href="index.html" style="color:var(--accent-ink)">← Все тренажёры</a></p><div id="ph"></div></main><script>/* Задания с наградой: цепочки целей, код награды, проверка кода родителем */
+(function(){
+"use strict";
+const WEEK_CAP=1000;
+const SECRET='mama-trainers-2026-kx';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* need: {id, pct} — лучший результат с первого раза ≥ pct %; {id, star} — олимпиадный уровень ★ ≥ star % */
+const A='Артём',P='Павел',BOTH=[A,P];
+const Q=[
+ // ===== Артём: алгебра 8 =====
+ {n:1, who:[A], chain:'Алгебра · 8 класс', reward:100, title:'Квадратные корни без ошибок', need:[{id:'korni',pct:80}]},
+ {n:2, who:[A], chain:'Алгебра · 8 класс', reward:100, title:'Рациональные дроби', need:[{id:'drobi',pct:80}]},
+ {n:3, who:[A], chain:'Алгебра · 8 класс', reward:100, title:'Гипербола', need:[{id:'giperbola',pct:80}]},
+ {n:4, who:[A], chain:'Алгебра · 8 класс', reward:150, title:'Квадратные уравнения', need:[{id:'a8_quadratic',pct:80}]},
+ {n:5, who:[A], chain:'Алгебра · 8 класс', reward:150, title:'Теорема Виета', need:[{id:'a8_vieta',pct:80}]},
+ {n:6, who:[A], chain:'Алгебра · 8 класс', reward:200, title:'Правила алгебры наизусть: корни, дроби, гипербола', need:[{id:'korni:rules',pct:100},{id:'drobi:rules',pct:100},{id:'giperbola:rules',pct:100}]},
+ {n:7, who:[A], chain:'Алгебра · 8 класс', reward:400, title:'Олимпиадник: ★ по корням и дробям', need:[{id:'korni',star:70},{id:'drobi',star:70}]},
+ {n:8, who:[A], chain:'Алгебра · 8 класс', reward:400, title:'Параметры и неравенства (★)', need:[{id:'a8_quad_param',pct:80},{id:'a8_inequalities',star:70}]},
+ // ===== Артём: геометрия 8 =====
+ {n:11, who:[A], chain:'Геометрия · 8 класс', reward:100, title:'Четырёхугольники', need:[{id:'chetyrehugolniki',pct:80}]},
+ {n:12, who:[A], chain:'Геометрия · 8 класс', reward:100, title:'Площадь', need:[{id:'ploshchad',pct:80}]},
+ {n:13, who:[A], chain:'Геометрия · 8 класс', reward:150, title:'Теорема Пифагора', need:[{id:'g8_pythagoras',pct:80}]},
+ {n:14, who:[A], chain:'Геометрия · 8 класс', reward:150, title:'Подобие треугольников', need:[{id:'g8_similarity',pct:80}]},
+ {n:15, who:[A], chain:'Геометрия · 8 класс', reward:400, title:'Геометр-олимпиадник: ★ четырёхугольники и площадь', need:[{id:'chetyrehugolniki',star:70},{id:'ploshchad',star:70}]},
+ // ===== Артём: повторение 7 класса =====
+ {n:21, who:[A], chain:'Алгебра · повторение 7 класса', reward:100, title:'Преобразование выражений', need:[{id:'vyrazheniya',pct:80}]},
+ {n:22, who:[A], chain:'Алгебра · повторение 7 класса', reward:100, title:'Формулы сокращённого умножения', need:[{id:'fsu',pct:80}]},
+ {n:23, who:[A], chain:'Алгебра · повторение 7 класса', reward:300, title:'ФСУ: олимпиадный уровень ★', need:[{id:'fsu',star:70}]},
+ // ===== Артём: статистика =====
+ {n:31, who:[A], chain:'Вероятность и статистика', reward:100, title:'Множества', need:[{id:'mnozhestva',pct:80}]},
+ {n:32, who:[A], chain:'Вероятность и статистика', reward:100, title:'Среднее, медиана, размах', need:[{id:'srednee',pct:80}]},
+ {n:33, who:[A], chain:'Вероятность и статистика', reward:100, title:'Дисперсия', need:[{id:'dispersiya',pct:80}]},
+ {n:34, who:[A], chain:'Вероятность и статистика', reward:200, title:'Все правила статистики наизусть', need:[{id:'mnozhestva:rules',pct:100},{id:'srednee:rules',pct:100},{id:'dispersiya:rules',pct:100}]},
+ // ===== Русский язык =====
+ {n:41, who:BOTH, chain:'Русский язык', reward:100, title:'Русский: 5 класс', need:[{id:'russkiy:5',pct:80}]},
+ {n:42, who:BOTH, chain:'Русский язык', reward:150, title:'Русский: 6 класс', need:[{id:'russkiy:6',pct:80}]},
+ {n:43, who:[A], chain:'Русский язык', reward:200, title:'Русский: 7 класс', need:[{id:'russkiy:7',pct:80}]},
+ {n:44, who:[A], chain:'Русский язык', reward:300, title:'Русский: 8 класс', need:[{id:'russkiy:8',pct:80}]},
+ {n:45, who:[A], chain:'Русский язык', reward:200, title:'Правила 8 класса наизусть', need:[{id:'russkiy:8:rules',pct:90}]},
+ {n:46, who:[A], chain:'Русский язык', reward:400, title:'Русский: 9 класс (уровень ОГЭ)', need:[{id:'russkiy:9',pct:80}]},
+ {n:47, who:[P], chain:'Русский язык', reward:200, title:'Правила 5 класса наизусть', need:[{id:'russkiy:5:rules',pct:90}]},
+ {n:48, who:[P], chain:'Русский язык', reward:200, title:'Правила 6 класса наизусть', need:[{id:'russkiy:6:rules',pct:90}]},
+ // ===== Английский =====
+ {n:51, who:[P], chain:'Английский язык', reward:100, title:'English: Старт', need:[{id:'english:S',pct:80}]},
+ {n:52, who:[P], chain:'Английский язык', reward:100, title:'English: 2–4 класс', need:[{id:'english:P',pct:80}]},
+ {n:53, who:BOTH, chain:'Английский язык', reward:150, title:'English: 5 класс', need:[{id:'english:5',pct:80}]},
+ {n:54, who:BOTH, chain:'Английский язык', reward:200, title:'English: 6 класс', need:[{id:'english:6',pct:80}]},
+ {n:55, who:[A], chain:'Английский язык', reward:200, title:'English: 7 класс', need:[{id:'english:7',pct:80}]},
+ {n:56, who:[A], chain:'Английский язык', reward:300, title:'English: 8 класс', need:[{id:'english:8',pct:80}]},
+ {n:57, who:[A], chain:'Английский язык', reward:400, title:'English: 9 класс (уровень ОГЭ)', need:[{id:'english:9',pct:80}]},
+ // ===== Информатика (появится) =====
+ {n:61, who:BOTH, chain:'Программирование', reward:100, title:'Первая программа', need:[{id:'i_first_program',pct:80}]},
+ {n:62, who:BOTH, chain:'Программирование', reward:150, title:'Переменные и ввод', need:[{id:'i_variables',pct:80}]},
+ {n:63, who:BOTH, chain:'Программирование', reward:200, title:'Условия', need:[{id:'i_if',pct:80}]},
+ {n:64, who:BOTH, chain:'Программирование', reward:300, title:'Циклы', need:[{id:'i_for',pct:80},{id:'i_while',pct:80}]},
+ {n:65, who:BOTH, chain:'Программирование', reward:400, title:'Свой искусственный нейрон', need:[{id:'i_neural',pct:80}]},
+ // ===== Павел: математика 6 (появится) =====
+ {n:71, who:[P], chain:'Математика · 6 класс', reward:100, title:'Делимость чисел', need:[{id:'m6_divisibility',pct:80}]},
+ {n:72, who:[P], chain:'Математика · 6 класс', reward:100, title:'Обыкновенные дроби', need:[{id:'m6_fractions',pct:80}]},
+ {n:73, who:[P], chain:'Математика · 6 класс', reward:150, title:'Отношения и пропорции', need:[{id:'m6_proportions',pct:80}]},
+ {n:74, who:[P], chain:'Математика · 6 класс', reward:150, title:'Положительные и отрицательные числа', need:[{id:'m6_negative',pct:80}]},
+ {n:75, who:[P], chain:'Математика · 6 класс', reward:400, title:'Олимпиадник 6 класса ★', need:[{id:'m6_olymp',pct:70}]},
+];
+const QU={list:Q,WEEK_CAP};
+/* hash → 4 chars */
+const ALPH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function h4(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}let o='';for(let i=0;i<4;i++){o+=ALPH[h%32];h=Math.floor(h/32)^(h<<7>>>0);h>>>=0;}return o;}
+const pref=n=>n===A?'АР':n===P?'ПА':n.slice(0,2).toUpperCase();
+const nameByPref=p=>p==='АР'?A:p==='ПА'?P:null;
+function makeCode(name,q,ddmm){return `${pref(name)}-${ddmm}-Q${String(q.n).padStart(2,'0')}-${h4(SECRET+name+q.n+ddmm+q.reward)}`;}
+QU.verify=function(code){
+  const c=String(code).trim().toUpperCase().replace(/\s+/g,'').replace(/[–—]/g,'-');
+  const m=c.match(/^(АР|ПА)-(\d{4})-Q(\d{1,3})-([A-Z0-9]{4})$/);
+  if(!m)return {ok:false,msg:'Код записан неправильно. Пример: АР-0311-Q04-7KX2'};
+  const name=nameByPref(m[1]);const q=Q.find(x=>x.n===+m[3]);
+  if(!q||!name)return {ok:false,msg:'Такого задания нет.'};
+  if(makeCode(name,q,m[2]).split('-')[3]!==m[4])return {ok:false,msg:'Код не подтверждён: возможно, ошибка в символах или код придуман.'};
+  return {ok:true,name,q,date:m[2].slice(0,2)+'.'+m[2].slice(2),code:c};
+};
+/* state per child */
+const LS=()=>window.PROF?PROF.key('trainer:quests'):'trainer:quests';
+function st(){try{return JSON.parse(localStorage.getItem(LS())||'{}');}catch(e){return {};}}
+function saveSt(s){try{localStorage.setItem(LS(),JSON.stringify(s));}catch(e){}}
+function weekKey(d){d=d||new Date();const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=(t.getUTCDay()+6)%7;t.setUTCDate(t.getUTCDate()-day);return t.toISOString().slice(0,10);}
+function needOk(n,done){
+  if(n.star!=null){const a=done[n.id];const b=done[n.id+':star'];const v=Math.max(a&&a.star!=null?a.star:-1,b?b.pct:-1);return {ok:v>=n.star,have:v<0?null:v,txt:`★ олимпиадный уровень «${label(n.id)}» — не меньше ${n.star}% с первого раза`};}
+  const r=done[n.id];const v=r?(r.best!=null?r.best:r.pct):null;return {ok:v!=null&&v>=n.pct,have:v,txt:`«${label(n.id)}»${/:rules$/.test(n.id)?' — проверка правил':''} — не меньше ${n.pct}% с первого раза`};
+}
+let TITLES={};function label(id){const base=id.replace(/:(rules|star)$/,'');const [a,b]=base.split(':');if(b!=null)return (a==='russkiy'?'Русский язык, ':'Английский, ')+(b==='S'?'Старт':b==='P'?'2–4 класс':b+' класс');return TITLES[a]||a;}
+function hrefOf(id){const a=id.split(':')[0];return QU.href?QU.href(a):a+'.html';}
+QU.render=function(host,opts){
+  opts=opts||{};TITLES=opts.titles||TITLES;QU.href=opts.href||QU.href;const present=new Set(opts.present||[]);
+  const name=window.PROF?PROF.name():A;const done=window.PROF?PROF.done():{};const S=st();
+  const wk=weekKey();const spent=Object.values(S.claimed||{}).filter(c=>c.week===wk).reduce((a,c)=>a+c.reward,0);
+  const rulesOk=new Set(opts.rules||[]);
+  const mine=Q.filter(q=>q.who.includes(name)&&q.need.every(n=>{const b=n.id.split(':')[0];return present.has(b)&&(!/:rules$/.test(n.id)||b==='russkiy'||b==='english'||rulesOk.has(b));}));
+  const chains=[...new Set(mine.map(q=>q.chain))];
+  let h=`<div class="qhead"><div><b>${esc(name)}</b>, за каждое задание — награда на игровой счёт. Решай честно: засчитывается только результат <b>с первого раза</b>.</div>
+  <div class="qcap">На этой неделе: <b>${spent} ₽</b> из ${WEEK_CAP} ₽<div class="progress"><i style="width:${Math.min(100,spent/WEEK_CAP*100)}%"></i></div></div></div>`;
+  chains.forEach(ch=>{
+    const qs=mine.filter(q=>q.chain===ch);let prevDone=true;
+    h+=`<h3 class="gr">${esc(ch)}</h3><div class="qlist">`;
+    qs.forEach(q=>{
+      const claimed=S.claimed&&S.claimed[q.n];const checks=q.need.map(n=>needOk(n,done));const ok=checks.every(c=>c.ok);
+      const locked=!prevDone&&!claimed&&!ok;
+      const state=claimed?'claimed':ok?'ready':locked?'locked':'open';
+      h+=`<div class="qitem ${state}"><div class="qrew">${q.reward} ₽</div><div class="qbody"><b>${esc(q.title)}</b>
+      <ul>${checks.map((c,i)=>`<li>${c.ok?'✅':'⬜'} <a href="${esc(hrefOf(q.need[i].id))}">${esc(c.txt)}</a>${c.have!=null&&!c.ok?` <span class="small">(сейчас ${c.have}%)</span>`:''}</li>`).join('')}</ul>
+      ${claimed?`<div class="qcode">Код награды: <b>${esc(claimed.code)}</b> <span class="small">— покажи или отправь маме</span></div>`:ok?`<button class="btn" data-claim="${q.n}">🎁 Получить награду</button>`:locked?'<div class="small">🔒 Откроется после предыдущего задания</div>':''}
+      </div></div>`;
+      prevDone=!!claimed||ok;
+    });
+    h+='</div>';
+  });
+  if(!mine.length)h+='<p class="small">Задания для этого ученика появятся, когда будут готовы его тренажёры.</p>';
+  host.innerHTML=h;
+  host.querySelectorAll('[data-claim]').forEach(b=>b.onclick=()=>{
+    const q=Q.find(x=>x.n===+b.dataset.claim);const S2=st();S2.claimed=S2.claimed||{};
+    const spentNow=Object.values(S2.claimed).filter(c=>c.week===wk).reduce((a,c)=>a+c.reward,0);
+    if(spentNow+q.reward>WEEK_CAP){b.replaceWith(Object.assign(document.createElement('div'),{className:'box tip',innerHTML:`<b>Лимит недели</b>На этой неделе уже ${spentNow} ₽ из ${WEEK_CAP} ₽. Задание выполнено и никуда не денется — награду можно будет получить с понедельника.`}));return;}
+    const d=new Date();const ddmm=String(d.getDate()).padStart(2,'0')+String(d.getMonth()+1).padStart(2,'0');
+    S2.claimed[q.n]={code:makeCode(name,q,ddmm),reward:q.reward,week:wk,date:d.toISOString().slice(0,10)};saveSt(S2);QU.render(host,opts);
+  });
+};
+/* parent page */
+QU.parent=function(host){
+  const PAID='trainer:paid';const paid=()=>{try{return JSON.parse(localStorage.getItem(PAID)||'{}');}catch(e){return {};}};
+  host.innerHTML=`<div class="card"><h1>Для родителя: проверка кода награды</h1>
+  <p>Ребёнок выполнил задание и показал код вида <b>АР-0311-Q04-7KX2</b>. Введите его — страница проверит, настоящий ли он.</p>
+  <div class="inp"><input id="pcode" autocomplete="off" autocapitalize="characters" placeholder="АР-0311-Q04-7KX2"><button class="btn" id="pchk">Проверить</button></div>
+  <div id="pres"></div></div>
+  <div class="card"><h2>Уже выплачено (на этом устройстве)</h2><div id="plist"></div></div>
+  <div class="card"><h2>Все задания и награды</h2><p class="small">Лимит: не больше ${WEEK_CAP} ₽ в неделю на каждого ребёнка (тренажёр сам не даёт получить больше).</p>
+  <table class="sym"><thead><tr><th>№</th><th>Кому</th><th>Задание</th><th>Условие</th><th>Награда</th></tr></thead><tbody>
+  ${Q.map(q=>`<tr><td>${q.n}</td><td>${q.who.join(', ')}</td><td><b>${esc(q.title)}</b><br><span class="small">${esc(q.chain)}</span></td><td class="small">${q.need.map(n=>esc(n.star!=null?`★ ${n.id} ≥ ${n.star}%`:`${n.id} ≥ ${n.pct}%`)).join('<br>')}</td><td><b>${q.reward} ₽</b></td></tr>`).join('')}
+  </tbody></table></div>`;
+  const list=()=>{const p=paid();const k=Object.keys(p);host.querySelector('#plist').innerHTML=k.length?`<ul class="res-list">${k.map(c=>`<li><span>${esc(p[c].name)}: ${esc(p[c].title)}</span><span><b>${p[c].reward} ₽</b> · ${esc(p[c].paid)}</span></li>`).join('')}</ul>`:'<p class="small">Пока ничего.</p>';};
+  list();
+  const chk=()=>{const r=QU.verify(host.querySelector('#pcode').value);const out=host.querySelector('#pres');
+    if(!r.ok){out.innerHTML=`<div class="fb bad"><h3>❌ Код не подтверждён</h3>${esc(r.msg)}</div>`;return;}
+    const p=paid();const was=p[r.code];
+    out.innerHTML=`<div class="fb ok"><h3>✅ Код настоящий</h3><b>${esc(r.name)}</b> выполнил задание №${r.q.n} «${esc(r.q.title)}» (${esc(r.q.chain)}), дата: ${r.date}.<div class="ans" style="margin-top:6px">Награда: ${r.q.reward} ₽</div>
+    ${was?`<div class="small">Уже отмечено как выплаченное: ${esc(was.paid)}</div>`:`<button class="btn" id="ppay">Отметить: выплачено</button>`}</div>`;
+    const b=out.querySelector('#ppay');if(b)b.onclick=()=>{const p2=paid();p2[r.code]={name:r.name,title:r.q.title,reward:r.q.reward,paid:new Date().toLocaleDateString('ru-RU')};try{localStorage.setItem(PAID,JSON.stringify(p2));}catch(e){}chk();list();};
+  };
+  host.querySelector('#pchk').onclick=chk;host.querySelector('#pcode').addEventListener('keydown',e=>{if(e.key==='Enter')chk();});
+};
+window.QUESTS=QU;
+})();
+
+QUESTS.parent(document.getElementById('ph'));</script></body></html>

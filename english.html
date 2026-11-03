@@ -120,6 +120,38 @@ table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",seri
 .brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
 .brand a.home:hover{text-decoration:underline}
 @media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
 .gaps-text{font-size:20px;line-height:2.3}
 select.gap{font:inherit;font-size:18px;font-weight:600;padding:2px 6px;margin:0 2px;border-radius:8px;border:2px dashed var(--accent);background:var(--accent-soft);color:var(--accent-ink);min-width:44px;-webkit-appearance:menulist;appearance:menulist}
 select.gap.filled{border-style:solid}
@@ -149,6 +181,38 @@ textarea#ans{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px
 .tr{font-family:"Lucida Sans Unicode","Arial Unicode MS","Segoe UI",sans-serif;color:var(--muted)}
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
 <body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d){try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+</script>
 <script>/* Английский язык: реестр тем от «Старт» до 9 класса.
    Содержание добавляют файлы levels/*.js через RU.rule({...}) (имя RU оставлено общим для движка). */
 window.CONF={ls:'en-trainer:v1',lang:'en-GB',title:'Английский язык',subtitle:'От нуля до 9 класса · с озвучкой',
@@ -8275,7 +8339,7 @@ function lcsMatch(a,b){const n=a.length,m=b.length;const d=Array.from({length:n+
   const hit=new Array(n).fill(false);let i=0,j=0;while(i<n&&j<m){if(a[i]===b[j]){hit[i]=true;i++;j++;}else if(d[i+1][j]>=d[i][j+1])i++;else j++;}return hit;}
 function normSpell(x){return String(x).toLowerCase().replace(/[’‘`]/g,"'").replace(/[.!?,;:]+$/,'').replace(/\s+/g,' ').trim();}
 const C=window.CONF||{};
-const LS=C.ls||'ru-trainer:v1';
+const LS=window.PROF?PROF.key(C.ls||'ru-trainer:v1'):(C.ls||'ru-trainer:v1');
 const GRADES=C.grades||[5,6,7,8,9];
 const GL=C.gradeLabels||{};
 const PATH_CAP=9, REMED_NEED=3, REMED_MAX=10, REINF_MAX=3;
@@ -8306,6 +8370,7 @@ function gradePath(g){
     p.push({k:'intro',rule:rid});
     const items=RU.reg[rid].items.slice().sort((a,b)=>a.lvl-b.lvl);
     items.slice(0,PATH_CAP).forEach(it=>p.push({k:'item',key:it.key,rule:rid}));
+    p.push({k:'recall',rule:rid});
   });
   const mix=RU.mixes[g]||[];
   if(mix.length){p.push({k:'mixintro',grade:g});mix.slice().sort((a,b)=>a.lvl-b.lvl).forEach(it=>p.push({k:'item',key:it.key,rule:null}));}
@@ -8313,10 +8378,10 @@ function gradePath(g){
   return p;
 }
 function rulePath(rids,title){
-  const p=[];rids.forEach(rid=>{p.push({k:'intro',rule:rid});RU.reg[rid].items.slice().sort((a,b)=>a.lvl-b.lvl).slice(0,PATH_CAP).forEach(it=>p.push({k:'item',key:it.key,rule:rid}));});
+  const p=[];rids.forEach(rid=>{p.push({k:'intro',rule:rid});RU.reg[rid].items.slice().sort((a,b)=>a.lvl-b.lvl).slice(0,PATH_CAP).forEach(it=>p.push({k:'item',key:it.key,rule:rid}));p.push({k:'recall',rule:rid});});
   p.push({k:'end'});return p;
 }
-function start(path,grade,title){S.view='run';S.path=path;S.pos=0;S.stack=[];S.grade=grade;S.title=title;save();render();}
+function start(path,grade,title){S.view='run';S.path=path;S.pos=0;S.stack=[];S.grade=grade;S.title=title;S.runR=0;S.runW=0;S.recallOnly=false;save();render();}
 
 function pickItem(rid,usedInFrame){
   const all=RU.reg[rid].items.filter(it=>pure(it,rid)).sort((a,b)=>a.lvl-b.lvl);
@@ -8341,6 +8406,7 @@ function build(){
   document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>{S.view=b.dataset.v==='home'?(S.path.length&&S.pos<S.path.length?'home':'home'):'ref';save();render();});
   $('#themeBtn').onclick=()=>{const cur=document.documentElement.dataset.theme;const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.dataset.theme=dark?'light':'dark';try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}};
   try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('#main'));
   S=load()||fresh();
   if(S.view==='run'&&(!S.path.length))S.view='home';
   if(S.view==='run')S.view='home';
@@ -8384,9 +8450,10 @@ function showGrade(g){
     h+=`<li><span>${i+1}. ${esc(r.title)}</span><span class="row" style="gap:6px">${s?`<span class="small"><span class="ok-t">${s.r}</span>/<span class="bad-t">${s.w}</span></span>`:''}<button class="btn ghost" style="padding:6px 10px" data-r="${rid}">Начать отсюда</button></span></li>`;});
   m.innerHTML=`<div class="card" style="margin-top:20px"><button class="btn ghost" id="back">← Все уровни</button><h1 style="margin-top:12px">${gLabel(g)}</h1>
   <p>${rs.length} тем. Сначала короткое объяснение, потом упражнения. ${(RU.mixes[g]||[]).length?'В конце — итоговое упражнение, где встретятся и правила прошлых классов.':''}</p>
-  <button class="btn" id="go">Начать с первой темы</button></div>
+  <button class="btn" id="go">Начать с первой темы</button> <button class="btn ghost" id="rulesChk">🧠 Проверить правила</button></div>
   <div class="card"><h2>Темы: ${gLabel(g)}</h2><ul class="res-list">${h}</ul></div>`;
   $('#back').onclick=()=>render();
+  $('#rulesChk').onclick=()=>{const p=rs.map(r=>({k:'recall',rule:r}));p.push({k:'end'});start(p,g,'Проверка правил: '+gLabel(g));S.recallOnly=true;save();};
   $('#go').onclick=()=>start(gradePath(g),g,gLabel(g));
   m.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const p=gradePath(g);const idx=p.findIndex(s=>s.k==='intro'&&s.rule===b.dataset.r);start(p,g,gLabel(g));S.pos=Math.max(0,idx);save();render();});
   window.scrollTo({top:0});
@@ -8423,6 +8490,7 @@ function renderRun(m){
   const st=S.path[S.pos];
   if(!st){S.view='home';save();return render();}
   if(st.k==='intro')return renderIntro(m,st);
+  if(st.k==='recall')return renderRecall(m,st);
   if(st.k==='mixintro')return renderMixIntro(m,st);
   if(st.k==='end')return renderEnd(m);
   return renderItem(m,ITEMS[st.key],null);
@@ -8451,7 +8519,38 @@ function renderMixIntro(m,st){
   <div class="row"><button class="btn" id="ok">Начать →</button></div></div>`;
   bindTop();$('#ok').onclick=advance;
 }
+function renderRecall(m,st){
+  const r=RU.reg[st.rule];
+  m.innerHTML=`<div class="card" style="margin-top:20px">${topbar()}
+  <div style="margin-top:12px"><span class="lvl-tag re">🧠 Проверь себя: помнишь правило?</span></div>
+  <h2>${esc(r.title)}</h2>
+  <p>Не подглядывай! Вспомни правило и коротко запиши его своими словами (или скажи вслух). Потом сравни с правильным.</p>
+  <div class="inp"><textarea id="rec" rows="3" style="flex:1 1 100%;font:inherit;font-size:17px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)" placeholder="Правило своими словами…"></textarea></div>
+  <div class="row" style="margin-top:10px"><button class="btn" id="show">Показать правило</button></div><div id="recbox"></div></div>`;
+  bindTop();
+  $('#show').onclick=()=>{
+    $('#show').remove();
+    $('#recbox').innerHTML=`<div class="box rule" style="margin-top:12px"><b>Правило</b>${r.short||''}</div>
+    <p>Сравни честно: ты вспомнил главное?</p>
+    <div class="row"><button class="btn" id="recOk">✅ Да, вспомнил правильно</button><button class="btn warn" id="recNo">❌ Забыл или ошибся</button></div><div id="recMore"></div>`;
+    $('#recOk').onclick=()=>{const s=stat(st.rule);s.rc=(s.rc||0)+1;if(S.recallOnly){S.runR=(S.runR||0)+1;}advance();};
+    $('#recNo').onclick=()=>{const s=stat(st.rule);s.rf=(s.rf||0)+1;if(S.recallOnly){S.runW=(S.runW||0)+1;}
+      $('#recOk').disabled=true;$('#recNo').disabled=true;
+      $('#recMore').innerHTML=`<div class="fb alt" style="margin-top:12px"><h3>Ничего страшного — повторим</h3>${r.theory2||''}<details style="margin-top:8px"><summary>Полное правило</summary>${theoryBlock(r)}</details></div>
+      <div class="understand card" style="margin-top:12px"><label for="und">Прочитай и напиши «понял»:</label><div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div><div class="errmsg" id="undErr"></div></div>`;
+      const go=()=>{if(!isPonyal($('#und').value)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься.';return;}advance();};
+      $('#undOk').onclick=go;$('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});};
+  };
+}
+function recordDone(){
+  if(!window.PROF||S.grade==null)return;
+  const tot=(S.runR||0)+(S.runW||0);if(!tot)return;
+  const pct=Math.round((S.runR||0)/tot*100);
+  const id=(window.CONF&&CONF.ls?'english':'russkiy')+':'+S.grade+(S.recallOnly?':rules':'');
+  if(S.recallOnly||S.title===gLabel(S.grade))PROF.record(id,{pct,total:tot,right:S.runR||0});
+}
 function renderEnd(m){
+  recordDone();
   const rs=[...new Set(S.path.filter(s=>s.rule).map(s=>s.rule))];
   m.innerHTML=`<div class="card" style="margin-top:20px"><h1>Готово! 🎉</h1><p>${esc(S.title)} пройден.</p>
   <ul class="res-list">${rs.map(r=>{const s=S.stats[r]||{r:0,w:0};return `<li><span>${esc(RU.reg[r].title)}</span><span><span class="ok-t">${s.r} верно</span>${s.w?` · <span class="bad-t">${s.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
@@ -8558,6 +8657,7 @@ function answer(it,f,val){
   const ok=!wrongRules.length;
   const rulesHere=itemRules(it);
   if(!f||f.k!=='retry'){rulesHere.forEach(r=>{if(wrongRules.includes(r))stat(r).w++;else stat(r).r++;});}
+  if(!f){if(ok)S.runR=(S.runR||0)+1;else S.runW=(S.runW||0)+1;}
   const fb=$('#fb');
   const sayFull=it.type==='gaps'?fullText(it,false).replace(/<[^>]+>/g,''):(it.sayAfter||'');
   const correctShow=it.type==='gaps'?`<div class="ans">Правильно: ${fullText(it,true)}</div>`:it.type==='spell'?`<div class="ans">Правильно: ${esc(Array.isArray(it.ans)?it.ans[0]:it.ans)}</div>`:it.type==='read'?it._readShown:`<div class="ans">Правильный ответ: ${it.opts[it.ans]}</div>`;
