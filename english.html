@@ -213,6 +213,7 @@ window.addEventListener('online',flush);
 <script>/* Who is studying: separate progress for each child on the same device */
 (function(){
 const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
 const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
 const P=window.PROF={
   list:LIST,

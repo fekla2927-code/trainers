@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Вещества и явления — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range}=H;
+const N=H.num;const C=H.chem;
+const rd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+const NUM=(q,v,d,extra)=>{const a=rd(v,d);if(!isFinite(a)||a===0)return null;const exact=Math.abs(a-v)<1e-9;
+  return Object.assign({type:'num',q:q+(exact?'':[' Округли до целых.',' Округли до десятых.',' Округли до сотых.'][d]),ans:a,tol:exact?1e-6:0.6*Math.pow(10,-d)/Math.abs(a)},extra||{});};
+/* multi-choice from positive / negative pools */
+const MU=(q,pos,neg,k,extra)=>{const np=R(2,Math.min(pos.length,k-2));const items=shuffle(sample(pos,np).map(x=>[x,1]).concat(sample(neg,k-np).map(x=>[x,0])));
+  return Object.assign({type:'multi',q,opts:items.map(x=>x[0][0]),ans:items.map((x,i)=>x[1]?i:-1).filter(i=>i>=0),_items:items},extra||{});};
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+
+/* ---------- data ---------- */
+const BODY=[['стакан',0],['стекло',1],['гвоздь',0],['железо',1],['алюминий',1],['ложка',0],['кислород',1],['сахар',1],['снежинка',0],['вода',1],['капля росы',0],['медь',1],['провод',0],['монета',0],['золото',1],['карандаш',0],['графит',1],['мел',1],['кирпич',0],['поваренная соль',1],['айсберг',0],['смартфон',0],['кремний',1],['гиря',0],['парафин',1],['свеча',0]];
+const PURE=[['дистиллированная вода',1],['морская вода',0],['воздух',0],['кислород',1],['молоко',0],['гранит',0],['сахар (рафинад)',1],['железо',1],['углекислый газ',1],['нефть',0],['почва',0],['медь',1],['чай',0],['азот',1],['поваренная соль (химически чистая)',1],['минеральная вода',0],['природный газ',0],['алюминий',1],['кровь',0],['уксус (столовый)',0]];
+const HOMO=[['воздух',1],['раствор поваренной соли',1],['раствор сахара в воде',1],['столовый уксус',1],['песок с водой',0],['молоко',0],['гранит',0],['железные опилки с серой',0],['масло с водой',0],['мутная речная вода',0],['глина с водой',0],['природный газ',1],['газированная вода с пузырьками',0],['раствор медного купороса',1]];
+/* mixture -> acceptable methods */
+const MET=['магнит','фильтрование','отстаивание','выпаривание','дистилляция','хроматография'];
+const SEP=[
+ ['железные и древесные опилки',['магнит','отстаивание'],'железо притягивается магнитом, дерево — нет'],
+ ['поваренную соль из её раствора в воде',['выпаривание','дистилляция'],'вода испаряется, а соль остаётся в чашке'],
+ ['чистую (питьевую) воду из морской',['дистилляция'],'вода кипит и испаряется, пар охлаждают — он снова становится чистой водой, а соль остаётся'],
+ ['растительное масло и воду',['отстаивание'],'масло не смешивается с водой, оно легче и собирается сверху; слои разделяют делительной воронкой'],
+ ['мел и воду',['фильтрование','отстаивание'],'мел не растворяется: частицы застревают на фильтре (или оседают на дно)'],
+ ['спирт и воду',['дистилляция'],'спирт кипит при 78 °С, вода — при 100 °С: спирт испаряется первым'],
+ ['чаинки и заваренный чай',['фильтрование','отстаивание'],'чаинки не растворяются — их задерживает ситечко (фильтр)'],
+ ['железные опилки и речной песок',['магнит'],'железо притягивается магнитом, песок — нет'],
+ ['красители в капле чернил',['хроматография'],'разные красители с разной скоростью «бегут» по бумаге вместе с водой'],
+ ['сахар из сиропа (раствора сахара)',['выпаривание','дистилляция'],'вода испаряется, сахар остаётся в виде кристаллов'],
+ ['песок и воду',['фильтрование','отстаивание'],'песок не растворяется и тяжелее воды: он оседает и задерживается на фильтре'],
+ ['железные опилки и порошок серы',['магнит','отстаивание'],'железо притягивается магнитом, сера — нет']];
+const BASIS={'магнит':'на том, что одно из веществ притягивается магнитом, а другое нет','фильтрование':'на том, что частицы нерастворимого вещества не проходят через поры фильтра','отстаивание':'на разной плотности веществ, которые не растворяются друг в друге','выпаривание':'на том, что вода испаряется, а растворённое твёрдое вещество — нет','дистилляция':'на разной температуре кипения жидкостей','хроматография':'на том, что разные вещества с разной скоростью движутся по бумаге (впитываются по-разному)'};
+const PHEN=[
+ ['лёд тает',0,'вода остаётся водой, меняется только агрегатное состояние'],['вода кипит',0,'жидкая вода превращается в пар — это та же вода'],['железо ржавеет',1,'образуется новое вещество — ржавчина (бурого цвета)'],['свеча горит',1,'парафин превращается в углекислый газ и воду'],['молоко скисает',1,'образуется молочная кислота, меняются вкус и запах'],['сахар растворяется в чае',0,'сахар никуда не делся — чай сладкий, при выпаривании сахар вернётся'],['лист на дереве желтеет осенью',1,'зелёный хлорофилл разрушается — новые вещества'],['гниёт яблоко',1,'образуются новые вещества с неприятным запахом'],['кузнец куёт подкову',0,'меняется только форма железа'],['лужа высыхает',0,'вода испаряется, но остаётся водой'],['пищевую соду гасят уксусом',1,'выделяется новый газ — углекислый'],['серебряная ложка темнеет',1,'на поверхности образуется новое вещество — сульфид серебра'],['жарят яичницу',1,'белок сворачивается: образуются новые вещества, назад не «разжарить»'],['мел растирают в порошок',0,'мел остаётся мелом, только мельче'],['светится лампа накаливания',0,'вольфрамовая нить раскаляется, но вещество не меняется'],['горит природный газ на плите',1,'метан превращается в углекислый газ и воду'],['стекло запотевает',0,'водяной пар конденсируется в капли воды'],['вода замерзает',0,'вода становится льдом — это та же вода'],['происходит фотосинтез в листьях',1,'из углекислого газа и воды образуются сахар и кислород'],['ржавеет железный гвоздь в воде',1,'образуется ржавчина']];
+const SIGNS=['выделение газа','образование осадка','изменение цвета','появление запаха','выделение света и тепла'];
+const SIGNX=[
+ ['В пищевую соду капнули уксус — смесь зашипела и вспенилась.','выделение газа','пузырьки — это новый, углекислый газ'],
+ ['Магниевую ленту подожгли — она ярко вспыхнула белым пламенем.','выделение света и тепла','горение всегда сопровождается светом и теплом'],
+ ['Через трубочку выдыхают в прозрачную известковую воду — она мутнеет.','образование осадка','углекислый газ из выдоха даёт нерастворимый мел — мелкие белые частицы'],
+ ['Блестящую медную проволоку подержали в пламени — она почернела.','изменение цвета','на поверхности образовался чёрный оксид меди'],
+ ['Яйцо долго пролежало в тепле — появился запах тухлого яйца.','появление запаха','при гниении белка выделяется сероводород'],
+ ['В раствор медного купороса опустили железный гвоздь — гвоздь покрылся красным налётом, синий раствор позеленел.','изменение цвета','железо вытеснило медь — образовались новые вещества'],
+ ['К раствору соли добавили другой раствор — выпали белые хлопья.','образование осадка','появилось нерастворимое вещество'],
+ ['Дрова горят в костре.','выделение света и тепла','горение — химическая реакция с выделением света и тепла'],
+ ['В кусочек мела капнули соляной кислотой — он покрылся пузырьками.','выделение газа','выделяется углекислый газ']];
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Из чего сделан твой смартфон?',lvl:0,html:`
+<p class="hook">Переверни телефон. Корпус — <b>алюминий</b> или пластик, экран — особое <b>стекло</b>, внутри — процессор из <b>кремния</b>, аккумулятор с <b>литием</b>, медные дорожки и крошечные капельки <b>золота</b> на контактах. Один телефон — а в нём десятки разных веществ! Химия как раз и изучает <b>вещества</b>: из чего они состоят, какие у них свойства и как одни вещества превращаются в другие.</p>
+<p>В этой теме ты разберёшься: чем тело отличается от вещества, что такое чистое вещество и смесь, как разделить смесь (даже песок, соль и железные опилки!) и как отличить физическое явление от химического.</p>
+<div class="box tip"><b>Маршрут</b>тела и вещества → свойства → чистые вещества и смеси → однородные и неоднородные смеси → разделение смесей (с игрой) → физические и химические явления → признаки реакций → расчёты → олимпиадные задачи.</div>
+<div class="fact">В одном смартфоне около 0,03 г золота. Из тонны старых телефонов можно извлечь больше золота, чем из тонны золотой руды.</div>`},
+{title:'Тела и вещества',lvl:0,html:`
+<div class="box rule"><b>Тело и вещество</b><b>Физическое тело</b> — любой конкретный предмет (гвоздь, стакан, капля). <b>Вещество</b> — то, из чего состоит тело (железо, стекло, вода).</div>
+<p><b>Почему так.</b> Тело можно сосчитать и взять в руки: «один гвоздь, два гвоздя». У вещества нет формы: железо может быть гвоздём, подковой, рельсом. Задай вопрос: «<b>Из чего</b> это сделано?» — ответ и будет веществом.</p>
+<div class="box ex"><b>Примеры</b>Ложка (тело) — из стали, серебра или пластика (вещества). Сосулька (тело) — из воды (вещество). Одно вещество — много тел: из стекла делают стакан, окно, экран телефона.</div>
+<div class="box err"><b>Частая ошибка</b>«Капля воды — вещество». Нет: капля — это <b>тело</b> (у неё есть форма и размер), а вода — вещество, из которого она состоит.</div>`},
+{title:'Свойства веществ',lvl:1,html:`
+<div class="box rule"><b>Физические свойства</b>агрегатное состояние (твёрдое, жидкое, газ), цвет, блеск, запах, вкус, плотность, растворимость в воде, температуры плавления и кипения, теплопроводность, электропроводность, твёрдость.</div>
+<p><b>Зачем это нужно.</b> По свойствам вещества узнают, как людей — по приметам. «Серебристая жидкость, очень тяжёлая» — это ртуть. «Жёлтый порошок, не смачивается водой» — сера. «Красноватый металл, отлично проводит ток» — медь, поэтому из неё делают провода.</p>
+<div class="box ex"><b>Пример</b>Вода: бесцветная жидкость без запаха, плотность 1 г/см³, кипит при 100 °С, замерзает при 0 °С. Поваренная соль: белые кристаллы, солёная, хорошо растворяется в воде, плавится при 801 °С.</div>
+<div class="box err"><b>Техника безопасности</b>В лаборатории вещества <b>никогда не пробуют на вкус</b>. Запах определяют так: держат сосуд в стороне и <b>направляют пары к себе взмахом ладони</b>, а не нюхают прямо из горлышка.</div>
+<div class="box err"><b>Частая ошибка</b>Путать свойства тела и вещества. Масса, форма и размер — это свойства <b>тела</b>. У гвоздя и рельса разные масса и форма, но одинаковые цвет, плотность и t плавления — это свойства <b>железа</b>.</div>`},
+{title:'Чистые вещества и смеси',lvl:2,html:`
+<div class="box rule"><b>Чистое вещество и смесь</b><b>Чистое вещество</b> состоит из одинаковых частиц и имеет постоянные свойства (например, точную температуру кипения). <b>Смесь</b> — несколько веществ вместе, и <b>каждое сохраняет свои свойства</b>.</div>
+<p><b>Почему так.</b> Смешай железные опилки с серой: железо по-прежнему притягивается магнитом, а сера по-прежнему жёлтая и всплывает в воде. Ничего нового не появилось — это смесь.</p>
+<div class="box ex"><b>Примеры</b>Чистые вещества: дистиллированная вода, кислород, азот, железо, медь, сахар. Смеси: воздух (азот + кислород + аргон + углекислый газ…), морская вода, молоко, нефть, гранит, почва, чай.</div>
+<div class="box tip"><b>Как отличить</b>Чистая вода кипит ровно при 100 °С (при нормальном давлении), и температура не меняется, пока вся вода не выкипит. Морская вода начинает кипеть выше 100 °С, и по мере выкипания температура растёт — признак смеси.</div>
+<div class="box err"><b>Частая ошибка</b>«Минеральная вода из магазина — чистое вещество, ведь она чистая». Нет: в химии «чистое» значит «одно вещество». В минеральной воде растворены соли — это смесь.</div>`},
+{title:'Однородные и неоднородные смеси',lvl:3,html:`
+<div class="box rule"><b>Два вида смесей</b><b>Однородная</b> — частицы компонентов не видны даже под микроскопом (воздух, раствор соли, уксус). <b>Неоднородная</b> — частицы видны глазом или под микроскопом (песок с водой, молоко, гранит).</div>
+<p><b>Почему молоко неоднородное?</b> Оно кажется ровным, но под микроскопом видны капельки жира, плавающие в воде. А в растворе соли частицы соли размером с молекулы — их не увидишь никаким обычным микроскопом.</p>
+<div class="box ex"><b>Пример</b>Песок + вода — неоднородная (песчинки видны). Сахар + вода (размешали) — однородная: раствор прозрачный.</div>
+<div class="box err"><b>Частая ошибка</b>«Прозрачная — значит, чистое вещество». Раствор соли прозрачный, но это смесь (однородная).</div>`},
+{title:'Как разделить смесь',lvl:4,html:`
+<div class="box rule"><b>Способы разделения</b>Смеси разделяют, используя <b>разницу в свойствах</b> компонентов:<br>• <b>магнит</b> — одно вещество притягивается (железо);<br>• <b>отстаивание</b> — разная плотность (песок оседает, масло всплывает);<br>• <b>фильтрование</b> — нерастворимые частицы задерживаются на фильтре;<br>• <b>выпаривание</b> — вода испаряется, растворённое твёрдое остаётся;<br>• <b>дистилляция (перегонка)</b> — разные температуры кипения;<br>• <b>хроматография</b> — вещества по-разному движутся по бумаге.</div>
+<p><b>Как выбрать способ.</b> Спроси себя: чем компоненты <b>отличаются</b>? Притягивается ли одно магнитом? Растворяется ли в воде? Кипят ли при разной температуре?</p>
+<div class="box ex"><b>Пример</b>Соль + вода: соль растворена, фильтр её не задержит! Нужно <b>выпаривание</b> (если нужна соль) или <b>дистилляция</b> (если нужна чистая вода).</div>
+<div class="box err"><b>Частая ошибка</b>Фильтровать раствор соли. Растворённая соль проходит через фильтр вместе с водой. Фильтр задерживает только <b>нерастворимое</b>.</div>
+<p><b>Попробуй сам:</b> разделить песок, соль и железные опилки. Нажимай кнопки в правильном порядке.</p>
+<div class="widget" id="w-sep"></div>
+<div class="fact">На многих морских кораблях и в пустынных странах (например, в Израиле и ОАЭ) питьевую воду получают из морской: дистилляцией или пропуская воду через особые мембраны под давлением.</div>`},
+{title:'Физические и химические явления',lvl:5,html:`
+<p class="hook">Почему железный гвоздь ржавеет за пару недель, а золотое кольцо и через 3000 лет блестит, как новое? Ржавчина — это <b>новое вещество</b>: железо соединилось с кислородом и водой. А золото почти ни с чем не реагирует — оно «химически ленивое». Ржавление — химическое явление, и с золотом его просто не происходит.</p>
+<div class="box rule"><b>Два вида явлений</b><b>Физическое</b> — вещества остаются прежними, меняются форма, размер, агрегатное состояние (лёд тает, стекло разбилось). <b>Химическое (химическая реакция)</b> — из одних веществ образуются <b>новые вещества</b> (железо ржавеет, бумага горит).</div>
+<p><b>Как проверить.</b> Спроси: «Появилось ли новое вещество с новыми свойствами?» Растаявший лёд — та же вода, её можно снова заморозить. А из пепла бумагу обратно не соберёшь.</p>
+<div class="box ex"><b>Пример: свеча</b>Горящая свеча — сразу два явления: парафин <b>плавится</b> (физическое) и <b>горит</b> (химическое: получаются углекислый газ и вода).</div>
+<div class="box err"><b>Частая ошибка</b>«Растворение сахара — химическое явление, ведь сахар исчез». Не исчез: чай сладкий, а если выпарить воду — сахар вернётся. Это физическое явление.</div>
+<div class="fact">Золотая маска Тутанхамона пролежала в гробнице больше 3000 лет — и блестит до сих пор. Золото не реагирует ни с кислородом, ни с водой, поэтому не тускнеет и не ржавеет.</div>`},
+{title:'Признаки химических реакций',lvl:6,html:`
+<div class="box rule"><b>Признаки реакции</b>По ним видно, что образовалось новое вещество:<br>• изменение цвета;<br>• выделение газа (пузырьки, шипение);<br>• образование или растворение осадка (муть, хлопья);<br>• появление запаха;<br>• выделение или поглощение тепла, выделение света.</div>
+<div class="box rule"><b>Условия</b>Чтобы реакция началась, вещества должны <b>соприкоснуться</b>; многим реакциям нужно ещё и <b>нагревание</b> (спичку надо поджечь).</div>
+<div class="box ex"><b>Пример</b>Сода + уксус — шипение и пена: выделяется углекислый газ. Выдох через трубочку в известковую воду — муть: образуется осадок мела.</div>
+<div class="box err"><b>Частая ошибка</b>Пузырьки при кипении воды — <b>не</b> признак реакции: это пар той же воды. А свет от лампочки — не горение: нить светится, но не превращается в другое вещество. Признак работает, только если появилось <b>новое вещество</b>.</div>`},
+{title:'Считаем состав смеси',lvl:7,html:`
+<div class="box rule"><b>Массовая доля</b><span class="m">w = m(компонента) / m(смеси) · 100 %</span></div>
+<p><b>Почему так.</b> Это просто «какая часть смеси приходится на это вещество». Если в 100 г смеси 30 г железа, то железа 30 %.</p>
+<div class="box ex"><b>Пример</b>Из 80 г смеси железных опилок и песка магнитом вынули 20 г железа. w(Fe) = 20 / 80 · 100 % = 25 %, песка — 75 %.</div>
+<div class="box ex"><b>Пример</b>В 500 г морской воды 3,5 % соли. m(соли) = 500 · 0,035 = 17,5 г — столько соли останется после выпаривания.</div>
+<div class="box err"><b>Частая ошибка</b>Делить на массу <b>другого</b> компонента, а не всей смеси: 20 / 60 вместо 20 / 80.</div>
+<div class="fact">Воздух — смесь: по объёму в нём около 78 % азота, 21 % кислорода и почти 1 % аргона. Углекислого газа — всего около 0,04 %.</div>`},
+{title:'★ Олимпиадные приёмы',lvl:8,html:`
+<ol class="steps">
+<li><b>Порядок важен.</b> Сначала убирают то, что «помешает» потом. Железо лучше вынуть магнитом <b>до</b> добавления воды: мокрое железо начнёт ржаветь, а на фильтре оно смешается с песком.</li>
+<li><b>Флотация.</b> Порошок серы не смачивается водой и всплывает, а тяжёлые опилки и песок тонут. Так отделяют серу.</li>
+<li><b>Вещество ≠ агрегатное состояние.</b> Лёд, вода и пар в одном сосуде — это <b>одно</b> вещество (вода), но три «фазы».</li>
+<li><b>Баланс масс.</b> Масса смеси = сумма масс компонентов. Если знаешь всё, кроме одного, — вычти.</li>
+</ol>
+<div class="box ex"><b>Пример</b>Песок + соль + железо: магнит → вода (соль растворится) → фильтрование (песок на фильтре) → выпаривание фильтрата (соль в чашке).</div>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Знаки',title:'Понятия и способы',rows:[
+['тело','конкретный предмет','Имеет форму, размер, массу.','гвоздь, стакан'],
+['вещество','из чего сделано тело','Обладает свойствами: цвет, плотность, t кипения.','железо, стекло'],
+['чистое вещество','одно вещество','Постоянные свойства.','дистиллированная вода'],
+['смесь','несколько веществ','Каждое сохраняет свои свойства.','воздух, молоко'],
+['однородная смесь','частиц не видно','Даже под микроскопом.','раствор соли'],
+['неоднородная смесь','частицы видны','Глазом или в микроскоп.','песок + вода'],
+['магнит','разделение','Притягивает железо.','Fe + сера'],
+['фильтрование','разделение','Задерживает нерастворимое.','мел + вода'],
+['выпаривание','разделение','Вода уходит, соль остаётся.','раствор соли'],
+['дистилляция','разделение','Разные t кипения.','спирт + вода'],
+['физическое явление','вещество то же','Меняются форма, состояние.','таяние льда'],
+['химическое явление','новые вещества','Есть признаки реакции.','ржавление'],
+['w = m<sub>к</sub>/m<sub>см</sub>·100 %','массовая доля','Какая часть смеси — этот компонент.','20/80 = 25 %']
+],after:`<div class="box tip" style="margin-top:14px"><b>Признаки реакции</b>цвет · газ · осадок · запах · свет и тепло</div>`};
+
+/* ---------- widget: separation game ---------- */
+function onTheory(root){const w=root.querySelector('#w-sep');if(!w)return;
+  let st;
+  const NM={sand:'песок',salt:'соль',iron:'железные опилки'};
+  const reset=()=>{st={mix:['sand','salt','iron'],water:false,got:[],log:['В стакане сухая смесь: песок + соль + железные опилки.']};draw();};
+  const say=s=>st.log.push(s);
+  const act={
+    magnet(){if(st.mix.includes('iron')){st.mix=st.mix.filter(x=>x!=='iron');st.got.push(['железные опилки',true]);say(st.water?'Магнит вытащил опилки, но они мокрые — придётся сушить, а то заржавеют.':'Магнит притянул железные опилки. Отлично!');}else say('Магнит ничего не притягивает: железа в смеси нет.');},
+    water(){if(st.water){say('Вода уже налита.');return;}st.water=true;say(st.mix.includes('salt')?'Налили воду и перемешали: соль растворилась, песок'+(st.mix.includes('iron')?' и опилки лежат':' лежит')+' на дне.':'Налили воду.');},
+    filter(){if(!st.water){say('Сухую смесь фильтровать бессмысленно — сначала добавь воду.');return;}const ins=st.mix.filter(x=>x!=='salt');if(!ins.length){say('Нерастворимого ничего нет — фильтр ничего не задержит.');return;}
+      st.mix=st.mix.filter(x=>x==='salt');const clean=ins.length===1;st.got.push([ins.map(x=>NM[x]).join(' + '),clean]);say(clean?'На фильтре остался песок, через фильтр прошёл раствор соли.':'На фильтре — песок вместе с опилками. Это снова смесь! Надо было раньше взять магнит.');},
+    evap(){if(!st.water||!st.mix.length){say('Выпаривать нечего.');return;}const clean=st.mix.length===1&&st.mix[0]==='salt';st.got.push([st.mix.map(x=>NM[x]).join(' + '),clean]);
+      say(clean?'Вода испарилась — в чашке белые кристаллы соли!':'Вода испарилась, но соль перемешана с '+st.mix.filter(x=>x!=='salt').map(x=>NM[x]).join(' и ')+' — снова смесь.');st.mix=[];st.water=false;}
+  };
+  w.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn ghost" data-a="magnet">🧲 Магнит</button><button class="btn ghost" data-a="water">💧 Добавить воду</button><button class="btn ghost" data-a="filter">⏬ Фильтровать</button><button class="btn ghost" data-a="evap">🔥 Выпарить</button><button class="btn ghost" data-a="reset">↺ Сначала</button></div><div id="wsS" style="margin-top:10px"></div>`;
+  const draw=()=>{const ok=st.got.filter(g=>g[1]).length;
+    const left=st.mix.length?st.mix.map(x=>NM[x]).join(' + ')+(st.water?' (в воде)':''):(st.water?'вода':'пусто');
+    w.querySelector('#wsS').innerHTML=`<div style="font-size:15px">В стакане: <span class="out">${left}</span></div><div style="font-size:15px">Получено: ${st.got.length?st.got.map(g=>`<span style="color:${g[1]?'var(--ok)':'var(--bad)'};font-weight:700">${g[0]}${g[1]?' ✓':' ✗'}</span>`).join(', '):'—'}</div><div style="margin-top:6px">${st.log.slice(-3).map(s=>`<div style="font-size:15px">• ${s}</div>`).join('')}</div>${ok===3?'<div class="out" style="margin-top:6px">Победа! Все три вещества выделены в чистом виде.</div>':''}`;};
+  w.querySelectorAll('button').forEach(b=>b.onclick=()=>{const a=b.dataset.a;if(a==='reset')reset();else{act[a]();draw();}});
+  reset();}
+
+/* =================== GENERATORS =================== */
+/* L0 тела и вещества */
+RULE(0,'Что такое вещество?','То, из чего состоят физические тела',['Любой предмет, который можно взять в руки','Только жидкости и газы','Всё, что имеет форму и размер'],
+{short:'Вещество — это материал, из которого сделано тело.',
+explain:'<b>Тело</b> — конкретный предмет (гвоздь, стакан). <b>Вещество</b> — то, из чего он состоит (железо, стекло). Предмет, который можно взять в руки, и «всё, что имеет форму», — это как раз тела. Вещества бывают твёрдыми, жидкими и газообразными.',
+explain2:'Спроси: «Из чего?» Из чего сделан гвоздь? Из железа. Железо — вещество. А гвоздь — тело.'});
+RULE(0,'Чем тело отличается от вещества?','Тело — конкретный предмет, а вещество — материал, из которого этот предмет состоит',['Тело всегда твёрдое, а вещество всегда жидкое','Тело — это живой организм, а вещество — неживое','Ничем: это одно и то же'],
+{short:'Тело — «что это?», вещество — «из чего?».',
+explain:'Тело — предмет с формой и размером: ложка, сосулька, капля. Вещество — то, из чего этот предмет: сталь, вода. Тело не обязательно твёрдое (капля — тело), а вещество бывает и твёрдым (железо). «Тело» в физике — не только живой организм.',
+explain2:'Пример: сосулька и капля — два разных тела, но вещество у них одно — вода.'});
+G(0,()=>{const p=pick(BODY);const opts=['Тело','Вещество'];
+return {type:'choice',q:`«<b>${cap(p[0])}</b>» — это физическое тело или вещество?`,opts,ans:p[1],short:p[1]?`${cap(p[0])} — это материал, из него делают разные предметы.`:`${cap(p[0])} — конкретный предмет.`,
+explain:`${p[1]?`«${cap(p[0])}» отвечает на вопрос «<b>из чего</b> сделано?» — это <b>вещество</b>. Из него можно сделать много разных тел.`:`«${cap(p[0])}» — конкретный предмет, его можно сосчитать («один, два…»), у него есть форма и размер. Это <b>тело</b>.`}`,
+explain2:`Попробуй сказать «один ${p[0]}, два…». ${p[1]?'Звучит странно? Значит, это вещество — материал без определённой формы.':'Получается? Значит, это тело (предмет).'}`};});
+G(0,()=>{const pos=BODY.filter(x=>x[1]).map(x=>[x[0]]),neg=BODY.filter(x=>!x[1]).map(x=>[x[0]]);const t=MU('Отметь все <b>вещества</b> (а не тела).',pos,neg,6);
+const vs=t._items.filter(x=>x[1]).map(x=>x[0][0]),ts=t._items.filter(x=>!x[1]).map(x=>x[0][0]);delete t._items;
+return Object.assign(t,{short:`Вещества: ${vs.join(', ')}.`,explain:`Вещества — это материалы: <b>${vs.join(', ')}</b>. Остальное — конкретные предметы, то есть тела: ${ts.join(', ')}.`,explain2:`Для каждого слова спроси «из чего это?». Если вопрос не подходит (из чего железо? — это и есть материал) — перед тобой вещество. Тела: ${ts.join(', ')}.`});});
+G(0,()=>{const P=[['экран смартфона','стекло'],['корпус банки для газировки','алюминий'],['провод в зарядке','медь'],['грифель карандаша','графит'],['сосулька','вода'],['гвоздь','железо'],['обручальное кольцо','золото'],['микросхема процессора','кремний']];
+const p=pick(P);const others=sample(P.filter(x=>x[1]!==p[1]).map(x=>x[1]),3);
+return CH(`Из какого вещества обычно состоит это тело: <b>${p[0]}</b>?`,p[1],others,{short:`${cap(p[0])} — тело, ${p[1]} — вещество.`,
+explain:`${cap(p[0])} — это <b>тело</b> (предмет). Вещество, из которого его обычно делают, — <b>${p[1]}</b>. Остальные варианты — тоже вещества, но из них делают другие вещи.`,
+explain2:`Вспомни, как выглядит ${p[0]} и какие у него свойства. ${p[1]==='медь'?'Провода должны хорошо проводить ток — медь в этом почти лучшая.':p[1]==='алюминий'?'Банка лёгкая и не ржавеет — это алюминий.':p[1]==='графит'?'Грифель мягкий, чёрный и пачкает бумагу — графит.':p[1]==='вода'?'Сосулька тает и превращается в воду.':p[1]==='кремний'?'Процессоры делают из очень чистого кремния — поэтому «Кремниевая долина».':p[1]==='стекло'?'Экран прозрачный и твёрдый — особое стекло.':p[1]==='золото'?'Кольцо жёлтое, блестит и не ржавеет — золото.':'Гвоздь притягивается магнитом и ржавеет — железо.'}`});});
+
+/* L1 свойства */
+RULE(1,'Что из перечисленного — физические свойства <b>вещества</b>?','Цвет, запах, плотность, температура кипения',['Форма и размер','Масса и объём предмета','Скорость, с которой движется предмет'],
+{short:'Цвет, запах, плотность, t кипения — свойства вещества.',
+explain:'Свойства вещества одинаковы у любого тела из этого вещества: цвет, блеск, запах, плотность, растворимость, температуры плавления и кипения, электропроводность. А форма, размер, масса, объём и скорость — свойства конкретного <b>тела</b>: у гвоздя и рельса они разные, хотя оба из железа.',
+explain2:'Возьми маленький и большой кусок меди. Масса и форма разные, а цвет и плотность одинаковые. Значит, цвет и плотность — свойства вещества (меди).'});
+RULE(1,'Как правильно определить запах вещества в лаборатории?','Держать сосуд в стороне и направлять пары к себе взмахом ладони',['Поднести горлышко к носу и глубоко вдохнуть','Попробовать вещество на кончике языка','Нагреть вещество и наклониться над ним'],
+{short:'Взмах ладонью — и никогда не пробовать на вкус.',
+explain:'Многие вещества ядовиты или едкие. Поэтому: <b>не нюхают прямо из сосуда</b> (можно обжечь слизистую), <b>никогда не пробуют на вкус</b> и не наклоняются над нагреваемым сосудом. Пары направляют к себе взмахом ладони.',
+explain2:'Представь, что в пробирке нашатырный спирт: если вдохнуть прямо из горлышка, глаза заслезятся и перехватит дыхание. Лёгкий взмах ладонью даёт почувствовать запах безопасно.'});
+G(1,()=>{const P=[['Бесцветная жидкость без запаха, кипит при 100 °С, плотность 1 г/см³','вода'],['Жёлтый порошок, не смачивается водой, плавится при 113 °С','сера'],['Серебристая жидкость, металл, очень тяжёлая (13,6 г/см³)','ртуть'],['Бесцветный газ без запаха, поддерживает горение — в нём тлеющая лучинка вспыхивает','кислород'],['Красноватый блестящий металл, отлично проводит электрический ток','медь'],['Белые кристаллы, солёные на вкус, хорошо растворимы в воде, плавятся при 801 °С','поваренная соль'],['Чёрное мягкое вещество, пачкает бумагу, проводит ток','графит'],['Бесцветный газ, тяжелее воздуха, не поддерживает горение, им насыщают газировку','углекислый газ'],['Лёгкий серебристый металл (2,7 г/см³), не ржавеет, из него делают банки для напитков','алюминий'],['Жёлтый блестящий металл, не тускнеет веками, очень тяжёлый (19,3 г/см³)','золото']];
+const p=pick(P);const others=sample(P.filter(x=>x!==p).map(x=>x[1]),3);
+return CH(`Узнай вещество по описанию: <i>${p[0]}</i>.`,p[1],others,{short:`Это ${p[1]}.`,
+explain:`Описание «${p[0]}» подходит только к одному веществу — это <b>${p[1]}</b>. Вещества узнают по набору свойств: цвет, состояние, запах, плотность, температуры плавления и кипения.`,
+explain2:`Ищи самый «особенный» признак. ${p[1]==='ртуть'?'Металл, который жидкий при комнатной температуре, — только ртуть.':p[1]==='сера'?'Жёлтый порошок, который всплывает в воде, — сера.':p[1]==='кислород'?'Тлеющая лучинка вспыхивает только в кислороде.':p[1]==='графит'?'Пачкает бумагу — это «начинка» карандаша.':p[1]==='медь'?'Красноватый металл для проводов — медь.':p[1]==='углекислый газ'?'Газ из газировки, который тушит огонь, — углекислый.':p[1]==='золото'?'Жёлтый, тяжёлый и не тускнеет — золото.':p[1]==='алюминий'?'Лёгкий металл для банок — алюминий.':p[1]==='вода'?'Кипит при 100 °С — вода.':'Солёные белые кристаллы — поваренная соль.'}`});});
+G(1,()=>{const P=[['железные и алюминиевые опилки','железо притягивается магнитом, алюминий — нет','действие магнита'],['мел и сахар','сахар растворяется в воде, мел — нет','растворимость в воде'],['медную и алюминиевую проволоку','медь красноватая, алюминий серебристо-белый','цвет'],['воду и уксус','уксус имеет резкий запах, вода — без запаха','запах'],['кусочки пенопласта и кирпича одного размера','пенопласт намного легче: у него меньше плотность','плотность'],['серу и древесный уголь','сера жёлтая, уголь чёрный','цвет']];
+const NOT=[['запах','растворимость в воде','цвет'],['цвет','запах','действие магнита'],['запах','растворимость в воде','действие магнита'],['цвет','действие магнита','агрегатное состояние'],['запах','действие магнита','растворимость в воде'],['растворимость в воде','действие магнита','агрегатное состояние']];
+const i=R(0,P.length-1);const p=P[i];const others=NOT[i];
+return CH(`По какому свойству проще всего отличить <b>${p[0]}</b>?`,p[2],others,{short:`${cap(p[1])}.`,
+explain:`Чтобы различить вещества, ищут свойство, которым они <b>явно отличаются</b>. Здесь ${p[1]} — значит, свойство: <b>${p[2]}</b>.`,
+explain2:`Представь, что вещества перемешаны и ты не видишь этикеток. Что сделать быстрее всего? ${cap(p[1])}.`});});
+G(1,()=>{const P=[['ртуть','жидкое','единственный металл, жидкий при комнатной температуре'],['бром','жидкое','единственный неметалл, жидкий при комнатной температуре (бурая жидкость)'],['кислород','газообразное','мы им дышим'],['йод','твёрдое','тёмно-фиолетовые кристаллы'],['азот','газообразное','его в воздухе 78 %'],['железо','твёрдое','плавится только при 1539 °С'],['сера','твёрдое','жёлтый порошок'],['хлор','газообразное','жёлто-зелёный ядовитый газ'],['спирт','жидкое','кипит при 78 °С'],['углекислый газ','газообразное','его выдыхаем мы']];
+const p=pick(P);const opts=['твёрдое','жидкое','газообразное'];
+return {type:'choice',q:`В каком агрегатном состоянии находится <b>${p[0]}</b> при комнатной температуре (≈ 20 °С)?`,opts,ans:opts.indexOf(p[1]),short:`${cap(p[0])} — ${p[1]}: ${p[2]}.`,
+explain:`При 20 °С ${p[0]} — <b>${p[1]}</b> (${p[2]}). Агрегатное состояние — физическое свойство вещества, оно зависит от того, выше или ниже комнатной температуры у вещества точки плавления и кипения.`,
+explain2:`Подсказка-запоминалка: при комнатной температуре жидкие только два простых вещества — металл ртуть и неметалл бром. Здесь: ${p[0]} — ${p[1]}.`};});
+
+/* L2 чистые и смеси */
+RULE(2,'Что такое смесь?','Несколько веществ вместе, каждое из которых сохраняет свои свойства',['Новое вещество, которое получилось из нескольких','Любое вещество, добытое в природе','Вещество, в котором есть грязь'],
+{short:'В смеси каждое вещество остаётся собой.',
+explain:'<b>Смесь</b> — это несколько веществ, которые просто находятся вместе. Каждое сохраняет свои свойства: железо в смеси с серой притягивается магнитом. Если бы получилось <b>новое</b> вещество — это была бы химическая реакция, а не смесь.',
+explain2:'Салат — смесь: огурец в нём остаётся огурцом, помидор — помидором. Можно выбрать вилкой обратно.'});
+RULE(2,'Какое вещество называют <b>чистым</b>?','Вещество, состоящее из одинаковых частиц, с постоянными свойствами',['Любое прозрачное вещество','Вещество, которое хорошо выглядит и не пахнет','Любое вещество из магазина с надписью «чистый»'],
+{short:'Чистое вещество — одно вещество с постоянными свойствами.',
+explain:'В химии «чистое» значит «<b>одно вещество</b>»: все частицы одинаковые, свойства постоянные (например, чистая вода кипит точно при 100 °С). Прозрачность ничего не доказывает: раствор соли тоже прозрачный, но это смесь.',
+explain2:'Дистиллированная вода — чистое вещество. Вода из-под крана прозрачная, но в ней растворены соли и газы — это смесь.'});
+G(2,()=>{const p=pick(PURE);const opts=['Чистое вещество','Смесь'];
+return {type:'choice',q:`<b>${cap(p[0])}</b> — это чистое вещество или смесь?`,opts,ans:p[1]?0:1,short:p[1]?'Здесь только одно вещество.':'Здесь несколько веществ.',
+explain:p[1]?`${cap(p[0])} — это одно вещество с постоянными свойствами, значит, <b>чистое вещество</b>.`:`${cap(p[0])} состоит из нескольких веществ, каждое сохраняет свои свойства. Это <b>смесь</b>${p[0]==='воздух'?' (азот, кислород, аргон, углекислый газ…)':p[0]==='морская вода'?' (вода и растворённые соли)':p[0]==='молоко'?' (вода, жиры, белки, сахар)':p[0]==='гранит'?' (кварц, полевой шпат, слюда)':''}.`,
+explain2:`Спроси: можно ли разделить это на разные вещества простыми способами (выпариванием, перегонкой, фильтрованием)? ${p[1]?'Нет — это одно вещество.':'Да — значит, смесь.'}`};});
+G(2,()=>{const pos=PURE.filter(x=>!x[1]).map(x=>[x[0]]),neg=PURE.filter(x=>x[1]).map(x=>[x[0]]);const t=MU('Отметь все <b>смеси</b>.',pos,neg,6);
+const ms=t._items.filter(x=>x[1]).map(x=>x[0][0]),ps=t._items.filter(x=>!x[1]).map(x=>x[0][0]);delete t._items;
+return Object.assign(t,{short:`Смеси: ${ms.join(', ')}.`,explain:`Смеси (несколько веществ): <b>${ms.join(', ')}</b>. Чистые вещества (одно вещество): ${ps.join(', ')}.`,explain2:`Вспомни, что внутри. Например, воздух — азот и кислород, молоко — вода, жир и белки, нефть — сотни веществ. А кислород, азот, железо — это по одному веществу. Чистые здесь: ${ps.join(', ')}.`});});
+RULE(2,'Дистиллированную воду и морскую воду нагревают. Что верно?','Дистиллированная кипит при постоянных 100 °С, а морская — выше 100 °С, и температура при кипении растёт',['Обе кипят при одной и той же температуре','Морская вода кипит ниже 100 °С','Дистиллированная вода не кипит'],
+{short:'У чистого вещества постоянная t кипения, у смеси — нет.',
+explain:'Чистое вещество кипит при <b>постоянной</b> температуре (вода — 100 °С при нормальном давлении). У смеси (морская вода) кипение начинается выше 100 °С, а по мере выкипания воды раствор становится солонее, и температура растёт. Так химики проверяют чистоту вещества.',
+explain2:'Это как «отпечаток пальца» вещества: у чистой воды он чёткий (ровно 100 °С), а у смеси «размазан».'});
+
+/* L3 однородные / неоднородные */
+RULE(3,'Какую смесь называют <b>однородной</b>?','Смесь, в которой частицы компонентов не видны даже под микроскопом',['Смесь из одинаковых по цвету веществ','Смесь только из двух веществ','Смесь, в которой одно вещество плавает на другом'],
+{short:'Однородная — частиц не видно даже в микроскоп.',
+explain:'<b>Однородная</b> смесь: частицы компонентов настолько малы, что их не видно даже под микроскопом (воздух, растворы). <b>Неоднородная</b>: частицы видны глазом или в микроскоп (песок с водой, молоко). Цвет и число компонентов тут ни при чём.',
+explain2:'Размешай сахар в воде — прозрачно, ничего не видно: однородная. Размешай песок — видишь песчинки: неоднородная.'});
+G(3,()=>{const p=pick(HOMO);const opts=['Однородная','Неоднородная'];
+return {type:'choice',q:`<b>${cap(p[0])}</b> — однородная или неоднородная смесь?`,opts,ans:p[1]?0:1,short:p[1]?'Частиц компонентов не видно.':'Частицы компонентов можно увидеть.',
+explain:p[1]?`В смеси «${p[0]}» частицы компонентов не видны даже в микроскоп — смесь <b>однородная</b>.`:`В смеси «${p[0]}» частицы компонентов видны глазом или под микроскопом${p[0]==='молоко'?' (капельки жира в воде)':p[0]==='газированная вода с пузырьками'?' (пузырьки газа)':''} — смесь <b>неоднородная</b>.`,
+explain2:`Мысленно посмотри в микроскоп. ${p[1]?'Видишь только однородную массу — однородная.':'Видишь отдельные частицы, капли, пузырьки или крупинки — неоднородная.'}`};});
+G(3,()=>{const pos=HOMO.filter(x=>!x[1]).map(x=>[x[0]]),neg=HOMO.filter(x=>x[1]).map(x=>[x[0]]);const t=MU('Отметь все <b>неоднородные</b> смеси.',pos,neg,6);
+const a=t._items.filter(x=>x[1]).map(x=>x[0][0]),b=t._items.filter(x=>!x[1]).map(x=>x[0][0]);delete t._items;
+return Object.assign(t,{short:`Неоднородные: ${a.join(', ')}.`,explain:`Неоднородные (видны частицы, капли, пузырьки): <b>${a.join(', ')}</b>. Однородные (ничего не видно): ${b.join(', ')}.`,explain2:`Растворы и газовые смеси (${b.join(', ')}) — однородные. Всё, где что-то оседает, всплывает или мутнеет, — неоднородное.`});});
+
+/* L4 разделение */
+RULE(4,'Что можно отделить <b>фильтрованием</b>?','Нерастворимое твёрдое вещество от жидкости',['Растворённую соль от воды','Две жидкости с разной температурой кипения','Два газа друг от друга'],
+{short:'Фильтр задерживает только нерастворимые частицы.',
+explain:'Поры фильтра пропускают воду и всё, что в ней <b>растворено</b>, но задерживают <b>нерастворимые</b> частицы (песок, мел, чаинки). Поэтому раствор соли фильтровать бесполезно — соль пройдёт вместе с водой.',
+explain2:'Фильтр — как сито с очень маленькими дырочками. Песчинки застревают, а растворённая соль распалась на крошечные частицы, которые свободно проходят.'});
+RULE(4,'На чём основана <b>дистилляция</b> (перегонка)?','На разной температуре кипения веществ',['На разной плотности веществ','На притяжении к магниту','На разном цвете веществ'],
+{short:'Сначала испаряется то, что кипит при более низкой температуре.',
+explain:'При перегонке смесь нагревают: первым испаряется вещество с более низкой температурой кипения, его пар охлаждают в холодильнике и собирают в другой сосуд. Так получают дистиллированную воду из водопроводной и разделяют спирт (78 °С) и воду (100 °С).',
+explain2:'Это как с лужей и кастрюлей супа: вода испаряется, а соль и всё остальное остаётся. Только пар ещё ловят и охлаждают, чтобы снова получить воду.'});
+G(4,()=>{const p=pick(SEP);const wr=sample(MET.filter(m=>!p[1].includes(m)),3);const c=p[1][0];
+return CH(`Каким способом удобнее всего выделить / разделить: <b>${p[0]}</b>?`,c,wr,{short:`${cap(c)}: ${p[2]}.`,
+explain:`Ищем, чем отличаются компоненты: ${p[2]}. Поэтому подходит <b>${c}</b>${p[1].length>1?` (можно и ${p[1].slice(1).join(', ')})`:''}. Способ «${c}» основан ${BASIS[c]}.`,
+explain2:`Проверим другие варианты: ${wr.map(m=>`«${m}» — основан ${BASIS[m]}, здесь это не поможет`).join('; ')}.`});});
+G(4,()=>{const m=pick(['магнит','фильтрование','выпаривание','дистилляция','отстаивание']);const good=pick(SEP.filter(s=>s[1][0]===m));const bad=sample(SEP.filter(s=>!s[1].includes(m)).map(s=>s[0]),3);
+return CH(`Какую смесь можно разделить способом «<b>${m}</b>»?`,good[0],bad,{short:`${cap(good[0])}: ${good[2]}.`,
+explain:`Способ «${m}» основан ${BASIS[m]}. Подходит: <b>${good[0]}</b> — ${good[2]}. Для остальных нужны другие способы.`,
+explain2:`Для каждой смеси спроси: чем отличаются её части? Только для «${good[0]}» отличие как раз такое, на котором основан способ «${m}».`});});
+G(4,()=>{const m=pick(MET);const wr=sample(MET.filter(x=>x!==m).map(x=>BASIS[x]),3);
+return CH(`На чём основан способ разделения «<b>${m}</b>»?`,cap(BASIS[m]),wr.map(cap),{short:`${cap(m)} — ${BASIS[m]}.`,
+explain:`Любой способ разделения использует <b>разницу в свойствах</b> компонентов. «${cap(m)}» основан ${BASIS[m]}.`,
+explain2:`Представь, как это выглядит в лаборатории: ${m==='магнит'?'проводишь магнитом над смесью — железо прилипает':m==='фильтрование'?'льёшь мутную воду через бумажный фильтр в воронке — сверху остаётся осадок':m==='выпаривание'?'нагреваешь чашку с раствором — вода уходит паром, на дне кристаллы':m==='дистилляция'?'кипятишь смесь, пар идёт в холодильник и стекает каплями в приёмник':m==='отстаивание'?'оставляешь смесь постоять — тяжёлое оседает, лёгкое всплывает':'капаешь чернила на бумагу и опускаешь её краем в воду — появляются цветные полоски'}.`});});
+
+/* L5 физ / хим явления */
+RULE(5,'Что такое <b>химическое</b> явление?','Явление, при котором из одних веществ образуются новые вещества',['Любое изменение агрегатного состояния вещества','Изменение формы или размера тела','Любое явление, которое происходит при нагревании'],
+{short:'Химическое явление = образование новых веществ.',
+explain:'При <b>химическом</b> явлении (химической реакции) появляются <b>новые вещества</b> с новыми свойствами: железо → ржавчина. Плавление, кипение, изменение формы — физические явления: вещество остаётся тем же. Нагревание бывает и при физических явлениях (кипение воды).',
+explain2:'Тест «назад»: растаявший лёд можно снова заморозить — та же вода. Сгоревшую спичку обратно не собрать — получились другие вещества.'});
+RULE(5,'Что происходит при <b>физическом</b> явлении?','Вещества остаются прежними, меняются форма, размер или агрегатное состояние',['Образуются новые вещества','Всегда выделяется газ','Всегда меняется цвет вещества'],
+{short:'Физическое — вещество то же самое.',
+explain:'При физическом явлении состав вещества не меняется: вода в виде льда, жидкости или пара — всё равно вода. Новые вещества, газ, смена цвета — признаки химической реакции.',
+explain2:'Пример: кусок пластилина смяли в шарик — форма другая, а пластилин тот же. Это физическое явление.'});
+G(5,()=>{const p=pick(PHEN);const opts=['Физическое','Химическое'];
+return {type:'choice',q:`Какое это явление: <b>${p[0]}</b>?`,opts,ans:p[1],short:`${opts[p[1]]}: ${p[2]}.`,
+explain:`Главный вопрос: образовалось ли <b>новое вещество</b>? Здесь ${p[2]}. Значит, явление <b>${opts[p[1]].toLowerCase()}</b>.`,
+explain2:p[1]?`Можно ли «откатить» назад простым способом (охладить, высушить)? Нет — появилось новое вещество с другими свойствами. Это химическая реакция.`:`Вещество осталось тем же — изменились только форма, размер или агрегатное состояние. Это физическое явление.`};});
+G(5,()=>{const pos=PHEN.filter(x=>x[1]),neg=PHEN.filter(x=>!x[1]);const t=MU('Отметь все <b>химические</b> явления.',pos.map(x=>[x[0],x[2]]),neg.map(x=>[x[0],x[2]]),6);
+const a=t._items.filter(x=>x[1]).map(x=>x[0]),b=t._items.filter(x=>!x[1]).map(x=>x[0]);delete t._items;
+return Object.assign(t,{short:`Химические: ${a.map(x=>x[0]).join(', ')}.`,explain:`Химические (новые вещества): ${a.map(x=>`<b>${x[0]}</b> — ${x[1]}`).join('; ')}.<br>Физические: ${b.map(x=>`${x[0]} — ${x[1]}`).join('; ')}.`,explain2:`Ищи слова «горит», «ржавеет», «гниёт», «скисает», «темнеет» — это почти всегда новые вещества. «Тает», «кипит», «растворяется», «измельчают», «высыхает» — физические. Здесь химические: ${a.map(x=>x[0]).join(', ')}.`});});
+G(5,()=>{const P=[['Горит свеча: парафин сначала плавится, потом горит в пламени.','Плавление — физическое, горение — химическое',['Оба явления физические','Оба явления химические','Плавление — химическое, горение — физическое'],'Плавленый парафин — тот же парафин (физическое). А при горении он превращается в углекислый газ и воду (химическое).'],
+ ['Сахар нагревают на сковороде: сначала он плавится, потом темнеет и превращается в карамель с горьким запахом.','Плавление — физическое, потемнение — химическое',['Оба явления физические','Оба явления химические','Плавление — химическое, потемнение — физическое'],'Расплавленный сахар — тот же сахар. Потемнение и новый запах — признаки новых веществ (химическое).'],
+ ['Воду в чайнике кипятят, на крышке собираются капли.','Оба явления физические',['Оба явления химические','Кипение — химическое, конденсация — физическая','Кипение — физическое, конденсация — химическая'],'Пар и капли — это всё та же вода. Новых веществ нет.'],
+ ['Железный гвоздь распилили, опилки оставили во влажном месте — они покрылись бурым налётом.','Распиливание — физическое, ржавление — химическое',['Оба явления физические','Оба явления химические','Распиливание — химическое, ржавление — физическое'],'Опилки — то же железо (физическое). Ржавчина — новое вещество (химическое).']];
+const p=pick(P);return CH(`${p[0]} Какие это явления?`,p[1],p[2],{short:p[3],explain:`Разбираем по шагам. ${p[3]} Ответ: <b>${p[1].toLowerCase()}</b>.`,explain2:'В одной истории часто смешаны оба вида явлений. Проверяй каждое отдельно: появилось новое вещество или нет?'});});
+
+/* L6 признаки */
+RULE(6,'Что из перечисленного — <b>признак химической реакции</b>?','Выпадение осадка',['Изменение формы','Испарение','Измельчение'],
+{short:'Осадок — новое нерастворимое вещество.',
+explain:'Признаки реакции: изменение цвета, выделение газа, образование осадка, появление запаха, выделение тепла и света. Изменение формы, испарение и измельчение — физические явления, вещество остаётся тем же.',
+explain2:'Запоминалка «ЦГОЗТ»: Цвет, Газ, Осадок, Запах, Тепло (и свет).'});
+RULE(6,'Какое условие обязательно нужно, чтобы два вещества прореагировали?','Вещества должны соприкоснуться',['Вещества должны быть одного цвета','Вещества должны быть жидкими','Нужно обязательно нагреть до кипения'],
+{short:'Без соприкосновения реакции нет.',
+explain:'Частицы веществ должны встретиться — значит, вещества должны <b>соприкоснуться</b> (поэтому их измельчают и перемешивают). Многим реакциям нужно ещё <b>нагревание</b> для начала (спичку поджигают), но не всем: сода с уксусом реагирует сразу.',
+explain2:'Спичка в коробке не горит, хотя кислород рядом, — нужно ещё нагревание трением. А сода с уксусом шипят сразу, как только встретились.'});
+G(6,()=>{const p=pick(SIGNX);const wr=sample(SIGNS.filter(s=>s!==p[1]),3);
+return CH(`${p[0]} Какой главный признак химической реакции здесь наблюдается?`,cap(p[1]),wr.map(cap),{short:`${cap(p[1])}: ${p[2]}.`,
+explain:`Здесь ${p[2]}. Главный признак — <b>${p[1]}</b>. Признаки реакции: цвет, газ, осадок, запах, свет и тепло — все они говорят, что появилось новое вещество.`,
+explain2:`Представь, что ты видишь это своими глазами: ${p[1]==='выделение газа'?'пузырьки и шипение':p[1]==='образование осадка'?'муть или хлопья в прозрачной жидкости':p[1]==='изменение цвета'?'вещество стало другого цвета':p[1]==='появление запаха'?'появился новый запах':'вспышка, пламя, жар'}. Это и есть признак: <b>${p[1]}</b>.`});});
+G(6,()=>{const P=[['Вода кипит — в ней поднимаются пузырьки.',0,'пузырьки — это пар той же воды'],['Сода в уксусе шипит пузырьками.',1,'пузырьки — новый углекислый газ'],['Лампочка ярко светится.',0,'нить светится от тока, но вещество не меняется'],['Бенгальский огонь ярко светится и искрит.',1,'металлический порошок горит — образуются новые вещества'],['Банан на солнце потемнел.',1,'темнеет из-за образования новых веществ'],['Стекло запотело, на нём капли.',0,'это сконденсировался водяной пар'],['Утюг нагрелся.',0,'нагрев от тока, вещество утюга не изменилось'],['Газ на плите горит голубым пламенем.',1,'метан превращается в углекислый газ и воду'],['Йод при нагревании превращается в фиолетовый пар.',0,'это возгонка: пар — тот же йод']];
+const p=pick(P);const opts=['Да, это химическая реакция','Нет, это физическое явление'];
+return {type:'choice',q:`${p[0]} Это химическая реакция?`,opts,ans:p[1]?0:1,short:`${p[1]?'Да':'Нет'}: ${p[2]}.`,
+explain:`Признак (свет, пузырьки, тепло, цвет) говорит о реакции, только если появилось <b>новое вещество</b>. Здесь ${p[2]} — ${p[1]?'значит, это <b>химическая реакция</b>':'значит, это <b>физическое явление</b>'}.`,
+explain2:`Не верь одному признаку «на глаз». Спроси: из чего было и из чего стало? ${cap(p[2])}.`};});
+
+/* L7 расчёты */
+RULE(7,'Как найти массовую долю компонента в смеси?','w = m(компонента) / m(смеси) · 100 %',['w = m(смеси) / m(компонента) · 100 %','w = m(компонента) · m(смеси)','w = m(компонента) − m(смеси)'],
+{short:'Масса части делить на массу всей смеси.',
+explain:'Массовая доля показывает, какая часть смеси приходится на компонент: <b>w = m(компонента) / m(смеси) · 100 %</b>. Делим часть на целое — получаем число от 0 до 100 %.',
+explain2:'Пицца из 8 кусков, ты съел 2 — это 2/8 = 25 % пиццы. Часть / целое.'});
+G(7,()=>{const M=pick([40,50,60,80,120,150,200,250]);const p=pick([10,15,20,25,30,35,40,45,60,75]);const mf=M*p/100;if(mf%1)return null;
+return NUM(`Смесь железных опилок и песка массой ${M} г провели магнитом и собрали ${N(mf)} г железа. Какова массовая доля железа в смеси? Ответ в процентах.`,p,0,
+{short:`${N(mf)} / ${M} · 100 % = ${p} %.`,explain:`w(Fe) = m(Fe) / m(смеси) · 100 % = ${N(mf)} / ${M} · 100 % = <b>${p} %</b>. Типичная ошибка — делить на массу песка (${N(M-mf)} г): получится ${N(rd(mf/(M-mf)*100,1))} %, это неверно.`,
+explain2:`Проверка: песка ${N(M-mf)} г — это ${100-p} %. Вместе ${p} % + ${100-p} % = 100 % ✓.`});});
+G(7,()=>{const M=pick([100,150,200,250,300,400,500]);const w=pick([2,2.5,3,3.5,4,5,8,10]);const ms=M*w/100;
+return NUM(`${M} г морской воды выпарили и получили ${N(ms)} г соли. Какова массовая доля соли в морской воде? Ответ в процентах.`,w,1,
+{short:`${N(ms)} / ${M} · 100 % = ${N(w)} %.`,explain:`Вся смесь — ${M} г морской воды, компонент — соль ${N(ms)} г. w = ${N(ms)} / ${M} · 100 % = <b>${N(w)} %</b>.`,
+explain2:`Сколько соли на каждые 100 г воды? ${N(ms)} г на ${M} г — это ${N(ms)} : ${N(M/100)} = ${N(w)} г на 100 г, то есть ${N(w)} %.`});});
+G(7,()=>{const M=pick([50,80,120,150,200,300]);const p=pick([15,20,25,30,40,60]);const sand=M*(100-p)/100;if(sand%1)return null;
+return NUM(`В ${M} г смеси песка и поваренной соли ${p} % соли. Смесь растворили в воде и отфильтровали. Сколько граммов песка останется на фильтре (после высушивания)?`,sand,0,
+{short:`Песка ${100-p} %: ${M} · ${N((100-p)/100)} = ${N(sand)} г.`,explain:`Соль растворяется и проходит через фильтр, на фильтре остаётся только песок. Его доля 100 % − ${p} % = ${100-p} %. m(песка) = ${M} · ${100-p} / 100 = <b>${N(sand)} г</b>.`,
+explain2:`Другой путь: соли ${M} · ${p}/100 = ${N(M*p/100)} г, песка ${M} − ${N(M*p/100)} = ${N(sand)} г.`});});
+G(7,()=>{const a=pick([4,5,6]),b=pick([3,4,5]),h=pick([2.5,3]);const V=a*b*h;const O=V*0.21;
+return NUM(`Комната размером ${a} м × ${b} м × ${N(h)} м. В воздухе 21 % кислорода по объёму. Сколько кубометров кислорода в комнате?`,O,1,
+{short:`V = ${N(V)} м³, кислорода ${N(V)} · 0,21 ≈ ${N(rd(O,1))} м³.`,explain:`Объём комнаты: ${a} · ${b} · ${N(h)} = ${N(V)} м³. Кислорода 21 %: ${N(V)} · 0,21 = ${N(rd(O,2))} ≈ <b>${N(rd(O,1))} м³</b>.`,
+explain2:`21 % — это примерно пятая часть. ${N(V)} : 5 = ${N(rd(V/5,1))} — ответ должен быть чуть больше: ${N(rd(O,1))} м³ ✓.`});});
+
+/* L8 ★ */
+RULE(8,'★ В каком порядке разделить смесь <b>песка, поваренной соли и железных опилок</b>?','Магнит → растворить в воде → фильтрование → выпаривание фильтрата',['Растворить в воде → выпаривание → магнит → фильтрование','Фильтрование → магнит → растворить в воде → выпаривание','Растворить в воде → магнит → выпаривание → фильтрование'],
+{short:'Магнит → вода → фильтр → выпаривание.',
+explain:'1) <b>Магнитом</b> убираем железо, пока смесь сухая (мокрое начнёт ржаветь). 2) Добавляем <b>воду</b>: соль растворяется, песок — нет. 3) <b>Фильтруем</b>: песок остаётся на фильтре, раствор соли проходит. 4) <b>Выпариваем</b> раствор — получаем соль. Если сначала выпарить, соль снова смешается с песком; сухую смесь фильтровать бессмысленно.',
+explain2:'Попробуй в игре в теории «Как разделить смесь»: если перепутать порядок, получишь «песок + опилки» или «соль + песок» — снова смесь.'});
+G(8,()=>{const P=[['железных опилок, порошка серы и поваренной соли','Магнит → залить водой (сера всплывёт, соль растворится) → снять серу / отфильтровать → выпарить фильтрат',['Залить водой → выпарить → магнит → фильтрование','Фильтрование → выпарить → магнит → залить водой','Выпарить → магнит → залить водой → фильтрование'],'Порошок серы не смачивается водой и всплывает (флотация), его снимают с поверхности или отделяют фильтрованием; соль остаётся в растворе.'],
+ ['речного песка, сахара и древесных опилок','Залить водой (опилки всплывут) → собрать опилки → отфильтровать песок → выпарить фильтрат',['Выпарить → залить водой → магнит','Магнит → выпарить → фильтрование','Фильтрование сухой смеси → выпаривание → отстаивание'],'Древесные опилки легче воды и всплывают, песок тонет, сахар растворяется. Магнит здесь бесполезен — железа нет.'],
+ ['поваренной соли, мела и растительного масла','Залить водой → слить масло делительной воронкой → отфильтровать мел → выпарить фильтрат',['Магнит → выпарить → залить водой','Выпарить → фильтрование → магнит','Фильтрование масла → магнит → выпарить'],'Масло не растворяется в воде и всплывает слоем; мел нерастворим — остаётся на фильтре; соль в растворе — её получают выпариванием.']];
+const p=pick(P);return CH(`★ Как разделить смесь <b>${p[0]}</b>? Выбери правильную последовательность.`,p[1],p[2],{short:p[3],
+explain:`Правильно: <b>${p[1]}</b>. ${p[3]} Выпаривание всегда в конце — иначе растворённое вещество снова смешается с остальными.`,
+explain2:'Алгоритм: 1) что притягивается магнитом? 2) что всплывает / не смешивается с водой? 3) что не растворяется (фильтр)? 4) что растворилось (выпарить). Действуй по шагам.'});},{star:true});
+G(8,()=>{const M=pick([50,60,80,100,120]);for(;;){const fe=R(5,M/2),sa=R(5,M/2);const salt=M-fe-sa;if(salt<5)continue;const w=salt/M*100;
+return NUM(`★ Смесь песка, соли и железных опилок массой ${M} г разделили. Магнитом собрали ${fe} г железа, на фильтре после высушивания осталось ${sa} г песка. Какова массовая доля соли в исходной смеси? Ответ в процентах.`,w,1,
+{hint:'Сначала найди массу соли по закону сохранения массы.',short:`m(соли) = ${M} − ${fe} − ${sa} = ${salt} г; w = ${N(rd(w,1))} %.`,
+explain:`Масса смеси равна сумме масс компонентов: m(соли) = ${M} − ${fe} − ${sa} = ${salt} г. w(соли) = ${salt} / ${M} · 100 % ≈ <b>${N(rd(w,1))} %</b>.`,
+explain2:`Проверь: доли всех трёх компонентов дают 100 %: Fe ${N(rd(fe/M*100,1))} %, песок ${N(rd(sa/M*100,1))} %, соль ${N(rd(w,1))} %.`});}},{star:true});
+G(8,()=>{const M=pick([200,300,400,500]);const w1=pick([2,3,3.5,4,5]);const w2=pick([10,20,25]);const s=M*w1/100;const M2=rd(s*100/w2,6);const ev=M-M2;if(ev<=0||ev%1)return null;
+return NUM(`★ Из ${M} г морской воды (${N(w1)} % соли) хотят получить рассол с ${w2} % соли, выпаривая воду. Сколько граммов воды нужно выпарить?`,ev,0,
+{hint:'При выпаривании масса соли не меняется.',short:`соли ${N(s)} г; рассол ${N(s)} / ${N(w2/100)} = ${N(M2)} г; выпарить ${N(ev)} г.`,
+explain:`Соль не испаряется: m(соли) = ${M} · ${N(w1/100)} = ${N(s)} г. В новом рассоле эти ${N(s)} г — это ${w2} %, значит, масса рассола ${N(s)} / ${N(w2/100)} = ${N(M2)} г. Выпарить: ${M} − ${N(M2)} = <b>${N(ev)} г</b>.`,
+explain2:`Проверка: ${N(s)} / ${N(M2)} · 100 % = ${w2} % ✓. Частая ошибка — думать, что доля растёт пропорционально выпаренной воде.`});},{star:true});
+G(8,()=>{const P=[['В закрытом сосуде лёд, жидкая вода и водяной пар. Сколько в сосуде <b>веществ</b>?',1,'Лёд, вода и пар — это одно вещество, вода, в трёх агрегатных состояниях.'],
+ ['В закрытом сосуде лёд, жидкая вода и водяной пар (больше ничего). Сколько здесь <b>агрегатных состояний</b> (фаз)?',3,'Твёрдое (лёд), жидкое (вода) и газообразное (пар) — три фазы одного вещества.'],
+ ['В стакане: вода, растворённый сахар, кубики льда и песок на дне. Сколько здесь <b>разных веществ</b>?',3,'Вода (и лёд — это тоже вода), сахар, песок — три вещества.']];
+const p=pick(P);return {type:'num',q:`★ ${p[0]}`,ans:p[1],short:p[2],explain:`${p[2]} Ответ: <b>${p[1]}</b>. Не путай вещество и агрегатное состояние: вещество определяется составом, а не тем, твёрдое оно или жидкое.`,explain2:'Пересчитай «по составу»: из каких разных частиц всё сделано? Молекулы воды во льду, в жидкой воде и в паре одинаковые.'};},{star:true});
+G(8,()=>{return CH('★ Какой способ <b>не позволит</b> получить чистую воду из морской?','Фильтрование',['Дистилляция','Замораживание с отделением льда и его таянием','Конденсация пара, полученного при кипячении'],
+{short:'Растворённая соль проходит через фильтр.',explain:'Соль в морской воде <b>растворена</b> — её частицы проходят через поры фильтра вместе с водой. Дистилляция и конденсация пара дают чистую воду (соль не испаряется). Замораживание тоже работает: при медленном замерзании лёд образуется в основном из чистой воды — поэтому морской лёд почти пресный.',
+explain2:'Фильтр задерживает только то, что не растворилось. Соль не видна в воде — значит, она растворена и пройдёт фильтр.'});},{star:true});
+G(8,()=>{const P=[['Ученик смешал порошки железа и серы — получилась серо-жёлтая смесь. Потом смесь сильно нагрели — она раскалилась, и образовалось чёрное вещество, которое не притягивается магнитом. Что произошло?','Сначала была смесь, после нагревания — химическая реакция с образованием нового вещества',['Это всё время была смесь, просто железо потемнело','Сначала была реакция, а потом получилась смесь','Ничего химического: сера просто расплавилась'],'В смеси железо притягивается магнитом. После нагревания магнит не действует — значит, железа как отдельного вещества больше нет: получилось новое вещество (сульфид железа FeS).'],
+ ['Медную проволоку нагрели в пламени — она почернела. Масса проволоки при этом увеличилась. Почему?','Медь соединилась с кислородом воздуха — образовалось новое вещество',['Медь расплавилась и стала тяжелее','На проволоку осела сажа, это физическое явление','Медь стала тяжелее от нагревания — так у всех металлов'],'Чёрный налёт — оксид меди: медь + кислород. Масса выросла на массу присоединённого кислорода.']];
+const p=pick(P);return CH(`★ ${p[0]}`,p[1],p[2],{short:p[3],explain:`${p[3]} Правильно: <b>${p[1].toLowerCase()}</b>.`,explain2:'Ищи доказательство нового вещества: исчезло старое свойство (магнит, блеск), появилось новое (цвет, масса изменилась за счёт воздуха).'});},{star:true});
+
+window.TOPIC={id:'c8_substances',title:'Вещества и явления',subtitle:'Химия · 8 класс',
+intro:`<p>Из чего сделан смартфон и почему золото не ржавеет. Тела и вещества, их свойства, чистые вещества и смеси, способы разделения смесей (есть мини-игра: раздели песок, соль и железные опилки), физические и химические явления, признаки реакций. В конце — олимпиадные задачи.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Тела и вещества','Свойства веществ','Чистые вещества и смеси','Однородные и неоднородные смеси','Способы разделения смесей','Физические и химические явления','Признаки химических реакций','Считаем состав смеси','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
