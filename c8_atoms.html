@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Атомы и Периодическая система — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range}=H;
+const N=H.num;const C=H.chem;
+const rd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+const NUM=(q,v,d,extra)=>{const a=rd(v,d);if(!isFinite(a)||a===0)return null;const exact=Math.abs(a-v)<1e-9;
+  return Object.assign({type:'num',q:q+(exact?'':[' Округли до целых.',' Округли до десятых.',' Округли до сотых.'][d]),ans:a,tol:exact?1e-6:0.6*Math.pow(10,-d)/Math.abs(a)},extra||{});};
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+const KEYS=['₂','₃','₄','(',')'];
+
+/* ---------- elements: [Z, symbol, name, reading, Ar(school), period, group, subgroup, kind m/n/g, latin, use] ---------- */
+const EL=[
+[1,'H','водород','аш',1,1,'I','A','n','Hydrogenium','самый лёгкий газ, топливо ракет'],
+[2,'He','гелий','гелий',4,1,'VIII','A','g','Helium','воздушные шарики'],
+[3,'Li','литий','литий',7,2,'I','A','m','Lithium','аккумулятор смартфона'],
+[4,'Be','бериллий','бериллий',9,2,'II','A','m','Beryllium','зеркала космических телескопов'],
+[5,'B','бор','бор',11,2,'III','A','n','Borum','жаропрочное стекло'],
+[6,'C','углерод','цэ',12,2,'IV','A','n','Carboneum','алмаз, графит'],
+[7,'N','азот','эн',14,2,'V','A','n','Nitrogenium','78 % воздуха'],
+[8,'O','кислород','о',16,2,'VI','A','n','Oxygenium','дыхание'],
+[9,'F','фтор','фтор',19,2,'VII','A','n','Fluorum','зубная паста'],
+[10,'Ne','неон','неон',20,2,'VIII','A','g','Neon','светящаяся реклама'],
+[11,'Na','натрий','натрий',23,3,'I','A','m','Natrium','поваренная соль'],
+[12,'Mg','магний','магний',24,3,'II','A','m','лёгкие сплавы'],
+[13,'Al','алюминий','алюминий',27,3,'III','A','m','Aluminium','корпус телефона, фольга'],
+[14,'Si','кремний','силициум',28,3,'IV','A','n','Silicium','процессоры, песок'],
+[15,'P','фосфор','пэ',31,3,'V','A','n','Phosphorus','спичечный коробок'],
+[16,'S','сера','эс',32,3,'VI','A','n','Sulfur','жёлтый порошок'],
+[17,'Cl','хлор','хлор',35.5,3,'VII','A','n','Chlorum','обеззараживание воды'],
+[18,'Ar','аргон','аргон',40,3,'VIII','A','g','Argon','лампы накаливания'],
+[19,'K','калий','калий',39,4,'I','A','m','Kalium','бананы, удобрения'],
+[20,'Ca','кальций','кальций',40,4,'II','A','m','Calcium','кости, мел'],
+[24,'Cr','хром','хром',52,4,'VI','B','m','Chromium','хромированные детали'],
+[25,'Mn','марганец','марганец',55,4,'VII','B','m','Manganum','марганцовка'],
+[26,'Fe','железо','феррум',56,4,'VIII','B','m','Ferrum','сталь, гемоглобин крови'],
+[29,'Cu','медь','купрум',64,4,'I','B','m','Cuprum','провода'],
+[30,'Zn','цинк','цинк',65,4,'II','B','m','Zincum','оцинкованное ведро'],
+[35,'Br','бром','бром',80,4,'VII','A','n','Bromum','жидкий неметалл'],
+[47,'Ag','серебро','аргентум',108,5,'I','B','m','Argentum','ложки, зеркала'],
+[50,'Sn','олово','станнум',119,5,'IV','A','m','Stannum','припой'],
+[53,'I','иод','иод',127,5,'VII','A','n','Iodum','йодная настойка'],
+[56,'Ba','барий','барий',137,6,'II','A','m','Barium','рентген желудка'],
+[79,'Au','золото','аурум',197,6,'I','B','m','Aurum','украшения, контакты'],
+[80,'Hg','ртуть','гидраргирум',201,6,'II','B','m','Hydrargyrum','старые термометры'],
+[82,'Pb','свинец','плюмбум',207,6,'IV','A','m','Plumbum','автомобильные аккумуляторы']
+].map(a=>a.length===10?[a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],'Magnesium',a[9]]:a).map(a=>({z:a[0],s:a[1],n:a[2],r:a[3],ar:a[4],p:a[5],g:a[6],sg:a[7],k:a[8],lat:a[9],use:a[10]}));
+const BY={};EL.forEach(e=>BY[e.s]=e);
+const GN={I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8};
+const FAKE={H:'эйч',C:'си',N:'нитроген',O:'оксиген',P:'фосфорус',S:'сульфур',Fe:'фе',Cu:'цу',Ag:'аг',Au:'ау',Hg:'гидроген',Pb:'пэ-бэ',Sn:'сн',Na:'на',K:'ка'};
+const SYMOK=(raw,e)=>{const t=H.normChem(raw);if(t.toLowerCase()===e.s.toLowerCase())return true;const w=H.normTok(raw);return w===e.n.replace(/ё/g,'е')||(e.s==='I'&&w==='йод');};
+const SYMQ=(q,e,extra)=>Object.assign({type:'text',q,ans:[e.s],check:raw=>SYMOK(raw,e),right:e.s,ansText:`${e.s} (${e.n})`,ph:'знак, например Na'},extra||{});
+const nm=e=>`${e.s} (${e.n})`;
+
+/* formula parser: 'Ca(OH)2' -> {Ca:1,O:2,H:2} */
+function parse(f){let i=0;const num=()=>{let d='';while(/\d/.test(f[i]||''))d+=f[i++];return d?+d:1;};
+  const grp=()=>{const m={};while(i<f.length&&f[i]!==')'){if(f[i]==='('){i++;const g=grp();i++;const n=num();for(const k in g)m[k]=(m[k]||0)+g[k]*n;}else{let s=f[i++];if(/[a-z]/.test(f[i]||''))s+=f[i++];const n=num();m[s]=(m[s]||0)+n;}}return m;};
+  return grp();}
+const tot=m=>Object.values(m).reduce((a,b)=>a+b,0);
+const FORM=['H2O','CO2','H2SO4','HNO3','NaCl','CaCO3','NH3','CH4','KMnO4','Fe2O3','Ca(OH)2','Al2(SO4)3','H3PO4','C6H12O6','Ca3(PO4)2','Mg(NO3)2','C2H5OH','Na2CO3','CuSO4','Fe(OH)3'];
+const brk=(f)=>{const m=parse(f);return Object.keys(m).map(k=>`${k}: ${m[k]}`).join(', ');};
+
+/* ---------- mini periodic table widget ---------- */
+const POS=e=>{if(e.z===1)return [1,1];if(e.z===2)return [1,8];return [e.p,GN[e.g]];};
+const KIND={m:'металл',n:'неметалл',g:'благородный газ'};
+const KBG={m:'var(--accent-soft)',n:'var(--warn-soft)',g:'var(--ok-soft)'};
+function onTheory(root){const w=root.querySelector('#w-pt');if(!w)return;
+  const small=EL.filter(e=>e.z<=20);
+  let cells='';small.forEach(e=>{const [r,c]=POS(e);cells+=`<button type="button" data-z="${e.z}" style="grid-row:${r+1};grid-column:${c};border:1px solid var(--line);border-radius:8px;background:${KBG[e.k]};color:var(--ink);padding:3px 0;cursor:pointer;font:inherit;line-height:1.1;min-width:0"><div style="font-size:10px;color:var(--muted)">${e.z}</div><div style="font-size:17px;font-weight:700">${e.s}</div></button>`;});
+  const head=range(1,8).map(i=>`<div style="grid-row:1;font-size:11px;text-align:center;color:var(--muted)">${Object.keys(GN)[i-1]}</div>`).join('');
+  w.innerHTML=`<div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;max-width:360px;margin:0 auto">${head}${cells}</div>
+<div style="font-size:13px;color:var(--muted);text-align:center;margin-top:6px">цвет: <span style="background:var(--accent-soft);padding:0 4px;border-radius:4px">металл</span> · <span style="background:var(--warn-soft);padding:0 4px;border-radius:4px">неметалл</span> · <span style="background:var(--ok-soft);padding:0 4px;border-radius:4px">благородный газ</span></div>
+<div id="wpI" style="margin-top:10px;font-size:15px"></div>`;
+  const show=z=>{const e=EL.find(x=>x.z===z);w.querySelectorAll('button').forEach(b=>b.style.outline=(+b.dataset.z===z)?'3px solid var(--accent)':'none');
+    w.querySelector('#wpI').innerHTML=`<div style="font-size:20px;font-weight:700">${e.s} — ${e.n}</div>
+<div>Читается: <span class="out">«${e.r}»</span> · латинское название: ${e.lat}</div>
+<div>Порядковый номер: <span class="out">${e.z}</span> · A<sub>r</sub> = <span class="out">${N(e.ar)}</span></div>
+<div>Период: <span class="out">${e.p}</span> · группа: <span class="out">${e.z===1?'I (иногда ставят и в VII)':e.g+e.sg}</span> · ${KIND[e.k]}</div>
+<div style="color:var(--muted)">Где встретишь: ${e.use}</div>`;};
+  w.querySelectorAll('button').forEach(b=>b.onclick=()=>show(+b.dataset.z));show(11);}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Сколько молекул в капле воды?',lvl:0,html:`
+<p class="hook">В одной капле воды около <b>1 700 000 000 000 000 000 000</b> молекул (1,7·10²¹). Если пересчитывать их по одной в секунду без сна и выходных, понадобится время, примерно в 4000 раз больше возраста Вселенной. А весь видимый мир — ты, смартфон, звёзды — собран всего из сотни видов атомов, как огромный конструктор из сотни видов деталей.</p>
+<p>В этой теме ты узнаешь, что такое атомы, молекулы и химические элементы, научишься читать химические знаки, отличать простые вещества от сложных, пользоваться относительной атомной массой и находить элементы в Периодической системе Менделеева.</p>
+<div class="box tip"><b>Маршрут</b>атомы и молекулы → химические знаки и как их читать → простые и сложные вещества → элемент или вещество? → A<sub>r</sub> → периоды и группы → сравнение масс → олимпиадные задачи.</div>`},
+{title:'Атомы и молекулы',lvl:0,html:`
+<div class="box rule"><b>Атом и молекула</b><b>Атом</b> — мельчайшая химически неделимая частица. <b>Молекула</b> — мельчайшая частица вещества, которая сохраняет его химические свойства; она состоит из атомов.</div>
+<p><b>Почему так.</b> Разрежь каплю воды пополам, ещё пополам… В конце останется одна молекула воды — это ещё вода. Если «разломать» её дальше, получатся атомы водорода и кислорода — а это уже не вода.</p>
+<div class="box rule"><b>Индекс и коэффициент</b><b>Индекс</b> (маленькая цифра справа внизу) — сколько атомов в одной молекуле: ${C('H2O')} — 2 атома H и 1 атом O. <b>Коэффициент</b> (большая цифра впереди) — сколько молекул: 3${C('H2O')} — три молекулы воды, в них 6 атомов H и 3 атома O.</div>
+<div class="box ex"><b>Пример</b>${C('H2SO4')}: H — 2, S — 1, O — 4, всего 7 атомов. ${C('Ca(OH)2')}: индекс за скобкой умножает всё в скобках — Ca 1, O 2, H 2, всего 5 атомов.</div>
+<div class="box err"><b>Частая ошибка</b>Путать 2H, ${C('H2')} и 2${C('H2')}. <b>2H</b> — два отдельных атома водорода; <b>${C('H2')}</b> — одна молекула из двух атомов; <b>2${C('H2')}</b> — две молекулы (4 атома).</div>
+<div class="fact">Слово «атом» придумал древнегреческий философ Демокрит около 2400 лет назад: «а-томос» значит «неделимый». Сегодня мы знаем, что атом делится на ещё более мелкие частицы, — но в химических реакциях атомы не исчезают и не превращаются друг в друга.</div>`},
+{title:'Химические элементы и их знаки',lvl:1,html:`
+<div class="box rule"><b>Химический элемент</b>— определённый вид атомов. Сейчас известно 118 элементов. Каждый обозначают <b>химическим знаком</b> — первой буквой (заглавной) латинского названия или первой и ещё одной (строчной).</div>
+<p><b>Почему латынь.</b> Знаки придумал шведский химик Берцелиус в 1814 году, а учёные всего мира тогда писали на латыни. Поэтому кислород — O (Oxygenium), а не К; железо — Fe (Ferrum); медь — Cu (Cuprum, от острова Кипр, где её добывали).</p>
+<div class="box ex"><b>Примеры</b>C — углерод (Carboneum), Ca — кальций, Cl — хлор, Cu — медь, Cr — хром. Одна буква C, а элементов много — вторая буква их различает.</div>
+<div class="box err"><b>Частая ошибка</b>Писать вторую букву заглавной: «CL», «NA». Правильно: Cl, Na. Иначе CO (угарный газ: углерод + кислород) спутаешь с Co (кобальт)!</div>`},
+{title:'Как читаются знаки',lvl:2,html:`
+<div class="box rule"><b>Правило чтения</b>Большинство знаков читают как название элемента по-русски (Na — «натрий», Cl — «хлор»). Но у некоторых особое чтение — по букве или по-латыни. Его надо выучить.</div>
+<div class="box tip"><b>Особые чтения</b>H — «аш» · C — «цэ» · N — «эн» · O — «о» · P — «пэ» · S — «эс» · Si — «силициум» · Fe — «феррум» · Cu — «купрум» · Ag — «аргентум» · Au — «аурум» · Hg — «гидраргирум» · Pb — «плюмбум» · Sn — «станнум».</div>
+<p><b>Как это звучит в жизни.</b> ${C('H2O')} читают «аш-два-о», ${C('CO2')} — «цэ-о-два», ${C('H2SO4')} — «аш-два-эс-о-четыре», ${C('Fe2O3')} — «феррум-два-о-три».</p>
+<div class="box err"><b>Частая ошибка</b>Читать по-английски: «эйч-ту-оу», «си-о-ту». На уроке химии в России так не говорят.</div>
+<div class="fact">Hydrargyrum (ртуть) значит «жидкое серебро», а английское слово plumber (сантехник) происходит от plumbum — свинец: в Древнем Риме водопроводные трубы делали из свинца.</div>`},
+{title:'Простые и сложные вещества',lvl:3,html:`
+<div class="box rule"><b>Два вида веществ</b><b>Простое</b> вещество образовано атомами <b>одного</b> элемента: ${C('O2')}, ${C('H2')}, Fe, Cu, S. <b>Сложное</b> — атомами <b>разных</b> элементов: ${C('H2O')}, ${C('CO2')}, NaCl.</div>
+<p><b>Почему так.</b> Посмотри на формулу: сколько разных знаков? Один знак (с любым индексом) — простое. Два и больше разных — сложное.</p>
+<div class="box ex"><b>Пример</b>${C('O3')} (озон) — простое: только кислород, хотя атомов три. ${C('HCl')} — сложное: водород и хлор.</div>
+<div class="box err"><b>Частая ошибка</b>«${C('O2')} — сложное, потому что два атома». Нет! Важно не число атомов, а число <b>разных элементов</b>.</div>
+<div class="fact">Один элемент может образовать несколько простых веществ: углерод — и мягкий чёрный графит, и самый твёрдый природный минерал алмаз. Кислород — и ${C('O2')}, которым мы дышим, и озон ${C('O3')}, защищающий Землю от ультрафиолета. Это явление называется аллотропией.</div>`},
+{title:'Элемент или простое вещество?',lvl:4,html:`
+<div class="box rule"><b>Как различать</b>Если речь о <b>составе</b> («входит в состав», «содержит атомы») — это <b>химический элемент</b>. Если о <b>свойствах</b> (газ, цвет, мы дышим, проводит ток) — это <b>простое вещество</b>.</div>
+<p><b>Почему путают.</b> У простого вещества и элемента часто одно имя: «кислород». Но «кислород в воде» — это атомы кислорода внутри молекул ${C('H2O')}, дышать ими нельзя. А «кислород в баллоне» — газ ${C('O2')}.</p>
+<div class="box ex"><b>Примеры</b>«Железо входит в состав гемоглобина» — элемент. «Железо притягивается магнитом» — простое вещество. «Водород — самый лёгкий газ» — простое вещество. «В молекуле воды два атома водорода» — элемент.</div>
+<div class="box err"><b>Частая ошибка</b>Думать, что в углекислом газе ${C('CO2')} есть «кусочек кислорода, которым можно дышать». Там только атомы элемента кислорода.</div>`},
+{title:'Относительная атомная масса',lvl:5,html:`
+<div class="box rule"><b>A<sub>r</sub></b>Относительная атомная масса показывает, <b>во сколько раз масса атома больше 1/12 массы атома углерода</b>. Она безразмерная (без единиц). В школьных расчётах её округляют до целых, кроме хлора: <b>A<sub>r</sub>(Cl) = 35,5</b>; A<sub>r</sub>(Cu) = 64.</div>
+<p><b>Почему так.</b> Атомы весят ничтожно мало: атом водорода — около 1,7·10⁻²⁷ кг. Считать с такими числами неудобно, поэтому сравнивают с «эталоном» — 1/12 атома углерода. Получаются удобные числа: H — 1, C — 12, O — 16.</p>
+<div class="box ex"><b>Пример</b>A<sub>r</sub>(S) = 32, A<sub>r</sub>(O) = 16. Значит, атом серы тяжелее атома кислорода в 32 : 16 = 2 раза.</div>
+<div class="box err"><b>Частая ошибка</b>Брать порядковый номер вместо A<sub>r</sub>. У серы номер 16, а A<sub>r</sub> = 32. Номер — это «место в таблице», A<sub>r</sub> — масса.</div>
+<div class="box tip"><b>Выучи самые нужные</b>H 1 · C 12 · N 14 · O 16 · Na 23 · Mg 24 · Al 27 · S 32 · Cl 35,5 · K 39 · Ca 40 · Fe 56 · Cu 64. Остальные — во вкладке «Знаки».</div>`},
+{title:'Периодическая система: периоды и группы',lvl:6,html:`
+<div class="box rule"><b>Периоды и группы</b><b>Период</b> — горизонтальный ряд (их 7; 1–3 — малые, 4–7 — большие). <b>Группа</b> — вертикальный столбец (в коротком варианте таблицы их 8, номера римскими цифрами). Каждая группа делится на <b>главную (A)</b> и <b>побочную (B)</b> подгруппы.</div>
+<p><b>Как найти элемент.</b> «Адрес» элемента — период и группа, как ряд и место в кинотеатре. Сера — 3 период, VI группа, главная подгруппа (VIA). Медь — 4 период, I группа, побочная подгруппа (IB).</p>
+<div class="box ex"><b>Пример</b>В 1 периоде всего 2 элемента (H и He), во 2-м и 3-м — по 8. Большие периоды начинаются с 4-го: K, Ca, а дальше вклиниваются элементы побочных подгрупп (Cr, Mn, Fe, Cu, Zn…).</div>
+<div class="box err"><b>Частая ошибка</b>Путать период и группу. Запоминалка: <b>П</b>ериод — <b>П</b>о горизонтали (как строка в тексте), группа — столбец.</div>
+<p><b>Нажми на элемент</b> — увидишь его название, чтение, A<sub>r</sub>, период и группу.</p>
+<div class="widget" id="w-pt"></div>
+<div class="fact">Менделеев построил свою систему в 1869 году и оставил в ней пустые клетки для неоткрытых элементов. Для «экасилиция» он предсказал массу и плотность — и в 1886 году был открыт германий с почти такими же свойствами. Элемент № 101 назван в его честь — менделевий.</div>`},
+{title:'Сравниваем массы атомов и молекул',lvl:7,html:`
+<div class="box rule"><b>Сравнение масс</b>Во сколько раз атом X тяжелее атома Y: <span class="m">A<sub>r</sub>(X) : A<sub>r</sub>(Y)</span>. Масса молекулы (M<sub>r</sub>) — сумма A<sub>r</sub> всех её атомов.</div>
+<div class="box ex"><b>Пример</b>M<sub>r</sub>(${C('O2')}) = 2 · 16 = 32. M<sub>r</sub>(${C('O3')}) = 3 · 16 = 48. Молекула озона тяжелее молекулы кислорода в 48 : 32 = 1,5 раза.</div>
+<div class="box ex"><b>Пример</b>Атом меди (64) тяжелее атома кислорода (16) в 4 раза: один атом меди «весит» как 4 атома кислорода.</div>
+<div class="box err"><b>Частая ошибка</b>Делить «наоборот»: если спрашивают, во сколько раз X тяжелее Y, в числителе — <b>больший</b>.</div>`},
+{title:'★ Олимпиадные приёмы',lvl:8,html:`
+<ol class="steps">
+<li><b>Найди элемент по массе.</b> «Атом в k раз тяжелее атома Y» → A<sub>r</sub>(X) = k · A<sub>r</sub>(Y). Дальше ищи в таблице.</li>
+<li><b>Сколько атомов в молекуле.</b> Если M<sub>r</sub> простого вещества известна: число атомов = M<sub>r</sub> : A<sub>r</sub>. Сера: 256 : 32 = 8, то есть ${C('S8')}.</li>
+<li><b>Считай атомы по частям.</b> 2${C('H2SO4')} + 3${C('H2O')}: водорода 2·2 + 3·2 = 10 атомов.</li>
+</ol>
+<div class="box ex"><b>Пример</b>Двухатомная молекула простого вещества имеет M<sub>r</sub> = 71. Тогда A<sub>r</sub> = 71 : 2 = 35,5 — это хлор, ${C('Cl2')}.</div>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Знаки',title:'Химические знаки: как читать, A<sub>r</sub>, место в таблице',rows:EL.map(e=>[`<b>${e.s}</b>`,`${e.n} — «${e.r}»`,`A<sub>r</sub> = ${N(e.ar)}; ${e.p} период, ${e.z===1?'I':e.g+e.sg} группа; ${KIND[e.k]}`,e.use]),
+after:`<div class="box tip" style="margin-top:14px"><b>Как читать формулу</b>${C('H2SO4')} — «аш-два-эс-о-четыре». Индекс — атомы в молекуле, коэффициент — число молекул.</div>`};
+
+/* =================== GENERATORS =================== */
+/* L0 атомы и молекулы */
+RULE(0,'Что такое <b>атом</b>?','Мельчайшая химически неделимая частица',['Мельчайшая частица вещества, сохраняющая его свойства','Самая маленькая крупинка, которую видно в микроскоп','Частица, из которой состоят только металлы'],
+{short:'Атом — химически неделимая частица.',
+explain:'<b>Атом</b> — мельчайшая частица, которая не делится в химических реакциях. «Мельчайшая частица вещества, сохраняющая его свойства» — это определение <b>молекулы</b> (молекула воды — ещё вода, а её атомы — уже нет). Атомы в миллионы раз меньше того, что видно в обычный микроскоп, и из них состоит всё, а не только металлы.',
+explain2:'Атом — как кубик конструктора, молекула — как маленькая модель из нескольких кубиков. Модель (молекула) уже «что-то» (вода), а кубики (атомы) — детали.'});
+RULE(0,'Что такое <b>молекула</b>?','Мельчайшая частица вещества, сохраняющая его химические свойства',['Мельчайшая химически неделимая частица','Любой кусочек вещества','Частица, которая есть только в газах'],
+{short:'Молекула — наименьшая «порция» вещества с его свойствами.',
+explain:'<b>Молекула</b> — мельчайшая частица вещества, сохраняющая его химические свойства; она состоит из атомов. «Химически неделимая» — это про атом. Молекулы есть в газах, жидкостях и твёрдых телах.',
+explain2:'Одна молекула сахара — всё ещё сахар. Разбей её на атомы углерода, водорода и кислорода — сахара больше нет.'});
+G(0,()=>{const f=pick(FORM);const m=parse(f);const n=tot(m);
+return {type:'num',q:`Сколько всего атомов в одной молекуле (формульной единице) ${C(f)}?`,ans:n,short:`${brk(f)} — всего ${n}.`,
+explain:`Считаем атомы каждого элемента по индексам (нет индекса — значит, 1; индекс за скобкой умножает всё в скобках): ${brk(f)}. Всего: <b>${n}</b>.`,
+explain2:`Распиши по буквам: ${Object.entries(m).map(([k,v])=>Array(v).fill(k).join(' ')).join(' | ')} — сосчитай: ${n}.`};});
+G(0,()=>{for(;;){const f=pick(FORM);const m=parse(f);const k=R(2,5);const el=pick(Object.keys(m));const v=m[el]*k;
+return {type:'num',q:`Сколько атомов <b>${el}</b> содержится в записи <b>${k}${C(f)}</b>?`,ans:v,short:`${k} · ${m[el]} = ${v}.`,
+explain:`Коэффициент ${k} — это ${k} ${H.plural(k,'молекула','молекулы','молекул')}. В одной молекуле ${C(f)} атомов ${el}: ${m[el]}. Всего: ${k} · ${m[el]} = <b>${v}</b>.`,
+explain2:`Представь, что моделей ${C(f)} — ${k}, в каждой ${m[el]} шт. ${el}. Сложи: ${Array(k).fill(m[el]).join(' + ')} = ${v}.`};}});
+G(0,()=>{const el=pick(['H','O','N','Cl']);const k=pick([2,3,4,5]);
+const PL=H.plural;const P=[[`${k}${el}`,`${k} ${PL(k,'отдельный атом','отдельных атома','отдельных атомов')} ${el}`],[C(el+'2'),`одна молекула из двух атомов ${el}`],[`${k}${C(el+'2')}`,`${k} ${PL(k,'молекула','молекулы','молекул')}, в каждой 2 атома ${el}`]];
+const i=R(0,2);const p=P[i];const wr=P.filter((_,j)=>j!==i).map(x=>x[1]).concat([`${k*2} молекул ${el}`]);
+return CH(`Что означает запись <b>${p[0]}</b>?`,p[1],wr,{short:`${p[0]} — ${p[1]}.`,
+explain:`Индекс (маленькая цифра справа) — сколько атомов <b>в одной молекуле</b>. Коэффициент (большая цифра впереди) — сколько <b>молекул или атомов</b> взято. ${p[0]} — это <b>${p[1]}</b>.`,
+explain2:`Сравни: ${k}${el} — ${k} ${H.plural(k,'атом','атома','атомов')} «поодиночке»; ${C(el+'2')} — пара атомов, сцепленных в молекулу; ${k}${C(el+'2')} — ${k} ${H.plural(k,'такая пара','таких пары','таких пар')} (${2*k} атомов).`});});
+
+/* L1 элементы и знаки */
+RULE(1,'Что такое <b>химический элемент</b>?','Определённый вид атомов',['Любое простое вещество','Мельчайшая частица вещества','Клеточка в таблице, где записано вещество'],
+{short:'Элемент — вид атомов.',
+explain:`<b>Химический элемент</b> — определённый вид атомов (например, все атомы кислорода — элемент кислород). Простое вещество — это вещество из атомов одного элемента (${C("O2")}), а не сам элемент. Мельчайшая частица — атом или молекула.`,
+explain2:'Атомы — как жители, а элемент — как «фамилия» одного вида атомов: все атомы кислорода носят «фамилию» O.'});
+G(1,()=>{const e=pick(EL);const others=sample(EL.filter(x=>x!==e&&(x.s[0]===e.s[0]||Math.random()<0.3)),3);if(others.length<3)return null;
+return CH(`Какой элемент обозначается знаком <b>${e.s}</b>?`,cap(e.n),others.map(x=>cap(x.n)),{short:`${e.s} — ${e.n} (лат. ${e.lat}).`,
+explain:`${e.s} — это <b>${e.n}</b>. Знак взят из латинского названия <b>${e.lat}</b>: ${e.s.length===1?'первая буква':'первая буква и ещё одна характерная'}.`,
+explain2:`Запоминалка: ${e.s} → ${e.lat} → ${e.n}. Встречается: ${e.use}.`});});
+G(1,()=>{const e=pick(EL);return SYMQ(`Напиши химический знак элемента <b>${e.n}</b>.`,e,{keys:[],short:`${cap(e.n)} — ${e.s}.`,
+explain:`${cap(e.n)} по-латыни — <b>${e.lat}</b>, отсюда знак <b>${e.s}</b>. ${e.s.length===2?'Вторая буква пишется строчной!':'Знак из одной заглавной буквы.'}`,
+explain2:`${e.s} читается «${e.r}». Найди его в таблице: ${e.p} период, ${e.z===1?'I':e.g+e.sg} группа.`});});
+G(1,()=>{const e=pick(EL.filter(x=>x.s[0].toLowerCase()!==x.n[0].toLowerCase()||['Au','Ag','Pb','Sn','Hg','Fe','Cu','Na','K','Si'].includes(x.s)));
+const wr=sample(EL.filter(x=>x!==e),3).map(x=>x.lat);
+return CH(`Латинское название какого элемента дало знак <b>${e.s}</b> (${e.n})?`,e.lat,wr,{short:`${e.lat} → ${e.s}.`,
+explain:`Знаки образованы от латинских названий: <b>${e.lat}</b> → ${e.s}. Поэтому знак не всегда похож на русское название «${e.n}».`,
+explain2:`Посмотри на первые буквы: ${e.s} — ${e.lat.slice(0,2)}… Только ${e.lat} начинается с тех же букв.`});});
+
+/* L2 чтение знаков */
+RULE(2,'Почему знак кислорода — <b>O</b>, а не К?','Знаки образованы от латинских названий (Oxygenium)',['Буква К уже занята калием, поэтому взяли случайную','O похожа на форму молекулы кислорода','Так решил Менделеев в 1869 году'],
+{short:'Знаки — от латыни: Oxygenium → O.',
+explain:'Химические знаки предложил Берцелиус в 1814 году, взяв первые буквы <b>латинских</b> названий: Oxygenium → O, Hydrogenium → H, Kalium → K. Менделеев знаки не придумывал — он построил Периодическую систему.',
+explain2:'Посмотри на калий: по-латыни Kalium → K. А натрий — Natrium → Na. Всё по латыни.'});
+RULE(2,'Как читается знак <b>H</b> в формулах (например, в H₂O)?','«Аш»',['«Эйч»','«Хэ»','«Гидроген»'],
+{short:'H — «аш»: H₂O — «аш-два-о».',
+explain:`В русской школе водород в формулах читают «<b>аш</b>» (как называли букву H по-французски). ${C("H2O")} — «аш-два-о». «Эйч» — английское чтение, на уроке так не говорят.`,
+explain2:'Запомни три формулы вслух: «аш-два-о» (вода), «аш-хлор» (HCl), «аш-два-эс-о-четыре» (серная кислота).'});
+G(2,()=>{const e=pick(EL.filter(x=>x.r!==x.n||FAKE[x.s]));const pool=[...new Set(EL.filter(x=>x!==e).map(x=>x.r))];const fk=FAKE[e.s];
+const wr=(fk?[fk]:[]).concat(sample(pool.filter(r=>r!==fk&&r!==e.r),fk?2:3));
+return CH(`Как читается химический знак <b>${e.s}</b>?`,`«${e.r}»`,wr.map(r=>`«${r}»`),{short:`${e.s} — «${e.r}».`,
+explain:`${e.s} (${e.n}) читается <b>«${e.r}»</b>${e.r===e.n?' — так же, как называется элемент':` — ${e.r.length<=2?'по названию латинской буквы':'по латинскому названию '+e.lat}`}.${fk?` «${fk}» — ошибочное чтение.`:''}`,
+explain2:`Особые чтения стоит выучить списком: H «аш», C «цэ», N «эн», O «о», P «пэ», S «эс», Si «силициум», Fe «феррум», Cu «купрум», Ag «аргентум», Au «аурум», Hg «гидраргирум», Pb «плюмбум», Sn «станнум».`});});
+G(2,()=>{const e=pick(EL.filter(x=>x.r!==x.n));const wr=sample(EL.filter(x=>x!==e&&x.r!==x.n),3).map(x=>x.s);
+return CH(`Какой знак читается как <b>«${e.r}»</b>?`,e.s,wr,{short:`«${e.r}» — ${e.s} (${e.n}).`,
+explain:`«${e.r}» — это <b>${e.s}</b>, ${e.n}${e.r.length>2?` (лат. ${e.lat})`:''}.`,
+explain2:`Произнеси формулу: ${e.s==='S'?'«аш-два-эс» — H₂S':e.s==='C'?'«цэ-о-два» — CO₂':e.s==='N'?'«эн-аш-три» — NH₃':e.s==='O'?'«аш-два-о» — H₂O':e.s==='P'?'«пэ-два-о-пять» — P₂O₅':e.s==='H'?'«аш-хлор» — HCl':`«${e.r}» — ${e.s}`}.`});});
+
+/* L3 простые и сложные */
+const SIMPLE=['O2','H2','N2','Fe','Cu','S','P','O3','Cl2','Na','Al','C','He','Br2','I2','Mg','Ag','P4','S8'];
+const COMPLEX=['H2O','CO2','NaCl','H2SO4','CH4','NH3','CaCO3','Fe2O3','KMnO4','HCl','CuO','C6H12O6','CO','NO','SO2','Al2O3','KCl','H2S'];
+RULE(3,'Какое вещество называют <b>простым</b>?','Вещество, образованное атомами одного химического элемента',['Вещество, молекула которого состоит из одного атома','Вещество с простой (короткой) формулой','Вещество, которое легко получить'],
+{short:'Простое — один элемент (атомов может быть много).',
+explain:`<b>Простое</b> вещество состоит из атомов <b>одного</b> элемента: ${C('O2')}, ${C('O3')}, Fe, ${C('S8')}. Число атомов в молекуле не важно: в озоне ${C('O3')} их три, а вещество простое. Сложное — из атомов разных элементов.`,
+explain2:'Считай не атомы, а разные знаки в формуле. Один знак — простое.'});
+RULE(3,'Какое вещество называют <b>сложным</b>?','Вещество, образованное атомами разных химических элементов',['Вещество, в молекуле которого больше двух атомов','Смесь нескольких веществ','Вещество с длинным названием'],
+{short:'Сложное — два и более разных элемента.',
+explain:`<b>Сложное</b> вещество образовано атомами разных элементов: ${C('H2O')} (H и O), ${C('CO2')} (C и O). Смесь — это несколько <b>веществ</b>, а сложное вещество — одно вещество. ${C('O3')} — три атома, но простое.`,
+explain2:'Вода — одно вещество, но состоит из двух элементов. Поэтому она сложное вещество, а не смесь.'});
+G(3,()=>{const s=Math.random()<0.5;const f=pick(s?SIMPLE:COMPLEX);const m=parse(f);const els=Object.keys(m);const opts=['Простое','Сложное'];
+return {type:'choice',q:`${C(f)} — простое или сложное вещество?`,opts,ans:s?0:1,short:s?`Только элемент ${els[0]} — простое.`:`Элементы: ${els.join(', ')} — сложное.`,
+explain:`Смотрим, сколько <b>разных</b> элементов в формуле ${C(f)}: ${els.join(', ')} — ${els.length===1?'один. Значит, вещество <b>простое</b>'+(tot(m)>1?' (то, что атомов '+tot(m)+', не важно)':''):els.length+'. Значит, вещество <b>сложное</b>'}.`,
+explain2:`Обведи пальцем каждый знак (заглавная буква + строчная после неё): ${els.join(' | ')}. ${els.length===1?'Один вид — простое.':'Разные виды — сложное.'}`};});
+G(3,()=>{const np=R(2,4);const it=shuffle(sample(SIMPLE,np).map(f=>[f,1]).concat(sample(COMPLEX,6-np).map(f=>[f,0])));
+const a=it.filter(x=>x[1]).map(x=>C(x[0])).join(', '),b=it.filter(x=>!x[1]).map(x=>C(x[0])).join(', ');
+return {type:'multi',q:'Отметь все <b>простые</b> вещества.',opts:it.map(x=>C(x[0])),ans:it.map((x,i)=>x[1]?i:-1).filter(i=>i>=0),short:`Простые: ${a}.`,
+explain:`Простые (один элемент): <b>${a}</b>. Сложные (разные элементы): ${b}.`,explain2:`Индекс не важен: ${C('O3')}, ${C('P4')}, ${C('S8')} — всё равно простые. Важно, чтобы в формуле был только один знак.`};});
+
+/* L4 элемент или простое вещество */
+const PHR=[['Кислород входит в состав воды.',0],['Кислород необходим для дыхания.',1],['Железо входит в состав гемоглобина крови.',0],['Гвоздь сделан из железа.',1],['В состав мела входит кальций.',0],['Водород — самый лёгкий газ.',1],['В молекуле воды два атома водорода.',0],['Азот составляет 78 % воздуха по объёму.',1],['Сера входит в состав сероводорода.',0],['Сера — жёлтое твёрдое вещество.',1],['Медь хорошо проводит электрический ток.',1],['Медь входит в состав малахита.',0],['Углекислый газ состоит из углерода и кислорода.',0],['Алюминий — лёгкий серебристый металл.',1],['В состав поваренной соли входит хлор.',0],['Хлор — ядовитый жёлто-зелёный газ.',1],['Золото не ржавеет.',1],['В костях много кальция и фосфора.',0]];
+RULE(4,'Как понять, о чём идёт речь — о химическом элементе или о простом веществе?','О составе («входит в состав») — элемент; о свойствах (цвет, газ, дышим) — простое вещество',['Если слово с большой буквы — элемент','О газах всегда говорят как об элементах','Это одно и то же, разницы нет'],
+{short:'Состав → элемент, свойства → вещество.',
+explain:`Простое вещество — это реальное вещество со свойствами: газ, металл, цвет, запах. Элемент — вид атомов, который <b>входит в состав</b> веществ. «Кислород в воде» — элемент (атомы O в молекулах воды). «Кислородом дышим» — простое вещество ${C("O2")}.`,
+explain2:'Задай вопрос: «Можно это потрогать, вдохнуть, увидеть цвет?» Да — простое вещество. Речь лишь о том, из каких атомов что-то состоит, — элемент.'});
+G(4,()=>{const p=pick(PHR);const opts=['Химический элемент','Простое вещество'];
+return {type:'choice',q:`О чём идёт речь в предложении: «<i>${p[0]}</i>»?`,opts,ans:p[1],short:p[1]?'Говорится о свойствах — простое вещество.':'Говорится о составе — элемент.',
+explain:p[1]?`В предложении «${p[0]}» описаны <b>свойства</b> (что-то, что можно наблюдать). Свойства есть у вещества — значит, речь о <b>простом веществе</b>.`:`В предложении «${p[0]}» говорится о <b>составе</b> — какие атомы входят в другое вещество. Значит, речь о <b>химическом элементе</b>.`,
+explain2:p[1]?'Это можно увидеть, потрогать или измерить — значит, речь о реальном веществе.':'Отдельно это вещество там не лежит: например, в воде нет газа кислорода — есть только атомы кислорода в составе молекул.'};});
+G(4,()=>{const f=pick(FORM.concat(['O3','P4','S8','H2O2','NaOH','K2Cr2O7']));const m=parse(f);const k=Object.keys(m).length;
+return {type:'num',q:`Сколько <b>химических элементов</b> входит в состав вещества ${C(f)}?`,ans:k,short:`${Object.keys(m).join(', ')} — ${k}.`,
+explain:`Элементы — это разные знаки: <b>${Object.keys(m).join(', ')}</b>. Их ${k}. Не путай с числом атомов (их ${tot(m)}).`,
+explain2:`Выпиши знаки, не обращая внимания на цифры: ${Object.keys(m).join(' · ')} → ${k}.`};});
+
+/* L5 Ar */
+const COMMON=['H','C','N','O','Na','Mg','Al','S','Cl','K','Ca','Fe','Cu'];
+RULE(5,'Что показывает относительная атомная масса A<sub>r</sub>?','Во сколько раз масса атома больше 1/12 массы атома углерода',['Массу атома в граммах','Порядковый номер элемента в таблице','Сколько атомов в молекуле'],
+{short:'A<sub>r</sub> — сравнение с 1/12 атома углерода, без единиц.',
+explain:'A<sub>r</sub> — безразмерная величина: во сколько раз атом тяжелее 1/12 атома углерода-12. Это не граммы (атом весит около 10⁻²⁶ кг) и не порядковый номер (у серы номер 16, а A<sub>r</sub> = 32).',
+explain2:'1/12 атома углерода — «эталонная гирька». A<sub>r</sub>(O) = 16 значит: атом кислорода весит как 16 таких гирек.'});
+RULE(5,'Какое значение A<sub>r</sub>(Cl) принято в школьных расчётах?','35,5',['35','36','17'],
+{short:'Хлор — единственный, у кого берут 35,5.',
+explain:'Почти все A<sub>r</sub> в школе округляют до целых, но у хлора берут <b>35,5</b> (в природе смесь атомов с массами 35 и 37). 17 — это порядковый номер хлора, а не масса.',
+explain2:'Запомни пару: «хлор — 35 с половиной», «медь — 64».'});
+G(5,()=>{const e=BY[pick(COMMON)];return {type:'num',q:`Чему равна относительная атомная масса элемента <b>${e.s}</b> (${e.n}) в школьных расчётах?`,ans:e.ar,short:`A<sub>r</sub>(${e.s}) = ${N(e.ar)}.`,
+explain:`По Периодической системе A<sub>r</sub>(${e.s}) = <b>${N(e.ar)}</b>. ${e.s==='Cl'?'Для хлора не округляем до целых: 35,5.':e.s==='Cu'?'У меди в таблице 63,5…63,6, в школе округляют до 64.':''} Не путай с порядковым номером (${e.z}).`,
+explain2:`Самые нужные: H 1, C 12, N 14, O 16, Na 23, Mg 24, Al 27, S 32, Cl 35,5, K 39, Ca 40, Fe 56, Cu 64. Их стоит выучить — они нужны в каждой задаче.`};});
+G(5,()=>{const e=pick(EL.filter(x=>x.s!=='Ar'&&x.s!=='Ca'&&x.s!=='K'));const wr=sample(EL.filter(x=>x.ar!==e.ar),3);
+return CH(`У какого элемента A<sub>r</sub> = ${N(e.ar)}?`,nm(e),wr.map(nm),{short:`A<sub>r</sub>(${e.s}) = ${N(e.ar)}.`,
+explain:`A<sub>r</sub> = ${N(e.ar)} у элемента <b>${nm(e)}</b>. Для остальных: ${wr.map(x=>`${x.s} — ${N(x.ar)}`).join(', ')}.`,
+explain2:`Проверь по вкладке «Знаки» или по таблице в теории: нажми на элемент — увидишь его A<sub>r</sub>. Важно: A<sub>r</sub> растёт почти вместе с номером, так что ${N(e.ar)} — это примерно ${e.z}-й элемент.`});});
+
+/* L6 периоды и группы */
+const A20=EL.filter(e=>e.z>1&&e.sg==='A');
+RULE(6,'Что такое <b>период</b> в Периодической системе?','Горизонтальный ряд элементов',['Вертикальный столбец элементов','Клетка с одним элементом','Группа элементов с похожими свойствами'],
+{short:'Период — строка (по горизонтали).',
+explain:'<b>Период</b> — горизонтальный ряд (всего 7). <b>Группа</b> — вертикальный столбец; именно в группах собраны элементы с похожими свойствами.',
+explain2:'«П — по горизонтали»: Период — как строчка в тетради.'});
+RULE(6,'На какие подгруппы делится каждая группа короткого варианта таблицы?','Главную (A) и побочную (B)',['Малую и большую','Металлическую и неметаллическую','Чётную и нечётную'],
+{short:'Главная A и побочная B.',
+explain:'Каждая группа делится на <b>главную (A)</b> и <b>побочную (B)</b> подгруппы. «Малые и большие» бывают <b>периоды</b> (1–3 — малые, 4–7 — большие).',
+explain2:'Пример: в I группе натрий и калий — главная подгруппа (IA), медь и серебро — побочная (IB).'});
+G(6,()=>{const e=pick(EL);return {type:'num',q:`В каком <b>периоде</b> находится ${nm(e)}?`,ans:e.p,short:`${e.s}: ${e.p} период.`,
+explain:`${cap(e.n)} стоит в <b>${e.p}-м</b> горизонтальном ряду — это ${e.p} период${e.p<=3?' (малый)':' (большой)'}.`,
+explain2:`Периоды: 1 — H, He; 2 — от Li до Ne; 3 — от Na до Ar; 4 — от K до Kr (там же Cr, Mn, Fe, Cu, Zn, Br); 5 — от Rb до Xe (Ag, Sn, I); 6 — Cs…Rn (Ba, Au, Hg, Pb). ${e.s} — ${e.p}.`};});
+G(6,()=>{const e=pick(A20);const g=GN[e.g];return {type:'num',q:`Номер <b>группы</b>, в которой находится ${nm(e)}? (ответ — арабской цифрой)`,ans:g,short:`${e.s}: ${e.g}A группа.`,
+explain:`${cap(e.n)} стоит в <b>${e.g} группе</b> (главная подгруппа ${e.g}A), то есть ${g}.`,
+explain2:`Во 2-м и 3-м периодах номер группы — просто порядок в строке: Li/Na — I, Be/Mg — II, B/Al — III, C/Si — IV, N/P — V, O/S — VI, F/Cl — VII, Ne/Ar — VIII. ${e.s} → ${g}.`};});
+G(6,()=>{const e=pick(A20.filter(x=>x.z<=20));return SYMQ(`Какой элемент находится в <b>${e.p} периоде, ${e.g} группе</b>, главной подгруппе? Напиши знак.`,e,{short:`${e.p} период, ${e.g}A — ${e.s} (${e.n}).`,
+explain:`Идём по ${e.p}-му ряду до ${e.g} столбца (главная подгруппа) — там <b>${e.s}</b>, ${e.n}.`,
+explain2:`Как в морском бое: строка ${e.p}, столбец ${GN[e.g]} → ${e.s}. Проверь в виджете таблицы в теории.`});});
+G(6,()=>{const b=pick(EL.filter(x=>x.sg==='B'));const wr=sample(EL.filter(x=>x.sg==='A'&&x.z>1),3);
+return CH('Какой элемент находится в <b>побочной</b> подгруппе (B)?',nm(b),wr.map(nm),{short:`${b.s}: ${b.g}B группа.`,
+explain:`${cap(b.n)} — ${b.p} период, ${b.g} группа, <b>побочная</b> подгруппа (${b.g}B). Остальные — в главных подгруппах: ${wr.map(x=>`${x.s} — ${x.g}A`).join(', ')}.`,
+explain2:'Побочные подгруппы появляются только в больших периодах (с 4-го). Там стоят Cr, Mn, Fe, Cu, Zn, Ag, Au, Hg — все металлы.'});});
+
+/* L7 сравнение масс */
+RULE(7,'Как узнать, во сколько раз атом X тяжелее атома Y?','Разделить A<sub>r</sub>(X) на A<sub>r</sub>(Y)',['Вычесть A<sub>r</sub>(Y) из A<sub>r</sub>(X)','Разделить порядковый номер X на номер Y','Умножить A<sub>r</sub>(X) на A<sub>r</sub>(Y)'],
+{short:'«Во сколько раз» — деление масс.',
+explain:'Вопрос «во сколько раз» — всегда <b>деление</b>. Массы атомов пропорциональны A<sub>r</sub>, поэтому делим A<sub>r</sub>(X) : A<sub>r</sub>(Y). Вычитание отвечает на «на сколько больше», а номера — это не массы.',
+explain2:'Пример: S — 32, O — 16. 32 : 16 = 2 — атом серы тяжелее в 2 раза.'});
+G(7,()=>{for(;;){const a=pick(EL),b=pick(EL.filter(x=>x.ar<a.ar));if(!b)continue;const r=a.ar/b.ar;if(r>20)continue;const ok=Math.abs(r*10-Math.round(r*10))<1e-9;if(!ok&&Math.random()<0.6)continue;
+return NUM(`Во сколько раз атом <b>${a.s}</b> (${a.n}) тяжелее атома <b>${b.s}</b> (${b.n})?`,r,1,{short:`${N(a.ar)} : ${N(b.ar)} ≈ ${N(rd(r,1))}.`,
+explain:`A<sub>r</sub>(${a.s}) = ${N(a.ar)}, A<sub>r</sub>(${b.s}) = ${N(b.ar)}. ${N(a.ar)} : ${N(b.ar)} ${ok?'=':'≈'} <b>${N(rd(r,1))}</b>.`,
+explain2:`Проверка умножением: ${N(b.ar)} · ${N(rd(r,1))} ${ok?'=':'≈'} ${N(rd(b.ar*rd(r,1),1))} — ${ok?'ровно':'почти'} ${N(a.ar)} ✓.`});}});
+G(7,()=>{const f=pick(['O2','O3','N2','H2','Cl2','P4','S8','F2','Br2','I2']);const m=parse(f);const el=Object.keys(m)[0];const v=m[el]*BY[el].ar;
+return {type:'num',q:`Чему равна относительная молекулярная масса M<sub>r</sub>(${C(f)})?`,ans:v,short:`${m[el]} · ${N(BY[el].ar)} = ${N(v)}.`,
+explain:`M<sub>r</sub> — сумма A<sub>r</sub> всех атомов молекулы. В ${C(f)} ${m[el]} атома ${el}, A<sub>r</sub>(${el}) = ${N(BY[el].ar)}: ${m[el]} · ${N(BY[el].ar)} = <b>${N(v)}</b>.`,
+explain2:`Сложи по атомам: ${Array(m[el]).fill(N(BY[el].ar)).join(' + ')} = ${N(v)}.`};});
+G(7,()=>{const s=sample(EL.filter(e=>e.z<=30),4);if(new Set(s.map(x=>x.ar)).size<4)return null;const h=s.reduce((a,b)=>a.ar>b.ar?a:b);
+return CH('Атом какого элемента <b>самый тяжёлый</b>?',nm(h),s.filter(x=>x!==h).map(nm),{short:`A<sub>r</sub>(${h.s}) = ${N(h.ar)} — наибольшая.`,
+explain:`Сравниваем A<sub>r</sub>: ${s.map(x=>`${x.s} — ${N(x.ar)}`).join(', ')}. Наибольшая у <b>${h.s}</b>.`,
+explain2:`Подсказка: чем дальше элемент в таблице (больше номер), тем, как правило, тяжелее атом. ${h.s} — №${h.z}, остальные: ${s.filter(x=>x!==h).map(x=>x.s+' №'+x.z).join(', ')}.`});});
+
+/* L8 ★ */
+G(8,()=>{for(;;){const b=pick(EL),k=R(2,8);const c=EL.filter(x=>x.ar===k*b.ar);if(c.length!==1)continue;const e=c[0];
+return SYMQ(`★ Атом элемента X в <b>${k}</b> ${H.plural(k,'раз','раза','раз')} тяжелее атома <b>${b.s}</b> (${b.n}). Какой это элемент? Напиши знак.`,e,{hint:'A<sub>r</sub>(X) = k · A<sub>r</sub>(Y).',short:`A<sub>r</sub>(X) = ${k} · ${N(b.ar)} = ${N(e.ar)} → ${e.s}.`,
+explain:`A<sub>r</sub>(${b.s}) = ${N(b.ar)}, значит, A<sub>r</sub>(X) = ${k} · ${N(b.ar)} = ${N(e.ar)}. Такая масса у <b>${e.s}</b> — ${e.n}.`,
+explain2:`Проверка: ${N(e.ar)} : ${N(b.ar)} = ${k} ✓. Ищи в таблице A<sub>r</sub> = ${N(e.ar)}.`});}},{star:true});
+G(8,()=>{const p=pick([['S',8],['P',4],['O',3],['S',6],['P',2]]);const e=BY[p[0]];const M=e.ar*p[1];
+return {type:'num',q:`★ Молекула простого вещества, образованного элементом <b>${e.s}</b> (${e.n}), имеет M<sub>r</sub> = ${N(M)}. Сколько атомов в этой молекуле?`,ans:p[1],hint:'Раздели M<sub>r</sub> на A<sub>r</sub>.',short:`${N(M)} : ${N(e.ar)} = ${p[1]} → ${C(p[0]+p[1])}.`,
+explain:`Все атомы в молекуле одинаковые, у каждого A<sub>r</sub> = ${N(e.ar)}. ${N(M)} : ${N(e.ar)} = <b>${p[1]}</b>. Формула ${C(p[0]+p[1])}.`,
+explain2:`Проверка: ${p[1]} · ${N(e.ar)} = ${N(M)} ✓. ${p[0]==='S'&&p[1]===8?'Сера и правда состоит из кольцевых молекул S₈.':p[0]==='P'&&p[1]===4?'Белый фосфор состоит из молекул P₄ — пирамидок.':p[0]==='O'?'Это озон O₃.':'В парах этого вещества бывают и такие молекулы.'}`};},{star:true});
+G(8,()=>{const e=BY[pick(['H','N','O','F','Cl','Br','I'])];const M=2*e.ar;
+return SYMQ(`★ Простое вещество состоит из двухатомных молекул <span class="chem">Э<sub>2</sub></span>, M<sub>r</sub> = ${N(M)}. Какой это элемент? Напиши знак.`,e,{hint:'A<sub>r</sub> = M<sub>r</sub> : 2.',short:`${N(M)} : 2 = ${N(e.ar)} → ${e.s}.`,
+explain:`В молекуле 2 одинаковых атома: A<sub>r</sub> = ${N(M)} : 2 = ${N(e.ar)}. Это <b>${e.s}</b> (${e.n}), вещество ${C(e.s+'2')}.`,
+explain2:`Двухатомные молекулы образуют H₂, N₂, O₂, F₂, Cl₂, Br₂, I₂ — проверь их массы: 2, 28, 32, 38, 71, 160, 254.`});},{star:true});
+G(8,()=>{for(;;){const b=BY[pick(['O','He','C','H'])];const e=pick(EL.filter(x=>x!==b&&x.ar>b.ar));const k=e.ar/b.ar;if(!Number.isInteger(k)||k>30)continue;
+return {type:'num',q:`★ Сколько атомов <b>${b.s}</b> (${b.n}) имеют в сумме такую же массу, как один атом <b>${e.s}</b> (${e.n})?`,ans:k,short:`${N(e.ar)} : ${N(b.ar)} = ${k}.`,
+explain:`A<sub>r</sub>(${e.s}) = ${N(e.ar)}, A<sub>r</sub>(${b.s}) = ${N(b.ar)}. Нужно ${N(e.ar)} : ${N(b.ar)} = <b>${k}</b> атомов ${b.s}.`,
+explain2:`Представь весы: на одной чаше атом ${e.s} (${N(e.ar)}), на другой кладём атомы ${b.s} по ${N(b.ar)}. ${k} · ${N(b.ar)} = ${N(e.ar)} — равновесие.`};}},{star:true});
+G(8,()=>{const fs=sample(['H2SO4','H2O','NH3','CH4','HNO3','H3PO4','C2H5OH','HCl','NaOH','Ca(OH)2'],2);const k=[R(2,4),R(2,5)];
+const per=fs.map(f=>parse(f).H||0);const v=k[0]*per[0]+k[1]*per[1];if(!per[0]||!per[1])return null;
+return {type:'num',q:`★ Сколько всего атомов <b>водорода</b> в записи ${k[0]}${C(fs[0])} + ${k[1]}${C(fs[1])}?`,ans:v,short:`${k[0]}·${per[0]} + ${k[1]}·${per[1]} = ${v}.`,
+explain:`В ${C(fs[0])} атомов H: ${per[0]}, умножаем на коэффициент ${k[0]}: ${k[0]*per[0]}. В ${C(fs[1])}: ${per[1]}, · ${k[1]} = ${k[1]*per[1]}. Всего <b>${v}</b>.`,
+explain2:`Не забудь H внутри скобок: в ${C('Ca(OH)2')} водорода 2, а не 1. Считай отдельно каждую часть, потом складывай.`};},{star:true});
+G(8,()=>{const A=EL.filter(e=>e.sg==='A'&&e.z>1);const pairs=[];for(const a of A)for(const b of A)if(a.g===b.g&&a.z<b.z)pairs.push([a,b]);
+const good=pairs.filter(p=>p[1].ar===2*p[0].ar),bad=pairs.filter(p=>p[1].ar!==2*p[0].ar);const it=shuffle(good.map(p=>[p,1]).concat(sample(bad,4).map(p=>[p,0])));
+const L=p=>`${p[0].s} и ${p[1].s}`;
+return {type:'multi',q:'★ В каких парах элементы стоят в <b>одной главной подгруппе</b> и A<sub>r</sub> одного <b>ровно в 2 раза</b> больше A<sub>r</sub> другого? Выбери все.',opts:it.map(x=>L(x[0])),ans:it.map((x,i)=>x[1]?i:-1).filter(i=>i>=0),
+short:`${good.map(p=>`${p[1].s} (${N(p[1].ar)}) = 2 · ${p[0].s} (${N(p[0].ar)})`).join('; ')}.`,
+explain:`Все пары и так в одной подгруппе — проверяем отношение масс: ${it.map(x=>`${x[0][1].s}/${x[0][0].s} = ${N(x[0][1].ar)}/${N(x[0][0].ar)}${x[1]?' = 2 ✓':''}`).join('; ')}. Подходят: <b>${good.map(L).join(', ')}</b>.`,
+explain2:`Удвой меньшую массу и сравни: ${it.map(x=>`2·${N(x[0][0].ar)} = ${N(2*x[0][0].ar)} ${x[1]?'=':'≠'} ${N(x[0][1].ar)}`).join('; ')}.`};},{star:true});
+
+window.TOPIC={id:'c8_atoms',title:'Атомы и Периодическая система',subtitle:'Химия · 8 класс',
+intro:`<p>Сколько молекул в капле воды и почему кислород обозначают буквой O. Атомы и молекулы, химические элементы и их знаки (как правильно читать «аш-два-о»), простые и сложные вещества, относительная атомная масса, периоды и группы. Есть кликабельная мини-таблица Менделеева, а в конце — олимпиадные задачи.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Атомы и молекулы','Химические элементы и знаки','Как читаются знаки','Простые и сложные вещества','Элемент или простое вещество?','Относительная атомная масса','Периоды и группы','Сравниваем массы','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Классы неорганических веществ — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range}=H;
+const N=H.num;
+const C=f=>H.chem(f).replace(/NaN/g,'Na&#8288;N');
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<300;i++){const t=make();if(t)return t;}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,typeof extra==='function'?extra():extra),{rule:true});
+
+/* ---------- chemistry core: formula parser, molar masses, equation balancer ---------- */
+const AM={H:1,Li:7,Be:9,C:12,N:14,O:16,F:19,Na:23,Mg:24,Al:27,Si:28,P:31,S:32,Cl:35.5,K:39,Ca:40,Cr:52,Mn:55,Fe:56,Cu:64,Zn:65,Br:80,Ag:108,Ba:137,Pb:207};
+function parseGroup(s){let i=0;const num=()=>{const m=s.slice(i).match(/^\d+/);if(!m)return 1;i+=m[0].length;return +m[0];};
+  const grp=()=>{const c={};while(i<s.length&&s[i]!==')'){if(s[i]==='('){i++;const g=grp();if(s[i]!==')')throw Error('bad formula '+s);i++;const n=num();for(const e in g)c[e]=(c[e]||0)+g[e]*n;}
+    else{const m=s.slice(i).match(/^[A-Z][a-z]?/);if(!m)throw Error('bad formula '+s);i+=m[0].length;const n=num();c[m[0]]=(c[m[0]]||0)+n;}}return c;};
+  const r=grp();if(i!==s.length)throw Error('bad formula '+s);return r;}
+function parseF(f){const tot={};String(f).replace(/[↑↓\s]/g,'').split(/[·*]/).forEach(p=>{let k=1;const m=p.match(/^(\d+)(.*)$/);if(m){k=+m[1];p=m[2];}const c=parseGroup(p);for(const e in c)tot[e]=(tot[e]||0)+k*c[e];});return tot;}
+const Mr=f=>{const c=parseF(f);let s=0;for(const e in c){if(!(e in AM))throw Error('no mass '+e);s+=AM[e]*c[e];}return Math.round(s*10)/10;};
+const BAL={};
+function balance(L,Rt){const key=L.join('+')+'='+Rt.join('+');if(BAL[key])return BAL[key];
+  const sp=[...L,...Rt].map(parseF);const els=[...new Set(sp.flatMap(o=>Object.keys(o)))];const n=sp.length;const c=new Array(n).fill(1);const MX=n>5?8:n>4?10:14;let found=null;
+  const rec=i=>{if(found)return;if(i===n){for(const e of els){let s=0;for(let j=0;j<n;j++)s+=(j<L.length?1:-1)*c[j]*(sp[j][e]||0);if(s)return;}found=c.slice();return;}for(let v=1;v<=MX&&!found;v++){c[i]=v;rec(i+1);}};
+  rec(0);if(!found)throw Error('cannot balance '+key);const g=found.reduce((a,b)=>H.gcd(a,b));found=found.map(x=>x/g);
+  /* double check */for(const e of els){let s=0;for(let j=0;j<n;j++)s+=(j<L.length?1:-1)*found[j]*(sp[j][e]||0);if(s)throw Error('unbalanced '+key);}
+  BAL[key]=found;return found;}
+/* equation: html with coefficients; cond — text over the arrow */
+function EQ(L,Rt,cond){const c=balance(L,Rt);const t=(f,k)=>`<span class="chem" style="white-space:nowrap">${k>1?k:''}${C(f).replace(/^<span class="chem">|<\/span>$/g,'')}</span>`;
+  const l=L.map((f,j)=>t(f,c[j])).join(' + '),r=Rt.map((f,j)=>t(f,c[L.length+j])).join(' + ');
+  const arr=cond?` <span style="white-space:nowrap">—${cond}→</span> `:' → ';
+  return {c,html:l+arr+r,sum:c.reduce((a,b)=>a+b,0),k:f=>{const i=[...L,...Rt].indexOf(f);return c[i];}};}
+const ion=(f,z,sg)=>C(f)+`<sup>${z>1?z:''}${sg||'−'}</sup>`;
+
+/* ---------- data ---------- */
+const COLS=['H','NaK','Ba','Ca','Mg','Al','Zn','Fe2','Fe3','Cu','Ag','Pb'];
+const COLH=['H⁺','Na⁺, K⁺','Ba²⁺','Ca²⁺','Mg²⁺','Al³⁺','Zn²⁺','Fe²⁺','Fe³⁺','Cu²⁺','Ag⁺','Pb²⁺'];
+/* school solubility table (Р — растворимо, М — малорастворимо, Н — нерастворимо, – — не существует / разлагается водой) */
+const SOL={OH:'–РРМНННННН–Н',Cl:'РРРРРРРРРРНМ',Br:'РРРРРРРРРРНМ',NO3:'РРРРРРРРРРРР',SO4:'РРНМРРРРРРМН',SO3:'РРННМ–МН––НН',S:'РРРМ––НН–ННН',CO3:'РРННН–НН––НН',SiO3:'НРННН–НН–––Н',PO4:'РРНННННННННН'};
+const ANH={OH:'OH⁻',Cl:'Cl⁻',Br:'Br⁻',NO3:'NO₃⁻',SO4:'SO₄²⁻',SO3:'SO₃²⁻',S:'S²⁻',CO3:'CO₃²⁻',SiO3:'SiO₃²⁻',PO4:'PO₄³⁻'};
+for(const k in SOL)if([...SOL[k]].length!==12)throw Error('SOL row '+k);
+const sol=(an,col)=>[...SOL[an]][COLS.indexOf(col)];
+const SOLW={Р:'растворимо',М:'малорастворимо',Н:'нерастворимо','–':'не существует (разлагается водой)'};
+const CAT=[
+ {k:'Na',f:'Na',z:1,col:'NaK',g:'натрия'},{k:'K',f:'K',z:1,col:'NaK',g:'калия'},{k:'Ba',f:'Ba',z:2,col:'Ba',g:'бария'},{k:'Ca',f:'Ca',z:2,col:'Ca',g:'кальция'},
+ {k:'Mg',f:'Mg',z:2,col:'Mg',g:'магния'},{k:'Al',f:'Al',z:3,col:'Al',g:'алюминия'},{k:'Zn',f:'Zn',z:2,col:'Zn',g:'цинка'},{k:'Fe2',f:'Fe',z:2,col:'Fe2',g:'железа(II)'},
+ {k:'Fe3',f:'Fe',z:3,col:'Fe3',g:'железа(III)'},{k:'Cu',f:'Cu',z:2,col:'Cu',g:'меди(II)'},{k:'Ag',f:'Ag',z:1,col:'Ag',g:'серебра'},{k:'Pb',f:'Pb',z:2,col:'Pb',g:'свинца(II)'}];
+const CATK=k=>CAT.find(c=>c.k===k);
+/* acids: formula, name, residue, charge, salt name, oxygen-containing, oxide */
+const ACIDS=[
+ {f:'HCl',n:'соляная (хлороводородная)',a:'Cl',z:1,s:'хлорид',ox:0},
+ {f:'HBr',n:'бромоводородная',a:'Br',z:1,s:'бромид',ox:0},
+ {f:'HF',n:'фтороводородная (плавиковая)',a:'F',z:1,s:'фторид',ox:0},
+ {f:'H2S',n:'сероводородная',a:'S',z:2,s:'сульфид',ox:0},
+ {f:'HNO3',n:'азотная',a:'NO3',z:1,s:'нитрат',ox:1,o:'N2O5'},
+ {f:'HNO2',n:'азотистая',a:'NO2',z:1,s:'нитрит',ox:1,o:'N2O3'},
+ {f:'H2SO4',n:'серная',a:'SO4',z:2,s:'сульфат',ox:1,o:'SO3'},
+ {f:'H2SO3',n:'сернистая',a:'SO3',z:2,s:'сульфит',ox:1,o:'SO2'},
+ {f:'H2CO3',n:'угольная',a:'CO3',z:2,s:'карбонат',ox:1,o:'CO2'},
+ {f:'H2SiO3',n:'кремниевая',a:'SiO3',z:2,s:'силикат',ox:1,o:'SiO2'},
+ {f:'H3PO4',n:'фосфорная',a:'PO4',z:3,s:'фосфат',ox:1,o:'P2O5'}];
+const ACK=a=>ACIDS.find(x=>x.a===a);
+const BASN=['одноосновная','двухосновная','трёхосновная'];
+const poly=f=>/[A-Z].*[A-Z]|\d/.test(f);
+const mk=(m,a,i,j)=>m+(i>1?i:'')+(j>1?(poly(a)?'('+a+')'+j:a+j):a);
+const saltF=(cat,an)=>{const zA=an==='OH'?1:ACK(an).z;const L=H.lcm(cat.z,zA);return mk(cat.f,an,L/cat.z,L/zA);};
+const hydF=cat=>saltF(cat,'OH');
+const saltName=(cat,an)=>ACK(an).s+' '+cat.g;
+const saltOK=(cat,an)=>sol(an,cat.col)!=='–';
+const oxF=cat=>{const L=H.lcm(cat.z,2);return cat.f+(L/cat.z>1?L/cat.z:'')+'O'+(L/2>1?L/2:'');};
+/* oxides */
+const OXT={b:'основный',a:'кислотный',m:'амфотерный',n:'несолеобразующий'};
+const OXIDES=[['Na2O','оксид натрия','b'],['K2O','оксид калия','b'],['CaO','оксид кальция','b'],['BaO','оксид бария','b'],['MgO','оксид магния','b'],['CuO','оксид меди(II)','b'],['FeO','оксид железа(II)','b'],['Li2O','оксид лития','b'],['Cu2O','оксид меди(I)','b'],
+ ['CO2','оксид углерода(IV)','a'],['SO2','оксид серы(IV)','a'],['SO3','оксид серы(VI)','a'],['P2O5','оксид фосфора(V)','a'],['N2O5','оксид азота(V)','a'],['SiO2','оксид кремния(IV)','a'],['Mn2O7','оксид марганца(VII)','a'],['CrO3','оксид хрома(VI)','a'],['N2O3','оксид азота(III)','a'],
+ ['ZnO','оксид цинка','m'],['Al2O3','оксид алюминия','m'],['BeO','оксид бериллия','m'],
+ ['CO','оксид углерода(II)','n'],['NO','оксид азота(II)','n'],['N2O','оксид азота(I)','n']];
+const OXWHY={b:'это оксид металла в степени окисления +1 или +2 — ему соответствует основание',a:'это оксид неметалла (или металла в высокой степени окисления +6, +7) — ему соответствует кислота',m:'ZnO, Al₂O₃, BeO — «двуличные»: реагируют и с кислотами, и со щелочами',n:'CO, NO, N₂O не образуют солей — не реагируют ни с кислотами, ни со щелочами'};
+const ROM=['','I','II','III','IV','V','VI','VII'];
+
+/* ---------- solubility table HTML ---------- */
+function solTable(small){const td='border:1px solid var(--line);padding:3px 5px;text-align:center';const th=td+';background:var(--accent-soft);color:var(--accent-ink);font-weight:700';
+  const col={Р:'',М:'background:var(--hl);background:color-mix(in srgb,var(--hl) 30%,transparent)',Н:'background:var(--accent-soft);font-weight:700','–':'color:var(--muted)'};
+  let s=`<div style="overflow-x:auto;margin:8px 0"><table style="border-collapse:collapse;margin:0 auto;font-size:${small?12:13}px;white-space:nowrap"><tr><th style="${th}"></th>${COLH.map(h=>`<th style="${th}">${h}</th>`).join('')}</tr>`;
+  for(const an in SOL)s+=`<tr><th style="${th}">${ANH[an]}</th>${[...SOL[an]].map(v=>`<td style="${td};${col[v]}">${v}</td>`).join('')}</tr>`;
+  return s+`</table></div><p class="small" style="text-align:center">Р — растворимо, М — малорастворимо, Н — нерастворимо, «–» — не существует или разлагается водой</p>`;}
+const solDet=()=>`<details style="margin-top:8px"><summary>📋 Таблица растворимости</summary>${solTable(true)}</details>`;
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Четыре «команды» неорганических веществ',lvl:[0,4],html:`
+<p class="hook">Что общего у мела на доске, ржавчины на гвоздях, кислоты в твоём желудке и соды на кухне? Все они принадлежат к одной из <b>четырёх команд</b>: оксиды, основания, кислоты, соли. Научишься узнавать команду по формуле — сможешь предсказывать, кто с кем подружится (вступит в реакцию), почти как в карточной игре.</p>
+<div class="box rule"><b>Как узнать класс по формуле</b>
+• <b>Оксид</b> — два элемента, второй — кислород: ${C('CaO')}, ${C('CO2')}, ${C('Al2O3')}.<br>
+• <b>Основание</b> — металл + группы OH: ${C('NaOH')}, ${C('Cu(OH)2')}.<br>
+• <b>Кислота</b> — впереди водород H, дальше кислотный остаток: ${C('HCl')}, ${C('H2SO4')}.<br>
+• <b>Соль</b> — металл + кислотный остаток: ${C('NaCl')}, ${C('CaCO3')}, ${C('Al2(SO4)3')}.</div>
+<p><b>Почему так.</b> Класс определяется тем, из каких «кирпичиков» собрана формула. Кислоту и соль строят из одного и того же кислотного остатка — только у кислоты рядом с ним стоит водород, а у соли — металл. Это как одна и та же «начинка» (остаток) в разной «обёртке».</p>
+<div class="box ex"><b>Пример</b>${C('H2SO4')} — кислота (H впереди), ${C('Na2SO4')} — соль (металл + SO₄), ${C('SO3')} — оксид (2 элемента, кислород), ${C('Ba(OH)2')} — основание (металл + OH).</div>
+<div class="box err"><b>Частая ошибка</b>Считать оксидом всё, где есть кислород. ${C('H2SO4')} и ${C('CaCO3')} содержат кислород, но элементов в них три — это кислота и соль. В оксиде <b>ровно два</b> элемента.</div>`},
+{title:'Оксиды: основные, кислотные, амфотерные',lvl:0,html:`
+<div class="box rule"><b>Оксиды</b>— сложные вещества из двух элементов, один из которых — кислород в степени окисления −2.</div>
+<div class="box rule"><b>Три главных типа</b>
+• <b>Основные</b> — оксиды металлов в степени окисления +1, +2: ${C('Na2O')}, ${C('CaO')}, ${C('CuO')}, ${C('FeO')}. Им соответствуют <b>основания</b>.<br>
+• <b>Кислотные</b> — оксиды неметаллов (и металлов в степени окисления +6, +7): ${C('CO2')}, ${C('SO3')}, ${C('P2O5')}, ${C('Mn2O7')}. Им соответствуют <b>кислоты</b>.<br>
+• <b>Амфотерные</b> — ${C('ZnO')}, ${C('Al2O3')}, ${C('BeO')}: ведут себя то как основные, то как кислотные.<br>
+Ещё есть <b>несолеобразующие</b> ${C('CO')}, ${C('NO')}, ${C('N2O')} — они солей не дают.</div>
+<p><b>Как называть.</b> «Оксид» + элемент в родительном падеже + (валентность римской цифрой, если она бывает разной): ${C('Fe2O3')} — оксид железа(III), ${C('SO2')} — оксид серы(IV), ${C('CaO')} — оксид кальция.</p>
+<div class="box ex"><b>Пример</b>${C('SO3')}: сера — неметалл → кислотный, ему соответствует серная кислота ${C('H2SO4')}. ${C('MgO')}: магний +2 → основный, ему соответствует ${C('Mg(OH)2')}.</div>
+<div class="box err"><b>Ловушка</b>${C('Mn2O7')} — оксид <b>металла</b>, но кислотный: у марганца здесь степень окисления +7. Смотри не только на «металл/неметалл», но и на степень окисления.</div>
+<div class="fact">Ржавчина — это в основном оксид железа(III) с водой (${C('Fe2O3')}·nH₂O), а «сухой лёд» в мороженых тележках — твёрдый ${C('CO2')}, кислотный оксид.</div>`},
+{title:'Основания и щёлочи',lvl:1,html:`
+<div class="box rule"><b>Основания</b>— сложные вещества из атомов металла и одной или нескольких гидроксогрупп OH. Число групп OH равно валентности металла.</div>
+<p>Формула: ${C('NaOH')} (натрий I → одна OH), ${C('Ca(OH)2')} (кальций II → две), ${C('Fe(OH)3')} (железо III → три). Название: «гидроксид» + металл: гидроксид кальция, гидроксид железа(III).</p>
+<div class="box rule"><b>Щёлочи</b>— основания, <b>растворимые в воде</b>: ${C('LiOH')}, ${C('NaOH')}, ${C('KOH')}, ${C('Ba(OH)2')}; к ним относят и малорастворимый ${C('Ca(OH)2')} (известковая вода). Остальные — <b>нерастворимые основания</b>: ${C('Cu(OH)2')}, ${C('Fe(OH)3')}, ${C('Mg(OH)2')}…</div>
+<div class="box tip"><b>Как запомнить</b>Щёлочи дают металлы, которые сами бурно реагируют с водой: Li, Na, K, Ca, Ba. Проверить всегда можно по строчке OH⁻ в таблице растворимости.</div>
+<div class="box err"><b>Частая ошибка</b>Забыть скобки: «CaOH2» — неправильно. Если групп OH две или три, их берут в скобки: ${C('Ca(OH)2')}.</div>
+<div class="fact">Гидроксид натрия называют «каустическая сода» (от греч. «жгучий»). Он разъедает кожу и жир — поэтому входит в средства для прочистки труб.</div>`},
+{title:'Кислоты и кислотные остатки',lvl:2,html:`
+<div class="box rule"><b>Кислоты</b>— сложные вещества, состоящие из атомов водорода, способных замещаться на атомы металла, и кислотного остатка. Заряд остатка = числу атомов H в кислоте.</div>
+<div style="overflow-x:auto"><table class="sym"><tr><th>Кислота</th><th>Название</th><th>Остаток</th><th>Соли</th></tr>
+${ACIDS.map(a=>`<tr><td>${C(a.f)}</td><td>${a.n}</td><td>${ion(a.a,a.z)}</td><td>${a.s}ы</td></tr>`).join('')}</table></div>
+<p><b>Классификация.</b> По кислороду: <b>кислородсодержащие</b> (${C('HNO3')}, ${C('H2SO4')}) и <b>бескислородные</b> (${C('HCl')}, ${C('H2S')}). По числу атомов H — <b>основность</b>: одноосновные (${C('HCl')}), двухосновные (${C('H2SO4')}), трёхосновные (${C('H3PO4')}).</p>
+<div class="box ex"><b>Пример</b>${C('H3PO4')}: три H → остаток ${ion('PO4',3)}, кислота трёхосновная, кислородсодержащая.</div>
+<div class="box err"><b>Ловушка</b>Серная ${C('H2SO4')} и сернистая ${C('H2SO3')} — разные кислоты! Чем больше кислорода, тем «полнее» название: серная (O₄) → сернистая (O₃).</div>
+<div class="fact">В твоём желудке есть соляная кислота HCl — около 0,3–0,5 %. Она помогает переваривать белки и убивает микробов. А газировка кислая из-за угольной кислоты ${C('H2CO3')}.</div>`},
+{title:'Соли и их названия',lvl:3,html:`
+<div class="box rule"><b>Соли</b>— сложные вещества из атомов металла и кислотного остатка. Название: остаток (хлорид, сульфат, …) + металл в родительном падеже: ${C('CuSO4')} — сульфат меди(II).</div>
+<div class="box tip"><b>Шпаргалка по названиям</b>
+${C('Cl')}⁻ хлорид · ${ion('SO4',2)} сульфат · ${ion('SO3',2)} сульфит · ${C('S')}²⁻ сульфид · ${ion('NO3',1)} нитрат · ${ion('CO3',2)} карбонат · ${ion('PO4',3)} фосфат · ${ion('SiO3',2)} силикат.<br>
+Окончание <b>-ат</b> — у «самой кислородной» кислоты (серная → сульфат), <b>-ит</b> — кислорода меньше (сернистая → сульфит), <b>-ид</b> — кислорода нет совсем (сероводородная → сульфид).</div>
+<p><b>Как составить формулу.</b> Заряды металла и остатка должны уравновеситься. Ищем НОК зарядов.</p>
+<ol class="steps"><li>Фосфат кальция: ${C('Ca')}²⁺ и ${ion('PO4',3)}.</li><li>НОК(2, 3) = 6 → кальция 6 : 2 = 3, остатков 6 : 3 = 2.</li><li>Ответ: ${C('Ca3(PO4)2')}. Проверка: 3·(+2) + 2·(−3) = 0 ✔</li></ol>
+<div class="box err"><b>Частая ошибка</b>Перепутать сульфат, сульфит и сульфид. ${C('Na2SO4')} — сульфат, ${C('Na2SO3')} — сульфит, ${C('Na2S')} — сульфид.</div>
+<div class="fact">Мел, мрамор и скорлупа яиц — это карбонат кальция ${C('CaCO3')}, а поваренная соль — хлорид натрия ${C('NaCl')}. «Соль» в химии — это целый класс, а не только то, что в солонке.</div>`},
+{title:'Таблица растворимости',lvl:4,html:`
+<div class="box rule"><b>Как пользоваться</b>Находишь столбец катиона (металла) и строку аниона (OH⁻ или кислотного остатка). На пересечении: Р — растворимо, М — малорастворимо, Н — нерастворимо (выпадает в осадок).</div>
+${solTable()}
+<div class="box tip"><b>Что запомнить без таблицы</b>Все соли натрия, калия и все нитраты — растворимы. Хлорид серебра ${C('AgCl')} и сульфат бария ${C('BaSO4')} — знаменитые белые осадки.</div>
+<div class="box ex"><b>Пример</b>${C('BaSO4')}: столбец Ba²⁺, строка SO₄²⁻ → Н. Поэтому сульфат бария можно пить перед рентгеном: он не растворяется и не всасывается, а на снимке хорошо виден желудок.</div>
+<div class="box err"><b>Ловушка</b>Не путай столбец Fe²⁺ и Fe³⁺. А прочерк «–» не значит «растворимо» — такой соли в воде просто не существует.</div>`},
+{title:'Индикаторы: химический светофор',lvl:5,html:`
+<div class="box rule"><b>Индикаторы</b>— вещества, меняющие цвет в зависимости от среды.<br>
+• <b>Лакмус</b>: кислота — красный, нейтральная — фиолетовый, щёлочь — синий.<br>
+• <b>Фенолфталеин</b>: в кислой и нейтральной — бесцветный, в щелочной — <b>малиновый</b>.<br>
+• <b>Метиловый оранжевый</b>: кислота — красно-розовый, нейтральная — оранжевый, щёлочь — жёлтый.</div>
+<p><b>Почему так.</b> Кислоты в воде дают ионы H⁺, щёлочи — ионы OH⁻. Молекула индикатора «ловит» эти ионы и перестраивается — а вместе с ней меняется и цвет.</p>
+<div class="widget" id="w-ind"></div>
+<div class="box tip"><b>Как запомнить</b>«Фенолфталеиновый малиновый — в щелочах» (ф-щ). Лакмус: <b>к</b>ислота — <b>к</b>расный.</div>
+<div class="box err"><b>Ловушка</b>Нерастворимые основания (${C('Cu(OH)2')}, ${C('Fe(OH)3')}) окраску индикатора <b>не меняют</b>: ионов OH⁻ в растворе почти нет. Фенолфталеин малиновый только в растворе щёлочи.</div>
+<div class="fact">Чай светлеет, если положить в него лимон: вещества чая — природные индикаторы. А сок красной капусты становится красным в уксусе и зелёным в растворе соды.</div>`},
+{title:'Химические свойства кислот',lvl:6,html:`
+<div class="box rule"><b>Кислота реагирует с</b>
+1) <b>металлами</b>, стоящими в ряду активности левее H → соль + водород;<br>
+2) <b>основными и амфотерными оксидами</b> → соль + вода;<br>
+3) <b>основаниями</b> → соль + вода (нейтрализация);<br>
+4) <b>солями</b>, если выпадает осадок или выделяется газ.</div>
+<p class="m" style="text-align:center">Li K Ba Ca Na Mg Al Zn Fe Ni Sn Pb (H₂) Cu Hg Ag Pt Au</p>
+<div class="box ex"><b>Примеры</b>
+${EQ(['Zn','HCl'],['ZnCl2','H2↑']).html}<br>
+${EQ(['CuO','H2SO4'],['CuSO4','H2O']).html}<br>
+${EQ(['NaOH','HNO3'],['NaNO3','H2O']).html}<br>
+${EQ(['BaCl2','H2SO4'],['BaSO4↓','HCl']).html}<br>
+${EQ(['Na2CO3','HCl'],['NaCl','H2O','CO2↑']).html}</div>
+<div class="box err"><b>Частые ошибки</b>• Медь и серебро стоят правее H — с ${C('HCl')} и разбавленной ${C('H2SO4')} <b>не реагируют</b>.<br>• Железо с ${C('HCl')} даёт ${C('FeCl2')}, а не ${C('FeCl3')}.<br>• Азотная кислота с металлами водород не выделяет — это особый случай (9 класс).</div>
+<div class="fact">Шипение соды в уксусе — это реакция соли-карбоната с кислотой: выделяется ${C('CO2')}. Так работают «вулканы» на школьных выставках и шипучие таблетки.</div>`},
+{title:'Свойства оснований, оксидов и солей',lvl:7,html:`
+<div class="box rule"><b>Щёлочи</b>реагируют с кислотами, кислотными оксидами и солями (если выпадает осадок):<br>
+${EQ(['Ca(OH)2','CO2'],['CaCO3↓','H2O']).html} — известковая вода мутнеет: так узнают ${C('CO2')}.<br>
+${EQ(['CuSO4','NaOH'],['Cu(OH)2↓','Na2SO4']).html} — голубой осадок.</div>
+<div class="box rule"><b>Нерастворимые основания</b>реагируют с кислотами и разлагаются при нагревании: ${EQ(['Cu(OH)2'],['CuO','H2O'],'t°').html}</div>
+<div class="box rule"><b>Оксиды и вода</b>Оксиды щелочных и щёлочноземельных металлов с водой дают щёлочь: ${EQ(['CaO','H2O'],['Ca(OH)2']).html}. Кислотные оксиды (кроме ${C('SiO2')}) дают кислоту: ${EQ(['P2O5','H2O'],['H3PO4']).html}. ${C('CuO')}, ${C('FeO')}, ${C('SiO2')} с водой не реагируют.</div>
+<div class="box rule"><b>Основный оксид + кислотный оксид → соль</b>: ${EQ(['CaO','CO2'],['CaCO3']).html}</div>
+<div class="box rule"><b>Соли</b>реагируют с кислотами, щелочами, другими солями (если осадок/газ) и с металлами: более активный металл вытесняет менее активный: ${EQ(['Fe','CuSO4'],['FeSO4','Cu']).html}</div>
+<div class="box ex"><b>Амфотерность</b>${C('Zn(OH)2')} и ${C('Al(OH)3')}, ${C('ZnO')} и ${C('Al2O3')} реагируют и с кислотами, и со щелочами: ${EQ(['ZnO','HCl'],['ZnCl2','H2O']).html}; ${EQ(['ZnO','NaOH'],['Na2ZnO2','H2O'],'t°').html} (сплавление).</div>
+<div class="box err"><b>Ловушка</b>Две щёлочи, два кислотных оксида, щёлочь и основный оксид — между собой <b>не реагируют</b>: «одинаковые» по характеру вещества не дружат.</div>`},
+{title:'Генетическая связь: из металла — в соль',lvl:7,html:`
+<div class="box rule"><b>Генетический ряд</b>металла: металл → основный оксид → основание → соль. Неметалла: неметалл → кислотный оксид → кислота → соль.</div>
+<p class="m" style="text-align:center">Ca → CaO → Ca(OH)₂ → CaCO₃<br>S → SO₂ → SO₃ → H₂SO₄ → BaSO₄</p>
+<p><b>Почему так.</b> Один и тот же элемент «переходит» из вещества в вещество, как эстафетная палочка. Слово «генетический» — от «генезис», происхождение: каждое следующее вещество получено из предыдущего.</p>
+<div class="box ex"><b>Пример</b>${EQ(['Ca','O2'],['CaO']).html};&nbsp; ${EQ(['CaO','H2O'],['Ca(OH)2']).html};&nbsp; ${EQ(['Ca(OH)2','CO2'],['CaCO3↓','H2O']).html}.</div>
+<div class="box err"><b>Ловушка</b>${C('CuO')} с водой не реагирует, поэтому ${C('Cu(OH)2')} получают в обход: ${C('CuO')} → ${C('CuCl2')} → ${C('Cu(OH)2')} (кислотой, потом щёлочью).</div>`},
+{title:'★ Цепочки превращений и распознавание',lvl:8,html:`
+<div class="box rule"><b>Как решать цепочку</b>1) Посмотри на элемент, который «путешествует» по цепочке. 2) Определи класс соседних веществ. 3) Подбери реагент из свойств классов. 4) Уравняй каждое уравнение.</div>
+<div class="box ex"><b>Пример</b>Cu → CuO → CuCl₂ → Cu(OH)₂ → CuO<br>${EQ(['Cu','O2'],['CuO'],'t°').html}<br>${EQ(['CuO','HCl'],['CuCl2','H2O']).html}<br>${EQ(['CuCl2','NaOH'],['Cu(OH)2↓','NaCl']).html}<br>${EQ(['Cu(OH)2'],['CuO','H2O'],'t°').html}</div>
+<div class="box rule"><b>Качественные реакции</b>${C('SO4')}²⁻ — ${C('BaCl2')}, белый осадок ${C('BaSO4')}. Cl⁻ — ${C('AgNO3')}, белый творожистый ${C('AgCl')}. ${C('CO3')}²⁻ — кислота, «вскипание» ${C('CO2')}. ${C('CO2')} — известковая вода мутнеет. Cu²⁺ — щёлочь, голубой осадок.</div>
+<div class="box err"><b>Ловушка</b>${C('BaCl2')} не отличит сульфат от карбоната: оба дают белый осадок (${C('BaSO4')} и ${C('BaCO3')}). Карбонат выдаёт себя газом с кислотой.</div>`}
+];
+
+const symbols={tab:'Формулы',title:'Классы, остатки и правила',rows:[
+['Э<sub>x</sub>O<sub>y</sub>','оксид','Два элемента, один — кислород.','CaO, CO₂'],
+['M(OH)<sub>n</sub>','основание','Металл + n групп OH (n = валентность).','Fe(OH)₃'],
+['H<sub>n</sub>A','кислота','Водород + кислотный остаток A заряда n−.','H₂SO₄ → SO₄²⁻'],
+['M<sub>x</sub>A<sub>y</sub>','соль','Металл + кислотный остаток, заряды уравновешены.','Ca₃(PO₄)₂'],
+['-ат / -ит / -ид','названия солей','Много O / меньше O / без O.','сульфат, сульфит, сульфид'],
+['кислота + Me','до H в ряду','→ соль + H₂↑','Zn + 2HCl'],
+['кислота + основание','нейтрализация','→ соль + вода','NaOH + HCl'],
+['кисл. оксид + щёлочь','','→ соль + вода','CO₂ + Ca(OH)₂'],
+['соль + соль','в растворе','Идёт, если выпадает осадок.','BaCl₂ + Na₂SO₄'],
+['лакмус','индикатор','кислота — красный, щёлочь — синий','HCl → красный'],
+['фенолфталеин','индикатор','в щёлочи малиновый, иначе бесцветный','NaOH → малиновый']
+],after:`<div class="box tip" style="margin-top:14px"><b>Ряд активности металлов</b>Li K Ba Ca Na Mg Al Zn Fe Ni Sn Pb (H₂) Cu Hg Ag Pt Au</div>${solTable(true)}`};
+
+/* ---------- widget: indicators ---------- */
+const MEDIA=[['соляная кислота HCl','a'],['серная кислота H₂SO₄','a'],['лимонный сок','a'],['газировка','a'],['вода','n'],['раствор NaCl','n'],['раствор сахара','n'],['раствор NaOH','b'],['известковая вода Ca(OH)₂','b'],['мыльный раствор','b']];
+const IND={l:{n:'лакмус',a:['#d63a3a','красный'],n_:['#8e5bb5','фиолетовый'],b:['#3a63d6','синий']},f:{n:'фенолфталеин',a:[null,'бесцветный'],n_:[null,'бесцветный'],b:['#d6338f','малиновый']},m:{n:'метилоранж',a:['#e0457a','красно-розовый'],n_:['#f08c2a','оранжевый'],b:['#e6c229','жёлтый']}};
+const indCol=(ind,m)=>IND[ind][m==='n'?'n_':m];
+function tube(x,col,lab,clr){return `<path d="M${x},20 V118 a18,18 0 0 0 36,0 V20" fill="none" stroke="var(--fig)" stroke-width="2"/>`+
+  `<path d="M${x+2},60 V118 a16,16 0 0 0 32,0 V60 Z" fill="${col||'var(--card)'}" fill-opacity="${col?0.85:1}" stroke="none"/>`+(col?'':`<path d="M${x+2},60 H${x+34}" stroke="var(--fig)" stroke-opacity=".4" stroke-dasharray="3 3"/>`)+
+  `<text x="${x+18}" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="var(--accent-ink)">${lab}</text><text x="${x+18}" y="174" text-anchor="middle" font-size="12" fill="var(--ink)">${clr}</text>`;}
+function onTheory(root){const w=root.querySelector('#w-ind');if(!w)return;
+  w.innerHTML=`<label>Что в пробирках: <select id="wiS" style="font-size:15px;padding:4px 6px;max-width:100%">${MEDIA.map((m,i)=>`<option value="${i}">${m[0]}</option>`).join('')}</select></label><div id="wiP" style="display:flex;justify-content:center"></div><div id="wiO" class="small" style="text-align:center"></div>`;
+  const draw=()=>{const m=MEDIA[+w.querySelector('#wiS').value][1];let s='';['l','f','m'].forEach((k,i)=>{const c=indCol(k,m);s+=tube(40+i*100,c[0],IND[k].n,c[1]);});
+    w.querySelector('#wiP').innerHTML=`<svg viewBox="0 0 320 182" width="320" role="img" aria-label="Пробирки с индикаторами" style="font-family:system-ui,sans-serif;max-width:100%">${s}</svg>`;
+    w.querySelector('#wiO').innerHTML=`Среда: <span class="out">${{a:'кислая',n:'нейтральная',b:'щелочная'}[m]}</span>`;};
+  w.querySelector('#wiS').onchange=draw;draw();}
+
+/* =================== GENERATORS =================== */
+/* ---- L0 оксиды ---- */
+RULE(0,'Что такое <b>оксид</b>?','Сложное вещество из двух элементов, один из которых — кислород (степень окисления −2)',['Любое вещество, в составе которого есть кислород','Вещество из атомов металла и кислотного остатка','Сложное вещество из металла и групп OH'],
+{short:'Оксид = ровно два элемента, один из них кислород.',
+explain:`Оксид — сложное вещество из <b>двух</b> элементов, один из которых — кислород в степени окисления −2: ${C('CaO')}, ${C('CO2')}, ${C('Fe2O3')}.<br>«Любое вещество с кислородом» — неверно: в ${C('H2SO4')} и ${C('CaCO3')} есть кислород, но это кислота и соль (элементов три). «Металл + остаток» — это соль, «металл + OH» — основание.`,
+explain2:'Посчитай разные буквы-элементы в формуле. Две, и одна из них O — оксид. Три и больше — уже не оксид, даже если кислород там есть.'});
+G(0,()=>{const t=pick(['b','a','m']);const D={b:['Оксиды металлов в степени окисления +1 и +2 (кроме ZnO, BeO), им соответствуют основания',['Оксиды неметаллов, им соответствуют кислоты','Все оксиды металлов без исключения','Оксиды, которые не образуют солей']],
+ a:['Оксиды неметаллов и металлов в степени окисления +6, +7, им соответствуют кислоты',['Только оксиды неметаллов, металлы кислотных оксидов не образуют','Оксиды, которые реагируют с кислотами','Оксиды металлов в степени окисления +1 и +2']],
+ m:['Оксиды, которые реагируют и с кислотами, и со щелочами (ZnO, Al₂O₃, BeO)',['Оксиды, которые не реагируют ни с кислотами, ни со щелочами','Все оксиды металлов','Оксиды, растворимые в воде']]}[t];
+ return CH(`Какие оксиды называют <b>${{b:'основными',a:'кислотными',m:'амфотерными'}[t]}</b>?`,D[0],D[1],{short:D[0]+'.',
+ explain:`Правило: <b>основные</b> — оксиды металлов +1, +2 (${C('Na2O')}, ${C('CaO')}, ${C('CuO')}) → им соответствуют основания; <b>кислотные</b> — оксиды неметаллов и металлов +6, +7 (${C('SO3')}, ${C('P2O5')}, ${C('Mn2O7')}) → им соответствуют кислоты; <b>амфотерные</b> — ${C('ZnO')}, ${C('Al2O3')}, ${C('BeO')} — реагируют и с кислотами, и со щелочами.<br>Верный ответ: «${D[0]}».`,
+ explain2:'Имя подсказывает: основный оксид — «папа» основания (CaO → Ca(OH)₂), кислотный — «папа» кислоты (SO₃ → H₂SO₄), амфотерный (греч. «и тот, и другой») — может быть и тем, и другим.'});},{rule:true});
+G(0,()=>{const o=pick(OXIDES);const opts=['основный','кислотный','амфотерный','несолеобразующий'];const ans=opts.indexOf(OXT[o[2]]);
+ return {type:'choice',q:`К какому типу относится оксид ${C(o[0])} (${o[1]})?`,opts,ans,short:`${C(o[0])} — ${OXT[o[2]]}: ${OXWHY[o[2]]}.`,
+ explain:`${C(o[0])} — ${o[1]}. Он <b>${OXT[o[2]]}</b>: ${OXWHY[o[2]]}.<br>Порядок рассуждения: 1) металл или неметалл? 2) если металл — какая у него степень окисления? +1, +2 → основный (кроме Zn, Al, Be — амфотерные); +6, +7 → кислотный. 3) Неметалл → кислотный, кроме CO, NO, N₂O.`,
+ explain2:`Шпаргалка «по спискам»: амфотерные — запомни тройку ZnO, Al₂O₃, BeO; несолеобразующие — тройку CO, NO, N₂O. Остальные оксиды неметаллов — кислотные, оксиды металлов +1/+2 — основные. ${C(o[0])} попадает в группу «${OXT[o[2]]}».`};});
+G(0,()=>{let f,name;if(Math.random()<0.5){const o=pick(OXIDES.filter(x=>x[0]!=='CrO3'));f=o[0];name=o[1];}else{const c=pick(CAT.filter(c=>!['Na','K','Ag'].includes(c.k)||Math.random()<0.4));f=oxF(c);name='оксид '+c.g;}
+ const at=parseF(f);const el=Object.keys(at).find(e=>e!=='O');const v=2*at.O/at[el];
+ return {type:'text',q:`Запиши формулу: <b>${name}</b>.`,keys:['₂','₃','₅','₇'],ph:'например, Al2O3',ans:[f],check:r=>H.normChem(r)===f,right:f,ansText:C(f),
+ short:`${name} — ${C(f)}.`,hint:'Валентность кислорода II. Найди НОК валентностей.',
+ explain:`Валентность элемента ${el} здесь ${ROM[v]}, кислорода — II. НОК(${v}, 2) = ${H.lcm(v,2)}. Индекс у ${el}: ${H.lcm(v,2)} : ${v} = ${H.lcm(v,2)/v}, у O: ${H.lcm(v,2)} : 2 = ${H.lcm(v,2)/2}.<br>Формула: <b>${C(f)}</b> (индекс 1 не пишут).`,
+ explain2:`Проверь «заряды»: у ${el} степень окисления +${v}, у кислорода −2. В ${C(f)}: ${at[el]}·(+${v}) + ${at.O}·(−2) = ${at[el]*v} − ${2*at.O} = 0 ✔ Сумма должна быть ноль — значит, формула верная.`};});
+
+/* ---- L1 основания ---- */
+RULE(1,'Что такое <b>основание</b>?','Сложное вещество из атомов металла и одной или нескольких гидроксогрупп OH',['Сложное вещество из атомов водорода и кислотного остатка','Любое вещество, которое растворяется в воде','Соединение металла с кислородом'],
+{short:'Основание = металл + группы OH.',explain:`Основания — сложные вещества из атомов металла и гидроксогрупп OH: ${C('NaOH')}, ${C('Ca(OH)2')}, ${C('Fe(OH)3')}. Число групп OH равно валентности металла.<br>«Водород + кислотный остаток» — это кислота, «металл + кислород» — оксид.`,
+explain2:'Ищи в формуле «хвостик» OH после металла. Есть OH (часто в скобках с индексом) — основание.'});
+RULE(1,'Что такое <b>щёлочь</b>?','Основание, растворимое в воде',['Любое основание','Основание, которое не растворяется в воде','Любое вещество, окрашивающее лакмус в красный цвет'],
+{short:'Щёлочи — растворимые основания: NaOH, KOH, Ba(OH)₂, Ca(OH)₂…',explain:`Щёлочи — основания, <b>растворимые</b> в воде: ${C('LiOH')}, ${C('NaOH')}, ${C('KOH')}, ${C('Ba(OH)2')}, а также малорастворимый ${C('Ca(OH)2')}. Не все основания — щёлочи: ${C('Cu(OH)2')} и ${C('Fe(OH)3')} нерастворимы. В красный лакмус окрашивают кислоты, а щёлочи — в синий.`,
+explain2:'Щёлочь — «основание, которое умеет плавать в воде» (растворяться). Все щёлочи — основания, но не все основания — щёлочи. Как все квадраты — прямоугольники, но не наоборот.'});
+G(1,()=>{const c=pick(CAT.filter(c=>c.k!=='Ag'));const f=hydF(c);
+ return {type:'text',q:`Запиши формулу: <b>гидроксид ${c.g}</b>.`,keys:['(',')','₂','₃'],ph:'например, Fe(OH)3',ans:[f],check:r=>H.normChem(r)===f,right:f,ansText:C(f),
+ short:`Валентность ${c.f} — ${ROM[c.z]} → ${c.z} ${c.z===1?'группа':'группы'} OH: ${C(f)}.`,
+ explain:`У ${c.f} в этом соединении валентность ${ROM[c.z]}, а группа OH одновалентна. Значит, групп OH — ${c.z}. ${c.z>1?'Несколько групп OH берут в скобки и ставим индекс: ':''}<b>${C(f)}</b>.${c.z>1?` Без скобок «${c.f}OH${c.z}» означало бы ${c.z} атома водорода и только один кислород — это ошибка.`:''}`,
+ explain2:`Представь, что у металла ${c.z} ${c.z===1?'рука':'руки'} (валентность ${ROM[c.z]}). В каждую руку он берёт одну группу OH. Получается ${c.f} и ${c.z}×OH → ${C(f)}.`};});
+G(1,()=>{const c=pick(CAT.filter(c=>c.k!=='Ag'));const f=hydF(c);const s=sol('OH',c.col);const alk=s!=='Н';const opts=['Щёлочь (растворимое основание)','Нерастворимое основание'];
+ return {type:'choice',q:`${C(f)} — щёлочь или нерастворимое основание?${solDet()}`,opts,ans:alk?0:1,short:`По таблице: ${C(f)} — ${SOLW[s]}${alk?' → щёлочь':' → нерастворимое основание'}.`,
+ explain:`Смотрим таблицу растворимости: столбец ${COLH[COLS.indexOf(c.col)]}, строка OH⁻ → «${s}» (${SOLW[s]}). ${alk?(s==='М'?`${C('Ca(OH)2')} малорастворим, но его традиционно относят к щелочам (раствор — известковая вода).`:'Значит, это <b>щёлочь</b>.'):'Значит, это <b>нерастворимое основание</b>: щёлочью его не называют.'}`,
+ explain2:`Короткое правило: щёлочи дают только самые активные металлы — Li, Na, K, Ca, Ba (они сами бурно реагируют с водой). ${c.f} ${alk?'в этом списке':'в этот список не входит'}.`};});
+
+/* ---- L2 кислоты ---- */
+RULE(2,'Что такое <b>кислота</b>?','Сложное вещество из атомов водорода, способных замещаться на металл, и кислотного остатка',['Сложное вещество из металла и кислотного остатка','Сложное вещество из металла и групп OH','Любое вещество с кислым вкусом'],
+{short:'Кислота = водород + кислотный остаток.',explain:`Кислоты — сложные вещества из атомов водорода, способных замещаться на атомы металла, и кислотного остатка: ${C('HCl')}, ${C('H2SO4')}, ${C('H3PO4')}. «Металл + кислотный остаток» — это соль: она получается, если водород кислоты заменить на металл.`,
+explain2:`Кислота и соль — «близнецы»: ${C('H2SO4')} → заменили H₂ на Na₂ → ${C('Na2SO4')}. У кислоты впереди водород, у соли — металл.`});
+RULE(2,'Чему равен заряд кислотного остатка?','Числу атомов водорода в молекуле кислоты (со знаком «−»)',['Числу атомов кислорода в кислоте','Всегда −2','Номеру группы неметалла'],
+{short:'Сколько H в кислоте, такой и заряд остатка: H₃PO₄ → PO₄³⁻.',explain:`Водород в кислотах имеет заряд +1, и молекула в целом нейтральна. Поэтому заряд остатка равен числу атомов H со знаком минус: ${C('HNO3')} → ${ion('NO3',1)}, ${C('H2SO4')} → ${ion('SO4',2)}, ${C('H3PO4')} → ${ion('PO4',3)}.`,
+explain2:'Атомы H — это «плюсики». Отщипни их все — у остатка останется столько же «минусиков». Три H ушли — остаток −3.'});
+G(2,()=>{const a=pick(ACIDS);const wr=sample(ACIDS.filter(x=>x!==a),3).map(x=>x.n);
+ return CH(`Как называется кислота ${C(a.f)}?`,a.n,wr,{short:`${C(a.f)} — ${a.n} кислота, её соли — ${a.s}ы.`,
+ explain:`${C(a.f)} — <b>${a.n}</b> кислота. Остаток ${ion(a.a,a.z)}, соли называются ${a.s}ами. ${a.f==='H2SO4'||a.f==='H2SO3'?'Не путай: H₂SO₄ — серная, H₂SO₃ — сернистая (кислорода меньше).':''}${a.f==='HNO3'||a.f==='HNO2'?'Не путай: HNO₃ — азотная, HNO₂ — азотистая (кислорода меньше).':''}`,
+ explain2:`Подсказка по корню: Cl — хлор → «хлороводородная» (соляная), S — сера, N — азот, C — углерод («угольная»), P — фосфор, Si — кремний. ${a.ox?'Кислород есть → название без «-водородная».':'Кислорода нет → название «…водородная».'}`});});
+G(2,()=>{const a=pick(ACIDS);const corr=ion(a.a,a.z);const w=new Set();[1,2,3].forEach(z=>{if(z!==a.z)w.add(ion(a.a,z));});
+ const at=parseF(a.a);if(at.O)w.add(ion(a.a.replace(/O(\d*)$/,(m,d)=>'O'+((+d||1)+1)),a.z));
+ const wr=[...w].filter(x=>x!==corr).slice(0,3);if(wr.length<3)return null;
+ return CH(`Какой кислотный остаток у кислоты ${C(a.f)}?`,corr,wr,{short:`${C(a.f)}: ${a.z} ${a.z===1?'атом':'атома'} H → ${corr}.`,
+ explain:`Убираем из формулы ${C(a.f)} все атомы водорода — остаётся ${C(a.a)}. Атомов H было ${a.z}, значит заряд остатка −${a.z}: <b>${corr}</b>. Состав остатка при этом не меняется — кислород не прибавляется и не убавляется.`,
+ explain2:`Проверка «на ноль»: ${a.z}·(+1) + (−${a.z}) = 0 ✔ Молекула кислоты нейтральна, так и должно быть.`});});
+G(2,()=>{const a=pick(ACIDS);const opts=[];for(const o of [0,1])for(const b of [0,1,2])opts.push(`${o?'кислородсодержащая':'бескислородная'}, ${BASN[b]}`);
+ const corr=`${a.ox?'кислородсодержащая':'бескислородная'}, ${BASN[a.z-1]}`;const wr=sample(opts.filter(x=>x!==corr),3);
+ return CH(`Как классифицируют кислоту ${C(a.f)}?`,corr,wr,{short:`${a.ox?'Есть O':'Нет O'}, ${a.z} H → ${corr}.`,
+ explain:`Два вопроса: 1) есть ли кислород в формуле ${C(a.f)}? ${a.ox?'Да → кислородсодержащая.':'Нет → бескислородная.'} 2) Сколько атомов водорода? ${a.z} → ${BASN[a.z-1]} (основность = число H).<br>Ответ: <b>${corr}</b>.`,
+ explain2:`«Основность» — сколько атомов водорода кислота может «отдать» металлу. У ${C(a.f)} их ${a.z}, поэтому она может образовать соль, где остаток ${ion(a.a,a.z)} держит ${a.z===1?'один':a.z===2?'два':'три'} «плюса» металла.`});});
+
+/* ---- L3 соли ---- */
+RULE(3,'Что такое <b>соль</b>?','Сложное вещество из атомов металла и кислотного остатка',['Сложное вещество из водорода и кислотного остатка','Только хлорид натрия NaCl','Сложное вещество из металла и кислорода'],
+{short:'Соль = металл + кислотный остаток.',explain:`Соли — сложные вещества из атомов металла и кислотного остатка: ${C('NaCl')}, ${C('CuSO4')}, ${C('Ca3(PO4)2')}. «Водород + остаток» — кислота, «металл + кислород» — оксид. Поваренная соль — лишь одна из тысяч солей.`,
+explain2:`Соль — это кислота, у которой водород заменили металлом: ${C('HCl')} → ${C('NaCl')}, ${C('H2SO4')} → ${C('CuSO4')}.`});
+G(3,()=>{const a=pick(ACIDS.filter(x=>x.a!=='F'&&x.a!=='Br'));
+ return CH(`Соли какой кислоты называют <b>${a.s}ами</b>?`,`${a.n} ${C(a.f)}`,sample(ACIDS.filter(x=>x!==a&&x.a!=='F'&&x.a!=='Br'),3).map(x=>`${x.n} ${C(x.f)}`),
+ {short:`${a.s[0].toUpperCase()+a.s.slice(1)}ы — соли кислоты ${C(a.f)}, остаток ${ion(a.a,a.z)}.`,
+ explain:`${a.s[0].toUpperCase()+a.s.slice(1)}ы — соли кислоты ${C(a.f)} (${a.n}), остаток ${ion(a.a,a.z)}.<br>Правило окончаний: <b>-ат</b> — у кислоты с бо́льшим числом атомов O (сульфат, нитрат, карбонат, фосфат), <b>-ит</b> — кислорода меньше (сульфит, нитрит), <b>-ид</b> — бескислородные (хлорид, сульфид).`,
+ explain2:`Смотри корень: «сульф-» — сера, «нитр-» — азот (лат. nitrogenium), «карбон-» — углерод (carboneum), «фосф-» — фосфор, «хлор-» — хлор, «силик-» — кремний (silicium). И окончание: -ат/-ит/-ид.`});},{rule:true});
+G(3,()=>{const c=pick(CAT);const an=pick(['Cl','NO3','SO4','SO3','S','CO3','PO4','SiO3']);if(!saltOK(c,an))return null;const f=saltF(c,an);const corr=saltName(c,an);
+ const w=new Set();const fam={SO4:['SO3','S'],SO3:['SO4','S'],S:['SO4','SO3'],NO3:['Cl','NO2'],Cl:['NO3','S'],CO3:['SiO3','SO4'],PO4:['SO4','NO3'],SiO3:['CO3','SO3']}[an];
+ fam.forEach(x=>w.add(ACK(x).s+' '+c.g));if(c.k==='Fe2'||c.k==='Fe3')w.add(ACK(an).s+' '+(c.k==='Fe2'?'железа(III)':'железа(II)'));else if(c.k==='Cu')w.add(ACK(an).s+' меди(I)');else w.add(ACK(pick(fam)).s+' '+pick(CAT.filter(x=>x.f!==c.f)).g);
+ const wr=[...w].filter(x=>x!==corr).slice(0,3);if(wr.length<3)return null;
+ return CH(`Как называется соль ${C(f)}?`,corr,wr,{short:`${C(f)} — ${corr}.`,
+ explain:`Остаток ${ion(an,ACK(an).z)} — это «${ACK(an).s}» (от кислоты ${C(ACK(an).f)}). Металл — ${c.f}${c.k==='Fe2'||c.k==='Fe3'||c.k==='Cu'?`; его степень окисления находим по остатку: ${parseF(f)[c.f]}·x = ${H.lcm(c.z,ACK(an).z)/ACK(an).z}·${ACK(an).z} → x = +${c.z}, поэтому в названии (${ROM[c.z]})`:''}.<br>Название: <b>${corr}</b>.`,
+ explain2:`Читаем формулу «с конца»: сначала остаток (${ACK(an).s}), потом металл в родительном падеже (${c.g}). ${an==='SO4'?'SO₄ — сульфат (много O), SO₃ — сульфит, S — сульфид.':''}`});});
+G(3,()=>{const c=pick(CAT);const an=pick(['Cl','NO3','SO4','CO3','PO4','S']);if(!saltOK(c,an))return null;const f=saltF(c,an);const zA=ACK(an).z;const L=H.lcm(c.z,zA);
+ return {type:'text',q:`Запиши формулу соли: <b>${saltName(c,an)}</b>.`,keys:['(',')','₂','₃','₄'],ph:'например, Al2(SO4)3',ans:[f],check:r=>H.normChem(r)===f,right:f,ansText:C(f),
+ short:`${C(c.f)}<sup>${c.z>1?c.z:''}+</sup> и ${ANH[an]}: НОК = ${L} → ${C(f)}.`,
+ explain:`1) Ионы: ${C(c.f)}<sup>${c.z>1?c.z:''}+</sup> и ${ion(an,zA)}.<br>2) НОК(${c.z}, ${zA}) = ${L}.<br>3) Металла: ${L} : ${c.z} = ${L/c.z}, остатков: ${L} : ${zA} = ${L/zA}.<br>4) ${L/zA>1&&poly(an)?'Сложный остаток при индексе берём в скобки: ':''}<b>${C(f)}</b>.`,
+ explain2:`Проверка зарядов: ${L/c.z}·(+${c.z}) + ${L/zA}·(−${zA}) = ${L} − ${L} = 0 ✔ Можно и «крест-накрест»: заряд металла (${c.z}) — индекс остатка, заряд остатка (${zA}) — индекс металла, потом сократить.`};});
+
+/* ---- L4 классификация, растворимость ---- */
+RULE(4,'Как по формуле отличить <b>кислоту</b> от <b>соли</b>?','У кислоты впереди стоит водород, у соли — металл; кислотный остаток у них один и тот же',['У кислоты всегда есть кислород, у соли — нет','Соль всегда содержит хлор','У кислоты есть группы OH'],
+{short:'H впереди → кислота; металл впереди → соль.',explain:`${C('H2SO4')} — кислота (впереди H), ${C('K2SO4')} — соль (впереди металл K), остаток SO₄ одинаковый. Кислород тут ни при чём: ${C('HCl')} — кислота без кислорода, ${C('Na2CO3')} — соль с кислородом. Группы OH — у оснований.`,
+explain2:'Смотри на первый символ формулы: H (и это не H₂O) → кислота; металл + OH → основание; металл + остаток → соль; ровно два элемента с O → оксид.'});
+const pool=()=>{const cls=R(0,3);let f;if(cls===0)f=pick(OXIDES)[0];else if(cls===1)f=hydF(pick(CAT.filter(c=>c.k!=='Ag')));else if(cls===2)f=pick(ACIDS).f;else{for(;;){const c=pick(CAT),an=pick(['Cl','NO3','SO4','CO3','PO4','S','SO3','SiO3']);if(saltOK(c,an)){f=saltF(c,an);break;}}}return [f,cls];};
+const CLS=['оксид','основание','кислота','соль'];
+const clsWhy=(f,cls)=>[`два элемента, один из них кислород`,`металл + групп${parseF(f).H>1?'ы':'а'} OH`,`впереди водород, дальше кислотный остаток`,`металл + кислотный остаток`][cls];
+G(4,()=>{const [f,cls]=pool();return {type:'choice',q:`К какому классу относится ${C(f)}?`,opts:CLS.slice(),ans:cls,short:`${C(f)} — ${CLS[cls]}: ${clsWhy(f,cls)}.`,
+ explain:`${C(f)}: ${clsWhy(f,cls)} → <b>${CLS[cls]}</b>.<br>Алгоритм: 1) два элемента и один — O? → оксид; 2) металл и OH? → основание; 3) впереди H? → кислота; 4) металл + остаток → соль.`,
+ explain2:`Разбери формулу на «кирпичики»: ${Object.keys(parseF(f)).join(', ')}. ${cls===0?'Только два элемента, второй — кислород.':cls===1?'Есть группа OH, прикреплённая к металлу.':cls===2?'Первым стоит водород.':'Металл, а за ним кислотный остаток (как в кислоте, но без H).'}`};});
+G(4,()=>{const tgt=R(0,3);const items=[];const seen=new Set();let guard=0;while(items.length<6&&guard++<200){const p=pool();if(seen.has(p[0]))continue;seen.add(p[0]);items.push(p);}
+ const ans=items.map((p,i)=>p[1]===tgt?i:-1).filter(i=>i>=0);if(ans.length<1||ans.length>4)return null;
+ return {type:'multi',q:`Выбери <b>все</b> вещества класса «${CLS[tgt]}».`,opts:items.map(p=>C(p[0])),ans,short:`${CLS[tgt][0].toUpperCase()+CLS[tgt].slice(1)}: ${ans.map(i=>C(items[i][0])).join(', ')}.`,
+ explain:items.map(p=>`${C(p[0])} — ${CLS[p[1]]}${p[1]===tgt?' ✔':''}`).join('<br>')+`<br>Правило: ${['оксид — два элемента, один кислород','основание — металл + OH','кислота — впереди H','соль — металл + кислотный остаток'][tgt]}.`,
+ explain2:`Пройди по каждой формуле и задай один вопрос: «${['Ровно два элемента, и один из них O?','Есть металл и группа OH?','Формула начинается с H?','Металл + остаток кислоты, без OH и без H впереди?'][tgt]}» «Да» — отмечай.`};});
+G(4,()=>{const c=pick(CAT);const an=pick(['OH','Cl','NO3','SO4','CO3','PO4']);if(an==='OH'&&c.k==='Ag')return null;if(an==='CO3'&&['Mg','Al','Fe3','Cu'].includes(c.k))return null;
+ const s=sol(an,c.col);if(s==='–')return null;const f=an==='OH'?hydF(c):saltF(c,an);const opts=['растворимо (Р)','малорастворимо (М)','нерастворимо (Н)'];const ans='РМН'.indexOf(s);
+ return {type:'choice',q:`Растворимо ли в воде вещество ${C(f)}? Пользуйся таблицей.${solDet()}`,opts,ans,short:`Столбец ${COLH[COLS.indexOf(c.col)]}, строка ${ANH[an]} → ${s}.`,
+ explain:`Разбиваем ${C(f)} на ионы: катион ${COLH[COLS.indexOf(c.col)].split(',')[c.k==='K'?1:0].trim()} и анион ${ANH[an]}. На пересечении в таблице — «${s}»: вещество <b>${SOLW[s]}</b>.${s==='Н'?' Поэтому при получении в растворе оно выпадает в осадок.':''}`,
+ explain2:`Быстрые правила: все соли Na, K и все нитраты растворимы; почти все карбонаты и фосфаты (кроме Na, K) — нерастворимы; из хлоридов нерастворим AgCl (PbCl₂ малорастворим); из сульфатов нерастворимы BaSO₄ и PbSO₄. Для ${C(f)} это даёт «${s}».`};});
+
+/* ---- L5 индикаторы ---- */
+G(5,()=>{const ind=pick(['l','f','m']);const m=pick(['a','n','b']);const corr=indCol(ind,m)[1];const all=['красный','фиолетовый','синий','бесцветный','малиновый','оранжевый','жёлтый','зелёный'];
+ const own=[indCol(ind,'a')[1],indCol(ind,'n')[1],indCol(ind,'b')[1]];const wr=[...new Set([...own,...all])].filter(x=>x!==corr).slice(0,3);
+ return CH(`Как окрашивается <b>${IND[ind].n}</b> в ${{a:'кислой',n:'нейтральной',b:'щелочной'}[m]} среде?`,corr,wr,{short:`${IND[ind].n}: кислота — ${own[0]}, нейтр. — ${own[1]}, щёлочь — ${own[2]}.`,
+ explain:`Правило для индикатора «${IND[ind].n}»: в кислой среде — ${own[0]}, в нейтральной — ${own[1]}, в щелочной — ${own[2]}. Значит, в ${{a:'кислой',n:'нейтральной',b:'щелочной'}[m]} — <b>${corr}</b>.`,
+ explain2:'Запоминалки: «Лакмус — кислота красная, щёлочь синяя, посередине — фиолет (красный + синий)». «Фенолфталеин краснеет (малиновый) только в щелочах». «Метилоранж — в кислоте краснеет, в щёлочи желтеет, нейтрально — оранжевый, как имя».'});},{rule:true});
+const SUBST=[['HCl','a'],['H2SO4','a'],['HNO3','a'],['NaOH','b'],['KOH','b'],['Ba(OH)2','b'],['LiOH','b'],['NaCl','n'],['KNO3','n'],['Na2SO4','n'],['BaCl2','n']];
+G(5,()=>{const s=pick(SUBST);const ind=pick(['l','f','m']);const corr=indCol(ind,s[1])[1];const own=[...new Set(['a','n','b'].map(m=>indCol(ind,m)[1]))];const wr=own.filter(x=>x!==corr);
+ const ext=['зелёный','коричневый','белый'];while(wr.length<3)wr.push(ext.shift());
+ const env={a:'кислота → кислая среда',n:'соль сильной кислоты и щёлочи → нейтральная среда',b:'щёлочь → щелочная среда'}[s[1]];
+ return CH(`В раствор ${C(s[0])} добавили <b>${IND[ind].n}</b>. Какой будет цвет?`,corr,wr,{short:`${C(s[0])}: ${env} → ${corr}.`,
+ explain:`Сначала определяем среду: ${C(s[0])} — ${env}. Потом вспоминаем правило: ${IND[ind].n} в такой среде — <b>${corr}</b>.`,
+ explain2:`Два шага, как в квесте: 1) Кто перед тобой — кислота (H впереди), щёлочь (растворимый M(OH)ₙ) или соль вроде NaCl? Для ${C(s[0])} — ${{a:'кислота',n:'нейтральная соль',b:'щёлочь'}[s[1]]}. 2) Цвет индикатора по правилу — ${corr}.`});});
+G(5,()=>{const alk=pick(['NaOH','KOH','Ba(OH)2']);const ins=pick(['Cu(OH)2','Fe(OH)3','Mg(OH)2']);const ac=pick(['HCl','H2SO4','HNO3']);const nt=pick(['NaCl','KNO3','Na2SO4']);
+ const v=pick([0,1]);const q=v?`В какой пробирке фенолфталеин станет <b>малиновым</b>?`:`В какой пробирке лакмус станет <b>красным</b>?`;const corr=v?alk:ac;const wr=v?[ins,ac,nt]:[ins,alk,nt];
+ return CH(q+' В каждой пробирке — вода и указанное вещество.',C(corr)+(v?'':''),wr.map(x=>C(x)),{short:v?`Малиновый — только в растворе щёлочи: ${C(alk)}.`:`Красный лакмус — в кислоте: ${C(ac)}.`,
+ explain:v?`Фенолфталеин малиновый в <b>щелочной</b> среде. ${C(alk)} — щёлочь, растворяется и даёт ионы OH⁻. А ${C(ins)} — нерастворимое основание: ионов OH⁻ в воде почти нет, окраска не меняется (это ловушка!). ${C(ac)} — кислота, ${C(nt)} — нейтральная соль.`:`Лакмус краснеет в <b>кислой</b> среде: ${C(ac)} — кислота. ${C(alk)} даст синий, ${C(nt)} — фиолетовый, ${C(ins)} нерастворим и окраску не меняет.`,
+ explain2:`Индикатор «видит» только то, что растворилось. ${C(ins)} лежит на дне осадком — для индикатора его как будто нет. Поэтому ответ — ${C(corr)}.`});});
+
+/* ---- L6 свойства кислот ---- */
+RULE(6,'С какими металлами реагируют растворы кислот (кроме HNO₃) с выделением водорода?','С металлами, стоящими в ряду активности левее водорода',['Со всеми металлами','С металлами, стоящими правее водорода','Только со щелочными металлами'],
+{short:'Металл левее H₂ в ряду активности → вытесняет водород.',explain:`Ряд активности: Li K Ba Ca Na Mg Al Zn Fe Ni Sn Pb (H₂) Cu Hg Ag Pt Au. Металлы <b>левее</b> водорода вытесняют его из кислот: ${EQ(['Zn','HCl'],['ZnCl2','H2↑']).html}. Cu, Ag, Au стоят правее — с ${C('HCl')} не реагируют. Азотная кислота — особый случай: водород не выделяется ни с каким металлом.`,
+explain2:'Ряд активности — как очередь силачей. Кто стоит левее водорода, тот сильнее его и «выталкивает» водород из кислоты. Медь стоит правее — она слабее, вытолкнуть не может.'});
+RULE(6,'Что такое <b>реакция нейтрализации</b>?','Реакция кислоты с основанием, в результате которой образуются соль и вода',['Реакция металла с кислотой, при которой выделяется водород','Реакция соли с солью','Разложение основания при нагревании'],
+{short:'Кислота + основание → соль + вода.',explain:`Нейтрализация: кислота + основание → соль + вода. ${EQ(['NaOH','HCl'],['NaCl','H2O']).html}. Кислота и щёлочь «гасят» друг друга: ионы H⁺ и OH⁻ соединяются в воду, среда становится нейтральной.`,
+explain2:'«Нейтрализация» — от слова «нейтральный». Кислое + щелочное = ни то ни другое: соль и вода. Так от изжоги пьют слабое основание — оно нейтрализует лишнюю кислоту желудка.'});
+const MET=[{f:'Mg',z:2,g:'магния'},{f:'Zn',z:2,g:'цинка'},{f:'Fe',z:2,g:'железа(II)'},{f:'Al',z:3,g:'алюминия'},{f:'Cu',z:0},{f:'Ag',z:0}];
+G(6,()=>{const m=pick(MET);const ac=pick([{f:'HCl',a:'Cl'},{f:'H2SO4',a:'SO4'}]);const no='реакция не идёт';
+ const sf=(z)=>saltF({f:m.f,z},ac.a);let corr,wr;
+ if(m.z){corr=C(sf(m.z))+' + '+C('H2');wr=[no,C(sf(m.z))+' + '+C('H2O'),m.f==='Fe'?C(sf(3))+' + '+C('H2'):C(mk(m.f,ac.a,1,1)===sf(m.z)?mk(m.f,ac.a,2,1):mk(m.f,ac.a,1,1))+' + '+C('H2')];}
+ else{corr=no;wr=[C(sf(m.f==='Cu'?2:1))+' + '+C('H2'),C(sf(m.f==='Cu'?2:1))+' + '+C('H2O'),C(m.f+'H2')+' + '+C(ac.a==='Cl'?'Cl2':'SO4')];}
+ if(new Set([corr,...wr]).size<4)return null;const e=m.z?EQ([m.f,ac.f],[sf(m.z),'H2↑']):null;
+ return CH(`Что получится? ${C(m.f)} + ${C(ac.f)} (разбавленная) → ?`,corr,wr,{short:m.z?e.html:`${m.f} стоит правее H₂ — не вытесняет водород.`,
+ explain:m.z?`${m.f} стоит в ряду активности <b>левее</b> водорода → вытесняет его: металл + кислота → соль + водород.<br>${e.html}${m.f==='Fe'?'<br>Железо с соляной и разбавленной серной кислотами даёт соль железа(<b>II</b>), а не (III) — это частая ошибка.':''}${m.f==='Al'?'<br>Алюминий трёхвалентен, поэтому соль '+C(sf(3))+'.':''}<br>Вода здесь не образуется — она получается при реакции кислоты с основанием или оксидом.`:`${m.f} стоит в ряду активности <b>правее</b> водорода (… Pb (H₂) Cu Hg Ag …), поэтому из ${C(ac.f)} водород не вытесняет: <b>реакция не идёт</b>.`,
+ explain2:m.z?`Представь обмен: атом ${m.f} занимает место водорода в кислоте, а водород улетает газом H₂. Остаток ${ac.a==='Cl'?'Cl⁻':'SO₄²⁻'} и ${m.f}<sup>${m.z}+</sup> собираются в соль ${C(sf(m.z))}.`:`Медный провод или серебряная ложка в соляной кислоте не растворяются и не пускают пузырей — ${m.f} «слабее» водорода.`});});
+G(6,()=>{const m=pick(MET.filter(x=>x.z));const ac=pick([{f:'HCl',a:'Cl'},{f:'H2SO4',a:'SO4'}]);const s=saltF({f:m.f,z:m.z},ac.a);const e=EQ([m.f,ac.f],[s,'H2↑']);const tgt=pick([m.f,ac.f,'H2↑']);const k=e.k(tgt);
+ return {type:'num',q:`Расставь коэффициенты: ${C(m.f)} + ${C(ac.f)} → ${C(s)} + ${C('H2')}↑. Какой коэффициент перед ${C(tgt.replace('↑',''))}?`,ans:k,
+ short:e.html,hint:'Начни с элемента, у которого разные индексы слева и справа; водород уравнивай в конце.',
+ explain:`Уравниваем: ${e.html}<br>Проверка по атомам: ${Object.keys(parseF(s+'H2'+m.f+ac.f)).map(el=>{const l=e.c[0]*(parseF(m.f)[el]||0)+e.c[1]*(parseF(ac.f)[el]||0),r=e.c[2]*(parseF(s)[el]||0)+e.c[3]*(parseF('H2')[el]||0);return `${el}: ${l} = ${r}`;}).join('; ')} ✔<br>Коэффициент перед ${C(tgt.replace('↑',''))}: <b>${k}</b>.`,
+ explain2:`${m.f==='Al'?`Хитрость с алюминием: в ${C(s)} — ${parseF(s).Al} Al, а водорода справа должно быть чётное число. Поэтому берём 2Al → ${e.c[2]===1?'':e.c[2]}${C(s)}, тогда кислоты ${e.c[1]} и водорода ${e.c[3]}.`:`Металл двухвалентный: один атом ${m.f} заменяет 2 атома H. В ${C(ac.f)} ${ac.f==='HCl'?'только один H — поэтому кислоты нужно 2':'как раз 2 H — все коэффициенты равны 1'}.`}`};});
+G(6,()=>{const c=pick(CAT.filter(c=>c.k!=='Ag'));const ac=pick(ACIDS.filter(a=>['HCl','HNO3','H2SO4','H3PO4'].includes(a.f)));if(!saltOK(c,ac.a))return null;const s=saltF(c,ac.a);const b=hydF(c);
+ const zA=ac.z;const cand=[mk(c.f,ac.a,1,1),mk(c.f,ac.a,zA,c.z),mk(c.f,ac.a,c.z,zA),mk(c.f,ac.a,2,1),mk(c.f,ac.a,1,2),mk(c.f,ac.a,3,1)];const wr=[...new Set(cand)].filter(x=>x!==s).slice(0,3);
+ if(wr.length<3)return null;const e=EQ([b,ac.f],[s,'H2O']);
+ return CH(`Какая соль образуется: ${C(b)} + ${C(ac.f)} → ? + ${C('H2O')}`,C(s),wr.map(x=>C(x)),{short:e.html,
+ explain:`Нейтрализация: основание + кислота → соль + вода. Металл ${c.f} (+${c.z}), остаток ${ion(ac.a,zA)}. НОК(${c.z}, ${zA}) = ${H.lcm(c.z,zA)} → соль <b>${C(s)}</b>.<br>Полное уравнение: ${e.html}`,
+ explain2:`Соль собираем «по зарядам», а не переписываем индексы из реагентов. Проверка: ${parseF(s)[c.f]}·(+${c.z}) + ${H.lcm(c.z,zA)/zA}·(−${zA}) = 0 ✔`});});
+G(6,()=>{const P=[[['BaCl2','H2SO4'],['BaSO4↓','HCl'],'выпадает белый осадок '+C('BaSO4')],[['AgNO3','HCl'],['AgCl↓','HNO3'],'выпадает белый творожистый осадок '+C('AgCl')],[['Na2CO3','HCl'],['NaCl','H2O','CO2↑'],'выделяется углекислый газ'],[['CaCO3','HCl'],['CaCl2','H2O','CO2↑'],'мел «вскипает»: выделяется CO₂'],[['K2CO3','H2SO4'],['K2SO4','H2O','CO2↑'],'выделяется CO₂'],[['Na2S','HCl'],['NaCl','H2S↑'],'выделяется сероводород (запах тухлых яиц)'],[['Ba(NO3)2','H2SO4'],['BaSO4↓','HNO3'],'выпадает осадок '+C('BaSO4')]];
+ const NO=[['NaCl','H2SO4'],['KNO3','HCl'],['Na2SO4','HCl'],['CuSO4','HNO3'],['NaNO3','H2SO4'],['KCl','HNO3'],['MgSO4','HCl']];
+ const p=pick(P);const wr=sample(NO,3);const f=x=>C(x[0])+' + '+C(x[1]);const e=EQ(p[0],p[1]);
+ return CH('Какая пара веществ реагирует в растворе? (Кислоты разбавленные.)',f(p[0]),wr.map(f),{short:`${e.html} — ${p[2]}.`,
+ explain:`Кислота реагирует с солью, только если образуется <b>осадок, газ или вода</b>. ${e.html} — ${p[2]}.<br>В остальных парах (${wr.map(f).join('; ')}) все возможные продукты растворимы и не газы — ионы просто остаются в растворе, реакция не идёт.`,
+ explain2:`Проверь «обменом»: поменяй местами металлы и остатки. ${f(wr[0])} дало бы снова растворимые вещества — никаких признаков. А в паре ${f(p[0])} получается ${p[1].map(x=>C(x)).join(' + ')} — есть ${p[1].some(x=>/↓/.test(x))?'осадок':'газ'}.`});});
+
+/* ---- L7 основания, оксиды, соли, генетика ---- */
+RULE(7,'Какой ряд — генетический ряд металла?','металл → основный оксид → основание → соль',['металл → кислота → оксид → соль','металл → соль → оксид → кислота','неметалл → основание → кислотный оксид → соль'],
+{short:'Например, Ca → CaO → Ca(OH)₂ → CaCO₃.',explain:`Генетический ряд металла: металл → основный оксид → основание → соль: Ca → ${C('CaO')} → ${C('Ca(OH)2')} → ${C('CaCO3')}. У неметалла: неметалл → кислотный оксид → кислота → соль: S → ${C('SO2')} → ${C('H2SO3')} → ${C('Na2SO3')}. В каждом звене «путешествует» один и тот же элемент.`,
+explain2:'Металл сгорает — получается оксид; оксид с водой — основание; основание с кислотой — соль. Кислота в ряду металла не может появиться: металл не «превращается» в кислоту.'});
+RULE(7,'Что образуется при взаимодействии кислотного оксида со щёлочью?','Соль и вода',['Кислота и вода','Основание и водород','Ничего — они не реагируют'],
+{short:'Кислотный оксид + щёлочь → соль + вода.',explain:`Кислотный оксид + щёлочь → соль + вода: ${EQ(['CO2','NaOH'],['Na2CO3','H2O']).html}; ${EQ(['SO3','KOH'],['K2SO4','H2O']).html}. Это как нейтрализация, только вместо кислоты — её оксид.`,
+explain2:`Представь, что ${C('CO2')} сначала с водой дал бы кислоту ${C('H2CO3')}, а она с ${C('NaOH')} — соль ${C('Na2CO3')} и воду. Итог тот же: соль + вода.`});
+G(7,()=>{const P=[['CaO',['Ca(OH)2']],['Na2O',['NaOH']],['BaO',['Ba(OH)2']],['K2O',['KOH']],['Li2O',['LiOH']],['SO3',['H2SO4']],['P2O5',['H3PO4']],['N2O5',['HNO3']],['SO2',['H2SO3']],['CuO',null],['FeO',null],['SiO2',null]];
+ const p=pick(P);const no='не реагирует с водой';const corr=p[1]?C(p[1][0]):no;
+ const near={CaO:['CaH2','Ca'],Na2O:['Na','NaH'],BaO:['BaH2','Ba'],K2O:['K','KH'],Li2O:['Li','LiH'],SO3:['H2SO3','H2S'],P2O5:['HPO3','PH3'],N2O5:['HNO2','NH3'],SO2:['H2SO4','H2S'],CuO:['Cu(OH)2','CuOH'],FeO:['Fe(OH)2','FeH2'],SiO2:['H2SiO3','SiH4']}[p[0]];
+ const wr=near.map(x=>C(x));if(p[1])wr.push(no);else wr.push(C('H2'));const e=p[1]?EQ([p[0],'H2O'],p[1]):null;
+ return CH(`Что получится, если ${C(p[0])} добавить в воду?`,corr,wr,{short:e?e.html:`${C(p[0])} с водой не реагирует.`,
+ explain:e?`${C(p[0])} — ${OXT[OXIDES.find(o=>o[0]===p[0])[2]]} оксид, ${parseF(p[0]).S||parseF(p[0]).P||parseF(p[0]).N?'с водой даёт соответствующую кислоту (степень окисления элемента сохраняется!)':'оксид активного металла: с водой даёт щёлочь'}:<br>${e.html}${p[0]==='SO2'?'<br>Ловушка: SO₂ (сера +4) даёт сернистую H₂SO₃, а не серную H₂SO₄.':''}`:`${C(p[0])} <b>не реагирует с водой</b>. ${p[0]==='SiO2'?'Песок (SiO₂) лежит в воде веками и не растворяется. Кремниевую кислоту получают из силикатов.':`Его основание ${C(p[0]==='CuO'?'Cu(OH)2':'Fe(OH)2')} нерастворимо, поэтому из оксида напрямую не получается; его делают так: оксид → соль (кислотой) → основание (щёлочью).`}`,
+ explain2:`Правило: с водой реагируют оксиды, которым соответствуют <b>растворимые</b> гидроксиды — щёлочи (Li, Na, K, Ca, Ba) и растворимые кислоты (все кислотные оксиды, кроме SiO₂). ${C(p[0])} ${p[1]?'подходит':'не подходит'}.`});});
+G(7,()=>{const P=[['CuSO4','Cu(OH)2','Na2SO4','голубой'],['CuCl2','Cu(OH)2','NaCl','голубой'],['FeCl3','Fe(OH)3','NaCl','бурый'],['Fe(NO3)3','Fe(OH)3','NaNO3','бурый'],['FeSO4','Fe(OH)2','Na2SO4','серо-зелёный'],['MgCl2','Mg(OH)2','NaCl','белый'],['Cu(NO3)2','Cu(OH)2','NaNO3','голубой']];
+ const p=pick(P);const e=EQ([p[0],'NaOH'],[p[1]+'↓',p[2]]);const m=p[1].match(/^[A-Z][a-z]?/)[0];
+ const wr=[C(p[2]),C(m+'OH'),'осадка нет'];if(p[1]==='Fe(OH)3')wr[1]=C('Fe(OH)2');if(p[1]==='Fe(OH)2')wr[1]=C('Fe(OH)3');
+ return CH(`К раствору ${C(p[0])} прилили раствор ${C('NaOH')}. Какое вещество выпало в осадок?`,C(p[1]),wr,{short:`${e.html} — ${p[3]} осадок.`,
+ explain:`Щёлочь + соль → новое основание + новая соль. Реакция идёт, потому что ${C(p[1])} нерастворим (таблица: Н) — выпадает <b>${p[3]}</b> осадок:<br>${e.html}<br>${C(p[2])} растворим и остаётся в растворе. Степень окисления металла не меняется: ${m}${p[1].includes('3')?'(III)':'(II)'} → ${C(p[1])}.`,
+ explain2:`Поменяй «партнёров»: ${m} забирает OH от натрия, а натрий забирает остаток. Получаем ${C(p[1])} и ${C(p[2])}. Кто нерастворим — тот и осадок.`});});
+G(7,()=>{const tgt=pick(['NaOH','HCl']);const Y={NaOH:['HCl','H2SO4','HNO3','CO2','SO2','SO3','P2O5','CuSO4','FeCl3','MgCl2','ZnO','Al2O3','Al(OH)3'],HCl:['Zn','Mg','Fe','Al','CaO','CuO','MgO','ZnO','NaOH','Cu(OH)2','Fe(OH)3','AgNO3','Na2CO3','CaCO3']}[tgt];
+ const Nn={NaOH:['CaO','BaO','CuO','KOH','NaCl','KNO3','Na2SO4','BaCl2','Cu','Fe'],HCl:['Cu','Ag','CO2','SO2','SiO2','NaCl','Na2SO4','KNO3','H2SO4']}[tgt];
+ const k=R(2,4);const items=shuffle([...sample(Y,k).map(f=>[f,1]),...sample(Nn,6-k).map(f=>[f,0])]);const ans=items.map((x,i)=>x[1]?i:-1).filter(i=>i>=0);
+ const why=f=>{if(tgt==='NaOH'){if(/^H/.test(f))return'кислота — нейтрализация';if(['CO2','SO2','SO3','P2O5'].includes(f))return'кислотный оксид';if(['ZnO','Al2O3','Al(OH)3'].includes(f))return'амфотерное вещество';if(['CuSO4','FeCl3','MgCl2'].includes(f))return'соль, даёт осадок гидроксида';if(['CaO','BaO','CuO'].includes(f))return'основный оксид — «свой», не реагирует';if(f==='KOH')return'щёлочь — со щёлочью не реагирует';if(['Cu','Fe'].includes(f))return'металл со щёлочью не реагирует';return'продукты обмена растворимы — нет признаков';}
+  else{if(['Zn','Mg','Fe','Al'].includes(f))return'металл левее H';if(['Cu','Ag'].includes(f))return'металл правее H';if(['CaO','CuO','MgO','ZnO'].includes(f))return'основный/амфотерный оксид';if(['CO2','SO2','SiO2'].includes(f))return'кислотный оксид — с кислотой не реагирует';if(['NaOH','Cu(OH)2','Fe(OH)3'].includes(f))return'основание — нейтрализация';if(f==='AgNO3')return'осадок AgCl';if(['Na2CO3','CaCO3'].includes(f))return'выделяется CO₂';if(f==='H2SO4')return'кислота с кислотой не реагирует';return'продукты растворимы — реакции нет';}};
+ return {type:'multi',q:`С какими веществами реагирует ${tgt==='NaOH'?'раствор гидроксида натрия':'соляная кислота'} ${C(tgt)}? Выбери все.`,opts:items.map(x=>C(x[0])),ans,
+ short:`Реагируют: ${ans.map(i=>C(items[i][0])).join(', ')}.`,
+ explain:items.map(x=>`${C(x[0])} — ${x[1]?'✔ ':'✘ '}${why(x[0])}`).join('<br>'),
+ explain2:tgt==='NaOH'?'Щёлочь — «основная». Она дружит с «кислотными» (кислоты, кислотные оксиды), с амфотерными и с солями, если получится осадок. Не дружит с «основными» (основные оксиды, другие щёлочи) и с металлами вроде Cu, Fe.':'Кислота — «кислотная». Она дружит с «основными» (металлы до H, основные оксиды, основания) и с солями, если выйдет газ или осадок. Не реагирует с кислотными оксидами, другими кислотами и с Cu, Ag.'};});
+
+/* ---- L8 ★ ---- */
+const CHAINS=[
+ [['Ca','O2'],['CaO'],['CaO','H2O'],['Ca(OH)2'],['Ca(OH)2','CO2'],['CaCO3','H2O'],['CaCO3','HCl'],['CaCl2','H2O','CO2']],
+ [['Cu','O2'],['CuO'],['CuO','HCl'],['CuCl2','H2O'],['CuCl2','NaOH'],['Cu(OH)2','NaCl'],['Cu(OH)2'],['CuO','H2O']],
+ [['S','O2'],['SO2'],['SO2','O2'],['SO3'],['SO3','H2O'],['H2SO4'],['H2SO4','BaCl2'],['BaSO4','HCl']],
+ [['P','O2'],['P2O5'],['P2O5','H2O'],['H3PO4'],['H3PO4','NaOH'],['Na3PO4','H2O'],['Na3PO4','AgNO3'],['Ag3PO4','NaNO3']],
+ [['Mg','O2'],['MgO'],['MgO','HCl'],['MgCl2','H2O'],['MgCl2','NaOH'],['Mg(OH)2','NaCl'],['Mg(OH)2','H2SO4'],['MgSO4','H2O']],
+ [['C','O2'],['CO2'],['CO2','NaOH'],['Na2CO3','H2O'],['Na2CO3','CaCl2'],['CaCO3','NaCl'],['CaCO3'],['CaO','CO2']],
+ [['Zn','O2'],['ZnO'],['ZnO','H2SO4'],['ZnSO4','H2O'],['ZnSO4','NaOH'],['Zn(OH)2','Na2SO4'],['Zn(OH)2','HCl'],['ZnCl2','H2O']],
+ [['Li','O2'],['Li2O'],['Li2O','H2O'],['LiOH'],['LiOH','H2SO4'],['Li2SO4','H2O'],['Li2SO4','BaCl2'],['BaSO4','LiCl']]];
+const chainSteps=ch=>{const st=[];for(let i=0;i<ch.length;i+=2)st.push({L:ch[i],R:ch[i+1]});return st;};
+const chainMembers=st=>[st[0].L[0],...st.map(s=>s.R[0])];
+const reag=s=>s.L.length>1?s.L.slice(1).map(x=>C(x)).join(', '):'t°';
+G(8,()=>{const st=chainSteps(pick(CHAINS));const mem=chainMembers(st);const h=R(1,mem.length-1);const corr=mem[h];
+ const ex=['CaH2','CuCl','H2SO3','HPO3','MgCO3','CO','ZnCl2','LiH','Ca(HCO3)2','Cu2O','SO2','P2O3','Mg','Na2O','Zn','Li'];
+ const pool=[...new Set([...mem.filter(x=>x!==corr),...ex])].filter(x=>x!==corr&&parseF(x)[Object.keys(parseF(mem[0]))[0]]);const wr=sample(pool.length>=3?pool:[...pool,...ex.filter(x=>x!==corr)],3);
+ const chainHtml=mem.map((m,i)=>(i===h?'<b>X</b>':C(m))).reduce((acc,m,i)=>i===0?m:acc+` <span style="white-space:nowrap">—${reag(st[i-1])}→</span> `+m,'');
+ const eqs=st.map(s=>EQ(s.L,s.R,s.L.length===1||(s.L[1]==='O2'&&s.L[0]!=='SO2')?'t°':s.L[0]==='SO2'?'кат.':'').html);
+ return CH(`★ Определи вещество X в цепочке (над стрелками — реагенты):<br>${chainHtml}`,C(corr),wr.map(x=>C(x)),{short:eqs[h-1],
+ explain:`Смотрим на шаг, где получается X: ${C(mem[h-1])} + ${reag(st[h-1])} → X. ${eqs[h-1]}. Значит, X = <b>${C(corr)}</b>.${h<mem.length-1?`<br>Проверка следующим шагом: ${eqs[h]} ✔`:''}<br>Вся цепочка:<br>${eqs.join('<br>')}`,
+ explain2:`Подумай о классах: ${C(mem[h-1])} — ${CLS[classOf(mem[h-1])]}; реагент ${reag(st[h-1])} превращает его в ${CLS[classOf(corr)]}. Единственный подходящий вариант с тем же элементом — ${C(corr)}.`});},{star:true});
+function classOf(f){const p=parseF(f);const els=Object.keys(p);if(els.length===1)return -1;if(els.length===2&&p.O&&!/^H2O$/.test(f))return 0;if(/\(OH\)|OH$/.test(f))return 1;if(/^H/.test(f))return 2;return 3;}
+CLS[-1]='простое вещество';
+G(8,()=>{const st=chainSteps(pick(CHAINS));const mem=chainMembers(st);const eqs=st.map(s=>EQ(s.L,s.R));const tot=eqs.reduce((a,e)=>a+e.sum,0);
+ return {type:'num',q:`★ Составь уравнения реакций цепочки и найди <b>сумму всех коэффициентов</b> во всех ${st.length} уравнениях:<br>${mem.map(C).join(' → ')}<br><span class="small">Реагенты: ${st.map((s,i)=>`${i+1}) ${reag(s)}`).join('; ')}.</span>`,ans:tot,
+ short:eqs.map(e=>e.html+` (Σ = ${e.sum})`).join('<br>'),hint:'Коэффициент 1 тоже считается!',
+ explain:eqs.map((e,i)=>`${i+1}) ${e.html} — сумма ${e.c.join(' + ')} = ${e.sum}`).join('<br>')+`<br>Итого: ${eqs.map(e=>e.sum).join(' + ')} = <b>${tot}</b>.`,
+ explain2:`Типичная ошибка — не считать «невидимые» единицы. В уравнении ${eqs[0].html} коэффициенты ${eqs[0].c.join(', ')}. Проверяй каждое уравнение по атомам: слева и справа их должно быть поровну.`};},{star:true});
+G(8,()=>{const P=[
+ {q:'Белый порошок А не растворяется в воде, но «вскипает» с соляной кислотой. При сильном прокаливании А теряет <b>'+N(Math.round(Mr('CO2')/Mr('CaCO3')*1000)/10)+'&nbsp;%</b> массы и превращается в белое вещество Б, которое с водой даёт раствор, окрашивающий фенолфталеин в малиновый. Что такое А?',a:'CaCO3',w:['CaO','Ca(OH)2','Na2CO3'],
+  e:`${EQ(['CaCO3'],['CaO','CO2↑'],'t°').html}: улетает CO₂, это ${Mr('CO2')} из ${Mr('CaCO3')} = ${N(Math.round(Mr('CO2')/Mr('CaCO3')*1000)/10)} % массы. ${EQ(['CaO','H2O'],['Ca(OH)2']).html} — щёлочь (малиновый фенолфталеин). ${C('Na2CO3')} не подходит — он растворим в воде.`},
+ {q:'Голубой осадок А получили, слив растворы сульфата меди(II) и щёлочи. При нагревании А почернел (вещество Б), а масса уменьшилась на <b>'+N(Math.round(Mr('H2O')/Mr('Cu(OH)2')*1000)/10)+'&nbsp;%</b>. Что такое А?',a:'Cu(OH)2',w:['CuO','CuSO4','Cu'],
+  e:`${EQ(['CuSO4','NaOH'],['Cu(OH)2↓','Na2SO4']).html} — голубой осадок. ${EQ(['Cu(OH)2'],['CuO','H2O'],'t°').html}: чёрный CuO, ушла вода: ${Mr('H2O')} из ${Mr('Cu(OH)2')} ≈ ${N(Math.round(Mr('H2O')/Mr('Cu(OH)2')*1000)/10)} %.`},
+ {q:'Металл А горит ослепительно белым пламенем (его используют в бенгальских огнях). Продукт горения Б — белый порошок, растворимый в соляной кислоте. Если к полученному раствору прилить щёлочь, выпадает белый осадок В. Что такое В?',a:'Mg(OH)2',w:['MgO','MgCl2','Ca(OH)2'],
+  e:`А — магний: ${EQ(['Mg','O2'],['MgO'],'t°').html}; ${EQ(['MgO','HCl'],['MgCl2','H2O']).html}; ${EQ(['MgCl2','NaOH'],['Mg(OH)2↓','NaCl']).html}. В — ${C('Mg(OH)2')}.`},
+ {q:'Жёлтое простое вещество А горит синим пламенем, образуя газ Б с резким запахом. Б окисляют на катализаторе до В, В с водой даёт кислоту Г, которая с хлоридом бария образует белый осадок. Что такое Г?',a:'H2SO4',w:['H2SO3','H2S','SO3'],
+  e:`А — сера: ${EQ(['S','O2'],['SO2'],'t°').html}; ${EQ(['SO2','O2'],['SO3'],'кат.').html}; ${EQ(['SO3','H2O'],['H2SO4']).html}; ${EQ(['H2SO4','BaCl2'],['BaSO4↓','HCl']).html}. Г — серная кислота.`}];
+ const p=pick(P);return CH('★ '+p.q,C(p.a),p.w.map(C),{short:p.e,explain:p.e+`<br>Ответ: <b>${C(p.a)}</b>.`,explain2:'Ищи «зацепки»: цвет осадка, запах газа, окраска индикатора, потеря массы при нагревании. Каждую зацепку переводи в уравнение — и проверяй числа.'});},{star:true});
+G(8,()=>{const P=[['NaCl','Na2SO4','BaCl2',['HCl','NaOH','фенолфталеин','KNO3'],`с ${C('Na2SO4')} — белый осадок: ${EQ(['Na2SO4','BaCl2'],['BaSO4↓','NaCl']).html}; с ${C('NaCl')} ничего не происходит`],
+ ['HCl','H2SO4','BaCl2',['лакмус','NaOH','Zn','Na2CO3'],`с ${C('H2SO4')} — осадок: ${EQ(['H2SO4','BaCl2'],['BaSO4↓','HCl']).html}. Лакмус покраснеет в обеих, Zn и Na₂CO₃ дадут газ в обеих, с NaOH видимых признаков нет`],
+ ['NaCl','NaNO3','AgNO3',['BaCl2','HCl','фенолфталеин','NaOH'],`с ${C('NaCl')} — белый творожистый осадок: ${EQ(['NaCl','AgNO3'],['AgCl↓','NaNO3']).html}`],
+ ['Na2CO3','Na2SO4','HCl',['BaCl2','NaOH','KNO3','NaCl'],`с ${C('Na2CO3')} — «вскипание»: ${EQ(['Na2CO3','HCl'],['NaCl','H2O','CO2↑']).html}. Ловушка: ${C('BaCl2')} даёт белый осадок с обеими солями (BaCO₃ и BaSO₄)`],
+ ['NaOH','NaCl','фенолфталеин',['HCl','KNO3','BaCl2','Na2SO4'],`в ${C('NaOH')} фенолфталеин малиновый, в ${C('NaCl')} — бесцветный. С HCl щёлочь реагирует, но без видимых признаков`],
+ ['NaOH','Ca(OH)2','CO2',['фенолфталеин','лакмус','NaCl','HCl'],`раствор ${C('Ca(OH)2')} мутнеет: ${EQ(['Ca(OH)2','CO2'],['CaCO3↓','H2O']).html}; ${C('Na2CO3')} растворим — у NaOH мути нет. Индикаторы одинаковы в обеих щёлочах`]];
+ const p=pick(P);const f=x=>/[а-я]/.test(x)?x:C(x);const wr=sample(p[3],3);
+ return CH(`★ В двух пробирках без этикеток — растворы ${C(p[0])} и ${C(p[1])}. Каким <b>одним</b> реактивом их можно различить?`,f(p[2]),wr.map(f),{short:`${f(p[2])}: ${p[4]}.`,
+ explain:`Реактив должен дать <b>видимый</b> признак (осадок, газ, цвет) только с одним из веществ. ${f(p[2])}: ${p[4]}.<br>Остальные варианты ведут себя одинаково с обоими растворами (или вообще без признаков).`,
+ explain2:`Найди, чем вещества <b>отличаются</b>: ${C(p[0])} и ${C(p[1])}. Отличающийся ион (или среда) и подсказывает качественную реакцию.`});},{star:true});
+G(8,()=>{const Y=[['Zn',['ZnSO4','H2']],['Mg',['MgSO4','H2']],['Fe',['FeSO4','H2']],['Al',['Al2(SO4)3','H2']],['CuO',['CuSO4','H2O']],['MgO',['MgSO4','H2O']],['ZnO',['ZnSO4','H2O']],['NaOH',['Na2SO4','H2O']],['KOH',['K2SO4','H2O']],['Cu(OH)2',['CuSO4','H2O']],['Fe(OH)3',['Fe2(SO4)3','H2O']],['BaCl2',['BaSO4↓','HCl']],['Ba(NO3)2',['BaSO4↓','HNO3']],['Na2CO3',['Na2SO4','H2O','CO2↑']],['K2CO3',['K2SO4','H2O','CO2↑']]];
+ const Nn=['Cu','Ag','CO2','SO2','SiO2','P2O5','NaCl','KNO3','HCl','Na2SO4','MgSO4'];const k=R(3,6);const items=shuffle([...sample(Y,k),...sample(Nn,8-k).map(f=>[f,null])]);
+ const why={Cu:'правее H',Ag:'правее H',CO2:'кислотный оксид',SO2:'кислотный оксид',SiO2:'кислотный оксид',P2O5:'кислотный оксид',NaCl:'продукты растворимы, без газа',KNO3:'продукты растворимы',HCl:'кислота',Na2SO4:'тот же остаток',MgSO4:'тот же остаток'};
+ return {type:'num',q:`★ Сколько из перечисленных веществ реагируют с <b>разбавленной серной кислотой</b>?<br>${items.map(x=>C(x[0])).join(', ')}`,ans:k,
+ short:`Реагируют ${k}: ${items.filter(x=>x[1]).map(x=>C(x[0])).join(', ')}.`,
+ explain:items.map(x=>x[1]?`✔ ${EQ([x[0],'H2SO4'],x[1]).html}`:`✘ ${C(x[0])} — ${why[x[0]]}`).join('<br>')+`<br>Итого: <b>${k}</b>.`,
+ explain2:'Серная кислота реагирует с: металлами левее H, основными и амфотерными оксидами, основаниями, солями, если получается осадок (BaSO₄) или газ (CO₂). Пройди по списку и отметь эти группы.'};},{star:true});
+const PAIR={'Fe|HCl':[['FeCl2','H2↑']],'Fe|CuSO4':[['FeSO4','Cu']],'HCl|NaOH':[['NaCl','H2O']],'HCl|Na2CO3':[['NaCl','H2O','CO2↑']],'NaOH|CuSO4':[['Cu(OH)2↓','Na2SO4']],'NaOH|CO2':[['Na2CO3','H2O']],'CuSO4|BaCl2':[['BaSO4↓','CuCl2']],'BaCl2|Na2CO3':[['BaCO3↓','NaCl']]};
+const PS=['Fe','Cu','HCl','NaOH','CuSO4','BaCl2','Na2CO3','CO2'];
+G(8,()=>{const s=sample(PS,4);if(s.includes('Na2CO3')&&s.includes('CO2'))return null;if(s.includes('CuSO4')&&s.includes('Na2CO3'))return null;
+ const pairs=[];for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){const k1=s[i]+'|'+s[j],k2=s[j]+'|'+s[i];const key=PAIR[k1]?k1:PAIR[k2]?k2:null;pairs.push([s[i],s[j],key]);}
+ const n=pairs.filter(p=>p[2]).length;if(n<1)return null;
+ return {type:'num',q:`★ Даны вещества (кислота и соли — в растворах): ${s.map(C).join(', ')}. Сколько реакций можно провести между ними <b>попарно</b>?`,ans:n,
+ short:`Пар — 6, реагируют ${n}.`,hint:'Из 4 веществ можно составить 6 пар. Проверь каждую.',
+ explain:pairs.map(p=>p[2]?`✔ ${EQ(p[2].split('|'),PAIR[p[2]][0]).html}`:`✘ ${C(p[0])} + ${C(p[1])} — не реагируют`).join('<br>')+`<br>Итого: <b>${n}</b>.`,
+ explain2:'Для каждой пары спроси: металл левее H или активнее металла соли? кислота + основание/карбонат? щёлочь + соль с нерастворимым гидроксидом? две соли с осадком? «Одинаковые по характеру» (кислота + соль без осадка, щёлочь + соль натрия) — нет.'};},{star:true});
+G(8,()=>{const P=[['Al','Al2O3'],['Cu','CuO'],['Mg','MgO'],['Ca','CaO'],['Fe','Fe2O3'],['Zn','ZnO'],['Ba','BaO'],['Na','Na2O']];
+ const p=pick(P);const w=Math.round(16*parseF(p[1]).O/Mr(p[1])*1000)/10;const typ=p[1].replace(/^[A-Z][a-z]?/,'M');
+ const others=P.filter(x=>x[1].replace(/^[A-Z][a-z]?/,'M')===typ&&x[0]!==p[0]).map(x=>x[0]);const wr=sample([...new Set([...others,...P.map(x=>x[0]).filter(x=>x!==p[0])])],3);
+ const nO=parseF(p[1]).O,nM=parseF(p[1])[p[0]];const MM=AM[p[0]];
+ return CH(`★ Массовая доля кислорода в оксиде состава ${C(typ)} равна ${N(w)}&nbsp;%. Какой это металл?`,p[0],wr,{hint:'Пусть M — атомная масса металла. Запиши w(O) через M.',
+ short:`${16*nO}/(${nM}M + ${16*nO}) = ${N(w/100)} → M ≈ ${MM}: ${p[0]}.`,
+ explain:`w(O) = ${nO}·16 / (${nM}·M + ${nO}·16) = ${N(w/100)}.<br>${nM}·M + ${16*nO} = ${16*nO} / ${N(w/100)} ≈ ${N(Math.round(16*nO/(w/100)*10)/10)} → ${nM>1?nM+'M':'M'} ≈ ${N(Math.round((16*nO/(w/100)-16*nO)*10)/10)} → M ≈ ${MM}.<br>Это <b>${p[0]}</b>: ${C(p[1])}, проверка ${16*nO}/${Mr(p[1])} = ${N(w)} % ✔`,
+ explain2:`Можно перебором: подставь кандидатов в ${C(typ)} и посчитай w(O). Например, у ${C(p[1])}: Mr = ${Mr(p[1])}, w(O) = ${16*nO}/${Mr(p[1])} ≈ ${N(w)} %. Совпало.`});},{star:true});
+
+window.TOPIC={id:'c8_classes',title:'Классы неорганических веществ',subtitle:'Химия · 8 класс',
+intro:`<p>Оксиды, основания, кислоты и соли: как узнать класс по формуле, как называть вещества, как пользоваться таблицей растворимости и индикаторами, кто с кем реагирует и как одно вещество превращается в другое. Есть «химический светофор» с индикаторами, а в конце — цепочки превращений и задачи в духе Менделеевской олимпиады.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Оксиды','Основания','Кислоты','Соли и их названия','Классификация и растворимость','Индикаторы','Свойства кислот','Основания, оксиды, соли; генетическая связь','★ Цепочки и олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

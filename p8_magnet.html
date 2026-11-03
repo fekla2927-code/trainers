@@ -1,0 +1,1141 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Магнитные явления — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,plural}=H;
+/* =====================================================================
+   Магнитные явления. Физика в координатах: x — вправо, y — вверх (на рисунке),
+   z — к нам (из листа). Направления считаем векторным произведением:
+   поле прямого тока  B ∝ I × r,   сила Ампера  F = I·l × B,  сила Лоренца F = q·v × B.
+   ===================================================================== */
+const N=H.num;
+const r2=x=>Math.round(x*100)/100;
+const rnd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+const NUMT=(x,d,o)=>{const a=rnd(x,d);const A=Math.abs(a)||1;let tol=Math.max(0.6*Math.pow(10,-d)/A,0.004);tol=Math.min(tol,0.9/A,0.5);return Object.assign({type:'num',ans:a,tol},o||{});};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<400;i++){const t=make();if(t)return t;}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const M=s=>`<span class="m">${s}</span>`;
+/* vectors */
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const neg=a=>a.map(x=>-x);
+const vkey=v=>{const i=v.findIndex(x=>Math.abs(x)>1e-9);return i<0?'0':(v[i]>0?'+':'-')+'xyz'[i];};
+const DIR={'+x':'вправо','-x':'влево','+y':'вверх','-y':'вниз','+z':'к нам (из листа) ⊙','-z':'от нас (в лист) ⊗','0':'сила равна нулю'};
+const VEC={'+x':[1,0,0],'-x':[-1,0,0],'+y':[0,1,0],'-y':[0,-1,0],'+z':[0,0,1],'-z':[0,0,-1]};
+const OPP={'+x':'-x','-x':'+x','+y':'-y','-y':'+y','+z':'-z','-z':'+z'};
+const PLANE=['+x','-x','+y','-y'];
+
+/* ---------- drawing primitives ---------- */
+const SV=(w,h,inner,aria,wd)=>`<svg viewBox="0 0 ${w} ${h}" width="${wd||w}" role="img" aria-label="${aria||'Рисунок'}" style="font-family:system-ui,sans-serif">${inner}</svg>`;
+const TX=(x,y,t,o)=>{o=o||{};return `<text x="${r2(x)}" y="${r2(y)}" text-anchor="${o.a||'middle'}" font-size="${o.fs||13}" font-weight="${o.wt||600}" fill="${o.c||'var(--ink)'}">${t}</text>`;};
+const LN=(x1,y1,x2,y2,o)=>{o=o||{};return `<line x1="${r2(x1)}" y1="${r2(y1)}" x2="${r2(x2)}" y2="${r2(y2)}" stroke="${o.c||'var(--fig)'}" stroke-width="${o.sw||2}" stroke-linecap="round"${o.dash?` stroke-dasharray="${o.dash}"`:''}/>`;};
+const HEAD=(x,y,dx,dy,o)=>{o=o||{};const m=Math.hypot(dx,dy)||1;const ux=dx/m,uy=dy/m,hs=o.hs||9;const bx=x-ux*hs,by=y-uy*hs;const px=-uy*hs*0.45,py=ux*hs*0.45;
+  return `<polygon points="${r2(x)},${r2(y)} ${r2(bx+px)},${r2(by+py)} ${r2(bx-px)},${r2(by-py)}" fill="${o.c||'var(--fig)'}"/>`;};
+const ARR=(x1,y1,x2,y2,o)=>{o=o||{};const m=Math.hypot(x2-x1,y2-y1)||1;const hs=o.hs||9;return LN(x1,y1,x2-(x2-x1)/m*hs*0.6,y2-(y2-y1)/m*hs*0.6,o)+HEAD(x2,y2,x2-x1,y2-y1,o);};
+const PC={N:'var(--bad)',S:'var(--accent)'};
+const other=p=>p==='N'?'S':'N';
+/* bar magnet: first = pole at the left (horizontal) or at the top (vertical) */
+function bar(x,y,w,h,first,o){o=o||{};const vert=h>w;const sec=other(first);const f=p=>o.grey?'var(--muted)':PC[p];const op=o.grey?0.45:0.9;let s='';
+  const lab=(cx,cy,t)=>o.noLab?'':TX(cx,cy+5.5,t,{c:'var(--card)',fs:16,wt:800});
+  if(!vert){s+=`<rect x="${x}" y="${y}" width="${w/2}" height="${h}" fill="${f(first)}" fill-opacity="${op}"/><rect x="${x+w/2}" y="${y}" width="${w/2}" height="${h}" fill="${f(sec)}" fill-opacity="${op}"/>`+lab(x+w/4,y+h/2,o.q1||first)+lab(x+3*w/4,y+h/2,o.q2||sec);}
+  else{s+=`<rect x="${x}" y="${y}" width="${w}" height="${h/2}" fill="${f(first)}" fill-opacity="${op}"/><rect x="${x}" y="${y+h/2}" width="${w}" height="${h/2}" fill="${f(sec)}" fill-opacity="${op}"/>`+lab(x+w/2,y+h/4,o.q1||first)+lab(x+w/2,y+3*h/4,o.q2||sec);}
+  return s+`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="var(--fig)" stroke-width="1.6" rx="2"/>`;}
+/* compass needle: centre, screen direction (dx,dy) of the NORTH end */
+function needle(cx,cy,dx,dy,len,o){o=o||{};len=len||16;const m=Math.hypot(dx,dy)||1;const ux=dx/m,uy=dy/m,w=len*0.3,px=-uy*w,py=ux*w;
+  return (o.box===false?'':`<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${len+4}" fill="var(--card)" stroke="var(--fig)" stroke-width="1.2"/>`)+
+  `<polygon points="${r2(cx+ux*len)},${r2(cy+uy*len)} ${r2(cx+px)},${r2(cy+py)} ${r2(cx-px)},${r2(cy-py)}" fill="var(--bad)"/>`+
+  `<polygon points="${r2(cx-ux*len)},${r2(cy-uy*len)} ${r2(cx+px)},${r2(cy+py)} ${r2(cx-px)},${r2(cy-py)}" fill="var(--accent)" fill-opacity="0.75"/><circle cx="${r2(cx)}" cy="${r2(cy)}" r="2.2" fill="var(--fig)"/>`;}
+const SDIR={'+x':[1,0],'-x':[-1,0],'+y':[0,-1],'-y':[0,1]};          // key → screen dx,dy
+const needleOpt=k=>SV(70,70,needle(35,35,...SDIR[k],24),'Стрелка компаса',64);
+/* wire cross-section: s=+1 ⊙ (к нам), −1 ⊗ (от нас), 0 = «?» */
+function wire(cx,cy,s,r){r=r||11;let o=`<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r}" fill="var(--card)" stroke="var(--fig)" stroke-width="2"/>`;
+  if(s>0)o+=`<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r*0.28}" fill="var(--fig)"/>`;else if(s<0){const d=r*0.6;o+=LN(cx-d,cy-d,cx+d,cy+d)+LN(cx-d,cy+d,cx+d,cy-d);}else o+=TX(cx,cy+5,'?',{fs:14,c:'var(--accent-ink)'});return o;}
+/* circle of a field line around a wire, ccw (visually) or cw; ccw=null → no arrows */
+function ring(cx,cy,r,ccw,o){o=o||{};let s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${o.c||'var(--accent)'}" stroke-width="1.8"${o.dash?' stroke-dasharray="5 4"':''}/>`;
+  if(ccw!=null){const d=ccw?-1:1;s+=HEAD(cx+d*6,cy-r,d,0,{c:o.c||'var(--accent)'})+HEAD(cx-d*6,cy+r,-d,0,{c:o.c||'var(--accent)'});}return s;}
+/* magnetic field of point "poles" (screen coords) and field lines */
+function Bf(P,x,y){let bx=0,by=0;for(const p of P){const dx=x-p.x,dy=y-p.y;const q=dx*dx+dy*dy;const r3=q*Math.sqrt(q)||1e-9;bx+=p.q*dx/r3;by+=p.q*dy/r3;}return [bx,by];}
+function lines(P,o){o=o||{};const W=o.W||320,Hh=o.H||200;let s='';const n=o.n||14;
+  for(const p of P)for(let k=0;k<n;k++){const sg=p.q>0?1:-1;const a=(k+0.5)*2*Math.PI/n;let x=p.x+5*Math.cos(a),y=p.y+5*Math.sin(a);let pts=[[x,y]];let out=false;
+    for(let i=0;i<700;i++){const [bx,by]=Bf(P,x,y);const m=Math.hypot(bx,by);if(!m)break;x+=2.5*sg*bx/m;y+=2.5*sg*by/m;if(i%3===0)pts.push([x,y]);
+      if(x<-5||x>W+5||y<-5||y>Hh+5){out=true;break;}if(P.some(q=>q.q*sg<0&&Math.hypot(x-q.x,y-q.y)<5))break;}
+    pts.push([x,y]);if(sg<0){if(!out)continue;pts=pts.reverse();}
+    s+=`<polyline points="${pts.map(t=>r2(t[0])+','+r2(t[1])).join(' ')}" fill="none" stroke="${o.c||'var(--accent)'}" stroke-opacity="0.75" stroke-width="1.3"/>`;
+    if(o.arrows!==false&&pts.length>8){// arrow on the visible part, outside magnets
+      const vis=pts.filter(t=>!(o.skip||[]).some(b=>t[0]>b[0]-3&&t[0]<b[2]+3&&t[1]>b[1]-3&&t[1]<b[3]+3)&&t[0]>8&&t[0]<W-8&&t[1]>8&&t[1]<Hh-8);
+      if(vis.length>4){const j=Math.floor(vis.length/2);const A=vis[j],B=vis[Math.min(j+1,vis.length-1)];s+=HEAD(B[0],B[1],B[0]-A[0],B[1]-A[1],{c:'var(--accent)',hs:7});}}}
+  return s;}
+/* standard horizontal bar magnet picture: centre 160,100, length 140 */
+const MG={cx:160,cy:100,L:70,h:26};
+const magPoles=(first,cx,cy,L)=>{cx=cx||MG.cx;cy=cy||MG.cy;L=L||MG.L;const sN=first==='N'?-1:1;return [{x:cx+sN*0.8*L,y:cy,q:1},{x:cx-sN*0.8*L,y:cy,q:-1}];};
+function magPic(first,o){o=o||{};const P=magPoles(first);let s='';
+  if(o.lines!==false)s+=lines(P,{skip:[[MG.cx-MG.L,MG.cy-MG.h/2,MG.cx+MG.L,MG.cy+MG.h/2]],arrows:o.arrows});
+  s+=bar(MG.cx-MG.L,MG.cy-MG.h/2,2*MG.L,MG.h,first,o);return s+(o.extra||'');}
+/* two-magnet picture: left magnet [20..120], right [200..300]; f1 = left pole of left magnet, f2 = left pole of right magnet */
+function twoMag(f1,f2,o){o=o||{};const P=magPoles(f1,70,100,50).concat(magPoles(f2,250,100,50));
+  return lines(P,{n:12,arrows:o.arrows,skip:[[20,87,120,113],[200,87,300,113]]})+bar(20,87,100,26,f1,o)+bar(200,87,100,26,f2,o);}
+/* ---- coil (horizontal). frontUp: current on the visible front side of the turns goes up */
+function coil(x1,x2,cy,frontUp,o){o=o||{};const h=o.h||50,n=o.n||6,st=(x2-x1)/n;let s='';
+  if(o.core)s+=`<rect x="${x1-14}" y="${cy-h/2+12}" width="${x2-x1+28}" height="${h-24}" fill="var(--muted)" fill-opacity="0.35" stroke="var(--fig)" stroke-width="1"/>`;
+  for(let i=0;i<n;i++){const xa=x1+i*st;s+=LN(xa+st/2,cy+h/2,xa+st,cy-h/2,{sw:1.4,dash:'3 3'});}
+  for(let i=0;i<n;i++){const xa=x1+i*st;s+=LN(xa,cy-h/2,xa+st/2,cy+h/2,{sw:2.4});
+    if(o.arrows!==false&&(i===1||i===n-2)){const mx=xa+st/4,my=cy;const dx=st/2,dy=h;s+=HEAD(mx+(frontUp?-1:1)*dx*0.12,my+(frontUp?-1:1)*dy*0.12,frontUp?-dx:dx,frontUp?-dy:dy,{c:'var(--bad)',hs:10});}}
+  s+=LN(x1,cy-h/2,x1-16,cy-h/2,{sw:2})+LN(x2,cy-h/2,x2+16,cy-h/2,{sw:2});
+  return s;}
+/* which end of a horizontal coil is N: frontUp → I_front = +y, m = z × I = −x → left */
+const coilN=frontUp=>{const m=cross([0,0,1],[0,frontUp?1:-1,0]);return m[0]>0?'right':'left';};
+const loopPic=(ccw)=>SV(160,130,`<circle cx="80" cy="62" r="44" fill="none" stroke="var(--fig)" stroke-width="5"/>`+HEAD(80+(ccw?-8:8),18,ccw?-1:1,0,{c:'var(--bad)',hs:13})+HEAD(80+(ccw?8:-8),106,ccw?1:-1,0,{c:'var(--bad)',hs:13})+LN(80,106,80,124,{sw:3}),'Виток с током, вид спереди',150);
+/* ---- poles around a gap: orient 'h' (left/right) or 'v' (top/bottom); first = left/top inner pole */
+function polesGap(orient,first,o){o=o||{};let s='';const sec=other(first);
+  if(orient==='h'){s+=`<rect x="14" y="30" width="70" height="120" fill="${PC[first]}" fill-opacity="0.85" stroke="var(--fig)" stroke-width="1.5"/><rect x="236" y="30" width="70" height="120" fill="${PC[sec]}" fill-opacity="0.85" stroke="var(--fig)" stroke-width="1.5"/>`+TX(49,96,first,{c:'var(--card)',fs:22,wt:800})+TX(271,96,sec,{c:'var(--card)',fs:22,wt:800});
+    if(o.field!==false)[36,144].forEach(y=>{s+=first==='N'?ARR(92,y,228,y,{c:'var(--accent)',sw:1.4,dash:'6 4',hs:8}):ARR(228,y,92,y,{c:'var(--accent)',sw:1.4,dash:'6 4',hs:8});});}
+  else{s+=`<rect x="70" y="4" width="180" height="44" fill="${PC[first]}" fill-opacity="0.85" stroke="var(--fig)" stroke-width="1.5"/><rect x="70" y="132" width="180" height="44" fill="${PC[sec]}" fill-opacity="0.85" stroke="var(--fig)" stroke-width="1.5"/>`+TX(160,33,first,{c:'var(--card)',fs:22,wt:800})+TX(160,161,sec,{c:'var(--card)',fs:22,wt:800});
+    if(o.field!==false)[86,234].forEach(x=>{s+=first==='N'?ARR(x,54,x,126,{c:'var(--accent)',sw:1.4,dash:'6 4',hs:8}):ARR(x,126,x,54,{c:'var(--accent)',sw:1.4,dash:'6 4',hs:8});});}
+  return s;}
+/* B vector (math coords) of a gap: field goes from N to S */
+const gapB=(orient,first)=>orient==='h'?(first==='N'?[1,0,0]:[-1,0,0]):(first==='N'?[0,-1,0]:[0,1,0]);
+/* grid of ⊙/⊗ field symbols */
+function fieldGrid(s,x0,y0,x1,y1,skip){let o='';for(let x=x0;x<=x1;x+=46)for(let y=y0;y<=y1;y+=40){if(skip&&skip(x,y))continue;o+=`<circle cx="${x}" cy="${y}" r="6" fill="none" stroke="var(--accent)" stroke-width="1.4"/>`+(s>0?`<circle cx="${x}" cy="${y}" r="1.8" fill="var(--accent)"/>`:LN(x-3.6,y-3.6,x+3.6,y+3.6,{c:'var(--accent)',sw:1.4})+LN(x-3.6,y+3.6,x+3.6,y-3.6,{c:'var(--accent)',sw:1.4}));}return o;}
+const fgLabel=s=>TX(12,192,s>0?'B: к нам ⊙':'B: от нас ⊗',{a:'start',fs:12,c:'var(--accent-ink)'});
+/* in-plane conductor with current arrow; k ∈ PLANE */
+function rodPic(k){const [dx,dy]=SDIR[k];const vert=dx===0;let s='';
+  if(vert){s+=`<rect x="152" y="14" width="16" height="160" rx="3" fill="var(--hl)" fill-opacity="0.55" stroke="var(--fig)" stroke-width="1.5"/>`+ARR(160,94-dy*40,160,94+dy*40,{c:'var(--bad)',sw:3,hs:12})+TX(182,98,'I',{c:'var(--bad)',fs:15,a:'start'});}
+  else{s+=`<rect x="40" y="86" width="240" height="16" rx="3" fill="var(--hl)" fill-opacity="0.55" stroke="var(--fig)" stroke-width="1.5"/>`+ARR(160-dx*40,94,160+dx*40,94,{c:'var(--bad)',sw:3,hs:12})+TX(160,80,'I',{c:'var(--bad)',fs:15});}
+  return s;}
+const skipRod=k=>(x,y)=>SDIR[k][0]===0?Math.abs(x-160)<34:Math.abs(y-94)<34;
+
+/* ---------- theory figures ---------- */
+const figBar=SV(320,200,magPic('N'),'Линии поля полосового магнита');
+const figAttr=SV(320,200,twoMag('S','S'),'Разноимённые полюса',300);
+const figRep=SV(320,200,twoMag('S','N'),'Одноимённые полюса',300);
+const figEarth=(()=>{const P=[{x:160,y:122,q:1},{x:160,y:82,q:-1}];let s=lines(P,{n:12,skip:[[150,62,170,142]]});
+  s+=`<circle cx="160" cy="102" r="56" fill="var(--ok)" fill-opacity="0.18" stroke="var(--fig)" stroke-width="1.5"/>`+bar(150,66,20,72,'S',{noLab:true});
+  s+=TX(176,82,'S',{c:'var(--accent-ink)',fs:13,a:'start'})+TX(176,130,'N',{c:'var(--bad)',fs:13,a:'start'})+TX(6,14,'↑ Северный',{fs:12,a:'start'})+TX(6,28,'географический',{fs:11,wt:500,a:'start'})+TX(6,182,'↓ Южный',{fs:12,a:'start'})+TX(6,196,'географический',{fs:11,wt:500,a:'start'});
+  return SV(320,200,s,'Магнитное поле Земли');})();
+const figWire=s=>SV(150,140,ring(75,70,30,s>0)+ring(75,70,52,s>0,{dash:1})+wire(75,70,s),'Поле прямого тока',140);
+const figCoil=SV(320,130,coil(100,220,62,true,{h:70})+ARR(206,62,114,62,{c:'var(--accent)',sw:2,dash:'5 4'})+TX(64,68,'N',{c:'var(--bad)',fs:20,wt:800})+TX(256,68,'S',{c:'var(--accent-ink)',fs:20,wt:800})+TX(160,122,'красные стрелки — ток спереди, синяя — поле внутри',{fs:11,wt:500}),'Катушка с током');
+const figAmp=SV(320,180,polesGap('h','N')+wire(160,90,1,14)+ARR(160,74,160,46,{c:'var(--bad)',sw:3,hs:12})+TX(174,56,'F',{c:'var(--bad)',fs:16,a:'start'}),'Сила Ампера');
+const figMotor=SV(320,180,polesGap('h','N')+LN(110,90,210,90,{dash:'5 4',sw:1.5})+`<circle cx="160" cy="90" r="3.5" fill="var(--fig)"/>`+wire(110,90,1)+wire(210,90,-1)+ARR(110,76,110,40,{c:'var(--bad)',sw:3})+ARR(210,104,210,140,{c:'var(--bad)',sw:3})+TX(120,52,'F',{c:'var(--bad)',a:'start'})+TX(200,136,'F',{c:'var(--bad)',a:'end'})+`<path d="M190,54 A44,44 0 0 1 206,74" fill="none" stroke="var(--ok)" stroke-width="2"/>`+HEAD(206,74,6,10,{c:'var(--ok)'}),'Рамка с током в магнитном поле');
+
+const theory=[
+{title:'Магниты и полюса',lvl:0,html:`
+<p class="hook">Магнит на холодильнике держит листок, стрелка компаса сама поворачивается на север, а японский поезд Маглев летит над рельсами со скоростью 600 км/ч — и ни одного колеса не касается пути. Всё это — одна и та же сила: <b>магнетизм</b>. Разберёмся, как она работает.</p>
+<div class="box rule"><b>Постоянный магнит</b>У любого магнита <b>два полюса</b>: северный <b style="color:var(--bad)">N</b> и южный <b style="color:var(--accent-ink)">S</b>. Сильнее всего магнит притягивает у полюсов, слабее всего — посередине.<br><b>Одноимённые</b> полюса (N и N, S и S) <b>отталкиваются</b>, <b>разноимённые</b> (N и S) — <b>притягиваются</b>.</div>
+<p>Почему «северный»? Если магнит подвесить на нитке, он развернётся одним концом на север — этот конец и назвали северным.</p>
+<div class="box ex"><b>Разрежем магнит</b>Разломи магнит пополам — получишь <b>два целых магнита</b>, у каждого свои N и S. Отдельного «только северного» полюса не бывает: сколько ни режь, каждый кусочек — снова магнит с двумя полюсами.</div>
+<div class="box rule"><b>Что притягивается</b>Сильно притягиваются <b>железо, сталь, никель, кобальт</b> (ферромагнетики). Медь, алюминий, золото, пластик, стекло, дерево — практически нет.</div>
+<div class="box err"><b>Типичная ошибка</b>«Магнит притягивает любой металл». Нет! Алюминиевая банка и медная монета к магниту не прилипнут.</div>
+<p>Железный гвоздь рядом с магнитом сам <b>намагничивается</b>: у полюса N на ближнем конце гвоздя появляется S, на дальнем — N. Поэтому гвоздь притягивается, а к нему цепляется второй гвоздь — получается цепочка.</p>
+<div class="fact">Слово «магнит» — от древней области Магнесия, где находили камень магнетит, притягивающий железо. Самые сильные бытовые магниты — неодимовые: маленький кубик может удержать груз в сотни раз тяжелее себя.</div>`},
+{title:'Магнитное поле и его линии',lvl:1,html:`
+<p>Магнит действует на гвоздь через воздух, не касаясь его. Значит, вокруг магнита есть что-то невидимое — <b>магнитное поле</b>. Его можно «увидеть»: насыпь железные опилки на картон над магнитом, и они выстроятся в цепочки — это и есть <b>линии магнитного поля</b>.</p>
+<div class="fig">${figBar}</div>
+<div class="box rule"><b>Линии магнитного поля</b>• Снаружи магнита линии <b>выходят из N и входят в S</b> (внутри магнита идут от S к N — линии замкнуты).<br>• <b>Северный конец</b> стрелки компаса показывает <b>по направлению линии</b> (по касательной к ней).<br>• Где линии <b>гуще</b>, там поле <b>сильнее</b> — у полюсов.<br>• Линии никогда не пересекаются.</div>
+<div class="figrow"><div class="fig">${figAttr}<div class="cap">разноимённые полюса: линии идут от N к S — магниты притягиваются</div></div><div class="fig">${figRep}<div class="cap">одноимённые полюса: линии «отворачиваются» друг от друга — отталкиваются</div></div></div>
+<div class="widget" id="w-compass"></div>
+<div class="box tip"><b>Как запомнить</b>Стрелка компаса — сама маленький магнит. Её северный конец тянется к южному полюсу большого магнита и отталкивается от северного. Поэтому у полюса N стрелка смотрит <b>от</b> магнита, у полюса S — <b>к</b> магниту.</div>
+<div class="box err"><b>Ошибка</b>Опилки показывают форму линий, но <b>не направление</b>. Направление показывает только компас (или знание, где N).</div>`},
+{title:'Магнитное поле Земли',lvl:2,html:`
+<p>Земля — огромный магнит. Именно поэтому компас работает в любой точке планеты.</p>
+<div class="fig">${figEarth}</div>
+<div class="box rule"><b>Главное про Землю</b>Около <b>северного географического</b> полюса находится <b>южный магнитный</b> полюс Земли (S), около южного географического — северный магнитный (N). Северный конец стрелки компаса притягивается к южному магнитному полюсу — и показывает на географический север.</div>
+<div class="box err"><b>Ловушка</b>«Компас показывает на северный магнитный полюс». Нет: разноимённые полюса притягиваются, значит N стрелки показывает на <b>S</b> Земли. Просто этот S находится на севере.</div>
+<p>Магнитные и географические полюса не совпадают, а магнитные ещё и «гуляют»: сейчас северный магнитный полюс смещается от Канады к Сибири на десятки километров в год. Поэтому моряки и лётчики вносят поправки.</p>
+<div class="fact">Полярное сияние — это частицы солнечного ветра, которые магнитное поле Земли «заворачивает» к полюсам. Там они врезаются в атомы воздуха на высоте 100–300 км, и те светятся зелёным и красным. Магнитное поле — наш щит от солнечной радиации.</div>
+<div class="fact">Морские черепахи и перелётные птицы чувствуют магнитное поле Земли и ориентируются по нему, как по встроенному компасу.</div>
+<div class="box tip"><b>Железо рядом сбивает компас</b>Стальной якорь, рельсы, телефон с магнитиками в динамике создают своё поле — и стрелка врёт. Поэтому компас в самолёте ставят подальше от стальных деталей.</div>`},
+{title:'Опыт Эрстеда: ток создаёт магнитное поле',lvl:3,html:`
+<p class="hook">1820 год, Копенгаген. Профессор Эрстед на лекции включает ток в проводе, а рядом стоящая стрелка компаса вдруг поворачивается! Выключил — вернулась. Так открыли, что <b>электричество и магнетизм — родственники</b>.</p>
+<div class="box rule"><b>Опыт Эрстеда</b>Вокруг проводника с током существует <b>магнитное поле</b>. Изменишь направление тока — стрелка повернётся в другую сторону.</div>
+<p>Линии поля прямого провода — <b>окружности</b> вокруг провода. На рисунках провод часто рисуют «в разрезе»:</p>
+<div class="figrow"><div class="fig">${figWire(1)}<div class="cap">⊙ — ток <b>к нам</b> (видим остриё стрелы): линии против часовой стрелки</div></div><div class="fig">${figWire(-1)}<div class="cap">⊗ — ток <b>от нас</b> (видим оперение стрелы): линии по часовой стрелке</div></div></div>
+<div class="box rule"><b>Правило буравчика (правой руки) для прямого тока</b>Направь <b>большой палец правой руки по току</b> — согнутые четыре пальца покажут направление <b>линий магнитного поля</b>. То же самое: если буравчик (штопор) вкручивается по току, его ручка вращается по линиям поля.</div>
+<div class="box ex"><b>Пример</b>Ток ⊗ (от нас). Большой палец — в лист. Пальцы правой руки загибаются <b>по часовой</b> стрелке. Значит, стрелка компаса, стоящая <b>над</b> проводом, повернётся северным концом <b>вправо</b>, под проводом — <b>влево</b>.</div>
+<div class="box err"><b>Ошибка</b>Думать, что стрелка у провода показывает «на провод» или «вдоль провода». Нет — она ложится <b>по касательной к окружности</b> вокруг провода.</div>`},
+{title:'Катушка с током и электромагнит',lvl:4,html:`
+<p>Свернём провод в спираль — получится <b>катушка</b> (соленоид). Поля всех витков складываются, и катушка ведёт себя как <b>полосовой магнит</b>: у неё есть N и S.</p>
+<div class="fig">${figCoil}</div>
+<div class="box rule"><b>Правило правой руки для катушки</b>Обхвати катушку правой рукой так, чтобы <b>четыре пальца шли по току в витках</b> — отставленный <b>большой палец</b> покажет на <b>северный полюс</b> катушки (направление линий поля внутри неё).</div>
+<div class="box tip"><b>Один виток «в лицо»</b>Смотришь на виток: ток идёт <b>против часовой</b> — к тебе обращён <b>N</b>; <b>по часовой</b> — <b>S</b>. Проверь правой рукой!</div>
+<div class="box rule"><b>Электромагнит</b>Катушка с <b>железным сердечником</b>. Её магнитное действие сильнее, если:<br>• увеличить <b>силу тока</b>;<br>• увеличить <b>число витков</b>;<br>• вставить <b>железный сердечник</b> (он сам намагничивается и усиливает поле в сотни раз).<br>Главный плюс: электромагнит можно <b>включить и выключить</b>, а поменяв направление тока — поменять полюса.</div>
+<div class="box err"><b>Ошибка</b>Медный или алюминиевый сердечник поле <b>не усилит</b> — нужен ферромагнетик (железо).</div>
+<p><b>Где применяют:</b> кран на свалке металлолома (подхватил машину — выключил ток — отпустил), электрический звонок, реле, замки домофона, МРТ в больнице, ускорители частиц.</p>
+<div class="fact">Японский Маглев (SCMaglev) в 2015 году разогнался до 603 км/ч — рекорд для поездов. Сверхпроводящие электромагниты поднимают вагон над путём примерно на 10 см, поэтому нет трения колёс о рельсы.</div>`},
+{title:'Сила Ампера: правило левой руки',lvl:5,html:`
+<p>Если ток создаёт магнитное поле, то и магнитное поле действует на ток! На проводник с током в поле магнита действует <b>сила Ампера</b>.</p>
+<div class="fig">${figAmp}</div>
+<div class="box rule"><b>Правило левой руки</b>Расположи <b>левую</b> ладонь так, чтобы <b>линии поля входили в ладонь</b>, а <b>четыре пальца</b> были направлены <b>по току</b> — тогда отогнутый на 90° <b>большой палец</b> покажет направление <b>силы</b>.</div>
+<div class="box ex"><b>По рисунку</b>Поле — слева направо (от N к S), ток ⊙ к нам. Левая ладонь смотрит влево (поле входит в неё), пальцы — на нас, большой палец — <b>вверх</b>. Сила направлена вверх.</div>
+<div class="box rule"><b>Величина силы (углублённо)</b>${M('F = B · I · l')}, если провод перпендикулярен линиям поля. B — <b>магнитная индукция</b> (сила поля), измеряется в <b>теслах</b> (Тл), I — ток в амперах, l — длина провода в поле в метрах. Если провод идёт <b>вдоль</b> линий поля, сила равна <b>нулю</b>.</div>
+<div class="widget" id="w-amp"></div>
+<div class="box tip"><b>Поменяли что-то одно — сила развернулась</b>Поменяли направление тока <b>или</b> полюса магнита — сила в обратную сторону. Поменяли <b>оба</b> — направление силы прежнее.</div>
+<div class="box err"><b>Ошибка</b>Перепутать руки: для <b>силы</b> — <b>левая</b> рука, для <b>поля тока</b> (провод, катушка) — <b>правая</b>. Запоминалка: «Сила — слева».</div>
+<div class="fact">Поле Земли — около 0,00005 Тл, магнит на холодильнике — около 0,005 Тл, неодимовый магнит — около 1 Тл, томограф МРТ — 1,5–3 Тл.</div>`},
+{title:'Электродвигатель',lvl:6,html:`
+<p>Поместим в поле магнита <b>рамку</b> с током. На её стороны действуют силы Ампера в <b>противоположные</b> стороны (ток в них идёт навстречу) — рамка поворачивается.</p>
+<div class="fig">${figMotor}</div>
+<div class="box rule"><b>Электродвигатель</b>Преобразует <b>электрическую энергию в механическую</b>. Главные части: магнит (статор), рамка-обмотка (ротор) и <b>коллектор</b> — полукольца со щётками, которые каждые пол-оборота <b>меняют направление тока в рамке</b>, чтобы она крутилась всё время в одну сторону.</div>
+<p>Без коллектора рамка повернулась бы до положения, где силы просто растягивают её, покачалась бы и остановилась.</p>
+<div class="box tip"><b>Как изменить направление вращения</b>Поменять направление тока (переключить провода батарейки) <b>или</b> поменять местами полюса магнита. Если поменять оба — двигатель крутится в ту же сторону.</div>
+<div class="box ex"><b>Где двигатели</b>Вентилятор, дрон, электросамокат, вибромотор телефона, Tesla. КПД электродвигателей — 80–95 %, у бензинового — около 30–40 %.</div>
+<div class="fact">Динамик наушников — тоже «двигатель»: катушка с переменным током сидит в поле маленького магнита, сила Ампера дёргает её туда-сюда тысячи раз в секунду, а приклеенная мембрана толкает воздух — получается звук.</div>`},
+{title:'★ Олимпиадные идеи',lvl:7,html:`
+<div class="box rule"><b>1. Параллельные токи</b>Два параллельных провода: токи <b>в одну сторону — притягиваются</b>, в разные — отталкиваются. (Каждый провод находится в поле другого, применяем правую руку для поля и левую для силы.) Не путай с зарядами, где «одинаковые отталкиваются»!</div>
+<div class="box rule"><b>2. Сложение полей</b>Поле в точке от двух проводов — сумма полей каждого. Между проводами с токами в одну сторону поля <b>гасят</b> друг друга, с токами в разные стороны — <b>складываются</b>.</div>
+<div class="box rule"><b>3. Сила Лоренца</b>Магнитное поле действует на <b>любую движущуюся заряженную частицу</b>. Направление — по правилу левой руки, где пальцы показывают направление движения <b>положительного</b> заряда. Для электрона пальцы направляем <b>против</b> его скорости.</div>
+<div class="box rule"><b>4. Как отличить магнит от железа без приборов</b>Прикоснись концом бруска A к <b>середине</b> бруска B. Середина магнита почти не притягивает. Если притяжение сильное — магнит A; если слабое — магнит B.</div>
+<div class="box tip"><b>Компас на магнитном полюсе</b>Линии поля Земли у магнитных полюсов идут почти <b>вертикально</b>. Стрелка, которая может вращаться во все стороны, там встанет вертикально, а обычный компас «сходит с ума».</div>`},
+{title:'Шпаргалка',lvl:0,html:`
+<table class="sym"><tr><th>Что ищем</th><th>Правило</th></tr>
+<tr><td>Поле прямого тока</td><td>Правая рука: большой палец — по току, пальцы — по линиям</td></tr>
+<tr><td>Полюс катушки</td><td>Правая рука: пальцы — по току в витках, большой палец — на N</td></tr>
+<tr><td>Сила на ток в поле</td><td>Левая рука: поле — в ладонь, пальцы — по току, большой палец — сила</td></tr>
+<tr><td>Линии поля магнита</td><td>Снаружи из N в S</td></tr>
+<tr><td>Компас</td><td>Северный конец — по линии поля</td></tr>
+<tr><td>Полюса Земли</td><td>На географическом севере — магнитный S</td></tr></table>`}
+];
+
+const symbols={tab:'Знаки',title:'Знаки и формулы',rows:[
+['N','Северный полюс (north)','Из него линии поля выходят','На рисунках — красный'],
+['S','Южный полюс (south)','В него линии поля входят','На рисунках — синий'],
+['⊙','Ток (или поле) к нам','Видим остриё летящей стрелы','Поле тока ⊙ — против часовой'],
+['⊗','Ток (или поле) от нас','Видим оперение стрелы','Поле тока ⊗ — по часовой'],
+['B','Магнитная индукция','«Сила» магнитного поля, в теслах (Тл)','Земля ≈ 0,00005 Тл'],
+['F = B·I·l','Сила Ампера','Сила на провод длиной l с током I поперёк поля B','0,5 Тл · 2 А · 0,1 м = 0,1 Н'],
+['правая рука','Буравчик','Поле прямого тока и полюса катушки','—'],
+['левая рука','Сила Ампера (и Лоренца)','Направление силы на ток в поле','—']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Правая рука — какое <b>поле</b> создаёт ток. Левая рука — какая <b>сила</b> действует на ток в поле.</div>`};
+
+/* =================== generators =================== */
+const POLE={N:'северный (N)',S:'южный (S)'};
+/* L0 — магниты */
+G(0,()=>CH('Как взаимодействуют полюса двух магнитов?','Одноимённые отталкиваются, разноимённые притягиваются',['Одноимённые притягиваются, разноимённые отталкиваются','Любые полюса притягиваются друг к другу','Северный притягивает всё, южный всё отталкивает'],{
+ short:'Одноимённые — отталкиваются, разноимённые — притягиваются.',explain:'Правило: N и N (или S и S) <b>отталкиваются</b>; N и S <b>притягиваются</b>. Так же ведут себя и электрические заряды: одноимённые отталкиваются.',
+ explain2:'Проверь на компасе: поднеси к стрелке северный полюс магнита — к нему повернётся <b>южный</b> (синий) конец стрелки. «Противоположности притягиваются».'}),{rule:true});
+G(0,()=>{const vert=pick([0,1]);const a=pick(['N','S']),b=pick(['N','S']);// a: first pole of magnet 1 (left/top), b: first of magnet 2
+ const face1=other(a),face2=b;const att=face1!==face2;const ans=att?'притягиваются':'отталкиваются';
+ const pic=vert?SV(160,220,bar(60,8,40,90,a)+bar(60,122,40,90,b),'Два магнита',130):SV(320,70,bar(8,20,130,30,a)+bar(182,20,130,30,b),'Два магнита');
+ return CH('Как будут взаимодействовать магниты?',ans,['притягиваются','отталкиваются','не взаимодействуют'].filter(x=>x!==ans),{pic,
+  short:`Друг к другу обращены ${face1} и ${face2} — ${att?'разноимённые':'одноимённые'} полюса.`,
+  explain:`Смотри только на <b>соседние</b> концы: у первого магнита к второму обращён полюс <b>${face1}</b>, у второго — <b>${face2}</b>. ${att?'Полюса разноимённые → магниты <b>притягиваются</b>.':'Полюса одноимённые → магниты <b>отталкиваются</b>.'} Дальние полюсы действуют слабее, их можно не учитывать.`,
+  explain2:`Правило «противоположности притягиваются»: N–S тянутся друг к другу, N–N и S–S — расталкиваются. Здесь ${face1}–${face2}: ${ans}.`});});
+G(0,()=>{const k=R(2,4);const first=pick(['N','S']);const j=R(0,k-1);const side=pick(['left','right']);const ans=side==='left'?first:other(first);
+ const W=320,gap=12,len=(300-gap*(k-1))/k;let s='';for(let i=0;i<k;i++){const x=10+i*(len+gap);s+=bar(x,40,len,30,first,{noLab:true});}
+ s+=TX(160,24,`исходный магнит: слева ${first}, справа ${other(first)}`,{fs:12,wt:500});
+ const xq=10+j*(len+gap)+(side==='left'?10:len-10);s+=TX(xq,96,'?',{fs:18,c:'var(--accent-ink)'})+LN(xq,84,xq,72,{c:'var(--accent-ink)'});
+ const kus=['','','на две части','на три части','на четыре части'][k];
+ return CH(`Полосовой магнит разрезали поперёк ${kus}. Какой полюс будет у отмеченного «?» ${side==='left'?'левого':'правого'} конца ${j+1}-го куска (считая слева)?`,POLE[ans],[POLE[other(ans)],'никакого: полюса только у концов исходного магнита'],{pic:SV(W,104,s,'Разрезанный магнит'),
+  short:`Каждый кусок — целый магнит, ориентированный как исходный: слева ${first}, справа ${other(first)}.`,
+  explain:`Отдельный полюс получить нельзя: <b>каждый кусок</b> становится полноценным магнитом с двумя полюсами, расположенными так же, как у исходного — слева <b>${first}</b>, справа <b>${other(first)}</b>. У ${side==='left'?'левого':'правого'} конца куска — <b>${POLE[ans]}</b>.`,
+  explain2:'Представь, что магнит состоит из множества крошечных магнитиков-стрелочек, выстроенных в одну сторону. Разрезал — в каждом куске стрелочки смотрят туда же, и на его концах снова N и S.'});},{rule:true});
+G(0,()=>{const good=pick(['железный гвоздь','стальная скрепка','кусочек никеля','стальная иголка']);const bad=sample(['медная проволока','алюминиевая ложка','золотое кольцо','стеклянный шарик','пластиковая линейка','деревянный карандаш','серебряная цепочка'],3);
+ return CH('Что из этого <b>притянется</b> к магниту?',good,bad,{short:`${good[0].toUpperCase()+good.slice(1)} — из ферромагнетика.`,
+  explain:`Магнит сильно притягивает только <b>железо, сталь, никель, кобальт</b>. ${good[0].toUpperCase()+good.slice(1)} — подходит. ${bad.join(', ')} — практически не притягиваются (даже если это металл, как медь, алюминий, золото, серебро).`,
+  explain2:'Лайфхак: чтобы проверить, стальная ли кастрюля для индукционной плиты, приложи магнит. Прилип — сталь. Не прилип — алюминий или медь.'});});
+G(0,()=>{const p=pick(['N','S']);const ask=pick(['near','far']);const near=other(p);const ans=ask==='near'?near:p;
+ const pic=SV(320,80,bar(10,25,130,30,'S'===p?'N':'S')+`<rect x="142" y="34" width="150" height="12" rx="2" fill="var(--muted)" fill-opacity="0.6" stroke="var(--fig)" stroke-width="1.4"/><polygon points="292,30 312,40 292,50" fill="var(--muted)" fill-opacity="0.6" stroke="var(--fig)" stroke-width="1.4"/>`+TX(ask==='near'?152:300,74,'?',{fs:18,c:'var(--accent-ink)'}),'Магнит и гвоздь');
+ return CH(`Железный гвоздь касается полюса <b>${p}</b> магнита и намагнитился. Какой полюс у ${ask==='near'?'<b>ближнего</b> к магниту конца гвоздя':'<b>дальнего</b> (острого) конца гвоздя'}?`,POLE[ans],[POLE[other(ans)],'у гвоздя полюсов нет'],{pic,
+  short:`Ближний конец — ${near} (притягивается к ${p}), дальний — ${p}.`,
+  explain:`Гвоздь в поле магнита сам становится магнитом. Он <b>притягивается</b>, значит к полюсу ${p} обращён <b>разноимённый</b> полюс: ближний конец — <b>${near}</b>, дальний — <b>${p}</b>. Спрошен ${ask==='near'?'ближний':'дальний'}: ${POLE[ans]}.`,
+  explain2:`Поэтому к острию гвоздя можно подвесить второй гвоздь — он тоже намагнитится (к ${p} острия прилипнет ${near} второго гвоздя). Так получаются цепочки из скрепок.`});});
+
+/* L1 — поле и линии */
+G(1,()=>CH('Как направлены линии магнитного поля <b>снаружи</b> полосового магнита?','Выходят из северного полюса и входят в южный',['Выходят из южного полюса и входят в северный','Идут от середины магнита к полюсам','У линий нет направления'],{
+ short:'Снаружи: из N в S.',explain:'По договорённости линии поля снаружи магнита <b>выходят из N и входят в S</b>, а внутри магнита идут от S к N — линии замкнуты. Направление линии в точке — это направление, куда повернётся северный конец стрелки компаса.',
+ explain2:'Запоминалка: N — «начало» линий снаружи (выходят), S — «стоп» (входят).'}),{rule:true});
+G(1,()=>CH('Куда показывает <b>северный</b> конец стрелки компаса, помещённой в магнитное поле?','По направлению линии поля в этой точке (по касательной к ней)',['Против направления линии поля','Перпендикулярно линиям поля','Всегда на географический север, магнит на стрелку не влияет'],{
+ short:'Стрелка ложится вдоль линии, N — по направлению поля.',explain:'Стрелка — маленький магнит. Поле разворачивает её <b>вдоль линии</b>, причём северный конец показывает туда, куда направлена линия. Именно так и определяют направление линий поля.',
+ explain2:'Цепочка опилок — это тоже «маленькие стрелочки», выстроенные вдоль линий. Компас показывает ещё и направление: куда смотрит его N.'}),{rule:true});
+G(1,()=>{const first=pick(['N','S']);const pos=pick([[285,100,'справа от магнита на его оси'],[35,100,'слева от магнита на его оси'],[160,30,'над серединой магнита'],[160,170,'под серединой магнита']]);
+ const P=magPoles(first);const [bx,by]=Bf(P,pos[0],pos[1]);const k=Math.abs(bx)>Math.abs(by)?(bx>0?'+x':'-x'):(by>0?'-y':'+y');
+ const keys=shuffle(PLANE);const pic=SV(320,200,magPic(first,{arrows:false,extra:`<circle cx="${pos[0]}" cy="${pos[1]}" r="17" fill="var(--card)" stroke="var(--fig)" stroke-width="1.5"/>`+TX(pos[0],pos[1]+6,'?',{fs:16,c:'var(--accent-ink)'})}),'Магнит и место компаса');
+ const nearN=(first==='N')===(pos[0]<160);
+ return {type:'choice',pics:true,q:`Компас поставили ${pos[2]}. Как установится его стрелка? (Красный конец — северный.)`,pic,opts:keys.map(needleOpt),ans:keys.indexOf(k),
+  short:`Поле здесь направлено ${DIR[k]}.`,
+  explain:`Снаружи магнита линии идут <b>из N в S</b>. ${pos[1]===100?`Точка на оси рядом с полюсом <b>${nearN?'N':'S'}</b>: ${nearN?'линии выходят из N и уходят от магнита':'линии приходят к магниту и входят в S'} → поле направлено <b>${DIR[k]}</b>.`:`Над (под) серединой линии идут параллельно магниту от N к S, то есть <b>${DIR[k]}</b>.`} Северный (красный) конец стрелки показывает по линии: ${DIR[k]}.`,
+  explain2:`Подумай через притяжение: северный конец стрелки отталкивается от N магнита и тянется к S. ${pos[1]===100?(nearN?'Рядом полюс N — красный конец стрелки отворачивается от магнита.':'Рядом полюс S — красный конец тянется к нему.'):`Посередине красный конец тянется к S магнита (он ${first==='N'?'справа':'слева'}), а синий — к N.`}`,
+  explain3:`Рисунок с линиями и правильной стрелкой:<div class="fig">${SV(320,200,magPic(first,{extra:needle(pos[0],pos[1],...SDIR[k],14)}),'Решение')}</div>`};});
+G(1,()=>{const first=pick(['N','S']);const pts=[[160+MG.L+16,100],[160,40],[290,180]];const P=magPoles(first);const mags=pts.map(p=>Math.hypot(...Bf(P,p[0],p[1])));
+ const labs=shuffle(['A','B','C']);let s='';pts.forEach((p,i)=>{s+=`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="var(--bad)"/>`+TX(p[0]+(i===0?0:12),p[1]+(i===0?-8:5)-(i===0?0:0),labs[i],{fs:15,c:'var(--bad)',a:i===0?'middle':'start'});});
+ const best=labs[mags.indexOf(Math.max(...mags))];
+ return CH('В какой из точек A, B, C магнитное поле <b>сильнее</b>?',best,['A','B','C','везде одинаково'].filter(x=>x!==best),{pic:SV(320,200,magPic(first,{extra:s}),'Магнит и три точки'),
+  short:`У полюса линии гуще — поле сильнее в точке ${best}.`,
+  explain:`Сила поля видна по <b>густоте линий</b>: чем гуще, тем сильнее. Линии сгущаются у полюсов магнита. Точка <b>${best}</b> — прямо у полюса, там поле сильнее всего. Чем дальше от магнита, тем линии реже и поле слабее.`,
+  explain2:'Попробуй руками: скрепка «прыгает» к полюсу магнита издалека, а к середине магнита — неохотно. Магнит сильнее всего у полюсов.'});});
+G(1,()=>{const att=pick([true,false]);const f1=pick(['N','S']);const f2=att?f1:other(f1);// left magnet first=f1 → right end other(f1); right magnet first=f2
+ const ans=att?'разноимённые (N и S)':'одноимённые (N и N или S и S)';
+ return CH('Опилки показали такую картину линий между двумя магнитами (полюса не подписаны). Какие полюса обращены друг к другу?',ans,['разноимённые (N и S)','одноимённые (N и N или S и S)','по картине линий это определить нельзя'].filter(x=>x!==ans),{pic:SV(320,200,twoMag(f1,f2,{arrows:false,grey:true,noLab:true}),'Картина линий',300),
+  short:att?'Линии переходят от магнита к магниту — разноимённые.':'Линии «отворачиваются», посередине пустое место — одноимённые.',
+  explain:att?'Линии идут <b>из одного магнита прямо в другой</b> через промежуток — значит, они выходят из N одного магнита и входят в S другого: полюса <b>разноимённые</b>, магниты притягиваются.':'Линии из промежутка <b>расходятся в стороны</b>, а посередине между магнитами есть точка, где поля нет (линии туда не заходят). Так бывает, когда полюса <b>одноимённые</b>: линии одного не могут войти в другой.',
+  explain2:'Опилки не показывают, где N, а где S (направления у них нет), но показывают, «дружат» ли полюса: линии-мостики между магнитами — притяжение, линии-«ёжик» в разные стороны — отталкивание.'});});
+
+/* L2 — Земля */
+G(2,()=>CH('Какой магнитный полюс Земли находится около её <b>северного географического</b> полюса?','Южный магнитный (S)',['Северный магнитный (N)','Никакой: магнитные полюса Земли — на экваторе','Магнитный и географический полюсы точно совпадают, и он северный'],{
+ short:'На севере — магнитный S.',explain:'Северный конец стрелки компаса показывает на север. Разноимённые полюса притягиваются → на севере находится <b>южный магнитный полюс</b> Земли. И он не совпадает с географическим точно.',
+ explain2:'Если бы на севере был магнитный N, он бы <b>отталкивал</b> северный конец стрелки, и компас показывал бы красным концом на юг.'}),{rule:true});
+G(2,()=>CH('🧭 Почему северный конец стрелки компаса показывает на север?','Земля — магнит, и на севере находится её южный магнитный полюс, который притягивает северный конец стрелки',['Северный конец стрелки тяжелее и ориентируется по вращению Земли','Его притягивает Полярная звезда','Северный конец намагничен сильнее, чем южный'],{
+ short:'Поле Земли: на севере — магнитный S.',explain:'Стрелка — маленький магнит, а Земля — большой. Около северного географического полюса находится <b>южный магнитный</b> полюс Земли. Разноимённые полюса притягиваются — северный конец стрелки разворачивается к нему.',
+ explain2:'Вдали от железа стрелка ложится вдоль линий поля Земли. Эти линии идут с юга на север (из N Земли, который на юге, в S, который на севере).'}));
+G(2,()=>CH('🌌 Почему полярные сияния видны в основном близко к полюсам?','Магнитное поле Земли направляет заряженные частицы солнечного ветра вдоль линий поля к полюсам, и там они заставляют светиться воздух',['У полюсов холодно, и лёд в атмосфере светится','Полюса ближе всего к Солнцу','У полюсов облака отражают свет Луны'],{
+ short:'Частицы солнечного ветра «скатываются» по линиям поля к полюсам.',explain:'Солнце выбрасывает поток заряженных частиц. Магнитное поле действует на движущиеся заряды и отклоняет их, частицы движутся по спиралям <b>вдоль линий поля</b>. Линии сходятся к магнитным полюсам — туда частицы и попадают, врезаются в атомы воздуха, и те светятся.',
+ explain2:'Магнитное поле работает как щит: большинство частиц оно отбрасывает, а «прорываются» они только там, где линии уходят в землю, — у полюсов.'}));
+G(2,()=>{const sc=pick([['🏴‍☠️ Пират отсчитывал шаги к кладу по компасу, держа его у огромного железного якоря. Почему клад не нашли?','Железный якорь намагнитился в поле Земли и исказил поле рядом с компасом — стрелка показывала не на север'],['✈️ Почему магнитный компас в самолёте ставят подальше от стальных деталей и проводов с током?','Сталь и токи создают своё магнитное поле, которое складывается с полем Земли и сбивает стрелку']]);
+ return CH(sc[0],sc[1],['Железо экранирует солнечный свет, а компас работает от света','Компас вообще не работает в движении','Стрелка компаса — из меди, и железо её нагревает'],{
+  short:'Рядом с железом и токами компас врёт.',explain:'Компас показывает направление <b>суммарного</b> магнитного поля в точке. Рядом с железом (оно намагничивается) или с проводом с током это поле уже не совпадает с полем Земли — стрелка отклоняется.',
+  explain2:'Поднеси телефон к компасу — стрелка дёрнется: в динамике телефона есть магнит. Поле Земли слабое (около 0,00005 Тл), его легко «перебить».'});});
+
+/* L3 — Эрстед и прямой ток */
+G(3,()=>CH('Что доказал опыт Эрстеда (1820)?','Вокруг проводника с током существует магнитное поле',['Магнит создаёт в проводе электрический ток','Ток нагревает провод','Стрелка компаса проводит электрический ток'],{
+ short:'Ток создаёт магнитное поле.',explain:'Эрстед заметил: когда по проводу идёт ток, стоящая рядом стрелка компаса поворачивается, а при смене направления тока — поворачивается в другую сторону. Значит, <b>ток создаёт магнитное поле</b>.',
+ explain2:'Никакого магнита рядом нет — а стрелка крутится. Значит, магнитное поле делает сам ток. Это открытие связало электричество и магнетизм.'}),{rule:true});
+G(3,()=>CH('Как звучит правило буравчика (правой руки) для <b>прямого</b> проводника с током?','Большой палец правой руки — по току, согнутые четыре пальца покажут направление линий магнитного поля',['Большой палец левой руки — по току, согнутые пальцы покажут линии поля','Четыре пальца правой руки — по току, большой палец покажет направление линий поля','Линии поля прямого тока направлены вдоль провода по току'],{
+ short:'Большой палец — ток, пальцы — линии.',explain:'Для <b>прямого</b> провода: обхвати его правой рукой, большой палец — <b>по току</b>, четыре согнутых пальца показывают, куда «закручены» <b>линии поля</b> (окружности вокруг провода). Вариант «пальцы по току — большой палец на поле» — это правило для <b>катушки</b>.',
+ explain2:'Штопор (буравчик): вкручиваешь его по направлению тока — ручка вращается по линиям поля.'}),{rule:true});
+G(3,()=>{const s=pick([1,-1]);const ccw=s>0;const ans=ccw?'против часовой стрелки':'по часовой стрелке';
+ return CH(`Ток в проводе направлен ${s>0?'<b>к нам</b> (⊙)':'<b>от нас</b> (⊗)'}. Как направлены линии его магнитного поля (если смотреть на рисунок)?`,ans,['по часовой стрелке','против часовой стрелки','вдоль провода, по току'].filter(x=>x!==ans),{pic:SV(150,140,ring(75,70,34,null,{dash:1})+wire(75,70,s),'Провод в разрезе',140),
+  short:`${s>0?'⊙':'⊗'} → ${ans}.`,explain:`Правая рука: большой палец ${s>0?'на нас (из листа)':'от нас (в лист)'}. Четыре пальца загибаются <b>${ans}</b> — так и идут линии поля.${s>0?' Проверка через вектор: точка справа от провода → поле там направлено вверх.':' Проверка: в точке справа от провода поле направлено вниз.'}`,
+  explain2:'Запоминалка: ⊙ — к нам — <b>против</b> часовой; ⊗ — от нас — <b>по</b> часовой (как закручивается шуруп, уходящий от тебя в стену: ты вращаешь отвёртку по часовой).',explain3:`<div class="fig">${figWire(s)}</div>`});});
+G(3,()=>{const ccw=pick([true,false]);const ans=ccw?'к нам (⊙)':'от нас (⊗)';
+ return CH('Линии магнитного поля провода направлены так, как на рисунке. Куда идёт ток в проводе?',ans,['к нам (⊙)','от нас (⊗)','по линиям поля, по кругу'].filter(x=>x!==ans),{pic:SV(150,140,ring(75,70,34,ccw)+ring(75,70,54,ccw,{dash:1})+wire(75,70,0),'Линии поля вокруг провода',140),
+  short:`Линии ${ccw?'против':'по'} часовой → ток ${ans}.`,
+  explain:`Согни пальцы правой руки по линиям поля (${ccw?'против часовой':'по часовой'} стрелки) — отставленный большой палец покажет ток: <b>${ans}</b>.`,
+  explain2:`Буравчик: вращаем ручку ${ccw?'против часовой — он выкручивается на нас':'по часовой — он вкручивается от нас, в лист'}. Ток — туда, куда движется буравчик.`});});
+G(3,()=>{const s=pick([1,-1]);const pos=pick([['над','+y',75,18],['под','-y',75,122],['справа от','+x',127,70],['слева от','-x',23,70]]);
+ const I=[0,0,s];const B=cross(I,VEC[pos[1]]);const k=vkey(B);const keys=shuffle(PLANE);
+ const pic=SV(150,140,ring(75,70,30,null,{dash:1})+wire(75,70,s)+`<circle cx="${pos[2]}" cy="${pos[3]}" r="14" fill="var(--card)" stroke="var(--fig)" stroke-width="1.4"/>`+TX(pos[2],pos[3]+5,'?',{fs:14,c:'var(--accent-ink)'}),'Провод и компас',150);
+ return {type:'choice',pics:true,q:`По проводу идёт ток ${s>0?'к нам ⊙':'от нас ⊗'}. Как установится стрелка компаса, стоящего ${pos[0]} проводом? (Поле Земли не учитываем, красный конец — северный.)`,pic,opts:keys.map(needleOpt),ans:keys.indexOf(k),
+  short:`Линии ${s>0?'против':'по'} часовой → ${pos[0]} проводом поле ${DIR[k]}.`,
+  explain:`1) Правая рука: ток ${s>0?'к нам':'от нас'} → линии поля идут <b>${s>0?'против':'по'} часовой</b> стрелке.<br>2) Стрелка ложится <b>по касательной</b> к окружности. ${pos[0][0].toUpperCase()+pos[0].slice(1)} проводом при движении ${s>0?'против':'по'} часовой мы идём <b>${DIR[k]}</b>.<br>3) Северный (красный) конец — ${DIR[k]}.`,
+  explain2:`Нарисуй окружность вокруг провода и стрелки на ней (${s>0?'против':'по'} часовой). Поставь палец в точку ${pos[0]} проводом и «прокатись» по окружности — палец поедет ${DIR[k]}.<div class="fig">${figWire(s)}</div>`};});
+G(3,()=>{const k=pick(PLANE);const side=pick(PLANE.filter(x=>x!==k&&x!==OPP[k]));const B=cross(VEC[k],VEC[side]);const bk=vkey(B);
+ const [sx,sy]=SDIR[side];const px=160+sx*80,py=94+sy*60;
+ const ans=DIR[bk];return CH(`Ток идёт по длинному проводу, как показано стрелкой. Куда направлено магнитное поле этого тока в точке A?`,ans,[DIR[OPP[bk]],'вдоль провода, по току','поля в точке A нет'],{pic:SV(320,190,rodPic(k)+`<circle cx="${px}" cy="${py}" r="4.5" fill="var(--accent-ink)"/>`+TX(px+12,py+5,'A',{fs:15,c:'var(--accent-ink)',a:'start'}),'Провод в плоскости листа'),
+  short:`Точка A ${DIR[side]} от провода → поле ${ans}.`,
+  explain:`Правая рука: большой палец — по току (${DIR[k]}). Четыре пальца обхватывают провод: с одной стороны они уходят в лист, с другой — выходят из листа. В точке A (она ${DIR[side]} от провода) пальцы направлены <b>${ans}</b>.`,
+  explain2:`Посмотри на провод «с торца», со стороны, куда течёт ток: тогда ток идёт от тебя (⊗), и линии — по часовой стрелке. Повернув картинку обратно в плоскость листа, получаем: в точке A поле ${ans}, а по другую сторону провода — наоборот.`});});
+
+/* L4 — катушка, электромагнит */
+G(4,()=>CH('Правило правой руки для <b>катушки</b>: обхвати катушку правой рукой так, чтобы четыре пальца шли по току в витках. Что покажет отставленный большой палец?','Северный полюс катушки (направление линий поля внутри неё)',['Южный полюс катушки','Направление тока в подводящих проводах','Направление силы, действующей на катушку'],{
+ short:'Большой палец — на N катушки.',explain:'Для катушки (и одного витка) роли пальцев меняются по сравнению с прямым проводом: <b>четыре пальца — по току в витках</b>, <b>большой палец — на северный полюс</b>. Внутри катушки линии поля идут от S к N.',
+ explain2:'Запомни через виток «в лицо»: ток против часовой — к тебе обращён N. Проверь правой рукой: пальцы против часовой — большой палец смотрит на тебя.'}),{rule:true});
+G(4,()=>CH('Какое действие <b>НЕ</b> усилит электромагнит?','Заменить железный сердечник медным',['Увеличить силу тока в обмотке','Намотать больше витков','Вставить в катушку железный сердечник'],{
+ short:'Медь не намагничивается — поле не усилит.',explain:'Магнитное действие электромагнита растёт с <b>силой тока</b>, с <b>числом витков</b> и при наличии <b>железного сердечника</b> (железо намагничивается и добавляет своё поле). Медь — не ферромагнетик, медный сердечник поля почти не меняет, а по сравнению с железным — сильно ослабит.',
+ explain2:'Железо внутри катушки — как «усилитель»: его крошечные магнитики выстраиваются по полю катушки и складываются с ним.'}),{rule:true});
+G(4,()=>{const up=pick([true,false]);const nEnd=coilN(up);const ans=nEnd==='left'?'левый конец — N, правый — S':'правый конец — N, левый — S';
+ return CH('Красные стрелки показывают направление тока на <b>передней</b> (видимой) стороне витков. Где у катушки северный полюс?',ans,['левый конец — N, правый — S','правый конец — N, левый — S','у катушки без сердечника полюсов нет'].filter(x=>x!==ans),{pic:SV(320,110,coil(100,220,55,up)+TX(70,60,'?',{fs:18,c:'var(--accent-ink)'})+TX(250,60,'?',{fs:18,c:'var(--accent-ink)'}),'Катушка с током'),
+  short:`Пальцы по току → большой палец ${nEnd==='left'?'влево':'вправо'}: ${ans.split(',')[0]}.`,
+  explain:`Правая рука: четыре пальца — по току в витках. На передней стороне ток идёт ${up?'<b>вверх</b>':'<b>вниз</b>'}. Положи ладонь на переднюю сторону катушки, пальцы ${up?'вверх':'вниз'} — большой палец отставлен <b>${nEnd==='left'?'влево':'вправо'}</b>. Там северный полюс: <b>${ans}</b>.`,
+  explain2:`Посмотри на катушку с ${nEnd==='left'?'левого':'правого'} торца: ток в витках там идёт <b>против часовой стрелки</b> — а виток, у которого ток против часовой, обращён к тебе северным полюсом.`});});
+G(4,()=>{const ccw=pick([true,false]);const ans=ccw?'северный (N)':'южный (S)';
+ return CH('Ток в витке идёт так, как показано. Какой полюс витка обращён <b>к нам</b>?',ans,['северный (N)','южный (S)','никакой: у одного витка нет полюсов'].filter(x=>x!==ans),{pic:loopPic(ccw),
+  short:`Ток ${ccw?'против':'по'} часовой → к нам ${ccw?'N':'S'}.`,
+  explain:`Правая рука: четыре пальца по току (${ccw?'против часовой':'по часовой'} стрелки) — большой палец ${ccw?'смотрит <b>на нас</b>':'смотрит <b>от нас</b>'}. Большой палец показывает на N, значит к нам обращён <b>${ans}</b>.`,
+  explain2:'Запоминалка с буквами: если обвести букву <b>N</b> её концами-стрелками, получится движение против часовой, а у <b>S</b> — по часовой. Ток против часовой — видим N, по часовой — S.'});});
+G(4,()=>{const u1=pick([true,false]),u2=pick([true,false]);const n1=coilN(u1),n2=coilN(u2);const face1=n1==='right'?'N':'S',face2=n2==='left'?'N':'S';const att=face1!==face2;const ans=att?'притягиваются':'отталкиваются';
+ return CH('Две катушки с током стоят рядом на одной оси (стрелки — ток на передней стороне витков). Как они взаимодействуют?',ans,['притягиваются','отталкиваются','не взаимодействуют'].filter(x=>x!==ans),{pic:SV(320,100,coil(30,130,50,u1,{n:5,h:44})+coil(190,290,50,u2,{n:5,h:44}),'Две катушки'),
+  short:`Обращены друг к другу ${face1} и ${face2} → ${ans}.`,
+  explain:`Найдём полюсы правой рукой. Левая катушка: ток спереди ${u1?'вверх':'вниз'} → N ${n1==='left'?'слева':'справа'}, к соседке обращён <b>${face1}</b>. Правая катушка: ток спереди ${u2?'вверх':'вниз'} → N ${n2==='left'?'слева':'справа'}, к соседке обращён <b>${face2}</b>. ${att?'Разноимённые → притягиваются.':'Одноимённые → отталкиваются.'}`,
+  explain2:`Есть короткий путь: если токи в соседних витках катушек идут <b>в одну сторону</b>, катушки притягиваются (как параллельные токи), если в разные — отталкиваются. Здесь токи ${u1===u2?'в одну сторону':'в разные стороны'} → ${ans}.`});});
+G(4,()=>{const up=pick([true,false]);const side=pick(['right','left']);const nEnd=coilN(up);// field outside on axis points away from N
+ const k=side===nEnd?(side==='right'?'+x':'-x'):(side==='right'?'-x':'+x');const keys=shuffle(PLANE);const cx=side==='right'?285:35;
+ return {type:'choice',pics:true,q:`Компас стоит на оси катушки ${side==='right'?'справа':'слева'} от неё. Как установится стрелка? (Стрелки на витках — ток на передней стороне.)`,pic:SV(320,110,coil(100,220,55,up)+`<circle cx="${cx}" cy="55" r="16" fill="var(--card)" stroke="var(--fig)" stroke-width="1.4"/>`+TX(cx,61,'?',{fs:16,c:'var(--accent-ink)'}),'Катушка и компас'),opts:keys.map(needleOpt),ans:keys.indexOf(k),
+  short:`N катушки ${nEnd==='left'?'слева':'справа'}; ${side===nEnd?'стрелка смотрит от катушки':'стрелка смотрит на катушку'}.`,
+  explain:`1) Правая рука: ток спереди ${up?'вверх':'вниз'} → северный полюс катушки <b>${nEnd==='left'?'слева':'справа'}</b>.<br>2) Компас ${side===nEnd?'у полюса N: линии выходят из N — поле направлено <b>от катушки</b>':'у полюса S: линии входят в S — поле направлено <b>к катушке</b>'}.<br>3) Красный конец стрелки — ${DIR[k]}.`,
+  explain2:`Катушка с током = полосовой магнит. ${side===nEnd?'Северный конец стрелки отталкивается от N катушки.':'Северный конец стрелки притягивается к S катушки.'}`};});
+
+/* L5 — сила Ампера */
+G(5,()=>CH('Правило левой руки: линии поля входят в ладонь, четыре пальца направлены по току. Что покажет отогнутый большой палец?','Направление силы Ампера, действующей на проводник',['Направление линий магнитного поля','Направление тока','Северный полюс магнита'],{
+ short:'Большой палец левой руки — сила.',explain:'<b>Левая рука</b>: поле — <b>в ладонь</b>, четыре пальца — <b>по току</b>, большой палец (отогнут на 90°) — <b>сила</b>. Правая рука нужна, чтобы найти поле тока, а левая — силу, действующую на ток в поле.',
+ explain2:'Запоминалка «Сила — слева»: для силы — левая рука. Буква F (сила) — у большого пальца, как будто ты показываешь «класс!».'}),{rule:true});
+G(5,()=>CH('Когда сила Ампера, действующая на проводник с током в магнитном поле, равна <b>нулю</b>?','Когда проводник расположен вдоль линий магнитного поля',['Когда проводник перпендикулярен линиям поля','Когда ток очень большой','Никогда: на ток в поле всегда действует сила'],{
+ short:'Провод вдоль линий — силы нет.',explain:`Сила максимальна, когда провод <b>перпендикулярен</b> линиям поля: ${M('F = B·I·l')}. Если провод идёт <b>вдоль</b> линий, сила равна нулю (в правиле левой руки линии тогда «не входят в ладонь» — не получается поставить руку).`,
+ explain2:'Как ветер и парус: если парус развёрнут вдоль ветра, ветер его не толкает.'}),{rule:true});
+G(5,()=>{const orient=pick(['h','v']);const first=pick(['N','S']);const s=pick([1,-1]);const B=gapB(orient,first);const F=cross([0,0,s],B);const k=vkey(F);
+ const ans=DIR[k];return CH(`Провод с током ${s>0?'к нам ⊙':'от нас ⊗'} находится между полюсами магнита. Куда направлена сила Ампера?`,ans,PLANE.filter(x=>x!==k).map(x=>DIR[x]),{pic:SV(320,180,polesGap(orient,first)+wire(160,90,s,14),'Провод между полюсами'),
+  short:`Поле ${DIR[vkey(B)]}, ток ${s>0?'к нам':'от нас'} → сила ${ans}.`,
+  explain:`1) Поле между полюсами идёт <b>от N к S</b> — ${DIR[vkey(B)]}.<br>2) Левая рука: ладонь подставляем так, чтобы линии <b>входили в неё</b> (ладонь смотрит ${DIR[vkey(neg(B))]}), четыре пальца — ${s>0?'на нас':'от нас, в лист'}.<br>3) Большой палец показывает <b>${ans}</b>.<div class="box err"><b>Ловушка</b>Правая рука дала бы противоположный ответ — ${DIR[OPP[k]]}.</div>`,
+  explain2:`Другой способ — «сгущение линий». Ток ${s>0?'⊙ создаёт вокруг себя линии против часовой':'⊗ создаёт вокруг себя линии по часовой'}. С одной стороны провода они совпадают с полем магнита (поле там сильнее), с другой — направлены против (поле слабее). Провод выталкивается <b>туда, где поле слабее</b>: ${ans}.`});});
+G(5,()=>{const fs=pick([1,-1]);const k=pick(PLANE);const B=[0,0,fs];const F=cross(VEC[k],B);const fk=vkey(F);const ans=DIR[fk];
+ return CH(`Проводник с током находится в магнитном поле, линии которого направлены ${fs>0?'к нам ⊙':'от нас ⊗'}. Куда направлена сила Ампера?`,ans,PLANE.filter(x=>x!==fk).map(x=>DIR[x]),{pic:SV(320,200,fieldGrid(fs,24,22,300,180,skipRod(k))+rodPic(k)+fgLabel(fs),'Провод в поле'),
+  short:`Ток ${DIR[k]}, поле ${fs>0?'к нам':'от нас'} → сила ${ans}.`,
+  explain:`Левая рука: линии поля должны входить в ладонь — поле ${fs>0?'выходит из листа на нас, значит ладонь повёрнута <b>к листу</b> (тыльной стороной к тебе)':'уходит в лист, значит ладонь повёрнута <b>к тебе</b>'}. Четыре пальца — по току, ${DIR[k]}. Отогнутый большой палец показывает <b>${ans}</b>.`,
+  explain2:`Проверка «векторно» (для любознательных): ${M('F ∝ I × B')}. Ток ${DIR[k]}, поле ${fs>0?'к нам':'от нас'} — поверни направление тока на 90° ${fs>0?'по часовой':'против часовой'} стрелки: получится ${ans}. Это и есть направление силы.`});});
+G(5,()=>{const orient=pick(['h','v']);const first=pick(['N','S']);const B=gapB(orient,first);const fk=pick(orient==='h'?['+y','-y']:['+x','-x']);
+ const s=[1,-1].find(z=>vkey(cross([0,0,z],B))===fk);const ans=s>0?'к нам (⊙)':'от нас (⊗)';const [dx,dy]=SDIR[fk];
+ return CH('На провод между полюсами магнита действует сила F, показанная стрелкой. Куда направлен ток в проводе?',ans,['к нам (⊙)','от нас (⊗)','вдоль линий поля'].filter(x=>x!==ans),{pic:SV(320,180,polesGap(orient,first)+wire(160,90,0,14)+ARR(160+dx*18,90+dy*18,160+dx*58,90+dy*58,{c:'var(--bad)',sw:3,hs:12})+TX(160+dx*58+(dx?0:16),90+dy*58+(dy?(dy>0?16:-6):-10),'F',{c:'var(--bad)',fs:15}),'Сила на провод'),
+  short:`Ток ${ans}.`,
+  explain:`Левая рука: линии поля (${DIR[vkey(B)]}) входят в ладонь, большой палец ставим по силе (${DIR[fk]}). Тогда четыре пальца направлены <b>${s>0?'на нас':'от нас'}</b> — это и есть ток: ${ans}.`,
+  explain2:`Проверь обратно: ток ${s>0?'⊙':'⊗'}, поле ${DIR[vkey(B)]} → левая рука даёт силу ${DIR[fk]} ✅. Если бы ток шёл наоборот, сила была бы ${DIR[OPP[fk]]}.`});});
+G(5,()=>{const B=pick([0.1,0.2,0.4,0.5,0.8,1.2]),I=pick([2,3,4,5,10]),lc=pick([10,20,25,40,50]);const F=B*I*lc/100;
+ return NUMT(F,3,{q:`Прямой проводник длиной ${lc} см с током ${I} А расположен перпендикулярно линиям однородного магнитного поля с индукцией ${N(B)} Тл. Найди силу Ампера. Ответ — в ньютонах.`,hint:'F = B·I·l, длину переведи в метры.',
+  short:`F = ${N(B)} · ${I} · ${N(lc/100)} = ${N(rnd(F,4))} Н.`,
+  explain:`${M('F = B · I · l')}. Длина: ${lc} см = ${N(lc/100)} м.<br>${M(`F = ${N(B)} · ${I} · ${N(lc/100)} = ${N(rnd(F,4))} Н`)}.<div class="box err"><b>Ловушка</b>Подставить сантиметры: ${N(B)} · ${I} · ${lc} = ${N(rnd(B*I*lc,3))} — в 100 раз больше.</div>`,
+  explain2:`Сила пропорциональна каждой величине: 1 Тл · 1 А · 1 м = 1 Н. У нас ${N(B)} Тл, ${I} А и ${N(lc/100)} м — перемножаем: ${N(rnd(F,4))} Н.`});});
+G(5,()=>{const B=pick([0.2,0.25,0.4,0.5,1]),lc=pick([10,20,40,50]);const I=pick([1,2,2.5,4,5,8]);const F=B*I*lc/100;if(!(Math.abs(F*1000-Math.round(F*1000))<1e-9))return null;const ask=pick(['I','B']);
+ return NUMT(ask==='I'?I:B,3,{q:ask==='I'?`На проводник длиной ${lc} см, расположенный перпендикулярно линиям поля с индукцией ${N(B)} Тл, действует сила ${N(F)} Н. Какой ток в проводнике? Ответ — в амперах.`:`На проводник длиной ${lc} см с током ${N(I)} А, расположенный перпендикулярно линиям поля, действует сила ${N(F)} Н. Найди индукцию поля. Ответ — в теслах.`,
+  hint:'Из F = B·I·l вырази нужную величину.',short:ask==='I'?`I = F/(B·l) = ${N(F)} / (${N(B)} · ${N(lc/100)}) = ${N(I)} А.`:`B = F/(I·l) = ${N(F)} / (${N(I)} · ${N(lc/100)}) = ${N(B)} Тл.`,
+  explain:`${M('F = B·I·l')} → ${ask==='I'?M('I = F / (B·l)'):M('B = F / (I·l)')}. Длина ${lc} см = ${N(lc/100)} м.<br>${ask==='I'?M(`I = ${N(F)} / (${N(B)} · ${N(lc/100)}) = ${N(F)} / ${N(rnd(B*lc/100,4))} = ${N(I)} А`):M(`B = ${N(F)} / (${N(I)} · ${N(lc/100)}) = ${N(F)} / ${N(rnd(I*lc/100,4))} = ${N(B)} Тл`)}.`,
+  explain2:`Проверка подстановкой: ${N(B)} · ${N(I)} · ${N(lc/100)} = ${N(F)} Н ✅.`});});
+
+/* L6 — двигатель */
+G(6,()=>CH('Какое превращение энергии происходит в электродвигателе?','Электрическая энергия → механическая (вращение)',['Механическая → электрическая','Тепловая → электрическая','Световая → механическая'],{
+ short:'Двигатель: электричество → движение.',explain:'В двигателе ток в обмотке, находящейся в магнитном поле, испытывает силу Ампера, и ротор вращается: <b>электрическая энергия превращается в механическую</b> (и немного — в тепло). Обратное превращение (механическая → электрическая) делает <b>генератор</b>.',
+ explain2:'Дрон: берёт энергию из аккумулятора (электрическую) и крутит винты (механическая).'}),{rule:true});
+G(6,()=>CH('Зачем в электродвигателе постоянного тока нужен <b>коллектор</b> (полукольца со щётками)?','Каждые пол-оборота он меняет направление тока в рамке, чтобы она вращалась в одну сторону',['Он усиливает магнитное поле статора','Он охлаждает обмотку','Он превращает постоянный ток в тепло'],{
+ short:'Коллектор переключает ток каждые пол-оборота.',explain:'Когда рамка поворачивается на пол-оборота, её стороны меняются местами. Если не менять ток, силы начнут поворачивать рамку <b>обратно</b>, и она остановится. Коллектор в этот момент <b>переключает направление тока</b> — силы снова крутят рамку в ту же сторону.',
+ explain2:'Как качели: чтобы раскачивать дальше, толкать надо вовремя и в нужную сторону. Коллектор «толкает» в правильный момент.'}),{rule:true});
+G(6,()=>{const first=pick(['N','S']);const sL=pick([1,-1]);const B=gapB('h',first);const FL=cross([0,0,sL],B),FR=cross([0,0,-sL],B);// left side at (-1,0), right at (1,0)
+ const tz=(-1)*FL[1]-0*FL[0]+(1)*FR[1];const ans=tz>0?'против часовой стрелки':'по часовой стрелке';
+ return CH('Рамка с током находится между полюсами магнита (показан её разрез: две стороны рамки и ось посередине). Как она начнёт поворачиваться?',ans,['по часовой стрелке','против часовой стрелки','не повернётся: силы уравновешены'].filter(x=>x!==ans),{pic:SV(320,180,polesGap('h',first)+LN(110,90,210,90,{dash:'5 4',sw:1.5})+`<circle cx="160" cy="90" r="3.5" fill="var(--fig)"/>`+wire(110,90,sL)+wire(210,90,-sL),'Рамка в поле'),
+  short:`Левая сторона — сила ${DIR[vkey(FL)]}, правая — ${DIR[vkey(FR)]} → ${ans}.`,
+  explain:`Поле — от N к S (${DIR[vkey(B)]}). Левая рука:<br>• левая сторона, ток ${sL>0?'⊙':'⊗'} → сила <b>${DIR[vkey(FL)]}</b>;<br>• правая сторона, ток ${sL>0?'⊗':'⊙'} → сила <b>${DIR[vkey(FR)]}</b>.<br>Левый край идёт ${DIR[vkey(FL)]}, правый — ${DIR[vkey(FR)]}: рамка поворачивается <b>${ans}</b>. Силы равны и противоположны, но приложены к разным сторонам — они создают вращение (пару сил), а не уравновешивают друг друга.`,
+  explain2:'Представь руль: одной рукой тянешь вверх, другой вниз — руль крутится, хотя «в сумме» ты его никуда не сдвигаешь. Так и рамка.'});});
+G(6,()=>{const sc=pick([['поменять местами провода, идущие к батарейке',1],['перевернуть магнит (поменять местами полюса)',1],['поменять и полюса магнита, и направление тока',0],['увеличить силу тока в 2 раза',0]]);const ans=sc[1]?'начнёт вращаться в обратную сторону':'будет вращаться в ту же сторону';
+ return CH(`Моторчик игрушечной машинки вращается по часовой стрелке. Что будет, если ${sc[0]}?`,ans,['начнёт вращаться в обратную сторону','будет вращаться в ту же сторону','остановится навсегда'].filter(x=>x!==ans),{
+  short:sc[1]?'Поменяли одно — сила развернулась.':sc[0].startsWith('увеличить')?'Сила выросла, направление прежнее.':'Две смены направления компенсируют друг друга.',
+  explain:`Направление силы Ампера зависит от направления <b>тока</b> и направления <b>поля</b>. Поменяешь одно — силы на сторонах рамки развернутся, и мотор закрутится обратно. Поменяешь оба — две «перемены» отменят друг друга. Сила тока влияет только на величину силы (скорость), но не на направление. Здесь: «${sc[0]}» → <b>${ans}</b>.`,
+  explain2:'Левая рука: переверни поле — ладонь развернётся, большой палец укажет обратно. Переверни ещё и ток — пальцы развернутся, и большой палец вернётся на место.'});});
+
+/* L7 — ★ */
+G(7,()=>CH('★ Два длинных параллельных провода, токи в них идут <b>в одну сторону</b>. Как провода взаимодействуют?','Притягиваются',['Отталкиваются','Не взаимодействуют','Поворачиваются перпендикулярно друг другу'],{
+ short:'Токи в одну сторону — притяжение.',explain:'Каждый провод находится в магнитном поле другого. Правой рукой находим поле первого провода в месте второго, левой — силу на второй провод. Получается: при <b>одинаковых</b> направлениях токов провода <b>притягиваются</b>, при противоположных — <b>отталкиваются</b>. (Именно этим опытом Ампера раньше определяли единицу силы тока — ампер.)',
+ explain2:'Не путай с зарядами! Одинаковые заряды отталкиваются, а одинаково направленные токи — притягиваются.'}),{star:true,rule:true});
+G(7,()=>{const s1=pick([1,-1]),s2=pick([1,-1]);// wire1 left at (-1,0), wire2 right (1,0); force on wire 2
+ const B1at2=cross([0,0,s1],[1,0,0]);const F2=cross([0,0,s2],B1at2);const att=F2[0]<0;const ans=att?'притягиваются':'отталкиваются';
+ return CH('★ Два длинных параллельных провода показаны в разрезе. Как они взаимодействуют?',ans,['притягиваются','отталкиваются','не взаимодействуют'].filter(x=>x!==ans),{pic:SV(320,110,wire(100,55,s1,14)+wire(220,55,s2,14)+TX(100,96,'1',{fs:14})+TX(220,96,'2',{fs:14}),'Два провода'),
+  short:`Токи ${s1===s2?'в одну сторону — притяжение':'в разные стороны — отталкивание'}.`,
+  explain:`1) Поле провода 1 в месте провода 2 (правая рука, ток ${s1>0?'⊙ → линии против часовой':'⊗ → линии по часовой'}): справа от провода 1 поле направлено <b>${DIR[vkey(B1at2)]}</b>.<br>2) Сила на провод 2 (левая рука, ток ${s2>0?'⊙':'⊗'}, поле ${DIR[vkey(B1at2)]}): <b>${DIR[vkey(F2)]}</b> — ${att?'к проводу 1':'от провода 1'}.<br>Провода <b>${ans}</b>.`,
+  explain2:`Правило: токи в одну сторону — притягиваются, в разные — отталкиваются. Здесь ${s1>0?'⊙':'⊗'} и ${s2>0?'⊙':'⊗'} — ${s1===s2?'одинаково':'противоположно'}.`});},{star:true});
+G(7,()=>{const s1=pick([1,-1]),s2=pick([1,-1]);const B=[0,1,2].map(i=>cross([0,0,s1],[1,0,0])[i]+cross([0,0,s2],[-1,0,0])[i]);const k=vkey(B);
+ const ans=k==='0'?'поле в точке P равно нулю':DIR[k];
+ return CH('★ По двум параллельным проводам текут одинаковые токи. Точка P — ровно посередине между ними. Куда направлено магнитное поле в точке P?',ans,['вверх','вниз','вправо','поле в точке P равно нулю'].filter(x=>x!==ans),{pic:SV(320,110,wire(70,55,s1,14)+wire(250,55,s2,14)+`<circle cx="160" cy="55" r="4" fill="var(--accent-ink)"/>`+TX(160,40,'P',{fs:15,c:'var(--accent-ink)'})+TX(70,96,'1',{fs:14})+TX(250,96,'2',{fs:14}),'Два провода и точка P'),
+  short:k==='0'?'Поля проводов в P равны и противоположны.':`Оба поля в P направлены ${DIR[k]}.`,
+  explain:`Поле в точке — сумма полей проводов.<br>• Провод 1 (${s1>0?'⊙':'⊗'}, P справа от него): поле <b>${DIR[vkey(cross([0,0,s1],[1,0,0]))]}</b>.<br>• Провод 2 (${s2>0?'⊙':'⊗'}, P слева от него): поле <b>${DIR[vkey(cross([0,0,s2],[-1,0,0]))]}</b>.<br>Расстояния и токи одинаковые → поля по величине равны. ${k==='0'?'Направлены противоположно — <b>гасят друг друга</b>, поле равно нулю.':`Направлены одинаково — <b>складываются</b>: поле ${DIR[k]}.`}`,
+  explain2:`Запомни: между проводами с токами <b>в одну сторону</b> поля гасятся (там ноль посередине), а между проводами с токами <b>в разные стороны</b> — удваиваются. Здесь токи ${s1===s2?'в одну сторону':'в разные стороны'}.`});},{star:true});
+G(7,()=>{const pt=pick([['электрон','e⁻',-1],['протон','p⁺',1]]);const fs=pick([1,-1]);const k=pick(PLANE);const F=cross(VEC[k],[0,0,fs]).map(x=>x*pt[2]);const fk=vkey(F);const ans=DIR[fk];const [dx,dy]=SDIR[k];
+ return CH(`★ ${pt[0][0].toUpperCase()+pt[0].slice(1)} влетает в магнитное поле (линии ${fs>0?'к нам ⊙':'от нас ⊗'}) со скоростью, показанной стрелкой. Куда направлена сила, действующая на него в этот момент?`,ans,PLANE.filter(x=>x!==fk).map(x=>DIR[x]),{pic:SV(320,200,fieldGrid(fs,24,22,300,180,(x,y)=>Math.hypot(x-160,y-100)<55)+`<circle cx="160" cy="100" r="9" fill="var(--hl)" stroke="var(--fig)" stroke-width="1.5"/>`+TX(160,104,pt[2]>0?'+':'−',{fs:13,wt:800})+ARR(160+dx*12,100+dy*12,160+dx*50,100+dy*50,{c:'var(--bad)',sw:2.5})+TX(160+dx*50+(dx?0:14),100+dy*50+(dy?(dy>0?14:-6):-8),'v',{c:'var(--bad)',fs:15})+fgLabel(fs),'Частица в магнитном поле'),
+  short:`Сила Лоренца: ${ans}.`,
+  explain:`Движущаяся заряженная частица — это маленький ток. Направление «тока» — по движению <b>положительного</b> заряда. ${pt[2]>0?'Протон положительный — пальцы левой руки направляем по скорости':'Электрон отрицательный — пальцы левой руки направляем <b>против</b> скорости'} (${DIR[pt[2]>0?k:OPP[k]]}). Линии поля (${fs>0?'к нам':'от нас'}) входят в ладонь. Большой палец: <b>${ans}</b>.`,
+  explain2:`Сначала найди силу так, будто частица положительная: ${DIR[vkey(cross(VEC[k],[0,0,fs]))]}. ${pt[2]<0?`Электрон отрицательный — разверни: ${ans}.`:'Протон положительный — так и оставляем.'} Именно так магнитное поле Земли закручивает частицы солнечного ветра, а в старых телевизорах магниты управляли электронным лучом.`});},{star:true});
+G(7,()=>CH('★ У тебя два одинаковых на вид стальных бруска. Один намагничен, другой — нет. Как узнать, какой из них магнит, <b>не используя ничего</b>, кроме самих брусков?','Прикоснуться концом одного бруска к середине другого: если притяжение сильное, магнит — тот, чьим концом касались',['Поднести концы друг к другу: тот, который притянулся, — магнит','Взвесить на руке: магнит тяжелее','Это невозможно без компаса'],{
+ short:'Середина магнита почти не притягивает.',explain:'Концы брусков притянутся друг к другу в любом случае (магнит притягивает железо, а железо — магнит), так что этот опыт ничего не даёт. Хитрость: у магнита <b>посередине</b> поле почти нулевое. Касаемся концом бруска A середины бруска B:<br>• сильно притягивается → A — магнит (его полюс притягивает железную середину B);<br>• почти не притягивается → магнит B (его середина «не работает», а A — просто железо).',
+ explain2:'Помнишь опыт с опилками? У магнита опилки собираются на концах, а середина почти голая. Значит, середина магнита сама почти ничего не притягивает.'}),{star:true});
+G(7,()=>CH('★ Мягкая металлическая пружина висит вертикально, её нижний конец чуть касается ртути в чашке. Через пружину и ртуть пропускают ток. Что будет происходить?','Пружина будет периодически сжиматься и разжиматься: витки с токами в одну сторону притягиваются, контакт с ртутью размыкается, ток пропадает, пружина опускается — и всё повторяется',['Пружина растянется и погрузится в ртуть','Ничего: в пружине все токи одинаковы, силы уравновешены','Пружина начнёт вращаться вокруг вертикальной оси'],{
+ short:'Витки притягиваются, цепь рвётся — колебания (спираль Роже).',explain:'Соседние витки пружины — это параллельные токи <b>одного направления</b>, они <b>притягиваются</b>. Пружина сжимается, её конец выходит из ртути — цепь размыкается, ток исчезает, силы пропадают, и пружина под действием тяжести опускается обратно, снова касаясь ртути. Цикл повторяется — пружина «прыгает». Этот опыт называется <b>спираль Роже</b>.',
+ explain2:'Похоже на электрический звонок: электромагнит притягивает молоточек, тот размыкает контакт, ток пропадает, молоточек отскакивает и снова замыкает цепь.'}),{star:true});
+G(7,()=>{const m=pick([5,10,20,40]),lc=pick([10,20,25,40,50]),B=pick([0.1,0.2,0.25,0.5]);const I=m/1000*10/(B*lc/100);if(I>40||Math.abs(I*100-Math.round(I*100))>1e-9)return null;
+ return NUMT(I,2,{q:`★ Горизонтальный проводник массой ${m} г и длиной ${lc} см подвешен на двух лёгких проводящих нитях в горизонтальном магнитном поле с индукцией ${N(B)} Тл, перпендикулярном проводнику. При какой силе тока натяжение нитей станет равным нулю? g = 10 Н/кг. Ответ — в амперах.`,
+  pic:SV(320,150,fieldGrid(-1,30,30,290,130,(x,y)=>y>70&&y<110||Math.abs(x-80)<10||Math.abs(x-240)<10)+LN(80,10,80,86,{sw:1.4})+LN(240,10,240,86,{sw:1.4})+`<rect x="60" y="86" width="200" height="12" rx="3" fill="var(--hl)" fill-opacity="0.6" stroke="var(--fig)" stroke-width="1.5"/>`+LN(40,10,280,10,{sw:3})+ARR(160,92,160,48,{c:'var(--bad)',sw:2.5})+TX(172,58,'F<tspan font-size="10">A</tspan>',{c:'var(--bad)',a:'start'})+ARR(200,98,200,142,{c:'var(--ok)',sw:2.5})+TX(212,140,'mg',{c:'var(--ok)',a:'start'}),'Проводник на нитях',300),
+  hint:'Нити не натянуты, когда сила Ампера уравновешивает силу тяжести: BIl = mg.',short:`I = mg/(Bl) = ${N(m/1000*10)} / (${N(B)} · ${N(lc/100)}) = ${N(I)} А.`,
+  explain:`Натяжение нитей ноль, когда сила Ампера направлена <b>вверх</b> и равна силе тяжести:<br>${M('B·I·l = m·g')} → ${M('I = m·g / (B·l)')}.<br>m = ${m} г = ${N(m/1000)} кг, l = ${lc} см = ${N(lc/100)} м.<br>${M(`I = ${N(m/1000)} · 10 / (${N(B)} · ${N(lc/100)}) = ${N(rnd(m/100,4))} / ${N(rnd(B*lc/100,4))} = ${N(I)} А`)}.<br>(Направление тока подбирается правилом левой руки так, чтобы сила была вверх: при поле «от нас», как на рисунке, — ток вправо.)`,
+  explain2:`Сила тяжести: ${N(m/1000)} кг · 10 = ${N(rnd(m/100,4))} Н. Каждый ампер даёт силу B·l = ${N(B)} · ${N(lc/100)} = ${N(rnd(B*lc/100,4))} Н. Сколько ампер нужно на ${N(rnd(m/100,4))} Н? ${N(rnd(m/100,4))} / ${N(rnd(B*lc/100,4))} = ${N(I)} А.`});},{star:true});
+G(7,()=>CH('★ Как установится стрелка компаса, которая может свободно поворачиваться <b>в любой плоскости</b> (и вверх-вниз), если её принести к северному магнитному полюсу Земли (в Арктику)?','Почти вертикально, северным концом вниз',['Горизонтально, северным концом на юг','Почти вертикально, северным концом вверх','Будет вращаться без остановки'],{
+ short:'Линии поля там уходят в землю почти вертикально.',explain:'Около северного географического полюса находится <b>южный магнитный</b> полюс Земли: линии поля там <b>входят в Землю</b>, почти вертикально вниз. Стрелка ложится вдоль линий: северным концом <b>вниз</b>. Горизонтальный компас там бесполезен: горизонтальная часть поля очень мала.',
+ explain2:'Вспомни рисунок поля Земли: у верхнего (северного) полюса линии ныряют внутрь планеты. Даже в Москве линии наклонены к горизонту примерно на 70°, поэтому у хороших компасов стрелку специально уравновешивают.'}),{star:true});
+
+/* ---------- interactive theory ---------- */
+function onTheory(root){
+  const w=root.querySelector('#w-compass');
+  if(w){w.innerHTML=`<b>Компас вокруг магнита</b><label>Положение компаса: <output id="cmo"></output><input type="range" id="cm" min="0" max="355" step="5" value="30"></label>
+    <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin:4px 0"><button class="btn ghost" id="cmf">Перевернуть магнит</button></div><div id="cmp" class="fig"></div><div id="cmt" style="text-align:center"></div>`;
+    let first='N';const g=id=>w.querySelector('#'+id);const base={};
+    const u=()=>{const a=+g('cm').value*Math.PI/180;g('cmo').textContent=g('cm').value+'°';const x=160+125*Math.cos(a),y=100-78*Math.sin(a);
+      if(!base[first])base[first]=magPic(first);const [bx,by]=Bf(magPoles(first),x,y);
+      g('cmp').innerHTML=SV(320,200,base[first]+needle(x,y,bx,by,14),'Компас вокруг магнита');
+      g('cmt').innerHTML=`Красный (северный) конец стрелки смотрит <span class="out">по линии поля</span>: от N, к S.`;};
+    g('cm').oninput=u;g('cmf').onclick=()=>{first=other(first);u();};u();}
+  const v=root.querySelector('#w-amp');
+  if(v){v.innerHTML=`<b>Сила Ампера: поиграй с током и полюсами</b>
+    <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0"><button class="btn" id="ai">Ток: к нам ⊙</button><button class="btn ghost" id="ap">Поменять полюса</button></div>
+    <label>Сила тока I = <output id="aio"></output><input type="range" id="aI" min="0" max="5" step="0.5" value="2"></label><div id="apic" class="fig"></div><div id="atx" style="text-align:center"></div>`;
+    let s=1,first='N';const g=id=>v.querySelector('#'+id);
+    const u=()=>{const I=+g('aI').value;g('aio').textContent=N(I)+' А';const B=gapB('h',first);const F=cross([0,0,s],B);const k=vkey(F);const L=I*14;const [dx,dy]=k==='+y'?[0,-1]:[0,1];
+      g('apic').innerHTML=SV(320,180,polesGap('h',first)+wire(160,90,I?s:0,14)+(I>0?ARR(160,90+dy*16,160,90+dy*(16+L),{c:'var(--bad)',sw:3,hs:11})+TX(176,90+dy*(16+L*0.6),'F',{c:'var(--bad)',a:'start'}):''),'Сила Ампера');
+      g('ai').textContent=s>0?'Ток: к нам ⊙':'Ток: от нас ⊗';
+      g('atx').innerHTML=I>0?`Поле: <span class="out">${DIR[vkey(B)]}</span> · ток: <span class="out">${s>0?'к нам':'от нас'}</span> → сила: <span class="out">${DIR[k]}</span><br><span class="small">Сила пропорциональна току: F = B·I·l</span>`:'Тока нет — силы нет.';};
+    g('ai').onclick=()=>{s=-s;u();};g('ap').onclick=()=>{first=other(first);u();};g('aI').oninput=u;u();}
+}
+
+window.TOPIC={id:'p8_magnet',title:'Магнитные явления',subtitle:'Физика · 8 класс',
+intro:`<p>Постоянные магниты и их поле, компас и магнитное поле Земли, опыт Эрстеда, правило буравчика, катушки и электромагниты, сила Ампера и правило левой руки, электродвигатель. В конце — олимпиадные качественные задачи: параллельные токи, сила Лоренца, хитрые опыты с магнитами.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Постоянные магниты','Магнитное поле и его линии','Магнитное поле Земли','Опыт Эрстеда, поле прямого тока','Катушка с током, электромагнит','Сила Ампера, правило левой руки','Электродвигатель','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

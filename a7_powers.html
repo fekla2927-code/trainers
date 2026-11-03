@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Степень с натуральным показателем — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural,gcd}=H;
+const SUPMAP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁺':'+','⁻':'−','ᵐ':'m','ⁿ':'n','ˣ':'x','ᵏ':'k'};
+const SUPRE=/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻ᵐⁿˣᵏ]+/g;
+function sx(s){if(typeof s!=='string')return s;return s.split(/(<svg[\s\S]*?<\/svg>)/).map(p=>p.startsWith('<svg')?p:p.replace(SUPRE,m=>'<sup>'+[...m].map(c=>SUPMAP[c]).join('')+'</sup>')).join('');}
+function fixT(t){['q','explain','explain2','explain3','short','hint','ansText'].forEach(k=>{if(typeof t[k]==='string')t[k]=sx(t[k]);});if(t.opts&&!t.pics)t.opts=t.opts.map(sx);return t;}
+function fin(TP){TP.intro=sx(TP.intro);TP.theory.forEach(s=>{s.html=sx(s.html);});if(TP.symbols){TP.symbols.rows=TP.symbols.rows.map(r=>r.map(sx));TP.symbols.after=sx(TP.symbols.after);}
+  TP.gens=TP.gens.map(g=>Object.assign({},g,{make:()=>fixT(g.make())}));return TP;}
+const M=s=>`<span class="m">${sx(s)}</span>`;
+const n=x=>H.num(x);
+const fr=(a,b)=>H.frac(a,b);
+const P=x=>x<0?`(${n(x)})`:n(x);
+const nz=(a,b)=>{let v;do{v=R(a,b);}while(!v);return v;};
+const SUPD='⁰¹²³⁴⁵⁶⁷⁸⁹';
+const sup=e=>String(e).split('').map(c=>SUPD[+c]).join('');
+const pw=(b,e)=>(typeof b==='number'&&b<0?`(${n(b)})`:b)+(e===1?'':sup(e));
+function mk(correct,traps){const o=[correct];traps.forEach(t=>{if(t&&!o.includes(t))o.push(t);});const s=shuffle(o.slice(0,5));return {opts:s,ans:s.indexOf(correct)};}
+const SETKEYS=['−','∅'];
+const SETPH='все корни через запятую';
+/* ---------- мини-алгебра многочленов ----------
+   одночлен {c, v:{x:2,y:1}}, многочлен — массив одночленов */
+function vars(s){const v={};String(s||'').replace(/([a-z])(\d*)/g,(m,l,d)=>{v[l]=(v[l]||0)+(d?+d:1);return m;});return v;}
+const T=(c,s)=>({c,v:vars(s)});
+const key=v=>Object.keys(v).filter(k=>v[k]).sort().map(k=>k+v[k]).join('');
+const deg=v=>Object.values(v).reduce((a,b)=>a+b,0);
+function norm(p){const m={};p.forEach(t=>{const k=key(t.v);if(!m[k])m[k]={c:0,v:{}};m[k].c+=t.c;Object.keys(t.v).forEach(x=>{if(t.v[x])m[k].v[x]=t.v[x];});});
+  const out=Object.values(m).filter(t=>Math.abs(t.c)>1e-12);const L=[...new Set(out.flatMap(t=>Object.keys(t.v)))].sort();
+  out.sort((a,b)=>{const d=deg(b.v)-deg(a.v);if(d)return d;for(const l of L){const e=(b.v[l]||0)-(a.v[l]||0);if(e)return e;}return 0;});return out;}
+const Pl=(...ts)=>norm(ts.map(t=>Array.isArray(t)?T(t[0],t[1]):t));
+const add=(a,b)=>norm(a.concat(b));
+const neg=a=>a.map(t=>({c:-t.c,v:t.v}));
+const sub=(a,b)=>add(a,neg(b));
+const scal=(a,k)=>norm(a.map(t=>({c:t.c*k,v:t.v})));
+function mul(a,b){const o=[];a.forEach(s=>b.forEach(t=>{const v=Object.assign({},s.v);Object.keys(t.v).forEach(k=>v[k]=(v[k]||0)+t.v[k]);o.push({c:s.c*t.c,v});}));return norm(o);}
+function ppow(a,k){let r=[T(1,'')];for(let i=0;i<k;i++)r=mul(r,a);return r;}
+function mulAll(...ps){return ps.reduce((r,p)=>mul(r,p),[T(1,'')]);}
+function vstr(v){return Object.keys(v).filter(k=>v[k]).sort().map(k=>k+(v[k]===1?'':sup(v[k]))).join('');}
+function mstr(t,first){const a=Math.abs(t.c),vs=vstr(t.v);const body=vs?(a===1?'':n(a))+vs:n(a);
+  return first?(t.c<0?'−':'')+body:(t.c<0?' − ':' + ')+body;}
+function fmt(p){p=norm(p);if(!p.length)return '0';return p.map((t,i)=>mstr(t,i===0)).join('');}
+const fm=t=>mstr(t,true);
+const par=p=>{p=norm(p);return p.length>1?`(${fmt(p)})`:fmt(p);};
+const parN=p=>{p=norm(p);return (p.length>1||(p.length&&p[0].c<0))?`(${fmt(p)})`:fmt(p);};
+const eqP=(a,b)=>fmt(a)===fmt(b);
+function ev(p,val){return p.reduce((s,t)=>s+t.c*Object.keys(t.v).reduce((m,k)=>m*Math.pow(val[k],t.v[k]),1),0);}
+/* произведение множителей «как пишут»: числовой/одночленный множитель впереди без скобок */
+function prodStr(fs){return fs.map((f,i)=>{f=norm(f);if(f.length===1&&i===0)return fm(f[0])==='1'?'':fm(f[0])==='−1'?'−':fm(f[0]);return par(f);}).join('');}
+/* BigInt */
+const bpow=(b,e)=>BigInt(b)**BigInt(e);
+const modpow=(b,e,m)=>{let r=1n,x=BigInt(b)%BigInt(m);e=BigInt(e);const M_=BigInt(m);while(e>0n){if(e&1n)r=r*x%M_;x=x*x%M_;e>>=1n;}return Number(r);};
+const bigs=x=>{const s=String(x);return s.replace(/\B(?=(\d{3})+(?!\d))/g,' ');};
+
+const chain=(b,e)=>Array(e).fill(P(b)).join(' · ');
+const S=(b,e)=>M(pw(b,e));
+const sp=s=>`<sup>${s}</sup>`;
+function cyc(b){b=((b%10)+10)%10;const c=[];let x=b;do{c.push(x);x=x*b%10;}while(!c.includes(x));return c;}
+const xn=(c,e)=>fmt([T(c,'x'+e)]);
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Что такое степень',lvl:0,html:`
+<p class="hook">📄 Возьми лист бумаги толщиной 0,1 мм и сложи пополам. Потом ещё раз. И ещё. Если бы удалось сложить его <b>42 раза</b>, стопка дотянулась бы… <b>до Луны</b>. Не веришь? Каждый сгиб удваивает толщину: 0,1 · 2 · 2 · … · 2. Сорок две двойки подряд — это 2⁴², и это больше четырёх триллионов. Вот почему математики придумали короткую запись — <b>степень</b>.</p>
+<div class="box rule"><b>Определение</b>${M('aⁿ = a · a · … · a')} — произведение <b>n</b> одинаковых множителей, каждый равен <b>a</b> (n — натуральное, n ≥ 2).<br>Отдельно договорились: ${M('a¹ = a')}.<br><b>a</b> — <b>основание</b> (что умножаем), <b>n</b> — <b>показатель</b> (сколько раз).</div>
+<p>Степень — это «сокращённое умножение», как умножение — это «сокращённое сложение»: ${M('5 + 5 + 5 = 5 · 3')}, а ${M('5 · 5 · 5 = 5³')}.</p>
+<div class="box ex"><b>Примеры</b>${M('2⁵ = 2 · 2 · 2 · 2 · 2 = 32')}<br>${M('3⁴ = 3 · 3 · 3 · 3 = 81')}<br>${M('10⁶ = 1 000 000')} — единица и шесть нулей.<br>${M('1²⁰²⁶ = 1')}, ${M('0⁷ = 0')}, ${M('7¹ = 7')}.</div>
+<div class="box err"><b>Частая ошибка</b>${M('2⁵ = 2 · 5 = 10')}. Нет! Показатель — это не множитель, а <b>количество</b> множителей: ${M('2⁵ = 32')}.<br>И основание с показателем менять местами нельзя: ${M('2⁵ = 32')}, а ${M('5² = 25')}.</div>
+<p><b>Поиграй:</b> сколько раз нужно сложить бумагу, чтобы дотянуться до вершины Эвереста? А до Луны?</p>
+<div class="widget" id="w-fold"></div>
+<div class="fact">Легенда о шахматах: изобретатель попросил у царя 1 зерно на первую клетку, 2 — на вторую, 4 — на третью и так далее, удваивая. На 64-й клетке лежало бы 2⁶³ зёрен, а всего — ${M('2⁶⁴ − 1')} ≈ 18,4 квинтиллиона. Это больше, чем всё зерно, выращенное человечеством за всю историю.</div>`},
+{title:'Знак степени: (−a)ⁿ и −aⁿ',lvl:1,html:`
+<div class="box rule"><b>Правило знаков</b>Отрицательное число в <b>чётной</b> степени — <b>положительно</b>, в <b>нечётной</b> — <b>отрицательно</b>.<br>${M('(−2)⁴ = 16')}, &nbsp;${M('(−2)³ = −8')}.</div>
+<p><b>Почему?</b> Минусы «гасят» друг друга парами: ${M('(−2)·(−2) = 4')}. Если минусов чётное число — все разбились на пары, ответ с плюсом. Если нечётное — один минус остался без пары.</p>
+<div class="box ex"><b>Пример</b>${M('(−1)²⁰²⁶ = 1')}, ${M('(−1)²⁰²⁵ = −1')}. Знак степени единицы — это просто «чётный или нечётный показатель».</div>
+<div class="box err"><b>Главная ловушка: скобки!</b>${M('(−3)² = (−3)·(−3) = 9')} — в квадрат возводится <b>−3</b>.<br>${M('−3² = −(3·3) = −9')} — в квадрат возводится только <b>3</b>, а минус ставится потом.<br>Степень «приклеена» только к тому, что стоит непосредственно перед ней.</div>
+<div class="box tip"><b>Как запомнить</b>Степень сильнее минуса. В записи ${M('−3²')} сначала считают ${M('3²')}, а потом приписывают минус — как в ${M('−3·3')}.</div>
+<p>Ещё: квадрат любого числа ${M('≥ 0')}. Поэтому ${M('x² = −4')} не имеет решений, а ${M('x² + 1')} всегда положительно.</p>`},
+{title:'Умножение степеней',lvl:2,html:`
+<div class="box rule"><b>Правило</b>${M(`a${sp('m')} · a${sp('n')} = a${sp('m+n')}`)}: при умножении степеней с <b>одинаковыми основаниями</b> показатели <b>складываются</b>.</div>
+<p><b>Почему?</b> Просто посчитай множители: ${M('a³ · a² = (a·a·a)·(a·a) = a⁵')}. Было три a, добавили два — стало пять.</p>
+<div class="box ex"><b>Примеры</b>${M('x⁴ · x⁷ = x¹¹')}<br>${M('2³ · 2⁵ = 2⁸ = 256')}<br>${M('y · y⁶ = y¹ · y⁶ = y⁷')} — у буквы без показателя показатель 1!<br>${M('3x² · (−5x⁴) = −15x⁶')}: числа перемножаем, показатели складываем.</div>
+<div class="box err"><b>Частые ошибки</b>• ${M('x³ · x⁴ = x¹²')} — перемножили показатели. Нет: <b>x⁷</b>.<br>• ${M('2³ · 2⁴ = 4⁷')} — перемножили основания. Нет: основание остаётся, ${M('2⁷')}.<br>• ${M('2³ · 3⁴')} — основания разные, правило не работает!<br>• ${M('a³ + a⁴ = a⁷')} — неверно! Сложение ≠ умножение. ${M('2³ + 2⁴ = 8 + 16 = 24')}, а ${M('2⁷ = 128')}.</div>`},
+{title:'Деление степеней и нулевая степень',lvl:3,html:`
+<div class="box rule"><b>Правило</b>${M(`a${sp('m')} : a${sp('n')} = a${sp('m−n')}`)} при a ≠ 0, m > n: при делении показатели <b>вычитаются</b>.<br>${M('a⁰ = 1')} при a ≠ 0.</div>
+<p><b>Почему?</b> Сокращаем одинаковые множители: ${M(`a⁵ : a² = ${fr('a·a·a·a·a','a·a')} = a·a·a = a³`)}.</p>
+<p><b>А почему a⁰ = 1?</b> Посмотри на ряд: ${M('2³ = 8, 2² = 4, 2¹ = 2')}. Каждый шаг влево — деление на 2. Следующий: ${M('2⁰ = 2 : 2 = 1')}. И по правилу: ${M('aⁿ : aⁿ = aⁿ⁻ⁿ = a⁰')}, а число, делённое само на себя, равно 1.</p>
+<div class="box ex"><b>Примеры</b>${M('7²⁰²⁶ : 7²⁰²⁴ = 7² = 49')} — огромные числа, а ответ в уме!<br>${M('x¹⁰ : x⁹ = x')}<br>${M('2026⁰ = 1')}</div>
+<div class="box err"><b>Частые ошибки</b>• ${M('x¹² : x⁴ = x³')} — разделили показатели. Нет: вычитаем, ${M('x⁸')}.<br>• ${M('5⁰ = 0')} — нет, ${M('5⁰ = 1')}.<br>• ${M('0⁰')} — не определено, так не пишут.</div>`},
+{title:'Степень степени',lvl:4,html:`
+<div class="box rule"><b>Правило</b>${M(`(a${sp('m')})${sp('n')} = a${sp('m·n')}`)}: при возведении степени в степень показатели <b>перемножаются</b>.</div>
+<p><b>Почему?</b> ${M('(a³)² = a³ · a³ = a³⁺³ = a⁶')}. Это n раз сложить m — то есть m·n.</p>
+<div class="box ex"><b>Примеры</b>${M('(x⁴)³ = x¹²')}<br>${M('8⁵ = (2³)⁵ = 2¹⁵')}<br>${M('4¹⁰ = (2²)¹⁰ = 2²⁰ = (2¹⁰)² ≈ 1 000 000')}</div>
+<div class="box err"><b>Ловушки</b>• ${M('(x³)⁴ = x⁷')} — сложили показатели. Нет: ${M('x¹²')}.<br>• ${M(`(2³)² ≠ 2${sp('3²')}`)}: слева ${M('2⁶ = 64')}, справа ${M('2⁹ = 512')}. Если скобок нет, «этажи» считают <b>сверху вниз</b>.</div>
+<div class="box tip"><b>Три правила — три действия</b>Умножаем степени → показатели <b>складываем</b>. Делим → <b>вычитаем</b>. Степень в степень → <b>умножаем</b>. Каждое действие с показателями — «на ступеньку проще», чем действие со степенями.</div>`},
+{title:'Степень произведения и частного',lvl:5,html:`
+<div class="box rule"><b>Правило</b>${M('(ab)ⁿ = aⁿbⁿ')}, &nbsp;${M(`(${fr('a','b')})ⁿ = ${fr('aⁿ','bⁿ')}`)} (b ≠ 0): в степень возводится <b>каждый множитель</b>.</div>
+<p><b>Почему?</b> ${M('(ab)³ = ab · ab · ab = (a·a·a)·(b·b·b) = a³b³')} — множители можно переставлять.</p>
+<div class="box ex"><b>Примеры</b>${M('(−2x³y)⁴ = (−2)⁴ · (x³)⁴ · y⁴ = 16x¹²y⁴')}<br>${M('25⁷ · 4⁷ = (25·4)⁷ = 100⁷ = 10¹⁴')}<br>${M('0,5¹⁰ · 2¹¹ = (0,5·2)¹⁰ · 2 = 2')}</div>
+<div class="box err"><b>Самая коварная ошибка</b>${M('(a + b)² = a² + b²')} — <b>НЕВЕРНО!</b> Правило работает для произведения, а не для суммы. Проверь: ${M('(1 + 2)² = 9')}, а ${M('1² + 2² = 5')}. Про квадрат суммы — отдельная тема «ФСУ».<br>И не забывай возвести в степень <b>число</b>: ${M('(3x)² = 9x²')}, а не ${M('3x²')}.</div>
+<div class="box tip"><b>Работает и в обратную сторону</b>${M('aⁿbⁿ = (ab)ⁿ')}. Ищи пары, которые дают круглые числа: ${M('2 · 5 = 10')}, ${M('4 · 25 = 100')}, ${M('8 · 125 = 1000')}.</div>`},
+{title:'Считаем с хитростью',lvl:6,html:`
+<div class="box rule"><b>Три главных приёма</b>1) Привести всё к одному основанию: ${M('8 = 2³, 9 = 3², 27 = 3³, 16 = 2⁴')}.<br>2) Склеить пары в круглые числа: ${M('2ⁿ · 5ⁿ = 10ⁿ')}.<br>3) Вынести общий множитель: ${M('3ⁿ + 3ⁿ + 3ⁿ = 3 · 3ⁿ = 3ⁿ⁺¹')}.</div>
+<div class="box ex"><b>Пример 1</b>${M(`${fr('8⁵ · 4³','2¹⁹')} = ${fr('2¹⁵ · 2⁶','2¹⁹')} = 2²¹⁻¹⁹ = 2² = 4`)}.</div>
+<div class="box ex"><b>Пример 2</b>Сколько цифр у числа ${M('2¹² · 5¹⁰')}? ${M('2¹² · 5¹⁰ = 2² · (2·5)¹⁰ = 4 · 10¹⁰ = 40 000 000 000')} — 11 цифр.</div>
+<div class="box ex"><b>Пример 3</b>${M('2¹⁰ + 2¹⁰ = 2 · 2¹⁰ = 2¹¹')}, а не ${M('2²⁰')} и не ${M('4²⁰')}.</div>
+<div class="box tip"><b>Запомни наизусть</b>${M('2¹⁰ = 1024 ≈ 1000')}. Поэтому килобайт ≈ 1000 байт, а ${M('2²⁰ ≈ 1 000 000')}, ${M('2³⁰ ≈ 1 000 000 000')}. Ещё полезно: ${M('2⁵ = 32, 3⁴ = 81, 3⁵ = 243, 5⁴ = 625')}.</div>
+<div class="fact">Слово «квадрат» в «x²» — не случайно: площадь квадрата со стороной x равна x·x. А «куб» x³ — это объём кубика со стороной x. А древнегреческий математик Диофант (III век) называл x⁴ «квадрато-квадратом» — коротких значков для степеней ещё не было. Привычную запись с маленьким числом сверху ввёл Декарт в 1637 году.</div>`},
+{title:'Последняя цифра степени',lvl:7,html:`
+<p class="hook">🔢 Какой цифрой оканчивается ${M('7²⁰²⁶')}? В этом числе больше 1700 цифр — ни один калькулятор в телефоне его не покажет. А ты ответишь за 30 секунд.</p>
+<div class="box rule"><b>Правило</b>Последняя цифра произведения зависит <b>только от последних цифр</b> множителей. Поэтому последние цифры степеней <b>повторяются по циклу</b>.</div>
+<p>Посмотри на 7: ${M('7¹ = 7, 7² = 49, 7³ = 343, 7⁴ = 2401, 7⁵ = 16807')}. Последние цифры: <b>7, 9, 3, 1, 7, 9, 3, 1, …</b> — цикл длины 4.</p>
+<ol class="steps"><li>Выпиши цикл последних цифр основания.</li><li>Найди остаток от деления показателя на длину цикла.</li><li>Остаток r → бери r-ю цифру цикла; остаток 0 → <b>последнюю</b> цифру цикла.</li></ol>
+<div class="box ex"><b>Пример</b>${M('7²⁰²⁶')}: цикл 7, 9, 3, 1 (длина 4). ${M('2026 = 4 · 506 + 2')} → остаток 2 → вторая цифра цикла: <b>9</b>.</div>
+<div class="box err"><b>Ловушка</b>Остаток 0 — это не «нулевая» цифра, а <b>последняя</b> в цикле. ${M('7⁴ = 2401')} оканчивается на 1, и ${M('7⁸')}, ${M('7²⁰²⁸')} — тоже на 1.</div>
+<div class="box tip"><b>Шпаргалка циклов</b>0, 1, 5, 6 — не меняются. 4: 4, 6. 9: 9, 1. 2: 2, 4, 8, 6. 3: 3, 9, 7, 1. 7: 7, 9, 3, 1. 8: 8, 4, 2, 6.</div>
+<p><b>Поиграй:</b> выбери основание и показатель — смотри, как «крутится» последняя цифра.</p>
+<div class="widget" id="w-digit"></div>`},
+{title:'Сравнение огромных чисел',lvl:8,html:`
+<p class="hook">⚔️ Битва гигантов: ${M('2³⁰⁰')} или ${M('3²⁰⁰')}? У 2 больше показатель, у 3 — больше основание. Кто победит? Посчитать нельзя — в каждом числе почти 100 цифр.</p>
+<div class="box rule"><b>Приём</b>Приведи степени к <b>одинаковому показателю</b> (или к одинаковому основанию). Тогда сравнивать нужно только основания (или только показатели).</div>
+<div class="box ex"><b>Решение</b>${M('2³⁰⁰ = (2³)¹⁰⁰ = 8¹⁰⁰')}, &nbsp;${M('3²⁰⁰ = (3²)¹⁰⁰ = 9¹⁰⁰')}.<br>${M('8 < 9')} → ${M('8¹⁰⁰ < 9¹⁰⁰')} → <b>${M('2³⁰⁰ < 3²⁰⁰')}</b>. Победило основание!</div>
+<p><b>Почему это работает?</b> Если ${M('0 < a < b')}, то ${M('aⁿ < bⁿ')}: перемножаем n раз меньшие положительные числа — и получаем меньше. А при одинаковом основании ${M('a > 1')}: чем больше показатель, тем больше степень.</p>
+<div class="box ex"><b>Пример с одним основанием</b>${M('4⁵⁰')} и ${M('8³⁰')}: ${M('4⁵⁰ = 2¹⁰⁰')}, ${M('8³⁰ = 2⁹⁰')} → ${M('4⁵⁰ > 8³⁰')}.</div>
+<div class="box err"><b>Ловушка</b>Сравнивать «на глаз» только основания или только показатели. ${M('2³⁰⁰')} vs ${M('3²⁰⁰')}: тут победило основание, а в ${M('2⁵⁰⁰')} vs ${M('3³⁰⁰')} (${M('32¹⁰⁰')} vs ${M('27¹⁰⁰')}) — уже показатель.</div>
+<div class="box tip"><b>Оценка через 2¹⁰ ≈ 10³</b>${M('2¹⁰ = 1024 > 1000')}, поэтому ${M('2¹⁰⁰ = (2¹⁰)¹⁰ > (10³)¹⁰ = 10³⁰')}: в числе ${M('2¹⁰⁰')} больше 30 цифр (на самом деле 31).</div>`},
+{title:'★ Олимпиадные приёмы',lvl:9,html:`
+<div class="box rule"><b>Приём 1: «вклинить» промежуточное число</b>Сравни ${M('31¹¹')} и ${M('17¹⁴')}. Общего показателя нет. Но ${M('31 < 32 = 2⁵')} и ${M('17 > 16 = 2⁴')}:<br>${M('31¹¹ < 32¹¹ = 2⁵⁵ < 2⁵⁶ = 16¹⁴ < 17¹⁴')}.</div>
+<div class="box rule"><b>Приём 2: сумма степеней двойки</b>${M('S = 1 + 2 + 2² + … + 2ⁿ')}. Умножим на 2: ${M('2S = 2 + 2² + … + 2ⁿ⁺¹')}. Вычтем: ${M('2S − S = 2ⁿ⁺¹ − 1')}. Отсюда ${M('S = 2ⁿ⁺¹ − 1')} — те самые зёрна на шахматной доске.</div>
+<div class="box rule"><b>Приём 3: остатки тоже ходят по кругу</b>${M('2³ = 8 = 7 + 1')} даёт остаток 1 при делении на 7. Значит, ${M('2³ᵏ')} тоже даёт остаток 1, а остатки ${M('2ⁿ')} при делении на 7 идут циклом 2, 4, 1.</div>
+<div class="box rule"><b>Приём 4: вынеси меньшую степень</b>${M('2ˣ⁺³ − 2ˣ = 2ˣ(2³ − 1) = 7 · 2ˣ')}. Уравнение ${M('2ˣ⁺³ − 2ˣ = 56')} превращается в ${M('2ˣ = 8')}, x = 3.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps"><li>${M('aⁿ')} — n множителей a; ${M('a¹ = a')}, ${M('a⁰ = 1')} (a ≠ 0).</li>
+<li>${M(`a${sp('m')}·a${sp('n')} = a${sp('m+n')}`)}, &nbsp;${M(`a${sp('m')} : a${sp('n')} = a${sp('m−n')}`)}, &nbsp;${M(`(a${sp('m')})${sp('n')} = a${sp('mn')}`)}.</li>
+<li>${M('(ab)ⁿ = aⁿbⁿ')}, но ${M('(a + b)ⁿ ≠ aⁿ + bⁿ')}.</li>
+<li>${M('(−a)ⁿ')}: чётное n → плюс, нечётное → минус. ${M('−aⁿ')} — минус всегда снаружи.</li>
+<li>${M('2¹⁰ = 1024')}, ${M('2ⁿ·5ⁿ = 10ⁿ')}.</li>
+<li>Последняя цифра — по циклу, сравнение — через общий показатель.</li></ul>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Формулы',title:'Свойства степеней',rows:[
+['aⁿ','«a в степени n»','Произведение n множителей, каждый равен a.',M('2⁴ = 2·2·2·2 = 16')],
+['a⁰ = 1','«a в нулевой степени»','Любое число, кроме нуля, в нулевой степени равно 1.',M('2026⁰ = 1')],
+[`a${sp('m')}·a${sp('n')} = a${sp('m+n')}`,'Умножение степеней','Основания одинаковые → показатели складываем.',M('x³·x⁵ = x⁸')],
+[`a${sp('m')} : a${sp('n')} = a${sp('m−n')}`,'Деление степеней','Основания одинаковые → показатели вычитаем.',M('5⁹ : 5⁷ = 25')],
+[`(a${sp('m')})${sp('n')} = a${sp('mn')}`,'Степень степени','Показатели перемножаем.',M('(x²)⁵ = x¹⁰')],
+['(ab)ⁿ = aⁿbⁿ','Степень произведения','В степень возводим каждый множитель.',M('(2x)³ = 8x³')],
+[`(${fr('a','b')})ⁿ = ${fr('aⁿ','bⁿ')}`,'Степень дроби','Числитель и знаменатель — отдельно.',M(`(${fr(2,3)})² = ${fr(4,9)}`)],
+['(−a)ⁿ','Знак степени','Чётная степень — плюс, нечётная — минус.',M('(−2)³ = −8')]
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Действие со степенями → действие «на ступеньку проще» с показателями: умножение → сложение, деление → вычитание, степень → умножение.</div>`};
+
+/* ---------- generators ---------- */
+const gens=[];
+const G=(lvl,make,f)=>gens.push({lvl,make,star:f==='s'||undefined,rule:f==='r'||undefined});
+
+/* L0 */
+G(0,()=>{const o=mk(`произведение n одинаковых множителей, каждый равен a`,[`произведение a и n, то есть a · n`,`сумма n одинаковых слагаемых, каждое равно a`,`произведение a одинаковых множителей, каждый равен n`]);
+return {type:'choice',q:`Что означает запись ${M('aⁿ')} (n — натуральное, n ≥ 2)?`,...o,
+short:'aⁿ = a · a · … · a (n раз).',
+explain:`${M('aⁿ')} — это <b>a, умноженное само на себя n раз</b>: ${M('a · a · … · a')} (n множителей). Например, ${M('2³ = 2·2·2 = 8')}.<br>«a · n» и «сумма n слагаемых a» — это одно и то же (умножение), и это неверно: ${M('2 · 3 = 6 ≠ 8')}.<br>«a множителей n» перепутано: это было бы ${M('nᵃ')}.`,
+explain2:`Сравни лесенку: сложение одинаковых → умножение (${M('5+5+5 = 5·3')}); умножение одинаковых → степень (${M('5·5·5 = 5³')}). Основание — <b>что</b> умножаем, показатель — <b>сколько раз</b>.`};},'r');
+G(0,()=>{const b=R(2,9),e=R(2,9);const w=pick(['b','e']);const right=w==='b'?'основание':'показатель';
+const o=mk(right,['основание','показатель','коэффициент','степень']);
+return {type:'choice',q:`В записи ${S(b,e)} как называется число <b>${w==='b'?b:e}</b>?`,...o,
+short:`${b} — основание, ${e} — показатель.`,
+explain:`В записи ${S(b,e)}: <b>${b}</b> — основание (это число мы умножаем), <b>${e}</b> — показатель (столько раз умножаем). Вся запись ${S(b,e)} целиком называется <b>степенью</b>.<br>Значит, ${w==='b'?b:e} — <b>${right}</b>.`,
+explain2:`Основание — внизу, как фундамент дома. Показатель — маленький, сверху, «показывает», сколько раз умножать. ${S(b,e)} = ${chain(b,Math.min(e,4))}${e>4?' · …':''} (${e} раз).`};},'r');
+G(0,()=>{const [b,e]=pick([[2,R(3,10)],[3,R(2,6)],[4,R(2,4)],[5,R(2,4)],[6,R(2,3)],[7,R(2,3)],[10,R(3,6)],[R(11,15),2]]);const v=b**e;
+return {type:'num',q:`Вычисли ${S(b,e)}.`,ans:v,hint:`Это ${e} множителей, каждый равен ${b}.`,
+short:`${S(b,e)} = ${chain(b,e)} = ${n(v)}.`,
+explain:`${S(b,e)} — это ${e} множителей по ${b}:<br>${M(chain(b,e))}.<br>Умножаем по очереди: ${range(1,e).map(k=>n(b**k)).join(' → ')}.<br>Ответ: <b>${n(v)}</b>.<br>Типичная ошибка — ${b} · ${e} = ${b*e}. Но показатель — это количество множителей, а не множитель.`,
+explain2:`Удобно идти «лесенкой»: каждый следующий шаг — умножить предыдущий результат на ${b}. ${range(1,e).map(k=>`${S(b,k)} = ${n(b**k)}`).join(', ')}.`};});
+G(0,()=>{const [a,b]=pick([[2,5],[2,6],[3,4],[3,5],[2,7],[4,5]]);const va=a**b,vb=b**a;
+return {type:'num',q:`Вычисли ${M(`${pw(a,b)} − ${pw(b,a)}`)}.`,ans:va-vb,hint:'Посчитай каждую степень отдельно. Основание и показатель менять местами нельзя!',
+short:`${S(a,b)} = ${va}, ${S(b,a)} = ${vb}, разность ${n(va-vb)}.`,
+explain:`${S(a,b)} = ${chain(a,b)} = ${va}.<br>${S(b,a)} = ${chain(b,a)} = ${vb}.<br>${va} − ${vb} = <b>${n(va-vb)}</b>.<br>Видишь: ${S(a,b)} ≠ ${S(b,a)}. У степени основание и показатель <b>не</b> переставляются (в отличие от множителей в произведении).`,
+explain2:`Если бы ${S(a,b)} и ${S(b,a)} были равны, ответ был бы 0. Но ${S(a,b)} — это ${b} множителей по ${a}, а ${S(b,a)} — ${a} множителей по ${b}. Разные произведения: ${va} и ${vb}.`};});
+
+/* L1 */
+G(1,()=>{const o=mk('в чётной степени — положительно, в нечётной — отрицательно',['в любой степени — отрицательно','в чётной степени — отрицательно, в нечётной — положительно','в любой степени — положительно']);
+return {type:'choice',q:'Какой знак у степени <b>отрицательного</b> числа?',...o,
+short:'Минусы гасятся парами: чётная степень → «+», нечётная → «−».',
+explain:`Минусы «гасят» друг друга парами: ${M('(−1)·(−1) = 1')}.<br>Чётное число множителей — все минусы в парах → <b>плюс</b>: ${M('(−2)⁴ = 16')}.<br>Нечётное — один минус лишний → <b>минус</b>: ${M('(−2)³ = −8')}.`,
+explain2:`Проверь на маленьких: ${M('(−1)¹ = −1')}, ${M('(−1)² = 1')}, ${M('(−1)³ = −1')}, ${M('(−1)⁴ = 1')} — знаки чередуются. Чётный показатель — плюс.`};},'r');
+G(1,()=>{const b=R(2,6),e=pick([2,4]);const o=mk(`только ${b}, а минус ставится после: ${M(`−${pw(b,e)} = −${b**e}`)}`,[`число −${b}: ${M(`−${pw(b,e)} = ${b**e}`)}`,`сначала минус, потом степень — это то же, что ${M(`(−${b})${sup(e)}`)}`,`ничего не возводится — запись без скобок не имеет смысла`]);
+return {type:'choice',q:`Что возводится в степень в записи ${M(`−${pw(b,e)}`)}?`,...o,
+short:`Степень «приклеена» только к ${b}: ${M(`−${pw(b,e)} = −${b**e}`)}.`,
+explain:`Степень относится только к тому, что стоит прямо перед ней, — к числу <b>${b}</b>. Минус ставится потом:<br>${M(`−${pw(b,e)} = −(${chain(b,e)}) = −${b**e}`)}.<br>А чтобы возвести в степень −${b}, нужны скобки: ${M(`(−${b})${sup(e)} = ${b**e}`)}.`,
+explain2:`Представь, что ${M(`−${pw(b,e)}`)} — это ${M(`−1 · ${pw(b,e)}`)}. Сначала степень (она «сильнее»), потом умножение на −1: −1 · ${b**e} = −${b**e}.`};},'r');
+G(1,()=>{const b=R(2,5),e=pick(b<=3?[2,3,4,5]:[2,3]);const br=Math.random()<0.5;const v=br?(-b)**e:-(b**e);const s=br?`(−${b})${sup(e)}`:`−${pw(b,e)}`;
+return {type:'num',q:`Вычисли ${M(s)}.`,ans:v,hint:br?`Скобки! В степень возводится −${b}. Показатель ${e} — ${e%2?'нечётный':'чётный'}.`:`Скобок нет — в степень возводится только ${b}.`,
+short:`${M(s)} = ${n(v)}.`,
+explain:br?`В скобках −${b}, значит в степень возводится всё число −${b}:<br>${M(`${chain(-b,e)} = ${n(v)}`)}.<br>Показатель ${e} ${e%2?'нечётный → один минус остаётся без пары → ответ отрицательный':'чётный → минусы гасятся парами → ответ положительный'}: <b>${n(v)}</b>.`:`Скобок нет, поэтому степень относится только к ${b}:<br>${M(`−${pw(b,e)} = −(${chain(b,e)}) = −${b**e}`)}.<br>Ответ: <b>${n(v)}</b> — минус стоит снаружи и никуда не девается, какой бы ни был показатель.`,
+explain2:br?`Сравни с записью без скобок: ${M(`−${pw(b,e)} = −${b**e}`)}. ${e%2?'Здесь ответы совпали, потому что показатель нечётный.':`А со скобками получилось ${b**e} — плюс, потому что показатель чётный.`}`:`Сравни со скобками: ${M(`(−${b})${sup(e)} = ${n((-b)**e)}`)}. ${e%2?'При нечётном показателе ответы совпадают.':'При чётном показателе они разные — вот почему скобки так важны!'}`};});
+G(1,()=>{const m=R(2015,2035),k=R(2015,2035),a=R(2,9),b=R(2,9);const pos=(m+k)%2===0;const o=mk(pos?'положительное':'отрицательное',['положительное','отрицательное','равно нулю']);
+return {type:'choice',q:`Какой знак у числа ${M(`(−${a})${sup(m)} · (−${b})${sup(k)}`)}?`,...o,
+short:`${m} — ${m%2?'нечётное':'чётное'}, ${k} — ${k%2?'нечётное':'чётное'} → ${pos?'плюс':'минус'}.`,
+explain:`Считать сами числа не нужно — только знаки.<br>${M(`(−${a})${sup(m)}`)}: показатель ${m} ${m%2?'нечётный → <b>минус</b>':'чётный → <b>плюс</b>'}.<br>${M(`(−${b})${sup(k)}`)}: показатель ${k} ${k%2?'нечётный → <b>минус</b>':'чётный → <b>плюс</b>'}.<br>Произведение: ${(m%2?'−':'+')} · ${(k%2?'−':'+')} = <b>${pos?'+':'−'}</b>. Число ${pos?'положительное':'отрицательное'}. Нулём оно быть не может: ни один множитель не равен 0.`,
+explain2:`Другой взгляд: всего минусов-множителей ${m} + ${k} = ${m+k}. Это число ${pos?'чётное — все минусы разбились на пары':'нечётное — один минус остался без пары'}. Значит, знак <b>${pos?'плюс':'минус'}</b>.`};});
+
+/* L2 */
+G(2,()=>{const o=mk(M(`a${sp('m')} · a${sp('n')} = a${sp('m+n')}`),[M(`a${sp('m')} · a${sp('n')} = a${sp('m·n')}`),M(`a${sp('m')} · a${sp('n')} = (2a)${sp('m+n')}`),M(`a${sp('m')} · a${sp('n')} = a${sp('m−n')}`)]);
+return {type:'choice',q:'Допиши правило умножения степеней с одинаковыми основаниями.',...o,
+short:'Основание то же, показатели складываем.',
+explain:`${M(`a${sp('m')} · a${sp('n')} = a${sp('m+n')}`)}: было m множителей a, добавили ещё n — стало m + n.<br>Пример: ${M('a³ · a² = (a·a·a)·(a·a) = a⁵')}, а не ${M('a⁶')} (перемножать показатели — ошибка).`,
+explain2:`Проверь числами: ${M('2² · 2³ = 4 · 8 = 32 = 2⁵')}. 2 + 3 = 5 ✅. А 2 · 3 = 6, ${M('2⁶ = 64')} — не то.`};},'r');
+G(2,()=>{const o=mk('при умножении степеней с одинаковыми основаниями',['при сложении степеней с одинаковыми основаниями','при умножении любых степеней, даже с разными основаниями','при возведении степени в степень']);
+return {type:'choice',q:'Когда показатели степеней <b>складывают</b>?',...o,
+short:'Только при умножении степеней с одинаковыми основаниями.',
+explain:`Показатели складывают <b>только при умножении</b> степеней с <b>одинаковым</b> основанием: ${M('x³ · x⁴ = x⁷')}.<br>• При сложении — нет: ${M('2³ + 2⁴ = 8 + 16 = 24 ≠ 2⁷')}.<br>• При разных основаниях — нет: ${M('2³ · 3⁴')} не упрощается в одну степень.<br>• Степень в степень — показатели <b>перемножают</b>: ${M('(x³)⁴ = x¹²')}.`,
+explain2:`Запомни пару: «умножаем степени — складываем показатели». Обе части про одно и то же основание. Сложение степеней — вообще отдельная история, там правила нет.`};},'r');
+G(2,()=>{const a=R(2,8),b=R(2,8);const c=pick([0,1]);const v=pick(['x','a','y']);const e=a+b+c;const str=`${v}${sup(a)} · ${v}${sup(b)}${c?` · ${v}`:''}`;
+const o=mk(M(`${v}${sup(e)}`),[M(`${v}${sup(a*b)}`),M(`${v}${sup(a+b+(c?0:1))}`),M(`${v}${sup(a*b+c)}`),M(`${c?3:2}${v}${sup(e)}`)]);
+return {type:'choice',q:`Упрости: ${M(str)}.`,...o,
+short:`Показатели складываем: ${a} + ${b}${c?' + 1':''} = ${e}.`,
+explain:`Основания одинаковые (${v}), значит показатели <b>складываем</b>${c?`. У одиночной ${v} показатель 1`:''}:<br>${M(`${str} = ${v}${sp(`${a}+${b}${c?'+1':''}`)} = ${v}${sup(e)}`)}.<br>Почему не ${M(`${v}${sup(a*b)}`)}: показатели перемножают только при возведении степени в степень.${c?`<br>Почему не ${M(`${v}${sup(a+b)}`)}: забыли одиночный множитель ${v} = ${v}¹.`:''}`,
+explain2:`Посчитай множители: ${M(`${v}${sup(a)}`)} — это ${a} штук ${v}, ${M(`${v}${sup(b)}`)} — ещё ${b}${c?`, и ещё один ${v}`:''}. Всего ${e} множителей ${v} → ${M(`${v}${sup(e)}`)}.`};});
+G(2,()=>{const p=R(2,6),q=R(2,6),A=nz(-5,5),B=nz(-5,5);const c=A*B,e=p+q;const ok=xn(c,e);
+const o=mk(M(ok),[M(xn(c,p*q)),M(xn(A+B||c+1,e)),M(xn(-c,e)),M(xn(c,e+1))]);
+return {type:'choice',q:`Упрости: ${M(`${fm(T(A,'x'+p))} · ${parN([T(B,'x'+q)])}`)}.`,...o,
+short:`Числа перемножаем: ${n(A)} · ${P(B)} = ${n(c)}; показатели складываем: ${p} + ${q} = ${e}.`,
+explain:`Перемножаем отдельно числа и отдельно степени:<br>• числа: ${n(A)} · ${P(B)} = <b>${n(c)}</b>${(A<0)!==(B<0)?' (знаки разные → минус)':' (знаки одинаковые → плюс)'};<br>• степени: ${M(`x${sup(p)} · x${sup(q)} = x${sup(e)}`)}.<br>Ответ: ${M(ok)}.<br>Типичные ошибки: сложить числа (${n(A)} + ${P(B)}) или перемножить показатели (x${sup(p*q)}).`,
+explain2:`Распиши как произведение и переставь множители: ${M(`${n(A)} · x${sup(p)} · ${P(B)} · x${sup(q)} = (${n(A)} · ${P(B)}) · (x${sup(p)} · x${sup(q)})`)} = ${M(ok)}.`};});
+
+/* L3 */
+G(3,()=>{const o=mk(M(`a${sp('m')} : a${sp('n')} = a${sp('m−n')}`),[M(`a${sp('m')} : a${sp('n')} = a${sp('m:n')}`),M(`a${sp('m')} : a${sp('n')} = a${sp('m+n')}`),M(`a${sp('m')} : a${sp('n')} = 1${sp('m−n')}`)]);
+return {type:'choice',q:'Допиши правило деления степеней (a ≠ 0, m > n).',...o,
+short:'Основание то же, показатели вычитаем.',
+explain:`${M(`a${sp('m')} : a${sp('n')} = a${sp('m−n')}`)}: n множителей a в числителе и знаменателе сокращаются, остаётся m − n.<br>Пример: ${M(`a⁶ : a² = ${fr('a·a·a·a·a·a','a·a')} = a⁴`)} (6 − 2 = 4), а не a³ (6 : 2 — неверно).`,
+explain2:`Проверь числами: ${M('2⁵ : 2² = 32 : 4 = 8 = 2³')}. 5 − 2 = 3 ✅. Деление показателей дало бы 2^2,5 — бессмыслица.`};},'r');
+G(3,()=>{const o=mk(`1, потому что ${M('aⁿ : aⁿ = a⁰')}, а число, делённое на себя, равно 1`,[`0, потому что множителей ноль`,`a, потому что степень не изменилась`,`1, но только при a > 1`]);
+return {type:'choice',q:`Чему равно ${M('a⁰')} при a ≠ 0 и почему?`,...o,
+short:'a⁰ = 1 при любом a ≠ 0.',
+explain:`По правилу деления: ${M('a³ : a³ = a³⁻³ = a⁰')}. С другой стороны, ${M('a³ : a³ = 1')} — число, делённое само на себя. Значит, ${M('a⁰ = 1')}. Это верно для <b>любого</b> a ≠ 0, даже отрицательного: ${M('(−5)⁰ = 1')}.`,
+explain2:`Лесенка: ${M('3³ = 27, 3² = 9, 3¹ = 3')}. Каждый шаг вниз — деление на 3. Ещё шаг: ${M('3⁰ = 3 : 3 = 1')}. Получить 0 делением 3 на 3 нельзя.`};},'r');
+G(3,()=>{const b=R(2,9),d=b<=4?R(1,4):R(1,2);const m=R(2015,2035);const v=b**d;
+return {type:'num',q:`Вычисли ${M(`${pw(b,m)} : ${pw(b,m-d)}`)}.`,ans:v,hint:'Не считай огромные степени — вычти показатели.',
+short:`${m} − ${m-d} = ${d}, ${S(b,d)} = ${v}.`,
+explain:`Основания одинаковые, показатели вычитаем:<br>${M(`${pw(b,m)} : ${pw(b,m-d)} = ${b}${sp(`${m}−${m-d}`)} = ${pw(b,d)} = ${v}`)}.<br>Ответ: <b>${v}</b>. Числа огромные, а ответ — в уме.`,
+explain2:`Представь дробь: сверху ${m} множителей по ${b}, снизу ${m-d}. Сокращаем ${m-d} пар — сверху остаётся ${d} ${H.plural(d,'множитель','множителя','множителей')}: ${d===1?b:chain(b,d)} = ${v}.`};});
+G(3,()=>{const a=R(3,9),b=R(2,9);const c=R(2,a+b-1);const e=a+b-c;const ok=e===1?'x':`x${sup(e)}`;
+const o=mk(M(ok),[M(`x${sup(a*b-c>0?a*b-c:a*b+c)}`),M(`x${sup(a+b+c)}`),e===1?M('1'):M(`x${sup(e-1)}`),M(`x${sup(Math.max(1,a*b))}`)]);
+return {type:'choice',q:`Упрости: ${M(`x${sup(a)} · x${sup(b)} : x${sup(c)}`)} (x ≠ 0).`,...o,
+short:`${a} + ${b} − ${c} = ${e}.`,
+explain:`Действуем по порядку слева направо:<br>${M(`x${sup(a)} · x${sup(b)} = x${sup(a+b)}`)} (складываем),<br>${M(`x${sup(a+b)} : x${sup(c)} = x${sup(e)}`)} (вычитаем).<br>Ответ: ${M(ok)}.`,
+explain2:`Запиши дробью: ${M(fr(`x${sup(a)} · x${sup(b)}`,`x${sup(c)}`))}. Сверху ${a+b} множителей x, снизу ${c}. Сокращаем — остаётся ${e}.`};});
+
+/* L4 */
+G(4,()=>{const o=mk(M(`(a${sp('m')})${sp('n')} = a${sp('m·n')}`),[M(`(a${sp('m')})${sp('n')} = a${sp('m+n')}`),M(`(a${sp('m')})${sp('n')} = a${sp('mⁿ')}`),M(`(a${sp('m')})${sp('n')} = n·a${sp('m')}`)]);
+return {type:'choice',q:'Допиши правило возведения степени в степень.',...o,
+short:'Показатели перемножаем.',
+explain:`${M(`(a${sp('m')})${sp('n')} = a${sp('m')} · a${sp('m')} · … · a${sp('m')}`)} (n раз) ${M(`= a${sp('m+m+…+m')} = a${sp('m·n')}`)}.<br>Пример: ${M('(a³)² = a³ · a³ = a⁶')}, а не ${M('a⁵')}.`,
+explain2:`Числами: ${M('(2²)³ = 4³ = 64 = 2⁶')}. 2 · 3 = 6 ✅. Сложение дало бы ${M('2⁵ = 32')} — не то.`};},'r');
+G(4,()=>{const b=pick([2,3]);const o=mk(`${M(`(${b}³)² = ${b}⁶`)}, а ${M(`${b}${sp('3²')} = ${b}⁹`)} — это разные числа`,[`они равны: обе записи — это ${M(`${b}⁶`)}`,`${M(`(${b}³)² = ${b}⁹`)}, а ${M(`${b}${sp('3²')} = ${b}⁶`)}`,`${M(`(${b}³)² = ${b}⁵`)}, а ${M(`${b}${sp('3²')} = ${b}⁹`)}`]);
+return {type:'choice',q:`Чем отличаются ${M(`(${b}³)²`)} и ${M(`${b}${sp('3²')}`)}?`,...o,
+short:`Со скобками показатели перемножаем (6), без скобок сначала считаем 3² = 9.`,
+explain:`${M(`(${b}³)²`)} — степень степени: показатели перемножаем, ${M(`${b}${sp('3·2')} = ${b}⁶ = ${b**6}`)}.<br>${M(`${b}${sp('3²')}`)} — «этажи» без скобок считают сверху: сначала ${M('3² = 9')}, потом ${M(`${b}⁹ = ${b**9}`)}.<br>${b**6} ≠ ${b**9} — числа разные.`,
+explain2:`Скобки говорят: «сначала возведи ${b} в куб, потом результат — в квадрат»: ${b**3}² = ${b**6}. Без скобок показатель сам является степенью: ${b} в степени девять.`};},'r');
+G(4,()=>{const a=R(2,5),b=R(2,5),c=R(1,6);const e=a*b+c;const ok=`x${sup(e)}`;const cs=c===1?'x':`x${sup(c)}`;
+const o=mk(M(ok),[M(`x${sup(a+b+c)}`),M(`x${sup(a*b*c)}`),M(`x${sup(a*(b+c))}`),M(`x${sup((a+b)*c)}`)]);
+return {type:'choice',q:`Упрости: ${M(`(x${sup(a)})${sup(b)} · ${cs}`)}.`,...o,
+short:`${a} · ${b} + ${c} = ${e}.`,
+explain:`Сначала степень степени — показатели перемножаем: ${M(`(x${sup(a)})${sup(b)} = x${sup(a*b)}`)}.<br>Потом умножение — складываем: ${M(`x${sup(a*b)} · ${cs} = x${sup(e)}`)}.<br>Ответ: ${M(ok)}. Ошибка «всё сложить» даёт x${sup(a+b+c)}, «всё перемножить» — x${sup(a*b*c)}.`,
+explain2:`Распиши скобку: ${M(`(x${sup(a)})${sup(b)}`)} = ${Array(b).fill(`x${sup(a)}`).join(' · ')} — это ${a*b} множителей x. Плюс ещё ${c} → ${e}.`};});
+G(4,()=>{const [B,p]=pick([[4,2],[8,3],[16,4],[32,5],[9,2],[27,3],[81,4],[25,2],[125,3]]);const base=B%2===0?2:B%3===0?3:5;const k=R(5,40);
+return {type:'num',q:`Запиши ${M(pw(B,k))} как степень числа ${base}: ${M(`${pw(B,k)} = ${base}${sup('?')}`)}. Чему равен показатель?`,ans:p*k,hint:`${B} = ${base}${sup(p)}.`,
+short:`${B} = ${pw(base,p)}, (${pw(base,p)})${sup(k)} = ${pw(base,p*k)}.`,
+explain:`Сначала представим ${B} как степень ${base}: ${M(`${B} = ${pw(base,p)}`)}.<br>Тогда ${M(`${pw(B,k)} = (${pw(base,p)})${sup(k)} = ${base}${sp(`${p}·${k}`)} = ${pw(base,p*k)}`)}.<br>Ответ: <b>${p*k}</b>.`,
+explain2:`В ${M(pw(B,k))} — ${k} множителей по ${B}, а каждое ${B} — это ${p} множителей по ${base}. Всего ${k} · ${p} = ${p*k} множителей ${base}.`};});
+
+/* L5 */
+G(5,()=>{const o=mk(M('(ab)ⁿ = aⁿbⁿ'),[M('(ab)ⁿ = abⁿ'),M('(ab)ⁿ = aⁿb'),M('(ab)ⁿ = n·ab')]);
+return {type:'choice',q:'Допиши правило возведения произведения в степень.',...o,
+short:'В степень возводится каждый множитель.',
+explain:`${M('(ab)ⁿ = ab · ab · … · ab = (a·a·…·a)(b·b·…·b) = aⁿbⁿ')}. В степень возводится <b>каждый</b> множитель. Частая ошибка — возвести только последний: ${M('(3x)² = 3x²')} — неверно, правильно ${M('9x²')}.`,
+explain2:`Числами: ${M('(2·5)² = 10² = 100')} и ${M('2²·5² = 4·25 = 100')} ✅. А ${M('2·5² = 50')} — не то.`};},'r');
+G(5,()=>{const o=mk(M('(a + b)² = a² + b²'),[M('(ab)² = a²b²'),M(`(${fr('a','b')})² = ${fr('a²','b²')}`),M('(a²)³ = a⁶')]);
+return {type:'choice',q:'Какое равенство <b>неверно</b> (в общем случае)?',...o,
+short:'Степень суммы ≠ сумма степеней: (1 + 2)² = 9, а 1² + 2² = 5.',
+explain:`Правило «возводим каждый» работает только для <b>произведения</b> и <b>частного</b>. Для суммы — нет: ${M('(1 + 2)² = 3² = 9')}, а ${M('1² + 2² = 1 + 4 = 5')}.<br>Правильно: ${M('(a + b)² = a² + 2ab + b²')} — это формула сокращённого умножения.<br>Остальные три равенства — верные свойства степеней.`,
+explain2:`Нарисуй квадрат со стороной a + b. Его площадь (a + b)². Внутри — квадраты a² и b², но ещё и два прямоугольника a × b. Их и «теряет» неверная формула.`};},'r');
+G(5,()=>{const c0=pick([-3,-2,2,3,-1]),a=R(2,4),k=pick([2,3,4]);const yk=R(1,3);const C=c0**k;
+const ys=yk===1?'y':`y${sup(yk)}`;const ok=fmt([T(C,`x${a*k}y${yk*k}`)]);
+const o=mk(M(ok),[M(fmt([T(c0,`x${a*k}y${yk*k}`)])),M(fmt([T(-C,`x${a*k}y${yk*k}`)])),M(fmt([T(C,`x${a+k}y${yk+k}`)])),M(fmt([T(c0*k,`x${a*k}y${yk*k}`)]))]);
+return {type:'choice',q:`Возведи в степень: ${M(`(${fm(T(c0,`x${a}y${yk}`))})${sup(k)}`)}.`,...o,
+short:`${P(c0)}${sup(k)} = ${n(C)}, (x${sup(a)})${sup(k)} = x${sup(a*k)}, (${ys})${sup(k)} = y${sup(yk*k)}.`,
+explain:`В степень ${k} возводим <b>каждый</b> множитель:<br>• число: ${M(`${pw(c0,k)} = ${n(C)}`)}${c0<0?` (показатель ${k} ${k%2?'нечётный → минус':'чётный → плюс'})`:''};<br>• ${M(`(x${sup(a)})${sup(k)} = x${sup(a*k)}`)} — показатели перемножаем;<br>• ${M(`(${ys})${sup(k)} = y${sup(yk*k)}`)}.<br>Ответ: ${M(ok)}.<br>Типичные ошибки: забыть возвести в степень число (${n(c0)}), умножить его на ${k} (${n(c0*k)}) или сложить показатели (x${sup(a+k)}).`,
+explain2:`Распиши: ${M(`(${fm(T(c0,`x${a}y${yk}`))})${sup(k)}`)} = ${Array(k).fill(`(${fm(T(c0,`x${a}y${yk}`))})`).join(' · ')}. Числа: ${Array(k).fill(P(c0)).join(' · ')} = ${n(C)}. Иксов ${a}·${k} = ${a*k}, игреков ${yk}·${k} = ${yk*k}.`};});
+G(5,()=>{const [d,y]=pick([[0.5,2],[0.25,4],[0.2,5],[0.125,8],[0.1,10]]);const k=R(5,15),e=R(1,2);const v=y**e;
+return {type:'num',q:`Вычисли ${M(`${n(d)}${sup(k)} · ${y}${sup(k+e)}`)}.`,ans:v,hint:`${n(d)} · ${y} = 1. Отдели от ${pw(y,k+e)} множитель ${pw(y,k)}.`,
+short:`(${n(d)} · ${y})${sup(k)} · ${pw(y,e)} = 1 · ${v} = ${v}.`,
+explain:`Заметим: ${M(`${n(d)} · ${y} = 1`)}. Чтобы применить ${M('aⁿbⁿ = (ab)ⁿ')}, нужны одинаковые показатели. Разобьём ${M(`${y}${sup(k+e)} = ${y}${sup(k)} · ${pw(y,e)}`)}.<br>${M(`${n(d)}${sup(k)} · ${y}${sup(k)} · ${pw(y,e)} = (${n(d)} · ${y})${sup(k)} · ${pw(y,e)} = 1${sup(k)} · ${pw(y,e)} = ${v}`)}.<br>Ответ: <b>${v}</b>.`,
+explain2:`${n(d)} = ${fr(1,y)}. Значит, ${M(`${n(d)}${sup(k)} = ${fr(1,`${y}${sup(k)}`)}`)}, и ${M(fr(`${y}${sup(k+e)}`,`${y}${sup(k)}`))} = ${M(pw(y,e))} = ${v}.`};});
+
+/* L6 */
+G(6,()=>{const o=mk('1024',['1000','2048','512','1240']);
+return {type:'choice',q:`Чему равно ${M('2¹⁰')}? (Это число полезно помнить наизусть.)`,...o,
+short:'2¹⁰ = 1024 ≈ 1000.',
+explain:`Удваиваем 10 раз: 2, 4, 8, 16, 32, 64, 128, 256, 512, <b>1024</b>.<br>${M('2¹⁰ = 1024')} — чуть больше тысячи. Поэтому ${M('2²⁰ ≈ 10⁶')}, ${M('2³⁰ ≈ 10⁹')}. 512 — это ${M('2⁹')}, 2048 — ${M('2¹¹')}.`,
+explain2:`Удобно так: ${M('2⁵ = 32')}, а ${M('2¹⁰ = (2⁵)² = 32² = 1024')}. В информатике 1 Кбайт = 1024 байта именно поэтому.`};},'r');
+G(6,()=>{const o=mk(M('2ⁿ · 5ⁿ = 10ⁿ'),[M('2ⁿ · 5ⁿ = 7ⁿ'),M('2ⁿ · 5ⁿ = 10²ⁿ'),M('2ⁿ · 5ⁿ = 10ⁿ²')]);
+return {type:'choice',q:'Какое равенство верно (n — натуральное)?',...o,
+short:'aⁿbⁿ = (ab)ⁿ, а 2 · 5 = 10.',
+explain:`По правилу ${M('aⁿbⁿ = (ab)ⁿ')}: ${M('2ⁿ · 5ⁿ = (2 · 5)ⁿ = 10ⁿ')}.<br>«7ⁿ» — сложили основания (2 + 5), а их нужно перемножать. «10²ⁿ» — сложили показатели, хотя основания разные.`,
+explain2:`Проверь при n = 3: ${M('2³ · 5³ = 8 · 125 = 1000 = 10³')} ✅. А ${M('10⁶')} — миллион, ${M('7³ = 343')}.`};},'r');
+G(6,()=>{let p,e1,e2,e3,k1,k2,k3,E;do{p=pick([2,3]);[k1,k2,k3]=p===2?shuffle([1,2,3,4]).slice(0,3):shuffle([1,2,3]);e1=R(2,9);e2=R(2,9);E=p===2?R(1,7):R(1,4);
+  const s=k1*e1+k2*e2-E;e3=s%k3===0?s/k3:0;}while(e3<2||k1===k3||k2===k3);
+const B=k=>p**k;const top=`${pw(B(k1),e1)} · ${pw(B(k2),e2)}`,bot=pw(B(k3),e3);const v=p**E;
+const rp=(k,e)=>k===1?pw(p,e):`(${pw(p,k)})${sup(e)} = ${pw(p,k*e)}`;
+return {type:'num',q:`Вычисли ${M(fr(top,bot))}.`,ans:v,hint:`Представь все основания как степени числа ${p}.`,
+short:`Всё к основанию ${p}: ${p}${sp(`${k1*e1}+${k2*e2}−${k3*e3}`)} = ${pw(p,E)} = ${v}.`,
+explain:`Приведём всё к основанию ${p}:<br>• ${M(`${pw(B(k1),e1)}${k1===1?'':' = '+rp(k1,e1)}`)};<br>• ${M(`${pw(B(k2),e2)}${k2===1?'':' = '+rp(k2,e2)}`)};<br>• ${M(`${bot}${k3===1?'':' = '+rp(k3,e3)}`)}.<br>${M(`${fr(`${pw(p,k1*e1)} · ${pw(p,k2*e2)}`,pw(p,k3*e3))} = ${p}${sp(`${k1*e1+k2*e2}−${k3*e3}`)} = ${pw(p,E)} = ${v}`)}.<br>Ответ: <b>${v}</b>.`,
+explain2:`Посчитай «сколько всего множителей ${p}»: сверху ${k1*e1} + ${k2*e2} = ${k1*e1+k2*e2}, снизу ${k3*e3}. После сокращения остаётся ${E} → ${pw(p,E)} = ${v}.`};});
+G(6,()=>{const b=R(8,40),d=R(1,9);const a=b+d;const v=bpow(2,a)*bpow(5,b);const len=String(v).length;const head=2**d;
+return {type:'num',q:`Сколько цифр в записи числа ${M(`${pw(2,a)} · ${pw(5,b)}`)}?`,ans:len,hint:`Составь пары «2 · 5 = 10»: ${pw(2,a)} = ${pw(2,d)} · ${pw(2,b)}.`,
+short:`${pw(2,d)} · 10${sup(b)} = ${head} и ${b} нулей → ${len}.`,
+explain:`Разобьём ${M(`${pw(2,a)} = ${pw(2,d)} · ${pw(2,b)}`)} и склеим пары:<br>${M(`${pw(2,d)} · ${pw(2,b)} · ${pw(5,b)} = ${pw(2,d)} · 10${sup(b)} = ${head} · 10${sup(b)}`)}.<br>Это число ${head}, за которым ${b} ${H.plural(b,'ноль','нуля','нулей')}. Цифр: ${String(head).length} + ${b} = <b>${len}</b>.`,
+explain2:`Маленький пример: ${M('2⁵ · 5³ = 2² · 10³ = 4000')} — 4 цифры (1 + 3). Здесь так же: «голова» ${head} (${String(head).length} ${H.plural(String(head).length,'цифра','цифры','цифр')}) и хвост из ${b} нулей.`};});
+
+/* L7 */
+G(7,()=>{const o=mk('повторяются по кругу: 7, 9, 3, 1, 7, 9, 3, 1, …',['всегда 7','повторяются по кругу: 7, 9, 7, 9, …','не повторяются, каждый раз новая цифра']);
+return {type:'choice',q:`Как ведут себя последние цифры чисел ${M('7¹, 7², 7³, 7⁴, 7⁵, …')}?`,...o,
+short:'Цикл 7 → 9 → 3 → 1, длина 4.',
+explain:`Достаточно следить только за последней цифрой: 7 → 7·7 = 4<b>9</b> → 9·7 = 6<b>3</b> → 3·7 = 2<b>1</b> → 1·7 = <b>7</b> — и всё сначала. Цикл <b>7, 9, 3, 1</b>, длина 4. Новые цифры не могут появляться бесконечно: цифр всего 10, рано или поздно одна повторится.`,
+explain2:`${M('7¹ = 7, 7² = 49, 7³ = 343, 7⁴ = 2401, 7⁵ = 16807')} — смотри на последние цифры: 7, 9, 3, 1, 7. Пятая совпала с первой — дальше всё повторится.`};},'r');
+G(7,()=>{const o=mk('только от последней цифры основания и от показателя',['от всех цифр основания','только от показателя','только от первой цифры основания']);
+return {type:'choice',q:'От чего зависит последняя цифра степени натурального числа?',...o,
+short:'Последняя цифра произведения зависит только от последних цифр множителей.',
+explain:`При умножении «в столбик» последняя цифра результата получается только из последних цифр множителей: ${M('…3 · …7 = …1')}. Поэтому у ${M('2023ⁿ')} и ${M('3ⁿ')} последние цифры одинаковые. А от показателя зависит, на каком месте цикла мы окажемся.`,
+explain2:`Проверь: ${M('13² = 169')}, ${M('3² = 9')} — обе оканчиваются на 9. ${M('23² = 529')} — тоже 9. Первые цифры роли не играют.`};},'r');
+G(7,()=>{const b=pick([2,3,4,7,8,9,12,13,17,18,19,22,27,28,2023,2027,2028,2029]);const N=R(2020,2099);const c=cyc(b);const L=c.length;const r=N%L;const d=modpow(b,N,10);
+return {type:'num',q:`Какой цифрой оканчивается число ${M(pw(b,N))}?`,ans:d,hint:`Выпиши последние цифры ${b%10}¹, ${b%10}², ${b%10}³, … и найди цикл.`,
+short:`Цикл ${c.join(', ')} (длина ${L}), ${N} = ${L}·${Math.floor(N/L)} + ${r} → ${d}.`,
+explain:`${b>9?`Важна только последняя цифра основания: ${b%10}.<br>`:''}Последние цифры степеней ${b%10}: <b>${c.join(', ')}</b>, дальше повторяются. Длина цикла ${L}.<br>Делим показатель на ${L}: ${N} = ${L} · ${Math.floor(N/L)} + ${r}.<br>${r===0?`Остаток 0 → берём <b>последнюю</b> цифру цикла`:`Остаток ${r} → берём ${r}-ю цифру цикла`}: <b>${d}</b>.`,
+explain2:`Представь стрелку, которая ходит по кругу ${c.join(' → ')} → … Каждый шаг — умножение на ${b%10}. За ${N} шагов стрелка сделает ${Math.floor(N/L)} полных кругов и ещё ${r} ${H.plural(r,'шаг','шага','шагов')}${r===0?' — то есть остановится на конце круга':''}: цифра <b>${d}</b>.`};});
+G(7,()=>{let a,b;do{a=pick([2,3,7,8]);b=pick([3,4,7,9]);}while(a===b);const N=R(2020,2040),Mx=R(2020,2040);const da=modpow(a,N,10),db=modpow(b,Mx,10);const d=(da+db)%10;
+return {type:'num',q:`Какой цифрой оканчивается сумма ${M(`${pw(a,N)} + ${pw(b,Mx)}`)}?`,ans:d,hint:'Найди последнюю цифру каждого слагаемого по циклу, потом сложи.',
+short:`${pw(a,N)} → ${da}, ${pw(b,Mx)} → ${db}, ${da} + ${db} → ${d}.`,
+explain:`• ${M(pw(a,N))}: цикл ${cyc(a).join(', ')}, ${N} : ${cyc(a).length} — остаток ${N%cyc(a).length} → цифра <b>${da}</b>.<br>• ${M(pw(b,Mx))}: цикл ${cyc(b).join(', ')}, ${Mx} : ${cyc(b).length} — остаток ${Mx%cyc(b).length} → цифра <b>${db}</b>.<br>Сумма оканчивается на последнюю цифру числа ${da} + ${db} = ${da+db}: <b>${d}</b>.`,
+explain2:`При сложении в столбик последняя цифра суммы зависит только от последних цифр слагаемых: …${da} + …${db} = …${d}. Осталось найти эти две цифры по циклам (остаток 0 означает последнюю цифру цикла).`};});
+
+/* L8 */
+G(8,()=>{const o=mk(`привести к одинаковому показателю: ${M('(2³)¹⁰⁰ = 8¹⁰⁰')} и ${M('(3²)¹⁰⁰ = 9¹⁰⁰')}`,[`сравнить основания: 3 > 2, значит ${M('3²⁰⁰')} больше`,`сравнить показатели: 300 > 200, значит ${M('2³⁰⁰')} больше`,`никак — числа слишком большие, сравнить нельзя`]);
+return {type:'choice',q:`Как правильно сравнить ${M('2³⁰⁰')} и ${M('3²⁰⁰')}?`,...o,
+short:'Общий показатель 100: 8¹⁰⁰ < 9¹⁰⁰.',
+explain:`Сравнивать только основания или только показатели нельзя — у одного числа больше одно, у другого другое. Приводим к <b>общему показателю</b>: 300 и 200 делятся на 100.<br>${M('2³⁰⁰ = (2³)¹⁰⁰ = 8¹⁰⁰')}, ${M('3²⁰⁰ = (3²)¹⁰⁰ = 9¹⁰⁰')}. Теперь показатели равны, и 8 < 9 → ${M('2³⁰⁰ < 3²⁰⁰')}.`,
+explain2:`Уменьши задачу в 100 раз: сравни ${M('2³ = 8')} и ${M('3² = 9')}. Большие числа — это просто «сотые степени» маленьких: ${M('8¹⁰⁰')} и ${M('9¹⁰⁰')}.`};},'r');
+G(8,()=>{const [a,p,b,q]=pick([[2,3,3,2],[2,5,5,2],[3,3,5,2],[2,4,3,3],[5,2,2,5],[7,2,2,6],[3,4,4,3],[10,2,3,4],[2,7,5,3],[6,2,3,3],[11,2,5,3]]);const k=pick([10,20,25,50,100]);
+const A=bpow(a,p*k),B=bpow(b,q*k);const sg=A>B?'>':A<B?'<':'=';const o=mk(M(`${pw(a,p*k)} ${sg} ${pw(b,q*k)}`),['>','<','='].filter(s=>s!==sg).map(s=>M(`${pw(a,p*k)} ${s} ${pw(b,q*k)}`)));
+return {type:'choice',q:`Сравни числа ${M(pw(a,p*k))} и ${M(pw(b,q*k))}.`,...o,hint:`У показателей ${p*k} и ${q*k} есть общий делитель ${k}.`,
+short:`${pw(a,p)} = ${a**p} ${sg} ${b**q} = ${pw(b,q)}, значит ${pw(a,p*k)} ${sg} ${pw(b,q*k)}.`,
+explain:`Приведём к общему показателю ${k}:<br>${M(`${pw(a,p*k)} = (${pw(a,p)})${sup(k)} = ${a**p}${sup(k)}`)},<br>${M(`${pw(b,q*k)} = (${pw(b,q)})${sup(k)} = ${b**q}${sup(k)}`)}.<br>Показатели равны, сравниваем основания: ${a**p} ${sg} ${b**q}. Значит, <b>${M(`${pw(a,p*k)} ${sg} ${pw(b,q*k)}`)}</b>.`,
+explain2:`Если ${M('0 < x < y')}, то ${M('xⁿ < yⁿ')}: перемножая меньшие положительные числа, получаем меньшее. Поэтому из ${a**p} ${sg} ${b**q} следует ${a**p}${sup(k)} ${sg} ${b**q}${sup(k)}.`};});
+G(8,()=>{const p=pick([2,3]);let A,a,B,b;do{[A,a]=[pick([p,p*p,p*p*p]),R(10,60)];[B,b]=[pick([p*p,p*p*p,p**4]),R(10,60)];}while(A===B);
+const ea=Math.round(Math.log(A)/Math.log(p))*a,eb=Math.round(Math.log(B)/Math.log(p))*b;const sg=ea>eb?'>':ea<eb?'<':'=';
+const o=mk(M(`${pw(A,a)} ${sg} ${pw(B,b)}`),['>','<','='].filter(s=>s!==sg).map(s=>M(`${pw(A,a)} ${s} ${pw(B,b)}`)));
+return {type:'choice',q:`Сравни числа ${M(pw(A,a))} и ${M(pw(B,b))}.`,...o,hint:`Оба основания — степени числа ${p}.`,
+short:`${pw(A,a)} = ${pw(p,ea)}, ${pw(B,b)} = ${pw(p,eb)}.`,
+explain:`Приведём к одному основанию ${p}:<br>${M(`${pw(A,a)} = ${A===p?pw(p,a):`(${pw(p,ea/a)})${sup(a)} = ${pw(p,ea)}`}`)},<br>${M(`${pw(B,b)} = (${pw(p,eb/b)})${sup(b)} = ${pw(p,eb)}`)}.<br>Основание ${p} > 1, значит больше та степень, у которой больше показатель: ${ea} ${sg} ${eb}.<br>Ответ: <b>${M(`${pw(A,a)} ${sg} ${pw(B,b)}`)}</b>.`,
+explain2:`Посчитай множители ${p}: в ${M(pw(A,a))} их ${ea}, в ${M(pw(B,b))} — ${eb}. Больше двоек${p===3?' (троек)':''} — больше число.`};});
+G(8,()=>{const k=pick([5,10,15,20]);const N=10*k;const m=pick([3*k-1,3*k,3*k+1]);const A=bpow(2,N),B=bpow(10,m);const sg=A>B?'>':'<';
+const o=mk(M(`${pw(2,N)} ${sg} 10${sup(m)}`),[M(`${pw(2,N)} ${sg==='>'?'<':'>'} 10${sup(m)}`),M(`${pw(2,N)} = 10${sup(m)}`)]);
+return {type:'choice',q:`Сравни ${M(pw(2,N))} и ${M('10'+sup(m))}. (Подсказка: ${M('2¹⁰ = 1024')}.)`,...o,
+short:`${pw(2,N)} = 1024${sup(k)}, ${m<=3*k?`а 1024${sup(k)} > 1000${sup(k)} = 10${sup(3*k)}`:`а 1024${sup(k)} < (1,1 · 1000)${sup(k)} < 10 · 10${sup(3*k)}`}.`,
+explain:`${M(`${pw(2,N)} = (2¹⁰)${sup(k)} = 1024${sup(k)}`)}.<br>${m<=3*k?`Так как 1024 > 1000: ${M(`1024${sup(k)} > 1000${sup(k)} = 10${sup(3*k)}`)}${m<3*k?` > 10${sup(m)}`:''}.`:`Оценка снизу ${M(`1024${sup(k)} > 10${sup(3*k)}`)} здесь не помогает — нужна оценка <b>сверху</b>. 1024 < 1100 = 1,1 · 1000, значит ${M(`1024${sup(k)} < 1,1${sup(k)} · 10${sup(3*k)}`)}. А ${M(`1,1${sup(k)}`)} ≤ ${M('1,1²⁰')} ≈ 6,7 < 10. Поэтому ${M(`${pw(2,N)} < 10 · 10${sup(3*k)} = 10${sup(m)}`)}.`}<br>Ответ: <b>${M(`${pw(2,N)} ${sg} 10${sup(m)}`)}</b>.`,
+explain2:`Посчитаем цифры: в ${M(pw(2,N))} их ${String(A).length}, а 10${sup(m)} — это единица и ${m} нулей, ${m+1} ${H.plural(m+1,'цифра','цифры','цифр')}. ${String(A).length>m?`У ${pw(2,N)} цифр не меньше, и оно не равно 10${sup(m)} — значит, больше.`:`У ${pw(2,N)} цифр меньше — значит, оно меньше.`}`,_v:()=>sg===(String(A).length>m?'>':'<')&&(m<=3*k||1.1**k<10)};});
+
+/* L9 ★ */
+G(9,()=>{const o=mk('найти «мостик» — степень удобного числа, которая больше одного и меньше другого',['сравнить только основания: у кого больше, то и больше','сравнить только показатели: у кого больше, то и больше','перемножить основание на показатель и сравнить результаты']);
+return {type:'choice',q:'Как сравнить две степени, если у них разные основания и у показателей <b>нет</b> общего делителя (например, 31¹¹ и 17¹⁴)?',...o,
+short:'Ищем «мостик»: 31¹¹ < 2⁵⁵ < 2⁵⁶ < 17¹⁴.',
+explain:`Когда к общему показателю не привести, ищут <b>промежуточное число</b>. Рядом с 31 есть 32 = 2⁵, рядом с 17 — 16 = 2⁴. Тогда ${M('31¹¹ < 2⁵⁵')} и ${M('17¹⁴ > 2⁵⁶')}, а степени двойки легко сравнить.<br>Сравнивать только основания или только показатели нельзя, а «основание · показатель» вообще не связано с величиной степени.`,
+explain2:`Это как сравнить рост двух людей через дверной косяк: один ниже косяка, другой выше — значит, второй выше первого. «Косяк» здесь — степень двойки.`};},'r');
+G(9,()=>{const o=mk(M('31¹¹ < 17¹⁴'),[M('31¹¹ > 17¹⁴'),M('31¹¹ = 17¹⁴')]);
+return {type:'choice',q:`Что больше: ${M('31¹¹')} или ${M('17¹⁴')}?`,...o,hint:'31 чуть меньше 32 = 2⁵, а 17 чуть больше 16 = 2⁴.',
+short:'31¹¹ < 32¹¹ = 2⁵⁵ < 2⁵⁶ = 16¹⁴ < 17¹⁴.',
+explain:`Общего показателя нет, поэтому «вклиним» степени двойки:<br>${M('31¹¹ < 32¹¹ = (2⁵)¹¹ = 2⁵⁵')},<br>${M('17¹⁴ > 16¹⁴ = (2⁴)¹⁴ = 2⁵⁶')}.<br>А ${M('2⁵⁵ < 2⁵⁶')}. Цепочка: ${M('31¹¹ < 2⁵⁵ < 2⁵⁶ < 17¹⁴')}. Значит, <b>${M('17¹⁴')} больше</b>.`,
+explain2:`Идея — найти «мостик»: число, которое точно больше первого и точно меньше второго. Удобные мостики — степени одного основания рядом с нашими: 32 рядом с 31, 16 рядом с 17. Кстати, проверка на компьютере: ${M('31¹¹')} ≈ 2,5·10¹⁶, ${M('17¹⁴')} ≈ 1,7·10¹⁷.`,_v:()=>bpow(31,11)<bpow(17,14)};},'s');
+G(9,()=>{let d,b;do{d=R(1,7);b=R(1000,2030);}while((b+d)%2);const a2=b+d;
+const ds=String(2**d).split('').reduce((s,c)=>s+ +c,0);
+return {type:'num',q:`Найди сумму цифр числа ${M(`4${sup(a2/2)} · 5${sup(b)}`)}.`,ans:ds,hint:`4 = 2². Составь пары 2 · 5 = 10.`,
+short:`${M(`4${sup(a2/2)} = 2${sup(a2)}`)}, ${M(`2${sup(a2)} · 5${sup(b)} = ${pw(2,d)} · 10${sup(b)}`)} → сумма цифр ${ds}.`,
+explain:`${M(`4${sup(a2/2)} = (2²)${sup(a2/2)} = 2${sup(a2)}`)}.<br>${M(`2${sup(a2)} · 5${sup(b)} = ${pw(2,d)} · 2${sup(b)} · 5${sup(b)} = ${pw(2,d)} · 10${sup(b)} = ${2**d} · 10${sup(b)}`)}.<br>Это число ${2**d} и ${b} нулей. Нули сумму не меняют: сумма цифр = ${String(2**d).split('').join(' + ')} = <b>${ds}</b>.`,
+explain2:`Маленький аналог: ${M('4² · 5³ = 2⁴ · 5³ = 2 · 10³ = 2000')} — сумма цифр 2. Огромное число здесь устроено так же: «голова» ${2**d} и длинный хвост нулей.`,_v:()=>{const s=String(bpow(4,a2/2)*bpow(5,b));return s.split('').reduce((x,c)=>x+ +c,0)===ds;}};},'s');
+G(9,()=>{const N=R(2020,2035);const ds=range(1,9).map(b=>modpow(b,N,10));const d=ds.reduce((s,x)=>s+x,0)%10;
+return {type:'num',q:`Какой цифрой оканчивается сумма ${M(`1${sup(N)} + 2${sup(N)} + 3${sup(N)} + … + 9${sup(N)}`)}?`,ans:d,hint:`Найди последнюю цифру каждого слагаемого по циклам. ${N} при делении на 4 даёт остаток ${N%4}.`,
+short:`Последние цифры: ${ds.join(', ')}, их сумма ${ds.reduce((s,x)=>s+x,0)} → ${d}.`,
+explain:`Все циклы последних цифр имеют длину 1, 2 или 4 — и все они «укладываются» в 4. ${N} = 4 · ${Math.floor(N/4)} + ${N%4}, поэтому последняя цифра ${M(`b${sup(N)}`)} такая же, как у ${M(`b${sup(N%4||4)}`)}.<br>${range(1,9).map(b=>`${b}${sup(N%4||4)} → ${ds[b-1]}`).join(', ')}.<br>Сумма последних цифр: ${ds.join(' + ')} = ${ds.reduce((s,x)=>s+x,0)}. Последняя цифра суммы: <b>${d}</b>.`,
+explain2:`Хитрость: длина любого цикла — делитель числа 4 (циклы 1, 5, 6 — длины 1; 4, 9 — длины 2; 2, 3, 7, 8 — длины 4). Поэтому показатель можно заменить остатком от деления на 4 (вместо 0 — четвёркой) и посчитать маленькие степени.`,_v:()=>{let s=0n;for(let b=1;b<=9;b++)s+=bpow(b,N);return Number(s%10n)===d;}};},'s');
+G(9,()=>{const N=R(100,3000);const r=modpow(2,N,7);
+return {type:'num',q:`Найди остаток от деления ${M(pw(2,N))} на 7.`,ans:r,hint:'2³ = 8 = 7 + 1. Какие остатки дают 2¹, 2², 2³, 2⁴, …?',
+short:`Остатки 2ⁿ при делении на 7 идут циклом 2, 4, 1; ${N} = 3·${Math.floor(N/3)} + ${N%3} → ${r}.`,
+explain:`Выпишем остатки: ${M('2¹ = 2')} → 2, ${M('2² = 4')} → 4, ${M('2³ = 8')} → 1, ${M('2⁴ = 16')} → 2, ${M('2⁵ = 32')} → 4, … Цикл <b>2, 4, 1</b> длины 3 — потому что ${M('2³ = 7 + 1')}: каждое умножение на 8 не меняет остаток.<br>${N} = 3 · ${Math.floor(N/3)} + ${N%3}.<br>${M(`${pw(2,N)} = (2³)${sup(Math.floor(N/3))}${N%3?` · ${pw(2,N%3)}`:''}`)}: ${M(`8${sup(Math.floor(N/3))}`)} даёт остаток 1, ${N%3?`а ${pw(2,N%3)} = ${2**(N%3)} — остаток ${2**(N%3)}`:'больше ничего нет'}.<br>Ответ: <b>${r}</b>.`,
+explain2:`Так же, как последняя цифра — это «остаток при делении на 10», здесь мы следим за остатком при делении на 7. Умножение на 2 переводит остаток 2 → 4 → 8 → 1 → 2 … Через каждые 3 шага всё повторяется.`,_v:()=>Number(bpow(2,N)%7n)===r};},'s');
+G(9,()=>{const [k,f,s]=pick([[2,5,'2ˣ⁺² + 2ˣ'],[3,7,'2ˣ⁺³ − 2ˣ'],[1,3,'2ˣ⁺¹ + 2ˣ'],[2,3,'2ˣ⁺² − 2ˣ'],[3,9,'2ˣ⁺³ + 2ˣ'],[4,15,'2ˣ⁺⁴ − 2ˣ']]);const x=R(2,8);const V=f*2**x;
+return {type:'num',q:`Реши уравнение ${M(`${s} = ${V}`)}.`,ans:x,hint:'Вынеси за скобки 2ˣ — меньшую из степеней.',
+short:`2ˣ · ${f} = ${V} → 2ˣ = ${2**x} → x = ${x}.`,
+explain:`${M(`2ˣ⁺${'⁰¹²³⁴'[k]} = 2ˣ · 2${sup(k)} = ${2**k} · 2ˣ`)}. Выносим ${M('2ˣ')}:<br>${M(`${s} = 2ˣ(${2**k} ${s.includes('−')?'−':'+'} 1) = ${f} · 2ˣ`)}.<br>${M(`${f} · 2ˣ = ${V}`)} → ${M(`2ˣ = ${2**x}`)} → x = <b>${x}</b> (${2**x} = ${pw(2,x)}).`,
+explain2:`Проверка подстановкой: ${M(`${pw(2,x+k)} ${s.includes('−')?'−':'+'} ${pw(2,x)} = ${2**(x+k)} ${s.includes('−')?'−':'+'} ${2**x} = ${V}`)} ✅. Другие x не подходят: левая часть растёт вместе с x.`,_v:()=>(s.includes('−')?2**(x+k)-2**x:2**(x+k)+2**x)===V};},'s');
+G(9,()=>{const N=R(50,300);const cnt=Math.ceil(N/2);
+return {type:'num',q:`Сколько существует натуральных чисел n от 1 до ${N}, для которых ${M('2ⁿ + 1')} делится на 3?`,ans:cnt,hint:'Посмотри на остатки 2ⁿ при делении на 3: 2, 1, 2, 1, …',
+short:`2ⁿ даёт остаток 2 при нечётном n → 2ⁿ + 1 делится на 3 при нечётных n; их ${cnt}.`,
+explain:`Остатки ${M('2ⁿ')} при делении на 3: ${M('2¹ = 2')} → 2, ${M('2² = 4')} → 1, ${M('2³ = 8')} → 2, ${M('2⁴ = 16')} → 1, … Цикл 2, 1 (потому что ${M('2² = 3 + 1')}).<br>${M('2ⁿ + 1')} делится на 3, когда остаток ${M('2ⁿ')} равен 2, то есть при <b>нечётных</b> n.<br>Нечётных чисел от 1 до ${N}: <b>${cnt}</b>.`,
+explain2:`Другой взгляд: ${M('2 = 3 − 1')}, поэтому ${M('2ⁿ')} ведёт себя при делении на 3 как ${M('(−1)ⁿ')}: при нечётном n это «−1», и ${M('2ⁿ + 1')} — как ${M('−1 + 1 = 0')}, делится на 3.`,_v:()=>{let c=0;for(let i=1;i<=N;i++)if((bpow(2,i)+1n)%3n===0n)c++;return c===cnt;}};},'s');
+G(9,()=>{const k=R(5,12);const ok=`2${sup(k+1)} − 1`;const o=mk(M(ok),[M(`2${sup(k+1)}`),M(`2${sup(k)} − 1`),M(`2${sup(k+1)} + 1`),M(`2${sup(k*(k+1)/2)}`)]);
+return {type:'choice',q:`Чему равна сумма ${M(`1 + 2 + 2² + 2³ + … + 2${sup(k)}`)}?`,...o,hint:'Обозначь сумму S и посчитай 2S − S.',
+short:`2S − S = 2${sup(k+1)} − 1.`,
+explain:`Пусть ${M(`S = 1 + 2 + … + 2${sup(k)}`)}. Тогда ${M(`2S = 2 + 2² + … + 2${sup(k+1)}`)}.<br>Вычитаем: почти всё сокращается, ${M(`2S − S = 2${sup(k+1)} − 1`)}.<br>Значит, ${M(`S = ${ok} = ${2**(k+1)-1}`)}.`,
+explain2:`Проверь на маленьких: 1 + 2 = 3 = 2² − 1; 1 + 2 + 4 = 7 = 2³ − 1; 1 + 2 + 4 + 8 = 15 = 2⁴ − 1. Каждый раз «следующая степень минус 1». Как в двоичной записи: 111…1 (${k+1} единиц) + 1 = 1000…0.`,_v:()=>{let s=0;for(let i=0;i<=k;i++)s+=2**i;return s===2**(k+1)-1;}};},'s');
+
+/* ---------- widgets ---------- */
+function onTheory(root){
+  const f=root.querySelector('#w-fold');
+  if(f){f.innerHTML=`<label>Сгибов: <output id="fn">10</output><input type="range" id="fs" min="0" max="45" value="10"></label><div id="ft" style="text-align:center;line-height:1.6"></div>`;
+    const marks=[[0.0001,'лист бумаги'],[0.18,'рост кошки'],[1.75,'рост человека'],[330,'Эйфелева башня (330 м)'],[8849,'Эверест (8849 м)'],[400000,'МКС (≈ 400 км)'],[384400000,'Луна (≈ 384 400 км)']];
+    const upd=()=>{const k=+f.querySelector('#fs').value;f.querySelector('#fn').textContent=k;const m=0.0001*2**k;
+      const show=m<0.01?n(Math.round(m*10000)/10)+' мм':m<1?n(Math.round(m*1000)/10)+' см':m<1000?n(Math.round(m*10)/10)+' м':bigs(Math.round(m/1000))+' км';
+      let best=marks[0];marks.forEach(x=>{if(m>=x[0])best=x;});
+      f.querySelector('#ft').innerHTML=`Толщина: ${M(`0,1 мм · 2${sup(k)}`)} = <b>${show}</b><br>${best===marks[0]?'Пока это тоньше кошки 🙂':`Выше, чем: <b>${best[1]}</b>`}`;};
+    f.querySelector('#fs').addEventListener('input',upd);upd();}
+  const w=root.querySelector('#w-digit');
+  if(w){w.innerHTML=`<label>Основание: <output id="db">7</output><input type="range" id="dbs" min="2" max="9" value="7"></label><label>Показатель: <output id="de">1</output><input type="range" id="des" min="1" max="40" value="1"></label><div id="dc" style="text-align:center;margin:8px 0"></div><div id="dv" style="text-align:center;word-break:break-all;font-variant-numeric:tabular-nums"></div>`;
+    const upd=()=>{const b=+w.querySelector('#dbs').value,e=+w.querySelector('#des').value;w.querySelector('#db').textContent=b;w.querySelector('#de').textContent=e;
+      const c=cyc(b),pos=(e-1)%c.length;
+      w.querySelector('#dc').innerHTML='Цикл: '+c.map((d,i)=>`<span style="display:inline-block;min-width:30px;padding:4px 6px;margin:2px;border-radius:8px;font-weight:700;${i===pos?'background:var(--accent);color:var(--card)':'background:var(--accent-soft);color:var(--accent-ink)'}">${d}</span>`).join(' → ')+` <span style="color:var(--muted)">(длина ${c.length})</span>`;
+      const s=String(bpow(b,e));w.querySelector('#dv').innerHTML=`${M(b+sup(e))} = ${s.slice(0,-1)}<b style="color:var(--accent-ink);font-size:1.25em">${s.slice(-1)}</b><br><span style="color:var(--muted)">${e} : ${c.length} — остаток ${e%c.length} → ${e%c.length?e%c.length+'-я':'последняя'} цифра цикла</span>`;};
+    ['#dbs','#des'].forEach(id=>w.querySelector(id).addEventListener('input',upd));upd();}
+}
+
+window.TOPIC=fin({id:'a7_powers',title:'Степень с натуральным показателем',subtitle:'Алгебра · 7 класс',
+intro:`<p>Степень — короткая запись многократного умножения. Тут ты разберёшься со свойствами степеней, научишься считать огромные выражения в уме, находить последнюю цифру числа из тысячи цифр и выяснять, что больше: ${M('2³⁰⁰')} или ${M('3²⁰⁰')}. В конце — олимпиадные задачи.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Что такое степень','Знак степени','Умножение степеней','Деление степеней','Степень степени','Степень произведения','Считаем с хитростью','Последняя цифра','Сравнение огромных чисел','★ Олимпиадные задачи'],
+gens});
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

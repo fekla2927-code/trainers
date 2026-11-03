@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Растворы — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range}=H;
+const N=H.num;
+const C=f=>H.chem(f).replace(/NaN/g,'Na&#8288;N');
+const FR=H.frac;
+const rd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+/* numeric answer rounded to d decimals; tolerance: ~1 % (at least half of the last digit, at most 0,9) */
+const NUM=(q,v,d,extra)=>{const a=rd(v,d);if(!isFinite(a)||a<=0)return null;const exact=Math.abs(a-v)<1e-9;const tA=Math.min(0.9,Math.max(0.6*Math.pow(10,-d),0.01*a));
+  return Object.assign({type:'num',q:q+(exact?'':[' Округли до целых.',' Округли до десятых.',' Округли до сотых.'][d]),ans:a,tol:tA/a},extra||{});};
+const SV=(w,h,inner,lab)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${lab||'Рисунок'}" style="font-family:system-ui,sans-serif;max-width:100%">${inner}</svg>`;
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.fs||14}" font-weight="${o.fw||600}" fill="${o.c||'var(--ink)'}">${s}</text>`;};
+const P=x=>N(rd(x,2))+'&nbsp;%';
+const g=x=>N(rd(x,2))+'&nbsp;г';
+const W='w = m(в-ва) / m(р-ра)';
+
+/* ---------- molar masses for hydrates ---------- */
+const AM={H:1,C:12,N:14,O:16,Na:23,Mg:24,S:32,Cl:35.5,K:39,Ca:40,Fe:56,Cu:64,Zn:65,Ba:137};
+function parseGroup(s){let i=0;const num=()=>{const m=s.slice(i).match(/^\d+/);if(!m)return 1;i+=m[0].length;return +m[0];};
+  const grp=()=>{const c={};while(i<s.length&&s[i]!==')'){if(s[i]==='('){i++;const gg=grp();i++;const n=num();for(const e in gg)c[e]=(c[e]||0)+gg[e]*n;}else{const m=s.slice(i).match(/^[A-Z][a-z]?/);if(!m)throw Error('bad '+s);i+=m[0].length;const n=num();c[m[0]]=(c[m[0]]||0)+n;}}return c;};
+  const r=grp();if(i!==s.length)throw Error('bad '+s);return r;}
+function parseF(f){const tot={};String(f).split(/[·*]/).forEach(p=>{let k=1;const m=p.match(/^(\d+)(.*)$/);if(m){k=+m[1];p=m[2];}const c=parseGroup(p);for(const e in c)tot[e]=(tot[e]||0)+k*c[e];});return tot;}
+const Mr=f=>{const c=parseF(f);let s=0;for(const e in c){if(!(e in AM))throw Error('no mass '+e);s+=AM[e]*c[e];}return Math.round(s*10)/10;};
+/* hydrates: salt, n(H2O), trivial name */
+const HYD=[['CuSO4',5,'медный купорос'],['FeSO4',7,'железный купорос'],['Na2SO4',10,'глауберова соль'],['Na2CO3',10,'кристаллическая сода'],['MgSO4',7,'горькая (английская) соль'],['ZnSO4',7,'цинковый купорос'],['CaSO4',2,'гипс'],['BaCl2',2,'дигидрат хлорида бария']].map(h=>({s:h[0],n:h[1],name:h[2],f:h[0]+'·'+h[1]+'H2O',Ms:Mr(h[0]),Mh:Mr(h[0])+h[1]*18}));
+HYD.forEach(h=>{if(Math.abs(h.Mh-Mr(h.f))>1e-9)throw Error('hydrate mass '+h.f);});
+const hydSol=HYD.filter(h=>h.s!=='CaSO4');
+
+/* ---------- solubility data (г на 100 г воды) ---------- */
+const KNO3={0:13.3,20:31.6,40:63.9,60:110,80:169};
+const NACL={0:35.7,20:35.9,40:36.4,60:37.1,80:38.0};
+/* substances for solution stories */
+const SOLU=[['NaCl','поваренной соли'],['KNO3','нитрата калия'],['CuSO4','сульфата меди(II)'],['NaOH','гидроксида натрия'],['сахар','сахара'],['KCl','хлорида калия'],['Na2CO3','карбоната натрия'],['глюкоза','глюкозы']];
+const nm=s=>s[1];
+
+/* ---------- pictures ---------- */
+function beaker(x,y,w,h,lvl,conc,top,bot){const lh=Math.max(4,(h-4)*lvl);
+  let s=`<rect x="${x+2}" y="${y+h-lh}" width="${w-4}" height="${lh-2}" fill="var(--accent)" fill-opacity="${(0.08+0.7*Math.min(1,conc)).toFixed(2)}"/>`;
+  s+=`<path d="M${x},${y} V${y+h} H${x+w} V${y}" fill="none" stroke="var(--fig)" stroke-width="2"/>`;
+  if(top)s+=T(x+w/2,y-8,top,{fs:13,c:'var(--accent-ink)',fw:700});if(bot)s+=T(x+w/2,y+h+17,bot,{fs:13});return s;}
+function curve(){const W=320,Hh=230,L=42,Rr=14,Tp=22,B=36;const sx=t=>L+t/80*(W-L-Rr),sy=v=>Hh-B-v/180*(Hh-B-Tp);let s='';
+  for(let v=0;v<=180;v+=30){const y=sy(v);s+=`<line x1="${L}" y1="${y}" x2="${W-Rr}" y2="${y}" stroke="var(--fig)" stroke-opacity=".15"/>`+T(L-6,y+4,v,{a:'end',fs:11,fw:400});}
+  for(let t=0;t<=80;t+=20){const x=sx(t);s+=`<line x1="${x}" y1="${Tp}" x2="${x}" y2="${Hh-B}" stroke="var(--fig)" stroke-opacity=".15"/>`+T(x,Hh-B+15,t,{fs:11,fw:400});}
+  s+=`<line x1="${L}" y1="${Hh-B}" x2="${W-Rr}" y2="${Hh-B}" stroke="var(--fig)" stroke-width="1.4"/><line x1="${L}" y1="${Tp}" x2="${L}" y2="${Hh-B}" stroke="var(--fig)" stroke-width="1.4"/>`;
+  s+=T(L+4,Tp-8,'↑ s, г на 100 г воды',{a:'start',fs:12,c:'var(--accent-ink)'})+T(W-Rr,Hh-4,'t, °С →',{a:'end',fs:12,c:'var(--accent-ink)'});
+  const pl=(d,col)=>`<polyline points="${Object.keys(d).map(t=>sx(+t).toFixed(1)+','+sy(d[t]).toFixed(1)).join(' ')}" fill="none" stroke="${col}" stroke-width="2.6"/>`+Object.keys(d).map(t=>`<circle cx="${sx(+t).toFixed(1)}" cy="${sy(d[t]).toFixed(1)}" r="3" fill="${col}"/>`).join('');
+  s+=pl(KNO3,'var(--accent-ink)')+pl(NACL,'var(--hl)');
+  s+=T(sx(56),sy(150),'KNO₃',{fs:13,c:'var(--accent-ink)',fw:700})+T(sx(70),sy(38)-10,'NaCl',{fs:13,c:'var(--hl)',fw:700});
+  return SV(W,Hh,s,'Кривые растворимости');}
+function crossPic(w1,w2,w,top,bot){const s=T(40,30,N(w1)+'%',{fs:15,c:'var(--accent-ink)',fw:700})+T(40,120,N(w2)+'%',{fs:15,c:'var(--accent-ink)',fw:700})+T(160,76,N(w)+'%',{fs:16,fw:700})+
+  `<line x1="64" y1="34" x2="140" y2="66" stroke="var(--fig)" stroke-width="1.6"/><line x1="64" y1="116" x2="140" y2="84" stroke="var(--fig)" stroke-width="1.6"/><line x1="186" y1="66" x2="262" y2="34" stroke="var(--fig)" stroke-width="1.6"/><line x1="186" y1="84" x2="262" y2="116" stroke="var(--fig)" stroke-width="1.6"/>`+
+  T(290,30,top,{fs:15,fw:700})+T(290,120,bot,{fs:15,fw:700})+T(290,52,'частей',{fs:11,fw:400,c:'var(--muted)'})+T(290,142,'частей',{fs:11,fw:400,c:'var(--muted)'});
+  return SV(330,150,s,'Правило креста');}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Почему газировка шипит?',lvl:0,html:`
+<p class="hook">Открываешь бутылку газировки — пшшш! — и пузыри лезут наружу. Но ведь до открытия никаких пузырей не было! Где прятался газ? Ответ: <b>растворился</b> в воде, как сахар в чае. На заводе углекислый газ закачивают под давлением — и он растворяется. Открыл крышку — давление упало, растворимость упала, «лишний» газ уходит пузырями. А тёплая газировка выдыхается быстрее холодной: газы при нагревании растворяются <b>хуже</b>.</p>
+<div class="box rule"><b>Раствор</b>— однородная смесь растворителя и растворённого вещества (а также продуктов их взаимодействия). Масса раствора = масса растворителя + масса растворённого вещества.</div>
+<p>В сладком чае вода — <b>растворитель</b>, сахар — <b>растворённое вещество</b>. В йодной настойке растворитель — спирт, растворённое вещество — йод. В газировке растворено сразу несколько веществ: CO₂, сахар, кислоты.</p>
+<div class="box err"><b>Частая ошибка</b>«Сахар в воде исчез». Нет! Его молекулы никуда не делись, они равномерно распределились между молекулами воды. Выпари воду — сахар вернётся.</div>
+<div class="fact">При 20 °С в литре воды растворяется около 1,7 г CO₂ при обычном давлении. В бутылке газировки давление в несколько раз больше — поэтому газа там намного больше, чем может удержать открытая вода.</div>`},
+{title:'Растворимость. Насыщенные растворы',lvl:[0,6],html:`
+<div class="box rule"><b>Растворимость (коэффициент растворимости) s</b>— масса вещества, которая при данной температуре может раствориться в <b>100 г воды</b>. Раствор, в котором вещество больше не растворяется, — <b>насыщенный</b>; если ещё можно растворить — <b>ненасыщенный</b>.</div>
+<div class="fig">${curve()}</div>
+<p class="small" style="text-align:center">Растворимость KNO₃ сильно растёт при нагревании, а NaCl — почти не меняется.</p>
+<p><b>Почему так.</b> При нагревании частицы двигаются быстрее и легче «разбирают» кристалл — поэтому растворимость большинства твёрдых веществ растёт. А молекулы газа, наоборот, при нагревании легче «вылетают» из воды — растворимость газов падает.</p>
+<div class="box ex"><b>Пример</b>При 20 °С s(NaCl) = 35,9 г. Значит, в 100 г воды можно растворить почти 36 г соли. Если насыпать 50 г, около 14 г останется на дне — раствор насыщенный.</div>
+<div class="box err"><b>Ловушка</b>Растворимость считают на <b>100 г воды</b>, а не на 100 г раствора. Насыщенный раствор NaCl при 20 °С — это 35,9 г соли в 135,9 г раствора.</div>
+<div class="fact">Солью посыпают дороги, потому что солёная вода замерзает ниже 0 °С: раствор NaCl с массовой долей около 23 % не замерзает до −21 °С.</div>`},
+{title:'Массовая доля растворённого вещества',lvl:1,html:`
+<div class="box rule"><b>Массовая доля</b>— какая часть массы раствора приходится на растворённое вещество:<br><span class="m">w = ${FR('m(в-ва)','m(р-ра)')}</span>, &nbsp; <span class="m">m(р-ра) = m(в-ва) + m(воды)</span><br>w — в долях единицы или в процентах (×100 %).</div>
+<p><b>Почему так.</b> Это обычная «доля», как доля пиццы. Если из 200 г раствора 30 г — соль, то соли 30/200 = 0,15 = 15 %. Остальные 85 % — вода.</p>
+<div class="box ex"><b>Пример: сколько сахара в банке колы?</b>В 100 мл колы примерно 10,6 г сахара, плотность напитка ≈ 1,04 г/мл. 100 мл весят 104 г, значит w(сахара) = 10,6 / 104 ≈ 0,102 ≈ <b>10 %</b>. В банке 330 мл — это 3,3 · 10,6 ≈ 35 г сахара, почти 9 кубиков рафинада по 4 г!</div>
+<div class="box err"><b>Частая ошибка</b>Делить на массу <b>воды</b>, а не раствора. 20 г соли в 80 г воды — это 20 / (20 + 80) = 20 %, а не 20/80 = 25 %.</div>
+<div class="fact">Физраствор в капельницах — 0,9 % NaCl, морская вода в среднем — около 3,5 % солей, а аптечная перекись водорода — 3 %.</div>`},
+{title:'Готовим раствор',lvl:2,html:`
+<div class="box rule"><b>Формулы-«перевёртыши»</b><span class="m">m(в-ва) = w · m(р-ра)</span>; &nbsp; <span class="m">m(воды) = m(р-ра) − m(в-ва)</span>; &nbsp; <span class="m">m(р-ра) = m(в-ва) / w</span>; &nbsp; если дан объём: <span class="m">m(р-ра) = ρ · V</span>.</div>
+<ol class="steps"><li>Нужно 250 г 8 %-го раствора соли.</li><li>m(соли) = 0,08 · 250 = 20 г.</li><li>m(воды) = 250 − 20 = 230 г (≈ 230 мл, у воды ρ = 1 г/мл).</li></ol>
+<div class="box ex"><b>С плотностью</b>Сколько H₂SO₄ в 100 мл 20 %-го раствора (ρ = 1,14 г/мл)? m(р-ра) = 1,14 · 100 = 114 г; m(H₂SO₄) = 0,2 · 114 = 22,8 г.</div>
+<div class="box err"><b>Частая ошибка</b>Подставить проценты как целое число: 0,08, а не 8! Либо помни: w = 8 % → m = 8/100 · m(р-ра).</div>`},
+{title:'Разбавление и добавление вещества',lvl:3,html:`
+<div class="box rule"><b>Разбавление водой</b>Масса растворённого вещества <b>не меняется</b>, растёт только масса раствора:<br><span class="m">w₂ = ${FR('w₁·m₁','m₁ + m(воды)')}</span></div>
+<p><b>Почему так.</b> Ты доливаешь только воду — соли от этого не прибавляется. Та же соль «разбавляется» на бо́льшую массу.</p>
+<div class="box ex"><b>Пример</b>К 200 г 15 %-го раствора добавили 100 г воды. Соли: 0,15 · 200 = 30 г. Новый раствор: 300 г. w = 30/300 = 10 %.</div>
+<div class="box rule"><b>Добавили вещество</b>Растут <b>и</b> масса вещества, <b>и</b> масса раствора: <span class="m">w₂ = ${FR('w₁·m₁ + Δm','m₁ + Δm')}</span></div>
+<div class="box err"><b>Частая ошибка</b>Добавив 10 г соли, прибавить их только к числителю. Соль тоже весит — масса раствора стала на 10 г больше.</div>`},
+{title:'Упаривание',lvl:4,html:`
+<div class="box rule"><b>Упаривание</b>— испаряется только вода, вещество остаётся: <span class="m">w₂ = ${FR('w₁·m₁','m₁ − m(испар.)')}</span></div>
+<div class="box ex"><b>Пример</b>Из 300 г 10 %-го раствора выпарили 100 г воды. Соли 30 г, раствора 200 г: w = 15 %.</div>
+<div class="box ex"><b>Обратная задача</b>Сколько воды выпарить из 400 г 5 %-го раствора, чтобы стал 20 %? Соли 20 г. Раствор должен весить 20 / 0,2 = 100 г. Выпарить 400 − 100 = <b>300 г</b> воды.</div>
+<div class="box err"><b>Ловушка</b>Увеличить w в 4 раза ≠ выпарить ¾ воды «на глаз»: считай через массу вещества, она не меняется.</div>
+<div class="fact">Так добывают соль на соляных промыслах: морскую воду пускают в мелкие бассейны, солнце испаряет воду, и раствор становится всё крепче, пока соль не выпадет кристаллами.</div>`},
+{title:'Смешивание растворов',lvl:5,html:`
+<div class="box rule"><b>Смешали два раствора</b>Массы веществ складываются, массы растворов складываются:<br><span class="m">w = ${FR('m₁w₁ + m₂w₂','m₁ + m₂')}</span></div>
+<div class="widget" id="w-mix"></div>
+<p><b>Почему так.</b> В итоговом стакане вещество из обоих растворов, а масса — сумма масс. Получается «среднее взвешенное»: ответ всегда <b>между</b> w₁ и w₂ и ближе к тому раствору, которого взяли больше.</p>
+<div class="box ex"><b>Пример</b>100 г 10 % + 300 г 30 %: вещества 10 + 90 = 100 г, раствора 400 г, w = 25 % (а не 20 %!).</div>
+<div class="box err"><b>Частая ошибка</b>Складывать проценты (10 % + 30 % = 40 %) или брать простое среднее. Среднее арифметическое верно только при <b>равных</b> массах.</div>
+<div class="box tip"><b>Вода и сухое вещество</b>Вода — это «раствор с w = 0 %», сухое вещество — «раствор с w = 100 %». Тогда все задачи на разбавление и добавление — это тоже смешивание!</div>`},
+{title:'Считаем по растворимости',lvl:6,html:`
+<div class="box rule"><b>Насыщенный раствор</b>На 100 г воды приходится s г вещества: <span class="m">w(нас.) = ${FR('s','100 + s')}</span>; &nbsp; в m г воды растворится <span class="m">s · m / 100</span> г.</div>
+<div class="box ex"><b>Пример 1</b>s(KNO₃, 20 °С) = 31,6 г. w(нас.) = 31,6 / 131,6 ≈ 24 %.</div>
+<div class="box ex"><b>Пример 2: охлаждение</b>210 г насыщенного при 60 °С раствора KNO₃ (s = 110 г) охладили до 20 °С (s = 31,6 г). В 210 г: 100 г воды и 110 г соли. При 20 °С в 100 г воды держится лишь 31,6 г → выпадет 110 − 31,6 = <b>78,4 г</b> кристаллов.</div>
+<div class="box err"><b>Ловушка</b>Если раствор не 210 г, а, скажем, 105 г, — всё делится пополам: воды 50 г, выпадет 39,2 г. Сначала найди массу воды!</div>
+<div class="fact">Так выращивают кристаллы дома: готовят горячий насыщенный раствор и медленно остужают. Чем медленнее — тем крупнее и красивее кристаллы.</div>`},
+{title:'Кристаллогидраты',lvl:7,html:`
+<div class="box rule"><b>Кристаллогидраты</b>— кристаллические вещества, в состав которых входят молекулы воды: ${C('CuSO4·5H2O')} (медный купорос), ${C('Na2CO3·10H2O')}, ${C('FeSO4·7H2O')}. При растворении эта вода становится частью растворителя, а растворённое вещество — <b>безводная</b> соль.</div>
+<p><b>Как считать.</b> M(${C('CuSO4·5H2O')}) = 160 + 5·18 = 250 г/моль. В 250 г купороса — 160 г ${C('CuSO4')} и 90 г воды. Доля соли в кристаллах: 160/250 = 64 %.</p>
+<div class="box ex"><b>Пример</b>25 г медного купороса растворили в 175 г воды. m(р-ра) = 200 г. m(${C('CuSO4')}) = 25 · 0,64 = 16 г. w = 16/200 = <b>8 %</b>.</div>
+<div class="box err"><b>Частая ошибка</b>Считать, что растворили 25 г ${C('CuSO4')}. Нет: 9 г из 25 — это вода из кристаллов!</div>
+<div class="box tip"><b>Удобный трюк</b>Кристаллогидрат — это «раствор» соли с w = M(соли)/M(гидрата). Для купороса — 64 %. Дальше — как обычное смешивание.</div>
+<div class="fact">Безводный ${C('CuSO4')} — белый порошок, а купорос — ярко-синий. Капни воды на белый порошок — он посинеет. Так проверяют, есть ли в жидкости вода.</div>`},
+{title:'★ Правило креста',lvl:8,html:`
+<div class="box rule"><b>Правило креста (конверт Пирсона)</b>Чтобы из растворов w₁ и w₂ получить w, их массы берут в отношении<br><span class="m">m₁ : m₂ = (w − w₂) : (w₁ − w)</span>  (из большего вычитаем меньшее по диагонали).</div>
+<div class="fig">${crossPic(40,10,25,'15','15')}</div>
+<p class="small" style="text-align:center">40 % и 10 % → 25 %: 25 − 10 = 15 частей 40 %-го и 40 − 25 = 15 частей 10 %-го, то есть 1 : 1.</p>
+<p><b>Почему работает.</b> Из уравнения смешивания m₁w₁ + m₂w₂ = (m₁ + m₂)w получаем m₁(w₁ − w) = m₂(w − w₂). Каждый раствор «тянет» среднее к себе с силой, пропорциональной массе, — как рычаг: груз × плечо.</p>
+<div class="box ex"><b>Пример</b>Нужно 300 г 20 % из 50 % и воды (0 %). Крест: 50 % → 20 − 0 = 20 частей, вода → 50 − 20 = 30 частей. Всего 50 частей = 300 г, 1 часть = 6 г: 120 г кислоты и 180 г воды.</div>
+<div class="box err"><b>Ловушка</b>Не перепутай диагонали: к раствору w₁ относится разность с <b>другим</b> раствором (w − w₂).</div>`}
+];
+
+const symbols={tab:'Формулы',title:'Обозначения и формулы',rows:[
+['w','массовая доля','Часть массы раствора, приходящаяся на вещество.','0,15 = 15&nbsp;%'],
+['w = m(в-ва)/m(р-ра)','определение','Масса вещества делить на массу раствора.','30/200 = 15&nbsp;%'],
+['m(р-ра) = m(в-ва) + m(воды)','масса раствора','Вещество тоже входит в раствор.','30 + 170 = 200'],
+['m = ρV','через плотность','Масса раствора по объёму, г = г/мл · мл.','1,14 · 100 = 114&nbsp;г'],
+['w₂ = w₁m₁/(m₁ + m(H₂O))','разбавление','Вещество то же, раствор тяжелее.','30/300 = 10&nbsp;%'],
+['w = (m₁w₁ + m₂w₂)/(m₁ + m₂)','смешивание','Среднее взвешенное.','100/400 = 25&nbsp;%'],
+['s','растворимость','Сколько г вещества растворяется в 100 г воды.','NaCl: 35,9&nbsp;г (20&nbsp;°С)'],
+['w = s/(100 + s)','насыщенный раствор','Доля вещества при растворимости s.','31,6/131,6 ≈ 24&nbsp;%'],
+['CuSO₄·5H₂O','медный купорос','M = 250, соли в нём 160/250 = 64&nbsp;%.','25&nbsp;г → 16&nbsp;г CuSO₄'],
+['m₁ : m₂ = (w − w₂) : (w₁ − w)','правило креста','Отношение масс смешиваемых растворов.','40, 10 → 25: 1 : 1']
+],after:`<div class="box tip" style="margin-top:14px"><b>Растворимость, г на 100 г воды</b>KNO₃: 0 °С — 13,3; 20 °С — 31,6; 40 °С — 63,9; 60 °С — 110; 80 °С — 169.<br>NaCl: 0 °С — 35,7; 20 °С — 35,9; 60 °С — 37,1; 80 °С — 38,0.</div>`};
+
+/* ---------- widget: solution mixer ---------- */
+function onTheory(root){const w=root.querySelector('#w-mix');if(!w)return;
+  w.innerHTML=`<label>Раствор 1: m₁ = <output id="o1">100</output> г<input type="range" id="m1" min="0" max="300" step="10" value="100"></label>
+<label>w₁ = <output id="o2">10</output> %<input type="range" id="w1" min="0" max="60" step="1" value="10"></label>
+<label>Раствор 2: m₂ = <output id="o3">300</output> г<input type="range" id="m2" min="0" max="300" step="10" value="300"></label>
+<label>w₂ = <output id="o4">30</output> %<input type="range" id="w2" min="0" max="60" step="1" value="30"></label>
+<label>Долить воды: <output id="o5">0</output> г<input type="range" id="mw" min="0" max="300" step="10" value="0"></label>
+<div id="wS" style="display:flex;justify-content:center"></div><div id="wO" class="small" style="text-align:center;margin-top:6px"></div>`;
+  const q=id=>w.querySelector(id);
+  const draw=()=>{const m1=+q('#m1').value,w1=+q('#w1').value,m2=+q('#m2').value,w2=+q('#w2').value,mw=+q('#mw').value;
+    q('#o1').textContent=m1;q('#o2').textContent=w1;q('#o3').textContent=m2;q('#o4').textContent=w2;q('#o5').textContent=mw;
+    const ms=m1*w1/100+m2*w2/100,M=m1+m2+mw;const wr=M?ms/M*100:0;const mx=Math.max(300,M/2.2);
+    let s=beaker(8,26,56,64,m1/300,w1/60,N(w1)+' %',m1+' г')+T(76,62,'+',{fs:20})+beaker(88,26,56,64,m2/300,w2/60,N(w2)+' %',m2+' г')+T(156,62,'+',{fs:20})+beaker(168,26,46,64,mw/300,0,'вода',mw+' г')+T(228,62,'=',{fs:20});
+    s+=beaker(242,18,72,72,Math.min(1,M/900),wr/60,M?N(rd(wr,1))+' %':'—',M+' г');
+    q('#wS').innerHTML=SV(320,112,s,'Смешивание растворов');
+    q('#wO').innerHTML=M?`m(в-ва) = ${N(rd(m1*w1/100,1))} + ${N(rd(m2*w2/100,1))} = ${N(rd(ms,1))} г; m(р-ра) = ${m1} + ${m2} + ${mw} = ${M} г; w = ${N(rd(ms,1))} / ${M} ≈ <span class="out">${N(rd(wr,1))} %</span>`:'Налей что-нибудь 🙂';};
+  w.querySelectorAll('input').forEach(i=>i.oninput=draw);draw();}
+
+/* =================== GENERATORS =================== */
+/* ---- L0 растворы, растворимость ---- */
+RULE(0,'Что такое <b>раствор</b>?','Однородная смесь растворителя и растворённого вещества',['Любая смесь веществ, например песок в воде','Чистое вещество, растворённое в себе','Смесь, в которой частицы видны невооружённым глазом'],
+{short:'Раствор однороден: растворённое вещество равномерно распределено в растворителе.',explain:'Раствор — <b>однородная</b> смесь растворителя и растворённого вещества (и продуктов их взаимодействия). Песок в воде — неоднородная смесь (взвесь): песчинки видны и оседают. В растворе частицы вещества размером с молекулы, их не видно, и они не оседают.',
+explain2:'Проверка: налей и подожди. Солёная вода остаётся прозрачной и одинаковой сверху и снизу — это раствор. Песок оседает на дно — не раствор.'});
+RULE(0,'Какой раствор называют <b>насыщенным</b>?','Раствор, в котором при данной температуре вещество больше не растворяется',['Раствор, в котором растворено очень много вещества','Раствор с массовой долей 100 %','Раствор, который нельзя разбавить'],
+{short:'Насыщенный = «больше не лезет» при этой температуре.',explain:'Насыщенный раствор — тот, в котором при данной температуре вещество <b>больше не растворяется</b>: лишнее остаётся на дне. «Много вещества» — не определение: насыщенный раствор гипса содержит всего 0,2 % вещества, а ненасыщенный раствор сахара может быть 60 %-м.',
+explain2:'Как губка: пока впитывает — ненасыщенная, перестала впитывать — насыщенная. Нагрел воду — «губка» стала больше (для большинства твёрдых веществ), и снова можно растворять.'});
+G(0,()=>{const P=[['Как меняется растворимость газов в воде при <b>нагревании</b>?','уменьшается','Газы при нагревании растворяются хуже: молекулы газа быстрее движутся и «вылетают» из воды. Поэтому тёплая газировка быстрее выдыхается, а рыбам летом в тёплых прудах не хватает кислорода.'],
+ ['Как меняется растворимость большинства <b>твёрдых</b> веществ при нагревании?','увеличивается','Частицы горячей воды быстрее разбирают кристалл. Например, s(KNO₃) при 20 °С — 31,6 г, а при 60 °С — 110 г на 100 г воды.'],
+ ['Как меняется растворимость газов при <b>повышении давления</b>?','увеличивается','Давление «вдавливает» газ в жидкость. Поэтому газировку разливают под давлением, а при открытии давление падает — газ выходит пузырями.'],
+ ['Как меняется растворимость NaCl при нагревании от 20 °С до 80 °С?','почти не меняется','По таблице: 35,9 г → 38,0 г на 100 г воды — рост очень маленький. Поэтому соль из морской воды получают выпариванием, а не охлаждением.']];
+ const p=pick(P);return CH(p[0],p[1],['увеличивается','уменьшается','почти не меняется','становится равной нулю'].filter(x=>x!==p[1]).slice(0,3),{short:p[2],explain:`Ответ: <b>${p[1]}</b>. ${p[2]}`,explain2:'Запомни пару: «твёрдые — горячее лучше», «газы — холоднее и под давлением лучше». NaCl — исключение-«ленивец»: его растворимость почти не зависит от температуры.'});});
+G(0,()=>{const sub=pick([['NaCl','поваренной соли',NACL],['KNO3','нитрата калия',KNO3]]);const t=pick([20,40,60]);const s=sub[2][t];const mw=pick([50,100,200,250]);const max=s*mw/100;
+ const k=pick([0.5,0.8,1,1.3]);const ms=rd(max*k,0)||1;const st=ms<max-1e-9?0:(Math.abs(ms-max)<0.5?1:2);if(st===1&&ms!==max)return null;
+ const opts=['ненасыщенный','насыщенный, всё растворилось','насыщенный, часть вещества осталась на дне'];const ans=ms<max?0:ms===max?1:2;
+ return {type:'choice',q:`Растворимость ${sub[1]} при ${t} °С — ${N(s)} г на 100 г воды. В ${mw} г воды при ${t} °С насыпали ${N(ms)} г ${sub[1]} и перемешали. Какой получился раствор?`,opts,ans,
+ short:`В ${mw} г воды растворится максимум ${N(rd(max,2))} г.`,
+ explain:`Сначала считаем, сколько вещества <b>может</b> раствориться в ${mw} г воды: ${N(s)} · ${mw}/100 = ${N(rd(max,2))} г. Насыпали ${N(ms)} г — ${ms<max?'меньше предела → раствор <b>ненасыщенный</b>, можно растворить ещё '+N(rd(max-ms,2))+' г.':ms===max?'ровно столько → раствор <b>насыщенный</b>.':'больше предела → растворится только '+N(rd(max,2))+' г, раствор <b>насыщенный</b>, а '+N(rd(ms-max,2))+' г останется на дне.'}`,
+ explain2:`Растворимость дана «на 100 г воды». У нас ${mw} г воды — это ${N(mw/100)} таких «порций», в каждую влезает ${N(s)} г. Всего влезет ${N(rd(max,2))} г.`};});
+
+/* ---- L1 массовая доля ---- */
+RULE(1,'Как найти массовую долю растворённого вещества?','w = m(в-ва) / m(р-ра)',['w = m(в-ва) / m(воды)','w = m(р-ра) / m(в-ва)','w = m(в-ва) · m(р-ра)'],
+{short:'w = m(в-ва) / m(р-ра), а m(р-ра) = m(в-ва) + m(воды).',explain:'Массовая доля — часть от целого, а целое — весь <b>раствор</b>: w = m(в-ва) / m(р-ра). Деление на массу воды — типичная ошибка: так получается не доля, а отношение вещества к воде (больше правильного ответа).',
+explain2:'Как доля пиццы: съел 2 куска из 8 → доля 2/8. Не 2/6 («из оставшихся»)! Так и тут: делим на всю массу раствора, вместе с веществом.'});
+RULE(1,'Чему равна масса раствора?','m(р-ра) = m(в-ва) + m(растворителя)',['m(р-ра) = m(растворителя)','m(р-ра) = m(растворителя) − m(в-ва)','m(р-ра) = m(в-ва) · w'],
+{short:'Вещество при растворении не исчезает — его масса входит в массу раствора.',explain:'Масса раствора = масса растворителя + масса растворённого вещества (закон сохранения массы). Растворил 20 г соли в 80 г воды → 100 г раствора.',
+explain2:'Поставь стакан с водой на весы, насыпь соль. Весы покажут воду + соль — даже когда соль полностью растворится.'});
+G(1,()=>{const ms=pick([5,8,10,12,15,20,25,30,40,50]);const mw=pick([45,60,75,80,90,100,120,150,170,200,230]);const s=pick(SOLU);const w=ms/(ms+mw)*100;
+ return NUM(`В ${mw} г воды растворили ${ms} г ${nm(s)}. Найди массовую долю вещества в растворе. Ответ дай в процентах.`,w,1,
+ {hint:'Сначала найди массу раствора: вещество + вода.',short:`w = ${ms} / (${ms} + ${mw}) = ${ms}/${ms+mw} ≈ ${N(rd(w,1))} %.`,
+ explain:`1) m(р-ра) = ${ms} + ${mw} = ${ms+mw} г.<br>2) w = ${ms} / ${ms+mw} = ${N(rd(w/100,4))} ≈ <b>${N(rd(w,1))} %</b>.<br>Если поделить на массу воды (${ms}/${mw} ≈ ${N(rd(ms/mw*100,1))} %) — это ошибка: делить нужно на весь раствор.`,
+ explain2:`Проверь себя «по смыслу»: вещества ${ms} г из ${ms+mw} г раствора. Это примерно ${N(rd(w,0))} из 100 — то есть около ${N(rd(w,0))} %.`});});
+G(1,()=>{const msol=pick([50,80,120,150,200,250,300,400,500]);const w0=pick([2,4,5,6,8,10,12,15,20,25]);const ms=msol*w0/100;if(!Number.isInteger(ms*10))return null;
+ const ask=pick([0,1]);const s=pick(SOLU);
+ if(ask===0)return NUM(`При выпаривании ${msol} г раствора ${nm(s)} получили ${N(ms)} г сухого вещества. Какой была массовая доля вещества? Ответ в процентах.`,w0,1,{short:`w = ${N(ms)} / ${msol} = ${w0} %.`,
+  explain:`Сухой остаток — это и есть растворённое вещество: m(в-ва) = ${N(ms)} г. Масса раствора — ${msol} г (вода уже входит в неё, прибавлять не нужно). w = ${N(ms)} / ${msol} = ${N(w0/100)} = <b>${w0} %</b>.`,
+  explain2:`Пропорция: ${msol} г — 100 %, ${N(ms)} г — x %. x = ${N(ms)} · 100 / ${msol} = ${w0} %.`});
+ return NUM(`Массовая доля ${nm(s)} в растворе — ${w0} %. Сколько граммов воды в ${msol} г такого раствора?`,msol-ms,1,{short:`m(в-ва) = ${N(w0/100)} · ${msol} = ${N(ms)} г; воды ${msol} − ${N(ms)} = ${N(msol-ms)} г.`,
+  explain:`1) m(в-ва) = w · m(р-ра) = ${N(w0/100)} · ${msol} = ${N(ms)} г.<br>2) m(воды) = ${msol} − ${N(ms)} = <b>${N(msol-ms)} г</b>.`,
+  explain2:`Если вещества ${w0} %, то воды ${100-w0} %: ${N((100-w0)/100)} · ${msol} = ${N(msol-ms)} г. Тот же ответ, в одно действие.`});});
+G(1,()=>{const V=pick([250,330,500,1000]);const sug=pick([10.6,9,11,8]);const rho=1.04;const m=V/100*sug;const w=sug/(100*rho)*100;const ask=pick([0,1]);
+ if(ask===0)return NUM(`В 100 мл газировки содержится ${N(sug)} г сахара. Сколько граммов сахара в бутылке (банке) объёмом ${V} мл?`,m,1,{short:`${V}/100 · ${N(sug)} = ${N(rd(m,1))} г — это примерно ${Math.round(m/4)} кубиков рафинада по 4 г.`,
+  explain:`${V} мл — это ${N(V/100)} раза по 100 мл. Сахара: ${N(V/100)} · ${N(sug)} = <b>${N(rd(m,1))} г</b>. Один кубик рафинада весит около 4 г — получается ${Math.round(m/4)} кубиков!`,
+  explain2:`Пропорция: 100 мл — ${N(sug)} г, ${V} мл — x г. x = ${N(sug)} · ${V} / 100 = ${N(rd(m,1))} г.`});
+ return NUM(`В 100 мл газировки содержится ${N(sug)} г сахара, плотность напитка — 1,04 г/мл. Найди массовую долю сахара. Ответ в процентах.`,w,1,{hint:'Найди массу 100 мл напитка: m = ρV.',short:`m(р-ра) = 1,04 · 100 = 104 г; w = ${N(sug)} / 104 ≈ ${N(rd(w,1))} %.`,
+  explain:`1) Масса 100 мл напитка: m = ρV = 1,04 · 100 = 104 г.<br>2) w(сахара) = ${N(sug)} / 104 ≈ <b>${N(rd(w,1))} %</b>.<br>Делить на 100 (объём) нельзя: в формулу w входит <b>масса</b> раствора, а не объём.`,
+  explain2:`Почти каждый десятый грамм газировки — сахар. Если бы плотность была ровно 1 г/мл, вышло бы ${N(sug)} %; плотность чуть больше, поэтому ответ чуть меньше: ${N(rd(w,1))} %.`});});
+
+/* ---- L2 приготовление ---- */
+RULE(2,'Как найти массу растворённого вещества, если известны w и масса раствора?','m(в-ва) = w · m(р-ра)',['m(в-ва) = m(р-ра) / w','m(в-ва) = w / m(р-ра)','m(в-ва) = m(р-ра) − w'],
+{short:'m(в-ва) = w · m(р-ра), w — в долях (8 % = 0,08).',explain:'Из w = m(в-ва) / m(р-ра) умножаем обе части на m(р-ра): <b>m(в-ва) = w · m(р-ра)</b>. Пример: 8 % от 250 г = 0,08 · 250 = 20 г. Проценты переводим в доли: 8 % = 0,08.',
+explain2:'«Найти процент от числа» — умножить: 10 % от 300 г = 0,1 · 300 = 30 г. Это та же формула.'});
+G(2,()=>{const msol=pick([100,150,200,250,300,400,500,600,800,1000]);const w0=pick([0.9,2,3,4,5,8,10,12,15,20]);const ms=msol*w0/100;const ask=pick(['s','w']);const s=pick(SOLU);
+ const pre=w0===0.9&&s[0]!=='NaCl'?null:1;if(!pre)return null;
+ return NUM(`Нужно приготовить ${msol} г раствора ${nm(s)} с массовой долей ${N(w0)} %. Сколько граммов ${ask==='s'?nm(s):'воды'} нужно взять?`,ask==='s'?ms:msol-ms,1,{hint:'m(в-ва) = w · m(р-ра).',
+ short:`m(в-ва) = ${N(w0/100)} · ${msol} = ${N(rd(ms,2))} г; воды ${N(rd(msol-ms,2))} г.`,
+ explain:`1) m(${s[0]==='сахар'||s[0]==='глюкоза'?s[0]:'в-ва'}) = w · m(р-ра) = ${N(w0/100)} · ${msol} = ${N(rd(ms,2))} г.<br>2) m(воды) = ${msol} − ${N(rd(ms,2))} = ${N(rd(msol-ms,2))} г.<br>Ответ: <b>${N(rd(ask==='s'?ms:msol-ms,1))} г</b>.${w0===0.9?' Это физиологический раствор — как в капельнице.':''}`,
+ explain2:`Проверка: ${N(rd(ms,2))} / (${N(rd(ms,2))} + ${N(rd(msol-ms,2))}) = ${N(rd(ms,2))} / ${msol} = ${N(w0/100)} = ${N(w0)} % ✔`});});
+const DEN=[['H2SO4','серной кислоты',20,1.14],['HCl','соляной кислоты',10,1.05],['NaOH','гидроксида натрия',10,1.11],['уксус','уксусной кислоты',9,1.01],['H2SO4','серной кислоты',10,1.07],['NaCl','хлорида натрия',10,1.07]];
+G(2,()=>{const d=pick(DEN);const V=pick([50,100,150,200,250,500]);const m=d[3]*V;const ms=m*d[2]/100;
+ return NUM(`Сколько граммов ${d[1]} содержится в ${V} мл ${d[2]} %-го раствора (плотность ${N(d[3])} г/мл)?`,ms,1,{hint:'Сначала масса раствора: m = ρ · V.',
+ short:`m(р-ра) = ${N(d[3])} · ${V} = ${N(rd(m,2))} г; m(в-ва) = ${N(d[2]/100)} · ${N(rd(m,2))} ≈ ${N(rd(ms,1))} г.`,
+ explain:`1) m(р-ра) = ρ · V = ${N(d[3])} г/мл · ${V} мл = ${N(rd(m,2))} г.<br>2) m(в-ва) = w · m(р-ра) = ${N(d[2]/100)} · ${N(rd(m,2))} ≈ <b>${N(rd(ms,1))} г</b>.<br>Ошибка — умножить w на объём (${N(d[2]/100)} · ${V} = ${N(rd(d[2]/100*V,1))}): массовую долю умножают только на массу.`,
+ explain2:`1 мл этого раствора весит ${N(d[3])} г, значит ${V} мл весят ${N(rd(m,2))} г. Из каждых 100 г — ${d[2]} г вещества.`});});
+G(2,()=>{const ms=pick([5,10,15,20,25,30,40,50]);const w0=pick([2,4,5,8,10,12.5,20,25]);const msol=ms/(w0/100);if(!Number.isInteger(msol))return null;const s=pick(SOLU);
+ return NUM(`Есть ${ms} г ${nm(s)}. Какую массу ${N(w0)} %-го раствора из него можно приготовить?`,msol,0,{short:`m(р-ра) = ${ms} / ${N(w0/100)} = ${N(msol)} г.`,
+ explain:`m(р-ра) = m(в-ва) / w = ${ms} / ${N(w0/100)} = <b>${N(msol)} г</b> (воды нужно ${N(msol-ms)} г).`,
+ explain2:`${N(w0)} % — это ${N(w0)} г вещества на 100 г раствора. У нас ${ms} г — это ${N(ms/w0)} раз по ${N(w0)} г, значит раствора ${N(ms/w0)} · 100 = ${N(msol)} г.`});});
+
+/* ---- L3 разбавление и добавление ---- */
+RULE(3,'Что <b>не меняется</b> при разбавлении раствора водой?','Масса растворённого вещества',['Масса раствора','Массовая доля вещества','Масса воды'],
+{short:'Доливаем только воду — вещества столько же.',explain:'При разбавлении водой добавляется только растворитель. <b>Масса вещества остаётся прежней</b>, масса раствора растёт, массовая доля падает: w₂ = m(в-ва) / (m₁ + m(воды)).',
+explain2:'Сок разбавили водой: сахара в стакане не прибавилось и не убавилось, но он «размазан» по бо́льшему объёму — вкус слабее.'});
+G(3,()=>{const m1=pick([100,150,200,250,300,400,500]);const w1=pick([5,6,8,10,12,15,20,25,30]);const add=pick([50,100,150,200,250,300]);const ms=m1*w1/100;const w2=ms/(m1+add)*100;const s=pick(SOLU);
+ return NUM(`К ${m1} г ${w1} %-го раствора ${nm(s)} добавили ${add} г воды. Какой стала массовая доля? Ответ в процентах.`,w2,1,{hint:'Масса вещества не изменилась.',
+ short:`${N(ms)} / ${m1+add} ≈ ${N(rd(w2,1))} %.`,
+ explain:`1) Вещества было: ${N(w1/100)} · ${m1} = ${N(ms)} г — столько и осталось.<br>2) Новый раствор: ${m1} + ${add} = ${m1+add} г.<br>3) w₂ = ${N(ms)} / ${m1+add} ≈ <b>${N(rd(w2,1))} %</b>.`,
+ explain2:`Можно в одну строку: масса раствора выросла в ${m1+add}/${m1} = ${N(rd((m1+add)/m1,3))} раза — во столько же раз уменьшилась доля: ${w1} / ${N(rd((m1+add)/m1,3))} ≈ ${N(rd(w2,1))} %.`});});
+G(3,()=>{const m1=pick([100,200,300,400,500]);const w1=pick([9,10,12,15,20,24,30,40]);const w2=pick([1,2,3,4,5,6,8,10,12,15]);if(w2>=w1)return null;const ms=m1*w1/100;const add=ms/(w2/100)-m1;if(!Number.isInteger(add*10))return null;
+ return NUM(`Сколько граммов воды нужно добавить к ${m1} г ${w1} %-го раствора, чтобы получить ${w2} %-й раствор?`,add,1,{hint:'Найди массу вещества, затем — какую массу должен иметь новый раствор.',
+ short:`m(в-ва) = ${N(ms)} г; новый раствор ${N(ms)}/${N(w2/100)} = ${N(ms/(w2/100))} г; воды ${N(add)} г.`,
+ explain:`1) m(в-ва) = ${N(w1/100)} · ${m1} = ${N(ms)} г (не меняется).<br>2) Новый раствор должен весить ${N(ms)} / ${N(w2/100)} = ${N(ms/(w2/100))} г.<br>3) Воды добавить: ${N(ms/(w2/100))} − ${m1} = <b>${N(add)} г</b>.`,
+ explain2:`Доля должна уменьшиться в ${w1}/${w2} = ${N(rd(w1/w2,3))} раза — значит, масса раствора должна вырасти во столько же раз: ${m1} · ${N(rd(w1/w2,3))} = ${N(ms/(w2/100))} г. Разница — это вода.`});});
+G(3,()=>{const m1=pick([80,90,100,150,180,200,240,300]);const w1=pick([5,10,15,20]);const add=pick([10,15,20,25,30,40,50]);const ms=m1*w1/100;const w2=(ms+add)/(m1+add)*100;const wrong=(ms+add)/m1*100;const s=pick(SOLU.filter(x=>x[0]!=='NaOH'));
+ return NUM(`В ${m1} г ${w1} %-го раствора ${nm(s)} растворили ещё ${add} г ${nm(s)}. Какой стала массовая доля? Ответ в процентах.`,w2,1,{hint:'Добавленное вещество увеличивает и массу вещества, и массу раствора.',
+ short:`(${N(ms)} + ${add}) / (${m1} + ${add}) ≈ ${N(rd(w2,1))} %.`,
+ explain:`1) Было вещества: ${N(w1/100)} · ${m1} = ${N(ms)} г; стало ${N(ms)} + ${add} = ${N(ms+add)} г.<br>2) Масса раствора тоже выросла: ${m1} + ${add} = ${m1+add} г.<br>3) w = ${N(ms+add)} / ${m1+add} ≈ <b>${N(rd(w2,1))} %</b>.<br>Ошибка — не прибавить ${add} г к знаменателю: ${N(ms+add)}/${m1} ≈ ${N(rd(wrong,1))} %.`,
+ explain2:`Думай о «сухом веществе» как о растворе со 100 %. Смешали ${m1} г ${w1} % и ${add} г 100 %: (${m1}·${w1} + ${add}·100)/(${m1}+${add}) ≈ ${N(rd(w2,1))} %.`});});
+G(3,()=>{const m1=pick([20,30,40,50,60,100]);const w1=pick([9,70]);const w2=w1===9?pick([3,1.5,4.5]):pick([7,9,14,35]);const ms=m1*w1/100;const add=ms/(w2/100)-m1;if(add<=0||!Number.isInteger(rd(add*10,6)))return null;
+ return NUM(`${w1===9?'Столовый уксус':'Уксусная эссенция'} — ${w1} %-й раствор уксусной кислоты. Для маринада нужен ${N(w2)} %-й раствор. Сколько граммов воды надо добавить к ${m1} г ${w1===9?'уксуса':'эссенции'}?`,add,1,{short:`Кислоты ${N(ms)} г → раствора ${N(ms/(w2/100))} г → воды ${N(rd(add,1))} г.`,
+ explain:`1) m(кислоты) = ${N(w1/100)} · ${m1} = ${N(ms)} г.<br>2) Нужный раствор: ${N(ms)} / ${N(w2/100)} = ${N(rd(ms/(w2/100),2))} г.<br>3) Воды: ${N(rd(ms/(w2/100),2))} − ${m1} = <b>${N(rd(add,1))} г</b>.`,
+ explain2:`Доля должна уменьшиться в ${N(rd(w1/w2,3))} раза, значит масса — вырасти в ${N(rd(w1/w2,3))} раза: ${m1} → ${N(rd(m1*w1/w2,2))} г.`,
+ hint:'Кислоты при разбавлении не прибавляется.'});});
+
+/* ---- L4 упаривание ---- */
+RULE(4,'Что происходит при <b>упаривании</b> раствора?','Испаряется вода: масса вещества не меняется, масса раствора уменьшается, w растёт',['Испаряется растворённое вещество, w уменьшается','Масса раствора не меняется, а w растёт','Вещество и вода испаряются поровну, w не меняется'],
+{short:'При упаривании уходит только вода → w = m(в-ва)/(m₁ − m(испар.)).',explain:'При упаривании испаряется <b>растворитель</b> (вода). Соль, сахар, щёлочь остаются. Масса вещества та же, раствор лёгче — массовая доля растёт: w₂ = w₁·m₁ / (m₁ − m(испарённой воды)).',
+explain2:'Суп варится без крышки и становится солонее: вода уходит паром, а соль остаётся в кастрюле.'});
+G(4,()=>{const m1=pick([200,250,300,400,500,600]);const w1=pick([4,5,6,8,10,12,15]);const ev=pick([50,100,150,200]);if(ev>=m1-m1*w1/100)return null;const ms=m1*w1/100;const w2=ms/(m1-ev)*100;
+ return NUM(`Из ${m1} г ${w1} %-го раствора соли выпарили ${ev} г воды. Какой стала массовая доля соли? Ответ в процентах.`,w2,1,{short:`${N(ms)} / (${m1} − ${ev}) ≈ ${N(rd(w2,1))} %.`,
+ explain:`1) Соли: ${N(w1/100)} · ${m1} = ${N(ms)} г — при упаривании не меняется.<br>2) Раствор: ${m1} − ${ev} = ${m1-ev} г.<br>3) w = ${N(ms)} / ${m1-ev} ≈ <b>${N(rd(w2,1))} %</b>.`,
+ explain2:`Раствор стал легче в ${m1}/${m1-ev} = ${N(rd(m1/(m1-ev),3))} раза — доля выросла во столько же: ${w1} · ${N(rd(m1/(m1-ev),3))} ≈ ${N(rd(w2,1))} %.`});});
+G(4,()=>{const m1=pick([200,300,400,500,600,800]);const w1=pick([2,3,4,5,6,8,10]);const k=pick([2,3,4,5]);const w2=w1*k;if(w2>40)return null;const ms=m1*w1/100;const ev=m1-ms/(w2/100);
+ return NUM(`Сколько граммов воды нужно выпарить из ${m1} г ${w1} %-го раствора, чтобы массовая доля стала ${w2} %?`,ev,1,{short:`Соли ${N(ms)} г; нужный раствор ${N(rd(ms/(w2/100),2))} г; выпарить ${N(rd(ev,1))} г.`,
+ explain:`1) m(соли) = ${N(w1/100)} · ${m1} = ${N(ms)} г.<br>2) Раствор с w = ${w2} % должен весить ${N(ms)} / ${N(w2/100)} = ${N(rd(ms/(w2/100),2))} г.<br>3) Выпарить: ${m1} − ${N(rd(ms/(w2/100),2))} = <b>${N(rd(ev,1))} г</b> воды.`,
+ explain2:`Доля растёт в ${k} раза ⇔ масса раствора уменьшается в ${k} раза: ${m1} / ${k} = ${N(rd(m1/k,2))} г. Испарить нужно ${m1} − ${N(rd(m1/k,2))} = ${N(rd(ev,1))} г. Ловушка: это не «${k}·${w1}» и не «половина воды».`});});
+
+/* ---- L5 смешивание ---- */
+RULE(5,'Как найти массовую долю при смешивании двух растворов?','w = (m₁w₁ + m₂w₂) / (m₁ + m₂)',['w = w₁ + w₂','w = (w₁ + w₂) / 2','w = (m₁w₁ + m₂w₂) / (w₁ + w₂)'],
+{short:'Массы веществ складываем, массы растворов складываем, делим.',explain:'При смешивании вещества складываются (m₁w₁ + m₂w₂) и растворы складываются (m₁ + m₂): <b>w = (m₁w₁ + m₂w₂)/(m₁ + m₂)</b>. Сложить проценты — бессмыслица (10 % + 10 % ≠ 20 %), а простое среднее верно только при равных массах.',
+explain2:'Смешай два стакана одинакового 10 %-го чая — получишь всё тот же 10 %-й, а не 20 %-й. Это хороший тест для любой «формулы».'});
+G(5,()=>{const m1=pick([50,100,150,200,250,300]);const m2=pick([50,100,150,200,300,400]);const w1=pick([5,10,15,20]);const w2=pick([25,30,40,50]);const w=(m1*w1+m2*w2)/(m1+m2);
+ return NUM(`Смешали ${m1} г ${w1} %-го и ${m2} г ${w2} %-го раствора одной соли. Найди массовую долю соли в полученном растворе. Ответ в процентах.`,w,1,{short:`(${N(m1*w1/100)} + ${N(m2*w2/100)}) / ${m1+m2} ≈ ${N(rd(w,1))} %.`,
+ explain:`1) Соли в первом: ${N(w1/100)} · ${m1} = ${N(m1*w1/100)} г, во втором: ${N(w2/100)} · ${m2} = ${N(m2*w2/100)} г. Всего ${N(rd((m1*w1+m2*w2)/100,2))} г.<br>2) Раствора: ${m1} + ${m2} = ${m1+m2} г.<br>3) w = ${N(rd((m1*w1+m2*w2)/100,2))} / ${m1+m2} ≈ <b>${N(rd(w,1))} %</b>.${m1!==m2?` Простое среднее (${N((w1+w2)/2)} %) не подходит: массы разные, ответ ближе к раствору, которого больше.`:''}`,
+ explain2:`Проверка «здравым смыслом»: ответ должен быть между ${w1} % и ${w2} % и ближе к ${m1>m2?w1:m2>m1?w2:'середине'}${m1===m2?'':' %'}. ${N(rd(w,1))} % — подходит ✔`});});
+G(5,()=>{const m1=pick([100,200,300,400]);const w1=pick([10,15,20]);const w2=pick([40,50,60]);const wt=pick([20,25,30,35]);if(!(w1<wt&&wt<w2))return null;const m2=m1*(wt-w1)/(w2-wt);if(!Number.isInteger(m2*10))return null;
+ return NUM(`Сколько граммов ${w2} %-го раствора нужно добавить к ${m1} г ${w1} %-го раствора, чтобы получить ${wt} %-й раствор?`,m2,1,{hint:'Обозначь искомую массу x и запиши «вещество₁ + вещество₂ = w · (m₁ + x)».',
+ short:`${m1}·${w1} + x·${w2} = ${wt}·(${m1} + x) → x = ${N(m2)} г.`,
+ explain:`Пусть x г — масса ${w2} %-го раствора.<br>Вещество: ${N(w1/100)}·${m1} + ${N(w2/100)}x = ${N(wt/100)}·(${m1} + x).<br>${N(m1*w1/100)} + ${N(w2/100)}x = ${N(m1*wt/100)} + ${N(wt/100)}x → ${N((w2-wt)/100)}x = ${N(m1*(wt-w1)/100)} → x = <b>${N(m2)} г</b>.`,
+ explain2:`Правило креста: m₁ : m₂ = (${w2} − ${wt}) : (${wt} − ${w1}) = ${w2-wt} : ${wt-w1}. Значит, m₂ = ${m1} · ${wt-w1}/${w2-wt} = ${N(m2)} г.`});});
+G(5,()=>{const m=pick([100,200,300]);const k=pick([1,2,3]);const w1=pick([10,20]);const w2=pick([30,40,50]);const m2=m*k;const w=(m*w1+m2*w2)/(m+m2);
+ const opts=[N(rd(w,1))+' %',N((w1+w2)/2)+' %',N(w1+w2)+' %',N(rd((m2*w1+m*w2)/(m+m2),1))+' %'];if(k===1)opts[1]=N(rd((w1+w2)/2+5,1))+' %';
+ return CH(`Смешали ${m} г ${w1} %-го и ${m2} г ${w2} %-го раствора. Какой будет массовая доля вещества?`,opts[0],opts.slice(1),{short:`(${m}·${w1} + ${m2}·${w2}) / ${m+m2} = ${N(rd(w,1))} %.`,
+ explain:`w = (${m}·${w1} + ${m2}·${w2}) / (${m} + ${m2}) = ${m*w1+m2*w2} / ${m+m2} = <b>${N(rd(w,1))} %</b>.<br>${N(w1+w2)} % — сложили проценты (так нельзя). ${k>1?N((w1+w2)/2)+' % — простое среднее, а массы разные. ':''}${N(rd((m2*w1+m*w2)/(m+m2),1))} % — перепутали, какого раствора больше.`,
+ explain2:`${k===1?'Массы равны — ответ ровно посередине между '+w1+' и '+w2+'.':'Второго раствора в '+k+' раза больше — ответ «тянется» к '+w2+' %: на ось от '+w1+' до '+w2+' он делит отрезок в отношении '+k+' : 1.'}`});});
+G(5,()=>{const m1=pick([100,150,200,250]);const w1=pick([10,20,30]);const m2=pick([50,100,150]);const w2=pick([5,15,25,40]);const mw=pick([50,100,150]);const ms=m1*w1/100+m2*w2/100;const w=ms/(m1+m2+mw)*100;
+ return NUM(`Смешали ${m1} г ${w1} %-го раствора, ${m2} г ${w2} %-го раствора того же вещества и ${mw} г воды. Найди массовую долю вещества. Ответ в процентах.`,w,1,{short:`${N(ms)} / ${m1+m2+mw} ≈ ${N(rd(w,1))} %.`,
+ explain:`Вещество: ${N(m1*w1/100)} + ${N(m2*w2/100)} + 0 = ${N(ms)} г (в воде вещества нет).<br>Раствор: ${m1} + ${m2} + ${mw} = ${m1+m2+mw} г.<br>w = ${N(ms)} / ${m1+m2+mw} ≈ <b>${N(rd(w,1))} %</b>.`,
+ explain2:'Вода — это «раствор с w = 0 %»: она добавляет массу, но не вещество. Попробуй собрать такую смесь в модели смешивания в теории.'});});
+
+/* ---- L6 растворимость ---- */
+RULE(6,'Что показывает <b>коэффициент растворимости</b> s?','Сколько граммов вещества растворяется в 100 г воды при данной температуре (до насыщения)',['Сколько граммов вещества в 100 г раствора','Массовую долю вещества в любом растворе','Скорость растворения вещества'],
+{short:'s — граммы вещества на 100 г ВОДЫ в насыщенном растворе.',explain:'Растворимость s — максимальная масса вещества, которая растворяется в <b>100 г воды</b> при данной температуре. Не на 100 г раствора! Поэтому w(нас.) = s / (100 + s), а не s %.',
+explain2:'s(NaCl, 20 °С) = 35,9 г: в 100 г воды — 35,9 г соли, а раствора получилось 135,9 г. Доля соли в нём 35,9/135,9 ≈ 26 %, не 35,9 %.'});
+G(6,()=>{const d=pick([['KNO3','нитрата калия',KNO3],['NaCl','хлорида натрия',NACL]]);const t=pick([0,20,40,60,80]);const s=d[2][t];const w=s/(100+s)*100;
+ return NUM(`Растворимость ${d[1]} при ${t} °С — ${N(s)} г на 100 г воды. Найди массовую долю вещества в насыщенном растворе. Ответ в процентах.`,w,1,{short:`w = ${N(s)} / (100 + ${N(s)}) ≈ ${N(rd(w,1))} %.`,
+ explain:`В насыщенном растворе на 100 г воды — ${N(s)} г вещества; масса раствора ${N(100+s)} г.<br>w = ${N(s)} / ${N(100+s)} ≈ <b>${N(rd(w,1))} %</b>.<br>Ответ «${N(s)} %» — ошибка: s считают на 100 г воды, а не раствора.`,
+ explain2:`Представь стакан: 100 г воды + ${N(s)} г соли = ${N(100+s)} г раствора. Доля соли — ${N(s)} из ${N(100+s)}.`});});
+G(6,()=>{const w0=pick([20,25,28,30,33.3,40,50]);const s=w0===33.3?50:100*w0/(100-w0);
+ return NUM(`Массовая доля вещества в насыщенном растворе равна ${N(w0)} %. Найди растворимость (г на 100 г воды).`,s,1,{hint:'Возьми 100 г раствора: сколько в нём вещества и сколько воды?',
+ short:`В 100 г раствора ${N(w0)} г вещества и ${N(rd(100-w0,1))} г воды → s = ${N(w0)}·100/${N(rd(100-w0,1))} ≈ ${N(rd(s,1))} г.`,
+ explain:`Возьмём 100 г насыщенного раствора: вещества ${N(w0)} г, воды ${N(rd(100-w0,1))} г.<br>На ${N(rd(100-w0,1))} г воды — ${N(w0)} г, на 100 г воды — ${N(w0)} · 100 / ${N(rd(100-w0,1))} ≈ <b>${N(rd(s,1))} г</b>.`,
+ explain2:`Формула-«перевёртыш»: из w = s/(100 + s) получаем s = 100w/(1 − w) = 100·${N(w0/100)}/${N(rd(1-w0/100,3))} ≈ ${N(rd(s,1))}.`});});
+G(6,()=>{const t1=pick([40,60,80]);const t2=pick([0,20,40].filter(x=>x<t1));const s1=KNO3[t1],s2=KNO3[t2];const k=pick([0.5,1,2]);const M=(100+s1)*k;const cr=(s1-s2)*k;
+ return NUM(`${N(M)} г насыщенного при ${t1} °С раствора нитрата калия охладили до ${t2} °С. Сколько граммов соли выпало в осадок? Растворимость KNO₃: ${N(s1)} г при ${t1} °С и ${N(s2)} г при ${t2} °С (на 100 г воды).`,cr,1,{hint:'Сначала найди, сколько в растворе воды и сколько соли.',
+ short:`Воды ${N(100*k)} г, соли ${N(s1*k)} г; останется ${N(s2*k)} г → выпадет ${N(rd(cr,1))} г.`,
+ explain:`1) В ${N(100+s1)} г насыщенного при ${t1} °С раствора — 100 г воды и ${N(s1)} г соли. У нас ${N(M)} г, то есть в ${N(k)} раза ${k<1?'меньше':'больше'}: воды ${N(100*k)} г, соли ${N(rd(s1*k,2))} г.<br>2) При ${t2} °С в ${N(100*k)} г воды останется растворённой ${N(s2)} · ${N(k)} = ${N(rd(s2*k,2))} г.<br>3) Выпадет: ${N(rd(s1*k,2))} − ${N(rd(s2*k,2))} = <b>${N(rd(cr,1))} г</b>.`,
+ explain2:`На каждые 100 г воды выпадает ${N(s1)} − ${N(s2)} = ${N(rd(s1-s2,1))} г. Воды у нас ${N(100*k)} г — выпадет ${N(rd(s1-s2,1))} · ${N(k)} = ${N(rd(cr,1))} г. Вода при охлаждении не уходит — меняется только то, сколько соли она может удержать.`});});
+G(6,()=>{const t=pick([20,40,60]);const s=KNO3[t];const mw=pick([40,50,150,200,250]);const ms=s*mw/100;
+ return NUM(`Какую массу нитрата калия можно растворить в ${mw} г воды при ${t} °С? Растворимость — ${N(s)} г на 100 г воды.`,ms,1,{short:`${N(s)} · ${mw}/100 = ${N(rd(ms,2))} г.`,
+ explain:`На 100 г воды — ${N(s)} г, на ${mw} г — в ${N(mw/100)} раза ${mw<100?'меньше':'больше'}: ${N(s)} · ${N(mw/100)} = <b>${N(rd(ms,1))} г</b>.`,
+ explain2:`Пропорция: 100 г воды — ${N(s)} г соли; ${mw} г воды — x. x = ${N(s)} · ${mw} / 100 = ${N(rd(ms,2))} г.`});});
+
+/* ---- L7 кристаллогидраты ---- */
+RULE(7,'Что такое <b>кристаллогидрат</b>?','Кристаллическое вещество, в состав которого входят молекулы воды',['Раствор соли в воде','Соль, которая не растворяется в воде','Кристалл льда с примесью соли'],
+{short:'Например, CuSO₄·5H₂O — в кристалле на каждую «единицу» соли 5 молекул воды.',explain:`Кристаллогидраты — кристаллические вещества, содержащие молекулы воды: ${C('CuSO4·5H2O')}, ${C('Na2CO3·10H2O')}. Они твёрдые и сухие на ощупь, хотя вода в них есть. Это не раствор: вода «встроена» в кристалл в строго определённом соотношении.`,
+explain2:'Медный купорос — синие кристаллы. Если нагреть их, вода уйдёт паром и останется белый порошок CuSO₄. Вода была внутри кристалла!'});
+RULE(7,'Медный купорос CuSO₄·5H₂O растворили в воде. Что считается растворённым веществом при расчёте w?','Безводный CuSO₄; вода из кристаллов переходит в растворитель',['Весь медный купорос CuSO₄·5H₂O','Только вода из кристаллов','CuSO₄ и вода из кристаллов вместе'],
+{short:'w считают по безводной соли: m(CuSO₄) = m(купороса) · 160/250.',explain:'При растворении кристаллогидрата его вода смешивается с водой-растворителем. В растворе — ионы <b>безводной соли</b> CuSO₄. Поэтому m(в-ва) = m(купороса) · M(CuSO₄)/M(CuSO₄·5H₂O) = m · 160/250, а масса раствора — купорос + вода.',
+explain2:'Как сухое печенье с изюмом в молоке: изюм (вода из кристаллов) не «растворённое вещество», он тоже становится частью жидкости.'});
+G(7,()=>{const h=pick(HYD);const ask=pick([0,1]);const ws=h.Ms/h.Mh*100;
+ return NUM(`Найди массовую долю ${ask?'кристаллизационной воды':'безводной соли '+C(h.s)} в кристаллогидрате ${C(h.f)} (${h.name}). Ответ в процентах.`,ask?100-ws:ws,1,{hint:'M(гидрата) = M(соли) + n·18.',
+ short:`M = ${N(h.Ms)} + ${h.n}·18 = ${N(h.Mh)}; ${ask?`w(H₂O) = ${h.n*18}/${N(h.Mh)}`:`w = ${N(h.Ms)}/${N(h.Mh)}`} ≈ ${N(rd(ask?100-ws:ws,1))} %.`,
+ explain:`1) M(${C(h.s)}) = ${N(h.Ms)} г/моль, M(H₂O) = 18 г/моль.<br>2) M(${C(h.f)}) = ${N(h.Ms)} + ${h.n}·18 = ${N(h.Mh)} г/моль.<br>3) ${ask?`w(H₂O) = ${h.n*18} / ${N(h.Mh)}`:`w(${C(h.s)}) = ${N(h.Ms)} / ${N(h.Mh)}`} ≈ <b>${N(rd(ask?100-ws:ws,1))} %</b>.`,
+ explain2:`Возьми 1 моль кристаллов: ${N(h.Mh)} г. Из них ${N(h.Ms)} г — соль, ${h.n*18} г — вода (${h.n} моль по 18 г). Доля ${ask?'воды':'соли'} — ${ask?h.n*18:N(h.Ms)} из ${N(h.Mh)}.`});});
+G(7,()=>{const h=pick(hydSol);const mh=pick([10,12.5,20,25,28.6,30,50]);const mw=pick([75,100,150,175,200,250,300]);const ms=mh*h.Ms/h.Mh;const w=ms/(mh+mw)*100;
+ return NUM(`${N(mh)} г кристаллогидрата ${C(h.f)} растворили в ${mw} г воды. Найди массовую долю ${C(h.s)} в растворе. Ответ в процентах.`,w,1,{hint:'Растворённое вещество — безводная соль. Найди её массу в кристаллах.',
+ short:`m(${h.s}) = ${N(mh)}·${N(h.Ms)}/${N(h.Mh)} ≈ ${N(rd(ms,2))} г; w = ${N(rd(ms,2))}/${N(mh+mw)} ≈ ${N(rd(w,1))} %.`,
+ explain:`1) M(${C(h.f)}) = ${N(h.Ms)} + ${h.n}·18 = ${N(h.Mh)} г/моль; доля соли в кристаллах ${N(h.Ms)}/${N(h.Mh)} ≈ ${N(rd(h.Ms/h.Mh,4))}.<br>2) m(${C(h.s)}) = ${N(mh)} · ${N(rd(h.Ms/h.Mh,4))} ≈ ${N(rd(ms,2))} г.<br>3) m(р-ра) = ${N(mh)} + ${mw} = ${N(mh+mw)} г.<br>4) w = ${N(rd(ms,2))} / ${N(mh+mw)} ≈ <b>${N(rd(w,1))} %</b>.<br>Если забыть про воду в кристаллах: ${N(mh)}/${N(mh+mw)} ≈ ${N(rd(mh/(mh+mw)*100,1))} % — неверно.`,
+ explain2:`Через моли: n(гидрата) = ${N(mh)}/${N(h.Mh)} ≈ ${N(rd(mh/h.Mh,4))} моль = n(${h.s}); m(${h.s}) = ${N(rd(mh/h.Mh,4))} · ${N(h.Ms)} ≈ ${N(rd(ms,2))} г. Дальше как обычно.`});});
+G(7,()=>{const h=pick(hydSol);const msol=pick([100,200,250,400,500]);const w0=pick([2,4,5,8,10]);const ms=msol*w0/100;const mh=ms*h.Mh/h.Ms;const ask=pick([0,1]);
+ return NUM(`Нужно приготовить ${msol} г раствора с массовой долей ${C(h.s)} ${w0} %, используя ${C(h.f)}. Сколько граммов ${ask?'воды':'кристаллогидрата'} нужно взять?`,ask?msol-mh:mh,1,{hint:'Сначала масса безводной соли, потом — масса кристаллогидрата, в котором её столько.',
+ short:`m(${h.s}) = ${N(ms)} г; m(гидрата) = ${N(ms)}·${N(h.Mh)}/${N(h.Ms)} ≈ ${N(rd(mh,1))} г; воды ≈ ${N(rd(msol-mh,1))} г.`,
+ explain:`1) m(${C(h.s)}) = ${N(w0/100)} · ${msol} = ${N(ms)} г.<br>2) В ${N(h.Mh)} г кристаллогидрата — ${N(h.Ms)} г соли. Нужно ${N(ms)} г соли → гидрата ${N(ms)} · ${N(h.Mh)} / ${N(h.Ms)} ≈ ${N(rd(mh,2))} г.<br>3) Воды: ${msol} − ${N(rd(mh,2))} ≈ ${N(rd(msol-mh,2))} г.<br>Ответ: <b>${N(rd(ask?msol-mh:mh,1))} г</b>.`,
+ explain2:`Типичная ошибка — взять ${N(ms)} г кристаллогидрата: в нём соли меньше, ведь часть массы — вода. Кристаллов нужно больше — в ${N(h.Mh)}/${N(h.Ms)} ≈ ${N(rd(h.Mh/h.Ms,3))} раза.`});});
+
+/* ---- L8 ★ ---- */
+RULE(8,'Правило креста: в каком отношении смешать растворы w₁ и w₂ (w₁ > w > w₂), чтобы получить w?','m₁ : m₂ = (w − w₂) : (w₁ − w)',['m₁ : m₂ = (w₁ − w) : (w − w₂)','m₁ : m₂ = w₁ : w₂','m₁ : m₂ = (w₁ + w₂) : w'],
+{short:'К каждому раствору — разность «по диагонали» с другим раствором.',explain:'Из m₁w₁ + m₂w₂ = (m₁ + m₂)w: m₁(w₁ − w) = m₂(w − w₂) → <b>m₁ : m₂ = (w − w₂) : (w₁ − w)</b>. Самая частая ошибка — перевернуть отношение: тогда крепкого раствора возьмёшь слишком много.',
+explain2:'Проверь крайний случай: w почти равно w₁ → крепкого раствора нужно почти всё. По формуле: (w − w₂) большое, (w₁ − w) ≈ 0 → m₁ ≫ m₂ ✔ Перевёрнутая формула дала бы наоборот.'});
+G(8,()=>{const w1=pick([40,50,60,70,80,96]);const w2=pick([0,5,10,15]);const w=pick([20,25,30,35]);if(!(w2<w&&w<w1))return null;const M=pick([200,300,400,500,600]);const m1=M*(w-w2)/(w1-w);const tot=m1/(w-w2)*(w1-w2);
+ const m1t=M*(w-w2)/(w1-w2);const ask=pick([0,1]);
+ return NUM(`★ Сколько граммов ${w1} %-го раствора ${w2===0?'и воды':'и '+w2+' %-го раствора'} нужно взять, чтобы приготовить ${M} г ${w} %-го раствора? В ответе укажи массу ${ask?(w2===0?'воды':w2+' %-го раствора'):w1+' %-го раствора'}.`,ask?M-m1t:m1t,1,
+ {pic:crossPic(w1,w2,w,N(w-w2),N(w1-w)),hint:'Правило креста: части = разности по диагонали.',
+ short:`${w1} % : ${w2} % = ${w-w2} : ${w1-w}; 1 часть = ${M}/${w1-w2} г.`,
+ explain:`Крест: к ${w1} % — ${w} − ${w2} = ${w-w2} частей, к ${w2} % — ${w1} − ${w} = ${w1-w} частей. Всего ${w1-w2} частей = ${M} г, 1 часть = ${N(rd(M/(w1-w2),4))} г.<br>${w1} %-го: ${w-w2} · ${N(rd(M/(w1-w2),4))} ≈ ${N(rd(m1t,2))} г; ${w2===0?'воды':w2+' %-го'}: ${N(rd(M-m1t,2))} г.<br>Ответ: <b>${N(rd(ask?M-m1t:m1t,1))} г</b>.`,
+ explain2:`Проверка уравнением: ${N(rd(m1t,2))}·${N(w1/100)} + ${N(rd(M-m1t,2))}·${N(w2/100)} = ${N(rd(m1t*w1/100+(M-m1t)*w2/100,2))} г вещества; ${N(rd(m1t*w1/100+(M-m1t)*w2/100,2))}/${M} = ${N(rd((m1t*w1/100+(M-m1t)*w2/100)/M*100,2))} % ✔`});},{star:true});
+G(8,()=>{const d=pick([4,5,6,8,10,12,15]);const k=pick([1,2,3]);// added water mass = k * initial mass; w drops by d percentage points
+ const w=d*(k+1)/k;if(!Number.isInteger(w*10))return null;
+ return NUM(`★ К раствору соли добавили ${k===1?'столько же':k===2?'вдвое больше':'втрое больше'} воды (по массе), чем было раствора. Массовая доля соли уменьшилась на ${d} ${d>4?'процентных пунктов':'процентных пункта'}. Какой была исходная массовая доля? Ответ в процентах.`,w,1,{hint:'Пусть исходная доля w, масса m. После разбавления масса стала больше в '+(k+1)+' раза.',
+ short:`w − w/${k+1} = ${d} → w = ${N(w)} %.`,
+ explain:`Пусть было m г раствора с долей w. Добавили ${k}m воды → масса ${k+1}m, вещества столько же → новая доля w/${k+1}.<br>Уравнение: w − w/${k+1} = ${d} → w·${k}/${k+1} = ${d} → w = ${d}·${k+1}/${k} = <b>${N(w)} %</b>.<br>Проверка: ${N(w)} → ${N(rd(w/(k+1),3))}, разница ${d} ✔`,
+ explain2:`Если масса выросла в ${k+1} раза, доля стала ${k===1?'вдвое':'в '+(k+1)+' раза'} меньше. Значит, «потеряли» ${k}/${k+1} от исходной доли, и это ${d} пунктов. Вся доля = ${d} : ${k}/${k+1} = ${N(w)} %.`});},{star:true});
+G(8,()=>{const m=pick([100,150,200,300,400]);const w1=pick([4,5,8,10]);const w2=pick([16,20,25]);const h=HYD[0];const wh=h.Ms/h.Mh;const x=m*(w2/100-w1/100)/(wh-w2/100);
+ return NUM(`★ Сколько граммов медного купороса ${C('CuSO4·5H2O')} нужно растворить в ${m} г ${w1} %-го раствора ${C('CuSO4')}, чтобы получить ${w2} %-й раствор?`,x,1,{hint:'Купорос — это как «раствор» CuSO₄ с w = 160/250 = 64 %.',
+ short:`${m}·${N(w1/100)} + 0,64x = ${N(w2/100)}(${m} + x) → x ≈ ${N(rd(x,1))} г.`,
+ explain:`Купорос содержит CuSO₄ с долей 160/250 = 0,64. Пусть x г купороса.<br>CuSO₄: ${N(m*w1/100)} + 0,64x; раствор: ${m} + x.<br>${N(m*w1/100)} + 0,64x = ${N(w2/100)}(${m} + x) → ${N(rd(0.64-w2/100,2))}x = ${N(rd(m*(w2-w1)/100,2))} → x ≈ <b>${N(rd(x,1))} г</b>.`,
+ explain2:`Правило креста с «раствором» 64 %: купорос : раствор = (${w2} − ${w1}) : (64 − ${w2}) = ${w2-w1} : ${64-w2}. Купороса ${m} · ${w2-w1}/${64-w2} ≈ ${N(rd(x,1))} г.`});},{star:true});
+G(8,()=>{const mw=pick([150,200,250]);const ls=pick([2,3,4]);const sp=pick([10,15]);const ms=ls*sp;const w1=ms/(mw+ms);const half=pick([2,3,4]);// pour out 1/half and refill with water to the same mass
+ const w2=w1*(1-1/half);
+ return NUM(`★ Артём насыпал в ${mw} г воды ${ls} ложки соли по ${sp} г. Потом отлил ${half===2?'половину':half===3?'треть':'четверть'} раствора и долил столько же воды. Какой стала массовая доля соли? Ответ в процентах.`,w2*100,1,{hint:'Отливание не меняет w; доливание воды до прежней массы уменьшает соль.',
+ short:`w₁ = ${ms}/${mw+ms}; осталось ${half-1}/${half} соли → w₂ = w₁·${half-1}/${half} ≈ ${N(rd(w2*100,1))} %.`,
+ explain:`1) Соли ${ls}·${sp} = ${ms} г, раствора ${mw+ms} г, w₁ = ${ms}/${mw+ms} ≈ ${N(rd(w1*100,2))} %.<br>2) Отлил 1/${half} — w не изменилась, но соли осталось ${N(rd(ms*(1-1/half),3))} г.<br>3) Долил воды до ${mw+ms} г: w₂ = ${N(rd(ms*(1-1/half),3))}/${mw+ms} ≈ <b>${N(rd(w2*100,1))} %</b>.`,
+ explain2:`Короче: масса раствора в итоге та же, а соли стало ${half-1}/${half} от исходной. Значит, и доля стала ${half-1}/${half} от исходной: ${N(rd(w1*100,2))} · ${half-1}/${half} ≈ ${N(rd(w2*100,1))} %.`});},{star:true});
+G(8,()=>{const t1=pick([60,80]);const t2=pick([0,20]);const s1=KNO3[t1],s2=KNO3[t2];const msol=pick([100,200,300]);const w0=pick([20,25,30,40]);const ms=msol*w0/100,mw=msol-ms;
+ const sat=s2*mw/100;if(ms<=sat+1||ms>=s1*mw/100)return null;const cr=ms-sat;
+ return NUM(`★ При ${t1} °С приготовили ${msol} г ${w0} %-го раствора нитрата калия (он ненасыщенный). Раствор охладили до ${t2} °С. Сколько граммов соли выпадет? Растворимость KNO₃ при ${t2} °С — ${N(s2)} г на 100 г воды.`,cr,1,{hint:'Найди массы соли и воды, затем — сколько соли может удержать эта вода при '+t2+' °С.',
+ short:`Соли ${N(ms)} г, воды ${N(mw)} г; при ${t2} °С удержится ${N(rd(sat,2))} г → выпадет ${N(rd(cr,1))} г.`,
+ explain:`1) m(KNO₃) = ${N(w0/100)} · ${msol} = ${N(ms)} г, m(воды) = ${N(mw)} г.<br>2) При ${t2} °С в ${N(mw)} г воды растворяется ${N(s2)} · ${N(mw)}/100 = ${N(rd(sat,2))} г.<br>3) Выпадет: ${N(ms)} − ${N(rd(sat,2))} = <b>${N(rd(cr,1))} г</b>.<br>(При ${t1} °С раствор действительно ненасыщенный: вода могла бы удержать ${N(rd(s1*mw/100,1))} г.)`,
+ explain2:`Главное — в расчёте участвует масса <b>воды</b>, а не раствора: ведь растворимость дана на 100 г воды. Ошибка — взять ${N(s2)} % от ${msol} г.`});},{star:true});
+
+window.TOPIC={id:'c8_solutions',title:'Растворы',subtitle:'Химия · 8 класс',
+intro:`<p>Почему газировка шипит, зачем солью посыпают дороги и сколько сахара в банке колы. Растворимость и насыщенные растворы, массовая доля, разбавление, упаривание, смешивание, кристаллогидраты и правило креста. В теории есть живая модель «смеситель растворов» с ползунками, в конце — олимпиадные задачи.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Растворы и растворимость','Массовая доля вещества','Готовим раствор','Разбавление и добавление вещества','Упаривание','Смешивание растворов','Расчёты по растворимости','Кристаллогидраты','★ Правило креста и олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

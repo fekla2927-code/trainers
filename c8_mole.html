@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Количество вещества — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range}=H;
+const N=H.num;
+const C=f=>H.chem(f).replace(/NaN/g,'Na&#8288;N');
+const rd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+/* numeric answer rounded to d decimals; tolerance = a bit more than half of the last kept digit */
+const NUM=(q,v,d,extra)=>{const a=rd(v,d);if(!isFinite(a)||a===0)return null;const exact=Math.abs(a-v)<1e-9;
+  return Object.assign({type:'num',q:q+(exact?'':[' Округли до целых.',' Округли до десятых.',' Округли до сотых.',' Округли до тысячных.'][d]),ans:a,tol:0.6*Math.pow(10,-d)/Math.abs(a)},extra||{});};
+const SV=(w,h,inner,lab)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${lab||'Рисунок'}" style="font-family:system-ui,sans-serif;max-width:100%">${inner}</svg>`;
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.fs||14}" font-weight="${o.fw||600}" fill="${o.c||'var(--ink)'}">${s}</text>`;};
+const ROM=['0','I','II','III','IV','V','VI','VII','VIII'];
+const KEYS=['₂','₃','₄','₅','₇','(',')'];
+
+/* ---------- school table of relative atomic masses ---------- */
+const AR={H:1,He:4,Li:7,C:12,N:14,O:16,F:19,Ne:20,Na:23,Mg:24,Al:27,Si:28,P:31,S:32,Cl:35.5,Ar:40,K:39,Ca:40,Cr:52,Mn:55,Fe:56,Cu:64,Zn:65,Br:80,Ag:108,I:127,Ba:137,Hg:201,Pb:207};
+/* parse formula: Al2(SO4)3, CuSO4·5H2O → {Al:2,S:3,O:12} (order of appearance) */
+function parseF(f){const tot={};String(f).split('·').forEach(part=>{const m=part.match(/^(\d+)(.*)$/);const k=m?+m[1]:1;const s=m?m[2]:part;let i=0;
+  const seq=()=>{const c={};while(i<s.length&&s[i]!==')'&&s[i]!==']'){let sub;if(s[i]==='('||s[i]==='['){i++;sub=seq();i++;}else{const mm=s.slice(i).match(/^[A-Z][a-z]?/);if(!mm)throw new Error('bad formula '+f);i+=mm[0].length;if(!(mm[0] in AR))throw new Error('no Ar for '+mm[0]);sub={[mm[0]]:1};}
+    const d=s.slice(i).match(/^\d+/);let q=1;if(d){q=+d[0];i+=d[0].length;}for(const e in sub)c[e]=(c[e]||0)+q*sub[e];}return c;};
+  const c=seq();for(const e in c)tot[e]=(tot[e]||0)+k*c[e];});return tot;}
+const Mr=f=>{const c=parseF(f);let s=0;for(const e in c)s+=AR[e]*c[e];return rd(s,6);};
+/* "2·27 + 3·16 = 102" */
+const MrSum=f=>{const c=parseF(f);return Object.keys(c).map(e=>c[e]>1?`${c[e]}·${N(AR[e])}`:N(AR[e])).join(' + ')+' = '+N(Mr(f));};
+const MrSumL=f=>{const c=parseF(f);return Object.keys(c).map(e=>c[e]>1?`${c[e]}·A<sub>r</sub>(${e})`:`A<sub>r</sub>(${e})`).join(' + ');};
+const atomsTotal=f=>{const c=parseF(f);let s=0;for(const e in c)s+=c[e];return s;};
+
+const NA=6.02,VM=22.4;
+/* substances: formula, nominative, genitive */
+const SUB={H2O:['вода','воды'],CO2:['углекислый газ','углекислого газа'],O2:['кислород','кислорода'],H2:['водород','водорода'],N2:['азот','азота'],CH4:['метан','метана'],NH3:['аммиак','аммиака'],NaCl:['поваренная соль','поваренной соли'],CaCO3:['мел','мела'],H2SO4:['серная кислота','серной кислоты'],Fe:['железо','железа'],Cu:['медь','меди'],Al:['алюминий','алюминия'],C12H22O11:['сахар (сахароза)','сахара'],SO2:['сернистый газ','сернистого газа'],He:['гелий','гелия'],Cl2:['хлор','хлора'],HCl:['хлороводород','хлороводорода'],C3H8:['пропан','пропана'],NaOH:['гидроксид натрия','гидроксида натрия'],CO:['угарный газ','угарного газа'],Ar:['аргон','аргона'],C:['углерод (алмаз)','углерода'],Ag:['серебро','серебра'],Au:null};
+delete SUB.Au;
+const GAS=['H2','O2','N2','CO2','CH4','NH3','SO2','He','Cl2','HCl','C3H8','CO','Ar'];
+const ALL=Object.keys(SUB);
+const NS=[0.1,0.2,0.25,0.3,0.4,0.5,1.5,2,2.5,3,4,5];
+const nm=f=>SUB[f][0],gn=f=>SUB[f][1];
+const MS=f=>`M(${C(f)}) = ${MrSum(f)} г/моль`;
+/* scientific notation */
+const sci=(x,d)=>{if(x===0)return '0';const e=Math.floor(Math.log10(Math.abs(x))+1e-12);const m=rd(x/Math.pow(10,e),d==null?2:d);return `${N(m)}·10<sup>${e}</sup>`;};
+const s23=x=>`${N(rd(x,3))}·10<sup>23</sup>`;
+
+/* hub picture m ↔ n ↔ N, V */
+function hubPic(hl){const c=k=>hl&&hl.includes(k)?'var(--hl)':'var(--card)';const op=k=>hl&&hl.includes(k)?'.55':'1';
+  const box=(x,y,k,t1,t2)=>`<rect x="${x-40}" y="${y-24}" width="80" height="48" rx="12" fill="${c(k)}" fill-opacity="${op(k)}" stroke="var(--fig)" stroke-width="1.6"/>`+T(x,y-3,t1,{fs:17,fw:700})+T(x,y+16,t2,{fs:10,fw:500,c:'var(--muted)'});
+  const sb=s=>`${s}<tspan dy="3" font-size="9">`;
+  let s=`<line x1="86" y1="110" x2="130" y2="110" stroke="var(--fig)" stroke-width="1.6"/><line x1="210" y1="110" x2="254" y2="110" stroke="var(--fig)" stroke-width="1.6"/><line x1="170" y1="52" x2="170" y2="86" stroke="var(--fig)" stroke-width="1.6"/>`;
+  s+=box(170,110,'n','n','моль')+box(170,28,'m','m','г')+box(46,110,'N','N','штук')+box(294,110,'V','V','л (газ, н.у.)');
+  s+=T(178,74,'× M',{a:'start',fs:12,c:'var(--accent-ink)'})+T(162,74,': M',{a:'end',fs:12,c:'var(--accent-ink)'});
+  s+=T(108,102,sb('× N')+'A</tspan>',{fs:12,c:'var(--accent-ink)'})+T(108,128,sb(': N')+'A</tspan>',{fs:12,c:'var(--accent-ink)'});
+  s+=T(232,102,sb('× V')+'m</tspan>',{fs:12,c:'var(--accent-ink)'})+T(232,128,sb(': V')+'m</tspan>',{fs:12,c:'var(--accent-ink)'});
+  return SV(340,140,s,'Схема переходов через количество вещества');}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Сколько молекул в глотке воды?',lvl:0,html:`
+<p class="hook">Сделай большой глоток воды — это примерно 18 г. В нём около <b>600 000 000 000 000 000 000 000</b> молекул (6·10²³). Если бы ты считал по одной молекуле в секунду без сна и еды, тебе понадобилось бы около 19 000 000 000 000 000 лет — это в миллион раз дольше, чем существует Вселенная! Химикам неудобно ворочать такими числами, поэтому они придумали «упаковку» для атомов — <b>моль</b>.</p>
+<p>В этой теме: моль и число Авогадро → молярная масса → переходы «граммы ↔ моли ↔ штуки» → молярный объём газа 22,4 л → почему гелиевый шарик улетает, а углекислый газ скапливается в подвалах (плотность газа) → олимпиадные задачи.</p>
+<div class="fact">Число Авогадро с 2019 года — точная константа: N<sub>A</sub> = 6,02214076·10²³ моль⁻¹. В школьных задачах берут 6,02·10²³.</div>`},
+{title:'Количество вещества и моль',lvl:0,html:`
+<div class="box rule"><b>Определение</b><b>Количество вещества</b> n — это число частиц (атомов, молекул), выраженное в «упаковках» по 6,02·10²³ штук. Единица — <b>моль</b>. 1 моль любого вещества содержит 6,02·10²³ частиц.</div>
+<p><b>Почему так.</b> Ты же не покупаешь яйца поштучно — берёшь «десяток». Бумагу — пачками по 500 листов. Пара носков — это 2. Дюжина — 12. А <b>моль — это «химическая дюжина»</b>, только очень большая: 6,02·10²³. Атомы такие крошечные, что меньшей «упаковкой» пользоваться неудобно.</p>
+<div class="box ex"><b>Примеры</b>1 моль воды — 6,02·10²³ молекул H₂O. 1 моль железа — 6,02·10²³ атомов Fe. 2 моль кислорода O₂ — 12,04·10²³ молекул.</div>
+<div class="box err"><b>Частая ошибка</b>Путать молекулы и атомы. В 1 моль H₂O — 1 моль молекул, но 2 моль атомов H и 1 моль атомов O (всего 3 моль атомов).</div>
+<div class="box tip"><b>Атомы внутри</b>n(атомов элемента) = n(вещества) · индекс. В 2 моль H₂SO₄: n(O) = 2·4 = 8 моль.</div>`},
+{title:'Число Авогадро: N = n · N<sub>A</sub>',lvl:1,html:`
+<div class="box rule"><b>Формулы</b><span class="m">N = n · N<sub>A</sub></span>, <span class="m">n = N / N<sub>A</sub></span>, где N<sub>A</sub> = 6,02·10²³ моль⁻¹ — постоянная Авогадро.</div>
+<p><b>Почему так.</b> Число частиц = число «упаковок» × сколько в одной упаковке. Как число яиц = число десятков × 10.</p>
+<div class="box ex"><b>Пример 1</b>3 моль CO₂: N = 3 · 6,02·10²³ = 18,06·10²³ = 1,806·10²⁴ молекул.</div>
+<div class="box ex"><b>Пример 2</b>N = 3,01·10²³ атомов железа: n = 3,01·10²³ / 6,02·10²³ = 0,5 моль.</div>
+<div class="box tip"><b>Как вводить ответ</b>В задачах тренажёра ответ про число частиц вводят «в единицах 10²³»: 18,06·10²³ → пиши 18,06. Степени при делении сокращаются: 10²³ / 10²³ = 1.</div>
+<div class="fact">Амедео Авогадро (1776–1856) сам этого числа не знал! Его впервые оценил в 1865 году австриец Йозеф Лошмидт, а назвали в честь Авогадро позже, в начале XX века.</div>`},
+{title:'Молярная масса M',lvl:2,html:`
+<div class="box rule"><b>Определение</b><b>Молярная масса</b> M — масса 1 моль вещества: <span class="m">M = m / n</span>, единица г/моль. Численно M равна M<sub>r</sub>: M<sub>r</sub>(H₂O) = 18 → M(H₂O) = 18 г/моль.</div>
+<p><b>Почему так.</b> Число Авогадро подобрали специально так, чтобы 1 моль атомов углерода весил ровно 12 г. Поэтому «относительная масса» молекулы сразу превращается в граммы на моль. Очень удобно!</p>
+<div class="box rule"><b>Главные формулы</b><span class="m">n = m / M</span>, <span class="m">m = n · M</span></div>
+<div class="box ex"><b>Пример</b>Сколько моль в 88 г CO₂? M(CO₂) = 12 + 2·16 = 44 г/моль; n = 88 / 44 = 2 моль.</div>
+<div class="box err"><b>Частая ошибка</b>Делить «наоборот»: n = M / m. Проверяй по единицам: г : (г/моль) = моль ✔, а (г/моль) : г — не моль.</div>
+<div class="box tip"><b>Треугольник</b>Закрой пальцем нужную величину: <span class="m">m</span> сверху, <span class="m">n · M</span> снизу. m = n·M, n = m/M, M = m/n.</div>`},
+{title:'Цепочка m ↔ n ↔ N',lvl:3,html:`
+<div class="box rule"><b>Правило моста</b>Из граммов в штуки (и обратно) всегда идём <b>через моли</b>: <span class="m">m → n = m/M → N = n·N<sub>A</sub></span>.</div>
+<div class="fig">${hubPic(['n'])}</div>
+<p><b>Почему так.</b> Количество вещества n — как «пересадочная станция метро»: все линии пересекаются в ней. Из любой величины — в n, а из n — в любую.</p>
+<div class="box ex"><b>Пример</b>Сколько молекул в 9 г воды? n = 9 / 18 = 0,5 моль; N = 0,5 · 6,02·10²³ = 3,01·10²³.</div>
+<div class="box ex"><b>Обратно</b>Масса 1,204·10²⁴ атомов меди? n = 12,04·10²³ / 6,02·10²³ = 2 моль; m = 2 · 64 = 128 г.</div>
+<div class="box err"><b>Частая ошибка</b>Сравнивать число молекул по граммам: «в 1 г кислорода больше молекул, чем в 1 г водорода, раз кислород тяжелее». Наоборот! 1 г H₂ — 0,5 моль, 1 г O₂ — всего 1/32 моль. Лёгких молекул в том же грамме больше.</div>`},
+{title:'Живой калькулятор моля',lvl:3,html:`
+<p>Выбери вещество и двигай ползунок количества вещества — смотри, как меняются масса, число частиц и объём (для газов).</p>
+<div class="widget" id="w-mole"></div>`},
+{title:'Молярный объём газа: 22,4 л',lvl:4,html:`
+<div class="box rule"><b>Закон Авогадро</b>В равных объёмах разных газов при одинаковых условиях — одинаковое число молекул. Поэтому 1 моль <b>любого газа</b> при нормальных условиях (н.у.: 0 °С и 101,3 кПа) занимает <b>V<sub>m</sub> = 22,4 л/моль</b>.</div>
+<div class="box rule"><b>Формулы</b><span class="m">V = n · V<sub>m</sub></span>, <span class="m">n = V / V<sub>m</sub></span></div>
+<p><b>Почему так.</b> В газе молекулы очень далеко друг от друга — расстояния в сотни раз больше самих молекул. Поэтому объём газа зависит от <b>числа</b> молекул, а не от того, большие они или маленькие. Как зрители на огромном стадионе: неважно, худые они или нет — места на трибунах нужно по числу людей.</p>
+<div class="box ex"><b>Пример</b>2 моль кислорода при н.у.: V = 2 · 22,4 = 44,8 л. 11,2 л водорода: n = 11,2 / 22,4 = 0,5 моль.</div>
+<div class="box err"><b>Частая ошибка</b>Применять 22,4 л к воде или железу. Только для <b>газов</b>! 1 моль воды (18 г) — это всего 18 мл.</div>
+<div class="fact">22,4 л — это куб с ребром примерно 28 см, чуть больше коробки из-под обуви. В нём 6,02·10²³ молекул любого газа: хоть лёгкого водорода, хоть тяжёлого хлора.</div>`},
+{title:'Переходы m ↔ V и N ↔ V',lvl:5,html:`
+<div class="box rule"><b>Тот же мост</b><span class="m">m → n = m/M → V = n·V<sub>m</sub></span> и обратно <span class="m">V → n = V/V<sub>m</sub> → m = n·M</span>.</div>
+<div class="fig">${hubPic(['m','n','V'])}</div>
+<div class="box ex"><b>Пример</b>Какой объём займут 8,8 г CO₂ при н.у.? n = 8,8 / 44 = 0,2 моль; V = 0,2 · 22,4 = 4,48 л.</div>
+<div class="box ex"><b>Пример 2</b>Масса 5,6 л аммиака NH₃ (н.у.)? n = 5,6 / 22,4 = 0,25 моль; m = 0,25 · 17 = 4,25 г.</div>
+<div class="box tip"><b>Одной формулой</b><span class="m">${H.frac('m','M')} = ${H.frac('V','V<sub>m</sub>')} = ${H.frac('N','N<sub>A</sub>')} = n</span> — все три отношения равны одному и тому же n.</div>
+<div class="box err"><b>Частая ошибка</b>Думать, что 10 г водорода и 10 г кислорода займут одинаковый объём. Нет: одинаковый объём у одинакового <b>числа моль</b>. 10 г H₂ — 5 моль (112 л), 10 г O₂ — 0,3125 моль (7 л).</div>`},
+{title:'Плотность газов: почему шарик улетает',lvl:6,html:`
+<div class="box rule"><b>Относительная плотность</b>Во сколько раз один газ тяжелее другого: <span class="m">D = M₁ / M₂</span>.<br>По воздуху: <span class="m">D<sub>возд</sub> = M / 29</span>; по водороду: <span class="m">D<sub>H₂</sub> = M / 2</span>.<br>Обратно: <span class="m">M = 29·D<sub>возд</sub></span>, <span class="m">M = 2·D<sub>H₂</sub></span>.</div>
+<p><b>Почему так.</b> Одинаковые объёмы газов содержат одинаковое число молекул (закон Авогадро). Значит, их массы относятся как массы молекул, то есть как молярные массы. 29 г/моль — средняя молярная масса воздуха (в нём ≈ 78% N₂ с M = 28 и ≈ 21% O₂ с M = 32).</p>
+<div class="box ex"><b>Пример</b>Гелий: D<sub>возд</sub> = 4 / 29 ≈ 0,14 — в 7 раз легче воздуха, поэтому шарик улетает. CO₂: 44 / 29 ≈ 1,52 — тяжелее воздуха, скапливается внизу.</div>
+<div class="box ex"><b>Пример 2</b>Газ в 8 раз тяжелее водорода: M = 2 · 8 = 16 г/моль — это метан CH₄.</div>
+<div class="box tip"><b>Плотность газа при н.у.</b><span class="m">ρ = M / 22,4</span> (г/л). Воздух: 29 / 22,4 ≈ 1,29 г/л.</div>
+<div class="box err"><b>Частая ошибка</b>Делить на 1 вместо 2: M(H₂) = 2, а не 1 — водород состоит из молекул H₂.</div>
+<div class="fact">В «Собачьей пещере» под Неаполем углекислый газ стелется у пола слоем около полуметра: собака задыхалась, а стоящий рядом человек дышал спокойно.</div>`},
+{title:'★ Смеси газов и хитрые задачи',lvl:7,html:`
+<div class="box rule"><b>Средняя молярная масса смеси газов</b><span class="m">M<sub>ср</sub> = φ₁·M₁ + φ₂·M₂ + …</span>, где φ — объёмные (они же мольные) доли.</div>
+<div class="box ex"><b>Пример: воздух</b>0,78·28 + 0,21·32 + 0,01·40 ≈ 28,96 ≈ 29 г/моль. Вот откуда «29».</div>
+<div class="box ex"><b>Найти состав</b>Смесь H₂ и O₂ имеет D<sub>H₂</sub> = 9, т. е. M<sub>ср</sub> = 18. Пусть доля H₂ = x: 2x + 32(1 − x) = 18 → 30x = 14 → x ≈ 0,467 (46,7%).</div>
+<div class="box tip"><b>Атомы в порции</b>Сначала n вещества, потом умножь на число атомов в формуле. В 9 г H₂O: 0,5 моль молекул → 1,5 моль атомов → 9,03·10²³ атомов.</div>
+<div class="box tip"><b>Масса одной молекулы</b><span class="m">m₀ = M / N<sub>A</sub></span>. Для воды: 18 / 6,02·10²³ ≈ 2,99·10⁻²³ г.</div>`}
+];
+
+const symbols={tab:'Формулы',title:'Обозначения и формулы',rows:[
+['n','количество вещества, моль','Сколько «упаковок» по 6,02·10²³ частиц.','2 моль'],
+['N<sub>A</sub>','постоянная Авогадро','6,02·10²³ частиц в 1 моль.','6,02·10²³ моль⁻¹'],
+['N = n·N<sub>A</sub>','число частиц','Упаковки × штук в упаковке.','0,5·6,02·10²³ = 3,01·10²³'],
+['M','молярная масса, г/моль','Масса 1 моль; численно = M<sub>r</sub>.','M(H₂O) = 18'],
+['n = m/M','через массу','Граммы → моли.','36 / 18 = 2 моль'],
+['V<sub>m</sub>','молярный объём','1 моль газа при н.у. — 22,4 л.','22,4 л/моль'],
+['V = n·V<sub>m</sub>','объём газа (н.у.)','Только для газов!','0,5·22,4 = 11,2 л'],
+['D = M₁/M₂','относительная плотность','Во сколько раз газ тяжелее другого.','D<sub>возд</sub>(CO₂) ≈ 1,52'],
+['M = 29·D<sub>возд</sub>','по воздуху','Средняя M воздуха — 29.','D = 2 → M = 58'],
+['M = 2·D<sub>H₂</sub>','по водороду','M(H₂) = 2.','D = 16 → M = 32'],
+['ρ = M/V<sub>m</sub>','плотность газа при н.у., г/л','Масса 1 л газа.','O₂: 32/22,4 ≈ 1,43']
+],after:`<div class="box tip" style="margin-top:14px"><b>Главная схема</b>m ⇄ n ⇄ N и n ⇄ V: из любой величины — сначала в моли.</div>`};
+
+/* ---------- widget ---------- */
+function onTheory(root){const w=root.querySelector('#w-mole');if(!w)return;
+  const L=['H2O','CO2','O2','H2','He','CH4','NaCl','Fe','Au0','C12H22O11'].filter(f=>SUB[f]);
+  const sel='font:inherit;font-size:16px;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)';
+  w.innerHTML=`<label>Вещество: <select id="wS" style="${sel}">${L.map(f=>`<option value="${f}">${nm(f)} — ${f.replace(/(\d+)/g,d=>d.replace(/\d/g,c=>'₀₁₂₃₄₅₆₇₈₉'[c]))}</option>`).join('')}</select></label>
+<label>n = <output id="wn">1</output> моль<input type="range" id="wN" min="0.1" max="5" step="0.1" value="1"></label>
+<div id="wO" style="font-size:15px;line-height:1.7"></div>`;
+  const g=id=>w.querySelector(id);
+  const draw=()=>{const f=g('#wS').value,n=+g('#wN').value;g('#wn').textContent=N(n);const M=Mr(f);const m=rd(n*M,2);const isG=GAS.includes(f);
+    g('#wO').innerHTML=`M = ${MrSum(f)} г/моль<br>m = n·M = ${N(n)}·${N(M)} = <span class="out">${N(m)} г</span><br>N = n·N<sub>A</sub> = ${N(n)}·6,02·10<sup>23</sup> = <span class="out">${sci(n*NA*1e23,3)}</span> ${f==='Fe'?'атомов':'частиц'}<br>`+
+    (isG?`V = n·V<sub>m</sub> = ${N(n)}·22,4 = <span class="out">${N(rd(n*VM,2))} л</span> (н.у.) — это ${N(rd(n*VM/0.5,1))} пол-литровых бутылок`:`<span class="small">22,4 л здесь не работает: при н.у. это не газ.</span>`)+
+    (f==='H2O'?`<br>Объём жидкой воды: ≈ <span class="out">${N(rd(m,1))} мл</span> — примерно ${N(rd(m/18,1))} ${(v=>Number.isInteger(v)?H.plural(v,'глоток','глотка','глотков'):'глотка')(rd(m/18,1))} 😄`:'');};
+  w.querySelectorAll('select,input').forEach(i=>i.oninput=i.onchange=draw);draw();}
+
+/* =================== GENERATORS =================== */
+/* L0 — моль */
+RULE(0,'Что такое 1 моль?','Порция вещества, в которой 6,02·10<sup>23</sup> частиц (атомов или молекул)',['Масса 1 г любого вещества','1 литр любого вещества','Одна молекула вещества'],
+{short:'Моль — «химическая дюжина» из 6,02·10²³ частиц.',explain:'1 моль — это количество вещества, в котором содержится 6,02·10²³ структурных частиц (атомов, молекул). Масса 1 моль у разных веществ разная (вода 18 г, железо 56 г), а объём 22,4 л бывает только у газов при н.у.',
+explain2:'Дюжина — это всегда 12 штук, чего угодно: яиц, карандашей. Моль — всегда 6,02·10²³ штук чего угодно: атомов железа, молекул воды. Число одно и то же, а массы разные — как дюжина арбузов тяжелее дюжины вишен.'});
+RULE(0,'В каких единицах измеряют количество вещества n?','в молях (моль)',['в граммах (г)','в литрах (л)','в г/моль'],
+{short:'n — в молях.',explain:'Количество вещества n измеряется в <b>молях</b>. Граммы — масса m, литры — объём V, г/моль — молярная масса M. Эти величины легко перепутать, поэтому всегда подписывай единицы.',
+explain2:'Запомни тройку: m — граммы, n — моли, M — граммы на моль. «M большая — это масса одной порции-моля».'});
+G(0,()=>{for(;;){const f=pick(['H2SO4','H2O','CO2','NH3','CH4','Al2O3','Fe2O3','HNO3','CaCO3','P2O5','C12H22O11','Ca(OH)2','H3PO4']);const c=parseF(f);const e=pick(Object.keys(c));const n=pick([0.5,1,2,3,0.2,1.5,4]);const ans=n*c[e];if(c[e]===1)continue;
+return {type:'num',q:`Сколько моль атомов <b>${e}</b> содержится в ${N(n)} моль ${C(f)}?`,ans,
+short:`n(${e}) = ${N(n)} · ${c[e]} = ${N(ans)} моль.`,explain:`В одной частице ${C(f)} — ${c[e]} ${H.plural(c[e],'атом','атома','атомов')} ${e}. Значит, в каждом моле вещества — ${c[e]} моль атомов ${e}.<br>n(${e}) = n(${C(f)}) · ${c[e]} = ${N(n)} · ${c[e]} = <b>${N(ans)} моль</b>.`,
+explain2:`Как с велосипедами: у каждого 2 колеса. 3 «упаковки» велосипедов → 6 «упаковок» колёс. Здесь «колёса» — атомы ${e}, их в формуле ${c[e]}.`};}});
+G(0,()=>{const [a,b]=sample(['воды','железа','сахара','углекислого газа','поваренной соли','золота','кислорода'],2);const n=pick([1,2,0.5,3]);
+return CH(`Где больше частиц (молекул или атомов): в ${N(n)} моль ${a} или в ${N(n)} моль ${b}?`,'Одинаково',[`В порции ${a}`,`В порции ${b}`,'Нельзя сказать без масс'],
+{short:'Одинаковое число моль — одинаковое число частиц.',explain:`В 1 моль <b>любого</b> вещества одно и то же число частиц — 6,02·10²³. Значит, в ${N(n)} моль ${a} и ${N(n)} моль ${b} частиц поровну: ${N(n)}·6,02·10²³ = ${s23(n*NA)}. Массы при этом разные, но вопрос не о массе.`,
+explain2:'Две корзины, в каждой по 3 дюжины: в одной арбузы, в другой вишни. Штук поровну — 36, хотя весят корзины по-разному.'});});
+
+/* L1 — N = n·NA */
+RULE(1,'Как найти число частиц N, если известно количество вещества n?','N = n · N<sub>A</sub>',['N = n / N<sub>A</sub>','N = N<sub>A</sub> / n','N = n · 22,4'],
+{short:'Упаковки × штук в упаковке.',explain:'В каждом моле — N<sub>A</sub> = 6,02·10²³ частиц. Если молей n, частиц в n раз больше: N = n·N<sub>A</sub>. Обратная формула: n = N / N<sub>A</sub>. А 22,4 — это молярный объём, он для литров газа.',
+explain2:'3 десятка яиц = 3·10 = 30 яиц. 3 моль молекул = 3·6,02·10²³ молекул. Умножаем.'});
+G(1,()=>{const f=pick(ALL);const n=pick(NS);const ans=n*NA;
+return {type:'num',q:`Сколько ${f==='Fe'||f==='Cu'||f==='Al'||f==='C'||f==='He'||f==='Ar'||f==='Ag'?'атомов':f==='NaCl'?'формульных единиц':'молекул'} содержится в ${N(n)} моль ${gn(f)} ${C(f)}? Ответ дай в единицах 10<sup>23</sup> (например, для 12,04·10<sup>23</sup> введи 12,04).`,ans,tol:0.012/ans,
+short:`N = ${N(n)}·6,02·10²³ = ${s23(ans)}.`,explain:`N = n · N<sub>A</sub> = ${N(n)} · 6,02·10<sup>23</sup> = <b>${s23(ans)}</b>.<br>Вводим число перед 10<sup>23</sup>: ${N(rd(ans,3))}.`,
+explain2:`1 моль — 6,02·10²³ частиц. ${N(n)} моль — в ${N(n)} раз ${n<1?'меньше':'больше'}: 6,02 · ${N(n)} = ${N(rd(ans,3))}, и степень 10<sup>23</sup> остаётся.`};});
+G(1,()=>{const f=pick(ALL);const n=pick(NS);const Nn=n*NA;
+return {type:'num',q:`Сколько моль ${gn(f)} ${C(f)} содержат ${s23(Nn)} частиц? Ответ в молях.`,ans:n,tol:0.01,
+short:`n = ${N(rd(Nn,3))}·10²³ / 6,02·10²³ = ${N(n)} моль.`,explain:`n = N / N<sub>A</sub> = ${s23(Nn)} / 6,02·10<sup>23</sup>. Степени 10<sup>23</sup> сокращаются: ${N(rd(Nn,3))} / 6,02 = <b>${N(n)} моль</b>.`,
+explain2:`Сколько раз «упаковка» в 6,02·10²³ поместится в ${N(rd(Nn,3))}·10²³? ${N(rd(Nn,3))} : 6,02 = ${N(n)}. Это и есть число молей.`};});
+G(1,()=>{const f=pick(['H2O','CO2','NH3','CH4','H2SO4','O2','N2','HCl','SO2','C3H8']);const n=pick([0.5,1,2,0.1,0.2,0.25]);const k=atomsTotal(f);const ans=n*k*NA;
+return {type:'num',q:`Сколько <b>всего атомов</b> в ${N(n)} моль ${C(f)}? Ответ в единицах 10<sup>23</sup>.`,ans,tol:0.012/ans,hint:`Сколько атомов в одной молекуле ${C(f)}?`,
+short:`${N(n)}·${k}·6,02 = ${N(rd(ans,3))} → ${s23(ans)}.`,explain:`В одной молекуле ${C(f)} — ${k} ${H.plural(k,'атом','атома','атомов')}. Атомов в моль: n(атомов) = ${N(n)} · ${k} = ${N(n*k)} моль.<br>N = ${N(n*k)} · 6,02·10<sup>23</sup> = <b>${s23(ans)}</b>.`,
+explain2:`Сначала посчитай молекулы: ${N(n)}·6,02·10²³ = ${s23(n*NA)}. В каждой ${k} ${H.plural(k,'атом','атома','атомов')} → умножаем на ${k}: ${s23(ans)}.`};});
+
+/* L2 — M */
+RULE(2,'Что такое молярная масса M и как она связана с M<sub>r</sub>?','Масса 1 моль вещества в г/моль; численно равна M<sub>r</sub>',['Масса одной молекулы в граммах','Число молекул в 1 г вещества','Масса 22,4 л любого вещества'],
+{short:'M = m/n, г/моль; M(H₂O) = 18 г/моль, как M<sub>r</sub> = 18.',explain:'Молярная масса — масса одного моля: M = m / n, единица г/моль. Её значение совпадает с M<sub>r</sub>: для воды M<sub>r</sub> = 18 → M = 18 г/моль. Масса одной молекулы — крошечная (≈3·10⁻²³ г), а 22,4 л — объём газа, не любой вещества.',
+explain2:'«Сколько весит одна упаковка-моль?» — вот что такое M. У воды — 18 г, у железа — 56 г, у сахара — 342 г.'});
+RULE(2,'Как найти количество вещества по массе?','n = m / M',['n = M / m','n = m · M','n = m / 22,4'],
+{short:'n = m / M.',explain:'Масса делить на массу одного моля = число молей: n = m / M. Проверка единицами: г : (г/моль) = моль ✔. При n = M/m получилось бы «1/моль» — бессмыслица.',
+explain2:'Пачка бумаги весит 2,5 кг, всего бумаги 10 кг → пачек 10 : 2,5 = 4. Так же и моли: всю массу делим на массу одного моля.'});
+G(2,()=>{const f=pick(['H2O','CO2','NaCl','CaCO3','H2SO4','NH3','CH4','C12H22O11','HCl','Cl2','NaOH','SO2','O2','C3H8','Fe2O3','CuSO4','Al2O3','HNO3']);const m=Mr(f);
+return {type:'num',q:`Найди молярную массу ${C(f)} в г/моль. A<sub>r</sub>: ${Object.keys(parseF(f)).map(e=>`${e} = ${N(AR[e])}`).join(', ')}.`,ans:m,
+short:`${MS(f)}.`,explain:`M численно равна M<sub>r</sub>: сумма A<sub>r</sub> всех атомов.<br>${MS(f)}. Ответ: <b>${N(m)} г/моль</b>.`,
+explain2:`Разбери формулу на атомы: ${Object.entries(parseF(f)).map(([e,k])=>`${k}×${e}`).join(', ')}. Сложи их массы — получишь M в г/моль.`};});
+G(2,()=>{const f=pick(ALL);const n=pick(NS);const M=Mr(f);const m=rd(n*M,4);
+return {type:'num',q:`Сколько моль составляют ${N(m)} г ${gn(f)} ${C(f)}?`,ans:n,tol:0.01,
+short:`n = ${N(m)} / ${N(M)} = ${N(n)} моль.`,explain:`1) ${MS(f)}.<br>2) n = m / M = ${N(m)} / ${N(M)} = <b>${N(n)} моль</b>.`,
+explain2:`Сколько раз по ${N(M)} г помещается в ${N(m)} г? ${N(m)} : ${N(M)} = ${N(n)}. Это и есть число молей.`};});
+G(2,()=>{const f=pick(ALL);const n=pick(NS);const M=Mr(f);const m=n*M;
+return {type:'num',q:`Какова масса ${N(n)} моль ${gn(f)} ${C(f)}? Ответ в граммах.`,ans:m,tol:0.012/m,
+short:`m = ${N(n)} · ${N(M)} = ${N(rd(m,3))} г.`,explain:`1) ${MS(f)}.<br>2) m = n · M = ${N(n)} · ${N(M)} = <b>${N(rd(m,3))} г</b>.`,
+explain2:`1 моль весит ${N(M)} г. ${N(n)} моль — в ${N(n)} раз ${n<1?'меньше':'больше'}: ${N(rd(m,3))} г.`};});
+
+/* L3 — m ↔ N */
+RULE(3,'Как перейти от массы вещества к числу молекул?','Через количество вещества: n = m/M, потом N = n·N<sub>A</sub>',['Сразу N = m·N<sub>A</sub>','N = m / N<sub>A</sub>','N = M·N<sub>A</sub> / m'],
+{short:'Мост через моли: m → n → N.',explain:'Из граммов в штуки напрямую не перейти: сначала находим число молей n = m/M, затем N = n·N<sub>A</sub>. Вместе: N = m·N<sub>A</sub>/M. Формула «m·N<sub>A</sub>» забывает поделить на M — масса молекул разная!',
+explain2:'Мешок гвоздей весит 2 кг, один гвоздь — 10 г. Чтобы узнать число гвоздей, делишь массу на массу одного. Здесь «один» — это моль (M), а потом умножаем на число штук в моле.'});
+G(3,()=>{const f=pick(ALL);const n=pick(NS);const M=Mr(f);const m=rd(n*M,4);const ans=n*NA;
+return {type:'num',q:`Сколько частиц содержится в ${N(m)} г ${gn(f)} ${C(f)}? Ответ в единицах 10<sup>23</sup>.`,ans,tol:0.012/ans,
+short:`n = ${N(m)}/${N(M)} = ${N(n)} моль; N = ${s23(ans)}.`,explain:`1) ${MS(f)}.<br>2) n = ${N(m)} / ${N(M)} = ${N(n)} моль.<br>3) N = ${N(n)} · 6,02·10<sup>23</sup> = <b>${s23(ans)}</b>.`,
+explain2:`Схема: граммы → (делим на M) → моли → (умножаем на 6,02·10²³) → штуки. ${N(m)} → ${N(n)} → ${N(rd(ans,3))}·10²³.`};});
+G(3,()=>{const f=pick(ALL);const n=pick(NS);const M=Mr(f);const Nn=n*NA;const m=n*M;
+return {type:'num',q:`Какова масса ${s23(Nn)} частиц ${gn(f)} ${C(f)}? Ответ в граммах.`,ans:m,tol:0.012/m,
+short:`n = ${N(n)} моль; m = ${N(n)}·${N(M)} = ${N(rd(m,3))} г.`,explain:`1) n = N / N<sub>A</sub> = ${N(rd(Nn,3))} / 6,02 = ${N(n)} моль.<br>2) ${MS(f)}.<br>3) m = ${N(n)} · ${N(M)} = <b>${N(rd(m,3))} г</b>.`,
+explain2:`Обратный путь по мосту: штуки → (делим на 6,02·10²³) → моли → (умножаем на M) → граммы.`};});
+G(3,()=>{for(;;){const fs=sample(['H2','O2','N2','CO2','CH4','H2O','NH3','Cl2','He','SO2','HCl'],4);const ms=fs.map(Mr);const mn=Math.min(...ms);if(ms.filter(x=>x===mn).length>1)continue;const f=fs[ms.indexOf(mn)];const m=pick([1,10,100]);
+return CH(`В какой порции больше всего молекул (атомов): ${fs.map(x=>`${m} г ${C(x)}`).join(', ')}?`,`${m} г ${C(f)}`,fs.filter(x=>x!==f).map(x=>`${m} г ${C(x)}`),
+{short:`Самая маленькая M — у ${C(f)} (${N(mn)} г/моль) → больше всего моль.`,explain:`При одинаковой массе n = m / M больше там, где M меньше:<br>${fs.map(x=>`${C(x)}: ${m} / ${N(Mr(x))} ≈ ${N(rd(m/Mr(x),3))} моль`).join('<br>')}<br>Больше всего частиц — в <b>${m} г ${C(f)}</b>.`,
+explain2:`Килограмм вишен или килограмм арбузов — где больше штук? Конечно, вишен: каждая лёгкая. Самые «лёгкие» частицы здесь — ${C(f)}.`});}});
+
+/* L4 — Vm */
+RULE(4,'Какой объём занимает 1 моль любого газа при нормальных условиях?','22,4 л',['1 л','18 л','Зависит от газа: у тяжёлых больше'],
+{short:'V<sub>m</sub> = 22,4 л/моль (н.у.).',explain:'По закону Авогадро равные объёмы газов содержат равное число молекул. Значит, 1 моль любого газа при н.у. (0 °С, 101,3 кПа) занимает одинаковый объём — 22,4 л. От «тяжести» газа объём не зависит: молекулы в газе далеко друг от друга.',
+explain2:'Стадион и зрители: мест нужно по числу людей, а не по их весу. В газе «места» между молекулами огромные, сами молекулы почти не важны.'});
+RULE(4,'К какому веществу <b>нельзя</b> применить V<sub>m</sub> = 22,4 л/моль при н.у.?','К воде H₂O',['К кислороду O₂','К метану CH₄','К азоту N₂'],
+{short:'22,4 л — только для газов, а вода при 0 °С — жидкость/лёд.',explain:'Молярный объём 22,4 л/моль — только для <b>газов</b>. При н.у. (0 °С) вода — жидкость (или лёд): 1 моль воды занимает всего около 18 мл. Кислород, метан и азот — газы, к ним 22,4 л применять можно.',
+explain2:'Если бы 18 г воды (глоток!) занимали 22,4 л, литровая бутылка воды весила бы меньше грамма. Глупость, правда? 22,4 л — для газов.'});
+G(4,()=>{const f=pick(GAS);const n=pick(NS);const V=n*VM;
+return {type:'num',q:`Какой объём (н.у.) займут ${N(n)} моль ${gn(f)} ${C(f)}? Ответ в литрах.`,ans:V,tol:0.003,
+short:`V = ${N(n)}·22,4 = ${N(rd(V,3))} л.`,explain:`V = n · V<sub>m</sub> = ${N(n)} · 22,4 = <b>${N(rd(V,3))} л</b>. Какой именно газ — неважно: 1 моль любого газа при н.у. — 22,4 л.`,
+explain2:`Каждый моль — это «куб» 22,4 л. ${N(n)} таких кубов — ${N(rd(V,3))} л.`};});
+G(4,()=>{const f=pick(GAS);const n=pick(NS);const V=rd(n*VM,4);
+return {type:'num',q:`Сколько моль ${gn(f)} содержится в ${N(V)} л ${C(f)} при н.у.?`,ans:n,tol:0.01,
+short:`n = ${N(V)} / 22,4 = ${N(n)} моль.`,explain:`n = V / V<sub>m</sub> = ${N(V)} / 22,4 = <b>${N(n)} моль</b>.`,
+explain2:`Сколько раз по 22,4 л помещается в ${N(V)} л? ${N(V)} : 22,4 = ${N(n)}.`};});
+G(4,()=>{const f=pick(GAS);const n=pick(NS);const V=rd(n*VM,4);const ans=n*NA;
+return {type:'num',q:`Сколько молекул ${f==='He'||f==='Ar'?'(атомов) ':''}${gn(f)} в ${N(V)} л (н.у.)? Ответ в единицах 10<sup>23</sup>.`,ans,tol:0.012/ans,
+short:`n = ${N(n)} моль → N = ${s23(ans)}.`,explain:`1) n = ${N(V)} / 22,4 = ${N(n)} моль.<br>2) N = ${N(n)} · 6,02·10<sup>23</sup> = <b>${s23(ans)}</b>.`,
+explain2:`22,4 л любого газа ↔ 6,02·10²³ молекул. ${N(V)} л — это ${N(n)} таких порций → ${N(rd(ans,3))}·10²³.`};});
+
+/* L5 — m ↔ V */
+RULE(5,'Как найти объём газа (н.у.), если известна его масса?','Найти n = m/M, затем V = n·22,4',['V = m · 22,4','V = m / 22,4','V = M · 22,4 / m'],
+{short:'m → n → V.',explain:'Снова мост через моли: n = m / M, потом V = n · V<sub>m</sub>. «m · 22,4» забывает, что газы с разной M при одинаковой массе содержат разное число молей.',
+explain2:'1 г водорода — это 0,5 моль (11,2 л), а 1 г кислорода — 1/32 моль (0,7 л). Масса одна, объёмы разные — значит, без M не обойтись.'});
+G(5,()=>{const f=pick(GAS);const n=pick(NS);const M=Mr(f);const m=rd(n*M,4);const V=n*VM;
+return {type:'num',q:`Какой объём при н.у. займут ${N(m)} г ${gn(f)} ${C(f)}? Ответ в литрах.`,ans:V,tol:0.003,
+short:`n = ${N(m)}/${N(M)} = ${N(n)} моль; V = ${N(rd(V,3))} л.`,explain:`1) ${MS(f)}.<br>2) n = ${N(m)} / ${N(M)} = ${N(n)} моль.<br>3) V = ${N(n)} · 22,4 = <b>${N(rd(V,3))} л</b>.`,
+explain2:`Одной формулой: V = m·22,4 / M = ${N(m)}·22,4 / ${N(M)} = ${N(rd(V,3))} л.`};});
+G(5,()=>{const f=pick(GAS);const n=pick(NS);const M=Mr(f);const V=rd(n*VM,4);const m=n*M;
+return {type:'num',q:`Найди массу ${N(V)} л ${gn(f)} ${C(f)} (н.у.). Ответ в граммах.`,ans:m,tol:0.012/m,
+short:`n = ${N(V)}/22,4 = ${N(n)} моль; m = ${N(rd(m,3))} г.`,explain:`1) n = ${N(V)} / 22,4 = ${N(n)} моль.<br>2) ${MS(f)}.<br>3) m = ${N(n)} · ${N(M)} = <b>${N(rd(m,3))} г</b>.`,
+explain2:`Одной формулой: m = V·M / 22,4 = ${N(V)}·${N(M)} / 22,4 = ${N(rd(m,3))} г.`};});
+G(5,()=>{for(;;){const fs=sample(GAS,4);const ms=fs.map(Mr);const mx=Math.max(...ms),mn=Math.min(...ms);const big=R(0,1);const tgt=big?mn:mx;if(ms.filter(x=>x===tgt).length>1)continue;const f=fs[ms.indexOf(tgt)];const m=pick([10,20,50]);
+return CH(`Взяли по ${m} г каждого газа: ${fs.map(C).join(', ')}. Какой займёт <b>${big?'наибольший':'наименьший'}</b> объём (н.у.)?`,C(f),fs.filter(x=>x!==f).map(C),
+{short:`${big?'Наименьшая':'Наибольшая'} M — у ${C(f)}.`,explain:`V = m·22,4 / M: при одинаковой массе объём обратно пропорционален M.<br>${fs.map(x=>`${C(x)}: ${m}·22,4/${N(Mr(x))} ≈ ${N(rd(m*VM/Mr(x),2))} л`).join('<br>')}<br>Ответ: <b>${C(f)}</b>.`,
+explain2:`Чем легче молекулы, тем больше их помещается в ${m} г, а объём газа зависит только от числа молекул. ${big?'Самые лёгкие':'Самые тяжёлые'} — ${C(f)} (M = ${N(tgt)}).`});}});
+
+/* L6 — плотность */
+RULE(6,'Как вычислить относительную плотность газа по воздуху?','D<sub>возд</sub> = M(газа) / 29',['D<sub>возд</sub> = 29 / M(газа)','D<sub>возд</sub> = M(газа) / 22,4','D<sub>возд</sub> = M(газа) · 29'],
+{short:'D = M / 29; по водороду — M / 2.',explain:'Относительная плотность показывает, во сколько раз газ тяжелее воздуха: D = M(газа) / M(воздуха) = M / 29. Деление на 22,4 даёт другое — плотность в г/л при н.у.',
+explain2:'Если D > 1 — газ тяжелее воздуха (CO₂: 44/29 ≈ 1,5), если D < 1 — легче (He: 4/29 ≈ 0,14), и шарик с ним улетит.'});
+RULE(6,'Почему для сравнения плотностей газов можно просто сравнить их молярные массы?','Равные объёмы газов содержат равное число молекул (закон Авогадро)',['Все газы имеют одинаковую массу','Молекулы всех газов одного размера','Потому что 1 моль любого газа весит 22,4 г'],
+{short:'Закон Авогадро: одинаковый объём — одинаковое число молекул.',explain:'В одном литре любого газа (при одинаковых условиях) одинаковое число молекул. Значит, масса литра пропорциональна массе одной молекулы, то есть M. Поэтому D = M₁/M₂. Размер молекул тут ни при чём, а 22,4 — это литры, а не граммы.',
+explain2:'Два одинаковых автобуса, в каждом по 40 пассажиров: в одном борцы-тяжеловесы, в другом гимнасты. Какой тяжелее, зависит только от массы одного пассажира. Газ — «автобус» с одинаковым числом молекул.'});
+G(6,()=>{const f=pick(GAS.filter(x=>x!=='He'));const M=Mr(f);const ref=pick(['air','h2']);const D=ref==='air'?M/29:M/2;
+return NUM(`Найди относительную плотность ${gn(f)} ${C(f)} по ${ref==='air'?'воздуху':'водороду'}.`,D,ref==='air'?2:2,
+{short:`D = ${N(M)} / ${ref==='air'?29:2} ≈ ${N(rd(D,2))}.`,explain:`D<sub>${ref==='air'?'возд':'H₂'}</sub> = M(${C(f)}) / ${ref==='air'?'M(воздуха) = '+N(M)+' / 29':'M(H₂) = '+N(M)+' / 2'} ≈ <b>${N(rd(D,2))}</b>.${ref==='air'?(D>1?' Газ тяжелее воздуха.':' Газ легче воздуха.'):''}`,
+explain2:`${MS(f)}. ${ref==='air'?'Воздух в среднем «весит» 29 г/моль':'Водород H₂ — 2 г/моль (не 1: молекула из двух атомов)'}. Во сколько раз ${N(M)} больше? ${N(M)} : ${ref==='air'?29:2} ≈ ${N(rd(D,2))}.`});});
+G(6,()=>{const f=pick(['CH4','O2','N2','CO2','NH3','SO2','Cl2','C3H8','HCl','He','Ar','CO','C4H10','C2H6']);const M=Mr(f);const D=M/2;
+return {type:'num',q:`Плотность газа по водороду равна ${N(D)}. Найди его молярную массу в г/моль.`,ans:M,
+short:`M = 2·${N(D)} = ${N(M)} г/моль${f!=='CO'&&f!=='N2'?` (например, ${C(f)})`:''}.`,explain:`D<sub>H₂</sub> = M / M(H₂) → M = 2 · D = 2 · ${N(D)} = <b>${N(M)} г/моль</b>.${f!=='CO'&&f!=='N2'&&f!=='C3H8'?` Такую молярную массу имеет, например, ${C(f)}.`:''}`,
+explain2:`«Газ в ${N(D)} раз тяжелее водорода». А водород весит 2 г/моль. Значит, газ: ${N(D)} · 2 = ${N(M)} г/моль.`};});
+G(6,()=>{const f=pick(['CH4','O2','N2','CO2','NH3','SO2','Cl2','C3H8','HCl','He','C4H10','C2H6','Ar']);const M=Mr(f);const D=rd(M/29,3);const ans=M;
+return {type:'num',q:`Плотность газа по воздуху равна ${N(D)}. Найди его молярную массу. Ответ в г/моль, округли до целых.`,ans,tol:0.6/ans,
+short:`M = 29·${N(D)} ≈ ${N(rd(29*D,2))} → ${N(ans)} г/моль.`,explain:`M = 29 · D<sub>возд</sub> = 29 · ${N(D)} ≈ ${N(rd(29*D,2))} → <b>${N(ans)} г/моль</b>.`,
+explain2:`Воздух — 29 г/моль. Газ в ${N(D)} раза ${D>1?'тяжелее':'легче'}: 29 · ${N(D)} ≈ ${N(ans)}.`};});
+G(6,()=>{for(;;){const light=['H2','He','CH4','NH3'],heavy=['CO2','Cl2','SO2','O2','Ar','C3H8','HCl'];const up=R(0,1);const f=pick(up?light:heavy);const ws=sample(up?heavy:light,3);
+return CH(`Шарик наполнили газом. Какой из этих шариков ${up?'<b>взлетит</b> в воздухе':'<b>упадёт на пол</b> (если надуть его газом из баллона, а не ртом)'}?`,`С газом ${C(f)}`,ws.map(x=>`С газом ${C(x)}`),
+{short:`M(${f}) = ${N(Mr(f))} ${up?'&lt;':'&gt;'} 29.`,explain:`Сравниваем молярную массу с воздухом (29 г/моль):<br>${[f,...ws].map(x=>`${C(x)}: ${N(Mr(x))} ${Mr(x)<29?'&lt; 29 — легче':'> 29 — тяжелее'}`).join('<br>')}<br>${up?'Взлетит':'Упадёт'} шарик с <b>${C(f)}</b>${up?' (масса оболочки должна быть небольшой)':''}.`,
+explain2:`D<sub>возд</sub> = M/29. Если D < 1 — газ легче воздуха и выталкивается вверх, как пробка в воде. ${C(f)}: D ≈ ${N(rd(Mr(f)/29,2))}.`});}});
+G(6,()=>{const f=pick(GAS);const M=Mr(f);const rho=M/VM;
+return NUM(`Найди плотность ${gn(f)} ${C(f)} при н.у. (масса 1 л). Ответ в г/л.`,rho,2,{short:`ρ = ${N(M)} / 22,4 ≈ ${N(rd(rho,2))} г/л.`,
+explain:`1 моль газа — ${N(M)} г и 22,4 л. Масса 1 л: ρ = M / V<sub>m</sub> = ${N(M)} / 22,4 ≈ <b>${N(rd(rho,2))} г/л</b>.`,
+explain2:`Сравни с воздухом: 29 / 22,4 ≈ 1,29 г/л. У ${C(f)} ${rho>1.29?'больше — он тяжелее воздуха':'меньше — он легче воздуха'}.`});});
+
+/* L7 ★ */
+RULE(7,'Как найти среднюю молярную массу смеси газов?','M<sub>ср</sub> = φ₁·M₁ + φ₂·M₂ (φ — объёмные доли)',['M<sub>ср</sub> = (M₁ + M₂) / 2 всегда','M<sub>ср</sub> = M₁·M₂','M<sub>ср</sub> = φ₁/M₁ + φ₂/M₂'],
+{short:'Взвешенное среднее по объёмным долям.',explain:'Средняя молярная масса — это «среднее с весами»: каждый газ входит с весом, равным его объёмной (мольной) доле φ. Например, воздух: 0,78·28 + 0,21·32 + 0,01·40 ≈ 29. Просто полусумма верна только при долях 50/50.',
+explain2:'Как средняя оценка: если у тебя три пятёрки и одна тройка, среднее не (5+3)/2 = 4, а (3·5 + 1·3)/4 = 4,5. Каждая оценка с «весом» — сколько раз она встречалась.'});
+G(7,()=>{for(;;){const [a,b]=sample(['H2','N2','O2','CO2','CH4','He','Ar','CO','NH3'],2);const p=pick([10,20,25,30,40,60,75,80]);const M=p/100*Mr(a)+(1-p/100)*Mr(b);
+const t=NUM(`★ Смесь газов: ${p}% ${C(a)} и ${100-p}% ${C(b)} по объёму. Найди среднюю молярную массу смеси в г/моль.`,M,2,{short:`${N(p/100)}·${N(Mr(a))} + ${N(1-p/100)}·${N(Mr(b))} = ${N(rd(M,2))}.`,
+explain:`M<sub>ср</sub> = φ(${C(a)})·M(${C(a)}) + φ(${C(b)})·M(${C(b)}) = ${N(p/100)}·${N(Mr(a))} + ${N(rd(1-p/100,2))}·${N(Mr(b))} = ${N(rd(p/100*Mr(a),3))} + ${N(rd((1-p/100)*Mr(b),3))} = <b>${N(rd(M,2))} г/моль</b>.`,
+explain2:`Возьми 100 моль смеси: ${p} моль ${a} (масса ${N(rd(p*Mr(a),2))} г) и ${100-p} моль ${b} (масса ${N(rd((100-p)*Mr(b),2))} г). Всего ${N(rd(100*M,2))} г на 100 моль → ${N(rd(M,2))} г/моль.`});if(t)return t;}},{star:true});
+G(7,()=>{for(;;){const [a,b]=pick([['H2','O2'],['H2','N2'],['He','O2'],['H2','CO2'],['CH4','O2'],['He','Ar'],['N2','CO2']]);const x=pick([0.2,0.25,0.4,0.5,0.6,0.75,0.8]);const M=x*Mr(a)+(1-x)*Mr(b);const D=rd(M/2,2);
+const xc=(Mr(b)-2*D)/(Mr(b)-Mr(a));const t=NUM(`★ Смесь ${C(a)} и ${C(b)} имеет плотность по водороду ${N(D)}. Найди объёмную долю ${C(a)} в процентах.`,xc*100,1,
+{hint:`M<sub>ср</sub> = 2·D. Пусть доля ${a} — x: ${N(Mr(a))}x + ${N(Mr(b))}(1 − x) = M<sub>ср</sub>.`,short:`x = ${N(rd(xc*100,1))}%.`,
+explain:`1) M<sub>ср</sub> = 2 · ${N(D)} = ${N(rd(2*D,2))} г/моль.<br>2) ${N(Mr(a))}x + ${N(Mr(b))}(1 − x) = ${N(rd(2*D,2))} → ${N(Mr(b))} − ${N(Mr(b)-Mr(a))}x = ${N(rd(2*D,2))} → x = ${N(rd(Mr(b)-2*D,2))} / ${N(Mr(b)-Mr(a))} ≈ ${N(rd(xc,4))}.<br>Доля ${C(a)} ≈ <b>${N(rd(xc*100,1))}%</b>.`,
+explain2:`«Правило рычага»: M<sub>ср</sub> = ${N(rd(2*D,2))} лежит между ${N(Mr(a))} и ${N(Mr(b))}. Доля ${a} = (${N(Mr(b))} − ${N(rd(2*D,2))}) / (${N(Mr(b))} − ${N(Mr(a))}) ≈ ${N(rd(xc*100,1))}%. Чем ближе M<sub>ср</sub> к M(${a}), тем больше ${a}.`});if(t)return t;}},{star:true});
+G(7,()=>{const f=pick(['H2O','CO2','NH3','CH4','H2SO4','C12H22O11','Al2O3','C3H8','HNO3']);const n=pick([0.1,0.2,0.25,0.5,1,2]);const M=Mr(f);const m=rd(n*M,4);const k=atomsTotal(f);const ans=n*k*NA;
+return {type:'num',q:`★ Сколько <b>всего атомов</b> содержится в ${N(m)} г ${C(f)}? Ответ в единицах 10<sup>23</sup>.`,ans,tol:0.012/ans,
+short:`${N(n)} моль × ${k} атомов × 6,02 = ${N(rd(ans,3))}·10²³.`,explain:`1) ${MS(f)}; n = ${N(m)} / ${N(M)} = ${N(n)} моль молекул.<br>2) В молекуле ${k} ${H.plural(k,'атом','атома','атомов')} → ${N(n*k)} моль атомов.<br>3) N = ${N(n*k)}·6,02·10<sup>23</sup> = <b>${s23(ans)}</b>.`,
+explain2:`Частая ловушка — найти только число молекул (${s23(n*NA)}) и забыть умножить на ${k}. Вопрос про атомы!`};},{star:true});
+G(7,()=>{for(;;){const P=[['H2O','H'],['CH4','H'],['NH3','H'],['H2SO4','O'],['CO2','O'],['SO3','O'],['H2O','O'],['C3H8','H'],['CO2','C'],['CH4','C'],['C3H8','C'],['HCl','H'],['NH3','N'],['HNO3','N'],['HNO3','O'],['SO2','O']];
+const [a,e]=pick(P);const bs=P.filter(p=>p[1]===e&&p[0]!==a);if(!bs.length)continue;const [b]=pick(bs);const ca=parseF(a)[e],cb=parseF(b)[e];const na=pick([0.5,1,2,0.25]);const ma=rd(na*Mr(a),4);const nb=na*ca/cb;const mb=nb*Mr(b);
+const t=NUM(`★ Сколько граммов ${C(b)} содержат столько же атомов ${e}, сколько их в ${N(ma)} г ${C(a)}?`,mb,2,{hint:'Сравнивай моли атомов, а не граммы.',
+short:`n(${e}) = ${N(na)}·${ca} = ${N(na*ca)} моль → n(${C(b)}) = ${N(rd(nb,4))} моль → ${N(rd(mb,2))} г.`,
+explain:`1) n(${C(a)}) = ${N(ma)} / ${N(Mr(a))} = ${N(na)} моль; атомов ${e}: ${N(na)}·${ca} = ${N(na*ca)} моль.<br>2) В ${C(b)} на молекулу ${cb} ${H.plural(cb,'атом','атома','атомов')} ${e} → n(${C(b)}) = ${N(na*ca)} / ${cb} = ${N(rd(nb,4))} моль.<br>3) m = ${N(rd(nb,4))} · ${N(Mr(b))} ≈ <b>${N(rd(mb,2))} г</b>.`,
+explain2:`Число атомов одинаковое ⇔ одинаковое число моль атомов (${N(na*ca)} моль). Дальше обычный путь: моли атомов → моли вещества → граммы.`});if(t)return t;}},{star:true});
+G(7,()=>{const f=pick(['H2O','CO2','O2','H2','CH4','NH3','N2','C12H22O11','Fe','Cu','Au'].filter(x=>SUB[x]));const M=Mr(f);const m0=M/NA;const e=Math.floor(Math.log10(m0*1e-23));const mant=m0*1e-23/Math.pow(10,e);
+return NUM(`★ Найди массу <b>одной</b> ${f==='Fe'||f==='Cu'?'частицы (атома)':'молекулы'} ${C(f)} в граммах. Ответ запиши как a·10<sup>${N(e)}</sup> г и введи число a.`,mant,2,
+{short:`m₀ = ${N(M)} / 6,02·10²³ ≈ ${N(rd(mant,2))}·10<sup>${N(e)}</sup> г.`,explain:`1 моль весит M = ${N(M)} г и содержит 6,02·10<sup>23</sup> частиц. Одна частица: m₀ = M / N<sub>A</sub> = ${N(M)} / 6,02·10<sup>23</sup> ≈ ${N(rd(M/NA,4))}·10<sup>−23</sup> г = <b>${N(rd(mant,2))}·10<sup>${N(e)}</sup></b> г.`,
+explain2:`Это как найти вес одного яйца: вес коробки (${N(M)} г) делим на число яиц в ней (6,02·10²³). Получается невероятно мало — поэтому химики и считают молями.`});},{star:true});
+G(7,()=>{const vml=pick([0.05,0.1,0.02,0.04,0.5]);const m=vml;const n=m/18;const Nn=n*NA*1e23;const e=Math.floor(Math.log10(Nn));const mant=Nn/Math.pow(10,e);
+return NUM(`★ Одна капля воды имеет объём ${N(vml)} мл (масса ${N(m)} г). Сколько в ней молекул? Ответ запиши как a·10<sup>${e}</sup> и введи число a.`,mant,2,
+{short:`n = ${N(m)}/18 ≈ ${N(rd(n,5))} моль; N ≈ ${N(rd(mant,2))}·10<sup>${e}</sup>.`,explain:`1) n = m / M = ${N(m)} / 18 ≈ ${N(rd(n,6))} моль.<br>2) N = n · N<sub>A</sub> ≈ ${N(rd(n,6))} · 6,02·10<sup>23</sup> ≈ <b>${N(rd(mant,2))}·10<sup>${e}</sup></b>.`,
+explain2:`18 г воды (глоток) — 6,02·10²³ молекул. Капля ${N(m)} г — в ${N(rd(18/m,1))} раз меньше: 6,02·10²³ / ${N(rd(18/m,1))} ≈ ${N(rd(mant,2))}·10<sup>${e}</sup>. Даже в капле молекул больше, чем звёзд в нашей Галактике (≈ 10¹¹)!`});},{star:true});
+G(7,()=>{const f=pick(['N2','O2','CO2','CH4','NH3','SO2','Cl2','He','Ar','HCl','C3H8','H2']);const M=Mr(f);const V=pick([1,2,5,0.5,10]);const m=rd(V*M/VM,3);const Mc=m*VM/V;
+return {type:'num',q:`★ ${N(V)} л неизвестного газа при н.у. имеют массу ${N(m)} г. Найди молярную массу газа (округли до целых), г/моль.`,ans:M,tol:0.6/M,
+short:`M = ${N(m)}·22,4 / ${N(V)} ≈ ${N(M)} г/моль.`,explain:`1) n = V / V<sub>m</sub> = ${N(V)} / 22,4 ≈ ${N(rd(V/VM,4))} моль.<br>2) M = m / n = ${N(m)} / ${N(rd(V/VM,4))} ≈ ${N(rd(Mc,2))} → <b>${N(M)} г/моль</b>.${f!=='N2'&&f!=='C3H8'?` Это может быть ${C(f)}.`:''}`,
+explain2:`Плотность газа: ${N(m)} / ${N(V)} ≈ ${N(rd(m/V,3))} г/л. Масса 22,4 л (1 моль): ${N(rd(m/V,3))} · 22,4 ≈ ${N(M)} г.`};},{star:true});
+
+window.TOPIC={id:'c8_mole',title:'Количество вещества',subtitle:'Химия · 8 класс',
+intro:`<p>Сколько молекул в одном глотке воды и почему химики считают атомы «упаковками»? Моль и число Авогадро, молярная масса, переходы граммы ↔ моли ↔ штуки ↔ литры, молярный объём 22,4 л и плотность газов (почему гелиевый шарик улетает). Есть живой калькулятор моля, а в конце — олимпиадные задачи про смеси газов.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Моль — «химическая дюжина»','Число Авогадро','Молярная масса','Граммы ↔ штуки','Молярный объём газа','Граммы ↔ литры','Плотность газов','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>

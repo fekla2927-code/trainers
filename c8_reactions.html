@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Химические уравнения — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
+const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  mount(header,main){
+    if(!header)return;
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    <div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  <div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  $('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=$('#v-train');
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{S.pos++;save();next();};
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        <div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div></div>`;
+        $('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Вернуть код</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range}=H;
+const N=H.num;
+const C=f=>H.chem(f).replace(/NaN/g,'Na&#8288;N');
+const rd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<500;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const RULE=(lvl,q,correct,wrongs,extra)=>G(lvl,()=>CH(q,correct,wrongs,extra),{rule:true});
+/* numeric answer rounded to d decimals; tolerance = a bit more than half of the last kept digit */
+const NUM=(q,v,d,extra)=>{const a=rd(v,d);if(!isFinite(a)||a===0)return null;const exact=Math.abs(a-v)<1e-9;
+  return Object.assign({type:'num',q:q+(exact?'':[' Округли до целых.',' Округли до десятых.',' Округли до сотых.',' Округли до тысячных.'][d]),ans:a,tol:0.6*Math.pow(10,-d)/Math.abs(a)},extra||{});};
+const SV=(w,h,inner,lab)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${lab||'Рисунок'}" style="font-family:system-ui,sans-serif;max-width:100%">${inner}</svg>`;
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.fs||14}" font-weight="${o.fw||600}" fill="${o.c||'var(--ink)'}">${s}</text>`;};
+const ROM=['0','I','II','III','IV','V','VI','VII','VIII'];
+const KEYS=['₂','₃','₄','₅','₇','(',')'];
+
+/* ---------- school table of relative atomic masses ---------- */
+const AR={H:1,He:4,Li:7,C:12,N:14,O:16,F:19,Ne:20,Na:23,Mg:24,Al:27,Si:28,P:31,S:32,Cl:35.5,Ar:40,K:39,Ca:40,Cr:52,Mn:55,Fe:56,Cu:64,Zn:65,Br:80,Ag:108,I:127,Ba:137,Hg:201,Pb:207};
+/* parse formula: Al2(SO4)3, CuSO4·5H2O → {Al:2,S:3,O:12} (order of appearance) */
+function parseF(f){const tot={};String(f).split('·').forEach(part=>{const m=part.match(/^(\d+)(.*)$/);const k=m?+m[1]:1;const s=m?m[2]:part;let i=0;
+  const seq=()=>{const c={};while(i<s.length&&s[i]!==')'&&s[i]!==']'){let sub;if(s[i]==='('||s[i]==='['){i++;sub=seq();i++;}else{const mm=s.slice(i).match(/^[A-Z][a-z]?/);if(!mm)throw new Error('bad formula '+f);i+=mm[0].length;if(!(mm[0] in AR))throw new Error('no Ar for '+mm[0]);sub={[mm[0]]:1};}
+    const d=s.slice(i).match(/^\d+/);let q=1;if(d){q=+d[0];i+=d[0].length;}for(const e in sub)c[e]=(c[e]||0)+q*sub[e];}return c;};
+  const c=seq();for(const e in c)tot[e]=(tot[e]||0)+k*c[e];});return tot;}
+const Mr=f=>{const c=parseF(f);let s=0;for(const e in c)s+=AR[e]*c[e];return rd(s,6);};
+/* "2·27 + 3·16 = 102" */
+const MrSum=f=>{const c=parseF(f);return Object.keys(c).map(e=>c[e]>1?`${c[e]}·${N(AR[e])}`:N(AR[e])).join(' + ')+' = '+N(Mr(f));};
+const MrSumL=f=>{const c=parseF(f);return Object.keys(c).map(e=>c[e]>1?`${c[e]}·A<sub>r</sub>(${e})`:`A<sub>r</sub>(${e})`).join(' + ');};
+const atomsTotal=f=>{const c=parseF(f);let s=0;for(const e in c)s+=c[e];return s;};
+
+/* ---------- equations ---------- */
+/* parse '2H2 + O2 = 2H2O' → {sp:[{k,f,side}], s} ; side 0 = left, 1 = right */
+function EQ(s,type,extra){const sp=[];s.split(' = ').forEach((side,si)=>side.split(' + ').forEach(t=>{const m=t.trim().match(/^(\d*)(.+)$/);sp.push({k:m[1]?+m[1]:1,f:m[2],side:si});}));return Object.assign({s,sp,type},extra||{});}
+const ks=e=>e.sp.map(x=>x.k);
+function atoms(e,k,side){const c={};e.sp.forEach((x,i)=>{if(x.side!==side)return;const p=parseF(x.f);for(const el in p)c[el]=(c[el]||0)+p[el]*k[i];});return c;}
+function balanced(e,k){const a=atoms(e,k,0),b=atoms(e,k,1);const keys=new Set([...Object.keys(a),...Object.keys(b)]);for(const el of keys)if((a[el]||0)!==(b[el]||0))return false;return true;}
+const gcdA=a=>a.reduce((g,x)=>H.gcd(g,x));
+/* HTML of an equation with given coefficients (null → '?', 0 → hidden) */
+function show(e,k,o){o=o||{};const part=side=>e.sp.map((x,i)=>x.side===side?((k&&k[i]===null)?'<b>?</b>':(k&&k[i]>1?`<b>${k[i]}</b>`:(!k&&x.k>1?`<b>${x.k}</b>`:'')))+C(x.f):null).filter(Boolean).join(' + ');
+  return `${part(0)} ${o.arrow||'→'} ${part(1)}`;}
+const scheme=e=>show(e,e.sp.map(()=>1));
+const TY={c:'соединения',d:'разложения',s:'замещения',x:'обмена'};
+const TYN={c:'соединение',d:'разложение',s:'замещение',x:'обмен'};
+
+const SIMPLE=[['2H2 + O2 = 2H2O','c'],['2Mg + O2 = 2MgO','c'],['4Al + 3O2 = 2Al2O3','c'],['4P + 5O2 = 2P2O5','c'],['2Na + Cl2 = 2NaCl','c'],['2Fe + 3Cl2 = 2FeCl3','c'],['4Na + O2 = 2Na2O','c'],['N2 + 3H2 = 2NH3','c'],['2SO2 + O2 = 2SO3','c'],['2Cu + O2 = 2CuO','c'],['4Li + O2 = 2Li2O','c'],['2Al + 3S = Al2S3','c'],['3Fe + 2O2 = Fe3O4','c'],['H2 + Cl2 = 2HCl','c'],['2NO + O2 = 2NO2','c'],['2Ca + O2 = 2CaO','c'],['2Al + 3Cl2 = 2AlCl3','c'],
+ ['2H2O = 2H2 + O2','d'],['2HgO = 2Hg + O2','d'],['2KClO3 = 2KCl + 3O2','d'],['2H2O2 = 2H2O + O2','d'],['2Fe(OH)3 = Fe2O3 + 3H2O','d'],['2Al(OH)3 = Al2O3 + 3H2O','d'],['2KNO3 = 2KNO2 + O2','d'],['2Ag2O = 4Ag + O2','d'],
+ ['Zn + 2HCl = ZnCl2 + H2','s'],['2Al + 6HCl = 2AlCl3 + 3H2','s'],['Mg + 2HCl = MgCl2 + H2','s'],['2Na + 2H2O = 2NaOH + H2','s'],['Fe2O3 + 3H2 = 2Fe + 3H2O','s'],['2Al + Fe2O3 = Al2O3 + 2Fe','s'],['Cu + 2AgNO3 = Cu(NO3)2 + 2Ag','s'],['2Al + 3H2SO4 = Al2(SO4)3 + 3H2','s'],['Ca + 2H2O = Ca(OH)2 + H2','s'],['2Al + 3CuCl2 = 2AlCl3 + 3Cu','s'],['Fe3O4 + 4H2 = 3Fe + 4H2O','s'],['2K + 2H2O = 2KOH + H2','s'],
+ ['2NaOH + H2SO4 = Na2SO4 + 2H2O','x'],['BaCl2 + Na2SO4 = BaSO4 + 2NaCl','x'],['CuSO4 + 2NaOH = Cu(OH)2 + Na2SO4','x'],['CuO + 2HCl = CuCl2 + H2O','x'],['CaCO3 + 2HCl = CaCl2 + H2O + CO2','x'],['3NaOH + H3PO4 = Na3PO4 + 3H2O','x'],['FeCl3 + 3NaOH = Fe(OH)3 + 3NaCl','x'],['Al2O3 + 6HCl = 2AlCl3 + 3H2O','x'],['Ca(OH)2 + 2HNO3 = Ca(NO3)2 + 2H2O','x'],['Fe2O3 + 3H2SO4 = Fe2(SO4)3 + 3H2O','x'],['Al2(SO4)3 + 3BaCl2 = 3BaSO4 + 2AlCl3','x'],['MgO + 2HNO3 = Mg(NO3)2 + H2O','x']].map(p=>EQ(p[0],p[1]));
+const ONES=[['CaO + H2O = Ca(OH)2','c'],['SO3 + H2O = H2SO4','c'],['Fe + S = FeS','c'],['C + O2 = CO2','c'],['S + O2 = SO2','c'],['CaCO3 = CaO + CO2','d'],['Cu(OH)2 = CuO + H2O','d'],['NH4Cl = NH3 + HCl','d'],['Fe + CuSO4 = FeSO4 + Cu','s'],['CuO + H2 = Cu + H2O','s'],['Zn + CuCl2 = ZnCl2 + Cu','s'],['Mg + H2SO4 = MgSO4 + H2','s'],['NaOH + HCl = NaCl + H2O','x'],['AgNO3 + NaCl = AgCl + NaNO3','x'],['KOH + HNO3 = KNO3 + H2O','x'],['BaCl2 + H2SO4 = BaSO4 + 2HCl','x']].map(p=>EQ(p[0],p[1]));
+const TYPED=[...SIMPLE,...ONES];
+const HARD=['CH4 + 2O2 = CO2 + 2H2O','C3H8 + 5O2 = 3CO2 + 4H2O','2C2H6 + 7O2 = 4CO2 + 6H2O','2C4H10 + 13O2 = 8CO2 + 10H2O','C2H6O + 3O2 = 2CO2 + 3H2O','4FeS2 + 11O2 = 2Fe2O3 + 8SO2','4NH3 + 5O2 = 4NO + 6H2O','4NH3 + 3O2 = 2N2 + 6H2O','Fe2O3 + 3CO = 2Fe + 3CO2','2Fe(OH)3 + 3H2SO4 = Fe2(SO4)3 + 6H2O','Ca3(PO4)2 + 3H2SO4 = 3CaSO4 + 2H3PO4','C6H12O6 + 6O2 = 6CO2 + 6H2O','2C8H18 + 25O2 = 16CO2 + 18H2O','2H2S + 3O2 = 2SO2 + 2H2O','2C2H2 + 5O2 = 4CO2 + 2H2O','Fe3O4 + 8HCl = FeCl2 + 2FeCl3 + 4H2O','2Al(OH)3 + 3H2SO4 = Al2(SO4)3 + 6H2O','3Fe3O4 + 8Al = 4Al2O3 + 9Fe','P2O5 + 3H2O = 2H3PO4','2KMnO4 = K2MnO4 + MnO2 + O2','4Fe(OH)2 + O2 + 2H2O = 4Fe(OH)3','2C6H6 + 15O2 = 12CO2 + 6H2O'].map(s=>EQ(s,null));
+const STAR=['3Cu + 8HNO3 = 3Cu(NO3)2 + 2NO + 4H2O','2KMnO4 + 16HCl = 2KCl + 2MnCl2 + 5Cl2 + 8H2O','Cu + 4HNO3 = Cu(NO3)2 + 2NO2 + 2H2O','MnO2 + 4HCl = MnCl2 + Cl2 + 2H2O','2Cu(NO3)2 = 2CuO + 4NO2 + O2','4KClO3 = 3KClO4 + KCl','C + 2H2SO4 = CO2 + 2SO2 + 2H2O','Ca3(PO4)2 + 3SiO2 + 5C = 3CaSiO3 + 5CO + 2P','4FeS2 + 11O2 = 2Fe2O3 + 8SO2','2C8H18 + 25O2 = 16CO2 + 18H2O','4Zn + 10HNO3 = 4Zn(NO3)2 + NH4NO3 + 3H2O'].map(s=>EQ(s,null));
+/* self-check: every equation balanced with smallest coefficients */
+[...TYPED,...HARD,...STAR].forEach(e=>{if(!balanced(e,ks(e))||gcdA(ks(e))!==1)console.error('UNBALANCED: '+e.s);});
+
+/* wrong versions of an equation: perturbed, unbalanced, distinct */
+function wrongs(e,n){const out=new Set(),key=k=>k.join(',');const base=ks(e);let guard=0;
+  const cand=[e.sp.map(()=>1)];
+  while(out.size<n&&guard++<300){let k=base.slice();if(cand.length){k=cand.shift();}else{const t=R(1,2);for(let j=0;j<t;j++){const i=R(0,k.length-1);k[i]=Math.max(1,k[i]+pick([-1,1,2,-2]));}}
+    if(balanced(e,k)||key(k)===key(base))continue;out.add(key(k));}
+  return [...out].map(s=>s.split(',').map(Number));}
+const atomTable=(e,k)=>{const a=atoms(e,k,0),b=atoms(e,k,1);const keys=[...new Set([...Object.keys(a),...Object.keys(b)])];return keys.map(el=>`${el}: ${a[el]||0} | ${b[el]||0}${(a[el]||0)===(b[el]||0)?' ✔':' ✘'}`).join('<br>');};
+const atomLine=(e,k)=>{const a=atoms(e,k,0);return Object.keys(a).map(el=>`${el} — ${a[el]}`).join(', ');};
+
+/* ---------- pictures ---------- */
+function molPic(){const H_=(x,y)=>`<circle cx="${x}" cy="${y}" r="10" fill="var(--card)" stroke="var(--fig)" stroke-width="1.5"/>`+T(x,y+4,'H',{fs:11,fw:700});
+  const O_=(x,y)=>`<circle cx="${x}" cy="${y}" r="15" fill="var(--hl)" fill-opacity=".6" stroke="var(--fig)" stroke-width="1.5"/>`+T(x,y+5,'O',{fs:13,fw:700});
+  let s='';s+=H_(26,40)+H_(44,40)+H_(26,80)+H_(44,80);s+=T(76,66,'+',{fs:22});s+=O_(104,60)+O_(130,60);s+=T(166,66,'→',{fs:22});
+  s+=O_(220,40)+H_(200,30)+H_(240,30)+O_(220,88)+H_(200,78)+H_(240,78);
+  s+=T(35,122,'2H₂',{fs:14})+T(117,122,'O₂',{fs:14})+T(220,122,'2H₂O',{fs:14});
+  s+=T(290,52,'H: 4 = 4',{fs:12,fw:500,c:'var(--accent-ink)'})+T(290,72,'O: 2 = 2',{fs:12,fw:500,c:'var(--accent-ink)'});
+  return SV(330,132,s,'Молекулы в реакции водорода с кислородом');}
+function typePic(){const box=(x,y,t,o)=>`<rect x="${x}" y="${y-15}" width="20" height="22" rx="5" fill="${o?'var(--hl)':'var(--card)'}" fill-opacity="${o?'.55':'1'}" stroke="var(--fig)" stroke-width="1.4"/>`+T(x+10,y+1,t,{fs:13,fw:700});
+  const row=(y,lab,parts)=>{let s=T(4,y+1,lab,{a:'start',fs:12,fw:600,c:'var(--accent-ink)'});let x=96;parts.forEach(p=>{if(typeof p==='string'){s+=T(x+9,y+1,p,{fs:14});x+=18;}else{p.forEach(([t,o])=>{s+=box(x,y,t,o);x+=21;});x+=4;}});return s;};
+  let s='';s+=row(26,'Соединение',[[['A',0]],'+',[['B',1]],'→',[['A',0],['B',1]]]);
+  s+=row(64,'Разложение',[[['A',0],['B',1]],'→',[['A',0]],'+',[['B',1]]]);
+  s+=row(102,'Замещение',[[['A',0]],'+',[['B',1],['C',0]],'→',[['A',0],['C',0]],'+',[['B',1]]]);
+  s+=row(140,'Обмен',[[['A',0],['B',1]],'+',[['C',0],['D',1]],'→',[['A',0],['D',1]],'+',[['C',0],['B',1]]]);
+  return SV(340,156,s,'Четыре типа реакций');}
+
+/* ---------- theory ---------- */
+const theory=[
+{title:'Куда девается масса, когда горит костёр?',lvl:0,html:`
+<p class="hook">Костёр горел весь вечер — от охапки дров осталась горстка пепла. Где масса? Исчезла? А ржавый гвоздь, наоборот, становится <b>тяжелее</b> нового. И фейерверк: вспышка, грохот, искры — неужели вещество «пропало в небе»? Нет! В химии <b>ничего не исчезает и не берётся из ниоткуда</b>. Атомы просто меняют партнёров, как в танце, а дрова «улетают» в виде углекислого газа и водяного пара.</p>
+<div class="box rule"><b>Закон сохранения массы</b>Масса веществ, вступивших в реакцию, равна массе веществ, образовавшихся в результате реакции.</div>
+<p><b>Почему так.</b> В реакции атомы не появляются и не исчезают — они только перегруппировываются. Сколько атомов каждого элемента было — столько и осталось. Значит, и масса та же.</p>
+<div class="box ex"><b>Пример</b>5,6 г железа + 3,2 г серы → 8,8 г сульфида железа FeS. 5,6 + 3,2 = 8,8 ✔</div>
+<div class="box err"><b>Частая ошибка</b>«Свеча сгорела — масса уменьшилась, закон нарушен». Нет: продукты горения — газы, они улетели. В закрытом сосуде весы не шелохнутся.</div>
+<div class="fact">М. В. Ломоносов в 1756 году прокаливал металлы в запаянных стеклянных сосудах и доказал: «без пропускания внешнего воздуха вес сожжённого металла остаётся в одной мере». Француз Антуан Лавуазье в 1789 году сформулировал закон ещё строже и точно взвешивал газы.</div>`},
+{title:'Химическое уравнение: индексы и коэффициенты',lvl:1,html:`
+<div class="box rule"><b>Химическое уравнение</b>— запись реакции формулами: слева исходные вещества (реагенты), справа — продукты. <b>Коэффициент</b> — большая цифра перед формулой: сколько молекул взяли. <b>Индекс</b> — маленькая цифра внизу: сколько атомов в одной молекуле.</div>
+<div class="fig">${molPic()}</div>
+<p><b>Почему так.</b> Уравнение — это «бухгалтерия атомов»: слева и справа должно быть одинаковое число атомов каждого элемента. Это и есть закон сохранения массы, записанный формулами.</p>
+<div class="box ex"><b>Считаем атомы</b>3H₂SO₄: коэффициент 3 умножает всё. H: 3·2 = 6, S: 3·1 = 3, O: 3·4 = 12.</div>
+<div class="box err"><b>Частая ошибка</b>Забыть, что коэффициент умножает <b>все</b> атомы формулы. 2Al₂O₃ — это 4 атома Al и 6 атомов O.</div>`},
+{title:'Расставляем коэффициенты',lvl:2,html:`
+<div class="box rule"><b>Главное правило</b>Уравнивать можно <b>только коэффициентами</b>. Индексы менять нельзя — это уже другое вещество! Коэффициенты должны быть наименьшими целыми.</div>
+<ol class="steps"><li>Запиши схему: Al + O₂ → Al₂O₃.</li>
+<li>Найди элемент, у которого «перекос» больше всего: кислород, слева 2, справа 3.</li>
+<li>НОК(2, 3) = 6: ставим 3 перед O₂ и 2 перед Al₂O₃ → Al + 3O₂ → 2Al₂O₃.</li>
+<li>Теперь справа 4 Al → ставим 4 перед Al: <b>4Al + 3O₂ → 2Al₂O₃</b>.</li>
+<li>Проверка: Al 4 = 4, O 6 = 6 ✔</li></ol>
+<div class="box err"><b>Частая ошибка</b>Исправить H₂ + O₂ → H₂O на H₂ + O₂ → H₂O₂. Это перекись водорода, совсем другое вещество! Правильно: 2H₂ + O₂ → 2H₂O.</div>
+<p><b>Попробуй сам</b> — жми + и −, пока атомы слева и справа не сравняются:</p>
+<div class="widget" id="w-bal"></div>`},
+{title:'Хитрости для трудных уравнений',lvl:3,html:`
+<div class="box tip"><b>Порядок</b>1) Сначала уравнивай металлы, потом неметаллы (S, N, P, C), потом водород и <b>в самом конце кислород</b>.<br>2) Группы атомов, которые не меняются (SO₄, NO₃, PO₄), считай целиком, как одну «деталь».<br>3) Начинай с самой «сложной» формулы — с большими индексами.</div>
+<div class="box ex"><b>Пример с группами</b>Al + H₂SO₄ → Al₂(SO₄)₃ + H₂. Al: ставим 2 слева. SO₄: справа 3 → 3H₂SO₄. H: слева 6 → 3H₂. Итог: 2Al + 3H₂SO₄ → Al₂(SO₄)₃ + 3H₂.</div>
+<div class="box ex"><b>Горение и «дробный» трюк</b>C₂H₆ + O₂ → CO₂ + H₂O. C: 2CO₂. H: 3H₂O. O справа: 4 + 3 = 7 → нужно 3,5 O₂. Дробь не годится — умножаем всё на 2: <b>2C₂H₆ + 7O₂ → 4CO₂ + 6H₂O</b>.</div>
+<div class="box err"><b>Частая ошибка</b>Уравнять кислород в самом начале — потом он «поедет» при каждом изменении. Кислород — последним.</div>`},
+{title:'Четыре типа реакций',lvl:4,html:`
+<div class="fig">${typePic()}</div>
+<div class="box rule"><b>Типы</b><b>Соединение</b>: из нескольких веществ — одно сложное. 2Mg + O₂ → 2MgO.<br><b>Разложение</b>: из одного сложного — несколько. CaCO₃ → CaO + CO₂.<br><b>Замещение</b>: простое вещество + сложное; атомы простого вещества замещают один из элементов сложного. Zn + 2HCl → ZnCl₂ + H₂.<br><b>Обмен</b>: два сложных вещества обмениваются частями. NaOH + HCl → NaCl + H₂O.</div>
+<div class="box tip"><b>Как отличить</b>Считай вещества: «много → одно» — соединение; «одно → много» — разложение. Есть <b>простое</b> вещество слева и справа (металл, H₂) — замещение. Два сложных → два сложных — обмен.</div>
+<div class="box err"><b>Частая ошибка</b>Называть 2H₂ + O₂ → 2H₂O замещением, потому что «два вещества слева». Справа одно вещество — это соединение.</div>
+<div class="fact">Термитная смесь (алюминий + оксид железа, 2Al + Fe₂O₃ → Al₂O₃ + 2Fe) горит при температуре около 2500 °С. Ею сваривают железнодорожные рельсы прямо на путях — это реакция замещения.</div>`},
+{title:'Экзо- и эндотермические реакции',lvl:5,html:`
+<div class="box rule"><b>Определения</b><b>Экзотермические</b> реакции идут с <b>выделением</b> теплоты (горение, нейтрализация, ржавление). <b>Эндотермические</b> — с <b>поглощением</b> теплоты (разложение мела при обжиге, фотосинтез, разложение воды током).</div>
+<p><b>Как запомнить:</b> «экзо» — наружу (экзоскелет у жука — снаружи), «эндо» — внутрь (эндоскоп заглядывает внутрь).</p>
+<div class="box rule"><b>Термохимическое уравнение</b>— уравнение с тепловым эффектом Q: C + O₂ → CO₂ + 394 кДж. Q относится к тем количествам веществ (в молях), которые стоят в уравнении.</div>
+<div class="box ex"><b>Пример расчёта</b>2H₂ + O₂ → 2H₂O + 572 кДж. Сколько теплоты даст 8 г водорода? n(H₂) = 8 / 2 = 4 моль. По уравнению 2 моль → 572 кДж, значит 4 моль → 2·572 = 1144 кДж.</div>
+<div class="box err"><b>Частая ошибка</b>Забыть коэффициент: 572 кДж — это на 2 моль H₂, а не на 1.</div>
+<div class="fact">Белый ослепительный свет фейерверков и фотовспышек XIX века — это горение магния: 2Mg + O₂ → 2MgO, очень экзотермическая реакция. А цвет искрам дают соли металлов: стронций — красный, барий — зелёный, натрий — жёлтый, медь — синий.</div>`},
+{title:'★ Алгебраический метод',lvl:7,html:`
+<p>Когда подбор не идёт, физмат-способ: обозначь коэффициенты буквами и составь уравнения для каждого элемента.</p>
+<div class="box ex"><b>Пример</b>a FeS₂ + b O₂ → c Fe₂O₃ + d SO₂.<br>Fe: a = 2c. S: 2a = d. O: 2b = 3c + 2d.<br>Пусть c = 1 → a = 2, d = 4, 2b = 3 + 8 = 11 → b = 5,5. Умножаем всё на 2: a = 4, b = 11, c = 2, d = 8.<br><b>4FeS₂ + 11O₂ → 2Fe₂O₃ + 8SO₂</b> (сумма коэффициентов 25).</div>
+<div class="box tip"><b>Горение углеводородов</b>CₙH₂ₙ₊₂ + O₂ → CO₂ + H₂O. Удобно: C → n CO₂, H → (n + 1) H₂O, кислорода нужно (3n + 1)/2 молекул O₂. Если дробь — удвой всё.</div>
+<div class="box tip"><b>Проверка в конце</b>Всегда пересчитай атомы каждого элемента слева и справа. Одна ошибка — и уравнение неверно.</div>`}
+];
+
+const symbols={tab:'Знаки',title:'Знаки и понятия',rows:[
+['→ (или =)','знак реакции','Слева реагенты, справа продукты.','2H₂ + O₂ → 2H₂O'],
+['2H₂O','коэффициент 2','Сколько молекул (моль) вещества. Умножает все атомы.','2H₂O: 4 H, 2 O'],
+['H₂','индекс 2','Сколько атомов в одной молекуле. Менять нельзя!','O₂ ≠ O₃'],
+['m(реаг.) = m(прод.)','закон сохранения массы','Ломоносов (1756), Лавуазье (1789).','5,6 + 3,2 = 8,8 г'],
+['A + B → AB','соединение','Несколько веществ → одно.','2Mg + O₂ → 2MgO'],
+['AB → A + B','разложение','Одно → несколько.','CaCO₃ → CaO + CO₂'],
+['A + BC → AC + B','замещение','Простое + сложное → простое + сложное.','Zn + 2HCl → ZnCl₂ + H₂'],
+['AB + CD → AD + CB','обмен','Сложные меняются частями.','NaOH + HCl → NaCl + H₂O'],
+['+Q','экзотермическая','Теплота выделяется.','C + O₂ → CO₂ + 394 кДж'],
+['−Q','эндотермическая','Теплота поглощается.','CaCO₃ → CaO + CO₂ − 178 кДж']
+],after:`<div class="box tip" style="margin-top:14px"><b>Порядок уравнивания</b>металлы → неметаллы → водород → кислород. Группы SO₄, NO₃, PO₄ — целиком.</div>`};
+
+/* ---------- widget: balancer ---------- */
+function onTheory(root){const w=root.querySelector('#w-bal');if(!w)return;
+  const L=['2H2 + O2 = 2H2O','4Al + 3O2 = 2Al2O3','2Fe + 3Cl2 = 2FeCl3','CH4 + 2O2 = CO2 + 2H2O','2Al + 6HCl = 2AlCl3 + 3H2','C3H8 + 5O2 = 3CO2 + 4H2O','4P + 5O2 = 2P2O5','4FeS2 + 11O2 = 2Fe2O3 + 8SO2'].map(s=>EQ(s));
+  const sel='font:inherit;font-size:16px;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)';
+  const bs='padding:2px 0;width:34px;justify-content:center;font-size:18px';
+  w.innerHTML=`<label>Реакция: <select id="wE" style="${sel}">${L.map((e,i)=>`<option value="${i}">${scheme(e).replace(/<sub>(\d+)<\/sub>/g,(m,d)=>d.replace(/\d/g,c=>'₀₁₂₃₄₅₆₇₈₉'[c])).replace(/<[^>]+>/g,'')}</option>`).join('')}</select></label><div id="wB" style="display:flex;flex-wrap:wrap;gap:6px 4px;align-items:center;justify-content:center;margin:10px 0"></div><div id="wT" style="display:flex;justify-content:center"></div><div id="wM" style="text-align:center;margin-top:6px;font-weight:600"></div>`;
+  let e=null,k=[];const g=id=>w.querySelector(id);
+  const draw=()=>{let h='';e.sp.forEach((x,i)=>{if(i>0)h+=`<span style="font-size:20px;padding:0 4px">${e.sp[i-1].side!==x.side?'→':'+'}</span>`;
+      h+=`<span style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;border:1px solid var(--line);border-radius:10px;padding:5px 6px;background:var(--card)"><span style="font-size:18px"><b class="out">${k[i]}</b> ${C(x.f)}</span><span style="display:flex;gap:4px"><button type="button" class="btn ghost" style="${bs}" data-i="${i}" data-d="-1">−</button><button type="button" class="btn ghost" style="${bs}" data-i="${i}" data-d="1">+</button></span></span>`;});
+    g('#wB').innerHTML=h;
+    const a=atoms(e,k,0),b=atoms(e,k,1);const keys=[...new Set([...Object.keys(a),...Object.keys(b)])];
+    let t='<table style="border-collapse:collapse;font-size:15px"><tr><th style="padding:3px 10px">атом</th><th style="padding:3px 10px">слева</th><th style="padding:3px 10px">справа</th><th></th></tr>';
+    keys.forEach(el=>{const ok=(a[el]||0)===(b[el]||0);t+=`<tr><td style="padding:3px 10px;text-align:center"><b>${el}</b></td><td style="padding:3px 10px;text-align:center">${a[el]||0}</td><td style="padding:3px 10px;text-align:center">${b[el]||0}</td><td style="color:${ok?'var(--ok)':'var(--bad)'};font-weight:700">${ok?'✔':'✘'}</td></tr>`;});
+    g('#wT').innerHTML=t+'</table>';
+    const bal=balanced(e,k);g('#wM').innerHTML=bal?(gcdA(k)===1?`🎉 Уравнено! ${show(e,k)}`:`Уравнено, но коэффициенты можно сократить на ${gcdA(k)}.`):'Пока не уравнено — ищи элемент с ✘.';
+    g('#wB').querySelectorAll('button').forEach(bt=>bt.onclick=()=>{const i=+bt.dataset.i;k[i]=Math.max(1,Math.min(30,k[i]+ +bt.dataset.d));draw();});};
+  const load=()=>{e=L[+g('#wE').value];k=e.sp.map(()=>1);draw();};
+  g('#wE').onchange=load;load();}
+
+/* =================== GENERATORS =================== */
+const MASSC=['2Mg + O2 = 2MgO','Fe + S = FeS','2Cu + O2 = 2CuO','4P + 5O2 = 2P2O5','2Ca + O2 = 2CaO','4Al + 3O2 = 2Al2O3','2H2 + O2 = 2H2O','C + O2 = CO2','S + O2 = SO2','Zn + S = ZnS','2Na + Cl2 = 2NaCl'].map(s=>EQ(s));
+const MASSD=['CaCO3 = CaO + CO2','2HgO = 2Hg + O2','Cu(OH)2 = CuO + H2O','2KClO3 = 2KCl + 3O2','2H2O2 = 2H2O + O2','2Fe(OH)3 = Fe2O3 + 3H2O','MgCO3 = MgO + CO2'].map(s=>EQ(s));
+const fm=x=>N(rd(x,3));
+/* L0 — закон сохранения массы */
+RULE(0,'Как звучит закон сохранения массы веществ?','Масса веществ, вступивших в реакцию, равна массе образовавшихся веществ',['Масса продуктов всегда больше массы реагентов','Масса сохраняется только у твёрдых веществ','Объём веществ до и после реакции одинаков'],
+{short:'m(реагентов) = m(продуктов).',explain:'Закон Ломоносова–Лавуазье: масса веществ до реакции равна массе после. Он верен для любых веществ — твёрдых, жидких, газов. Объём при этом может меняться (например, газ получается из твёрдого).',
+explain2:'Атомы как детали LEGO: из домика ты собрал машинку. Детали те же — значит, и вес тот же.'});
+RULE(0,'Почему масса в химической реакции сохраняется?','Атомы не исчезают и не появляются, а только перегруппировываются',['Молекулы не меняются в реакции','Потому что реакции идут в закрытых сосудах','Потому что теплота не имеет массы'],
+{short:'Число атомов каждого элемента не меняется.',explain:'В реакции разрушаются старые молекулы и образуются новые, но сами атомы остаются: сколько атомов каждого элемента было, столько и стало. Молекулы как раз меняются — иначе это не химическая реакция.',
+explain2:'Перемешай колоду карт и разложи по-новому — карт не стало ни больше, ни меньше. Атомы в реакции — это карты.'});
+G(0,()=>{const e=pick(MASSC);const k=pick([0.05,0.1,0.2,0.25,0.5]);const ms=e.sp.map(x=>x.k*k*Mr(x.f));const L=e.sp.filter(x=>x.side===0);const pr=e.sp.find(x=>x.side===1);
+return {type:'num',q:`Реакция ${show(e)}. В реакцию полностью вступили ${L.map((x,i)=>`${fm(ms[e.sp.indexOf(x)])} г ${C(x.f)}`).join(' и ')}. Какая масса ${C(pr.f)} образовалась? Ответ в граммах.`,ans:rd(ms.slice(0,L.length).reduce((a,b)=>a+b,0),6),tol:0.002,
+short:`${L.map(x=>fm(ms[e.sp.indexOf(x)])).join(' + ')} = ${fm(ms[ms.length-1])} г.`,explain:`По закону сохранения массы масса продукта равна сумме масс реагентов: ${L.map(x=>fm(ms[e.sp.indexOf(x)])).join(' + ')} = <b>${fm(ms[ms.length-1])} г</b>.`,
+explain2:`Все атомы ${L.map(x=>C(x.f)).join(' и ')} перешли в ${C(pr.f)} — ни один не потерялся. Значит, и масса вся там же.`};});
+G(0,()=>{const e=pick(MASSD);const k=pick([0.05,0.1,0.2,0.5,1]);const ms=e.sp.map(x=>x.k*k*Mr(x.f));const known=R(1,2);const other=3-known;
+return {type:'num',q:`При разложении ${fm(ms[0])} г ${C(e.sp[0].f)} (${show(e)}) получилось ${fm(ms[known])} г ${C(e.sp[known].f)}. Какая масса ${C(e.sp[other].f)} образовалась? Ответ в граммах.`,ans:rd(ms[other],6),tol:0.002,
+short:`${fm(ms[0])} − ${fm(ms[known])} = ${fm(ms[other])} г.`,explain:`m(${C(e.sp[0].f)}) = m(${C(e.sp[1].f)}) + m(${C(e.sp[2].f)}).<br>m(${C(e.sp[other].f)}) = ${fm(ms[0])} − ${fm(ms[known])} = <b>${fm(ms[other])} г</b>.`,
+explain2:`Вещество «распалось на две кучки». Всего было ${fm(ms[0])} г, одна кучка ${fm(ms[known])} г — значит, во второй остальное.`};});
+G(0,()=>{const P=[['Свечу сожгли на весах в открытой банке. Масса уменьшилась.','Нет: продукты горения (CO₂ и пар) — газы, они улетели в воздух',['Да, закон нарушен: вещество исчезло','Да: при горении масса превращается в энергию и свет','Нет: весы просто сломались']],
+['Железный гвоздь заржавел — он стал тяжелее, чем был.','Нет: к железу присоединились кислород и вода из воздуха',['Да, закон нарушен: масса взялась из ниоткуда','Да: ржавчина растёт сама','Нет: гвоздь впитал свет']],
+['Магний сожгли в запаянной колбе на весах. Масса колбы не изменилась.','Это подтверждает закон: ничего не вылетело и не попало внутрь',['Это нарушение: магний сгорел, масса должна уменьшиться','Это нарушение: при горении масса растёт','Реакция не прошла, раз масса та же']],
+['Мел прокалили в открытом тигле — остаток весит меньше, чем мел.','Нет: выделился углекислый газ CO₂ и улетел',['Да, закон нарушен','Да: мел испарился полностью','Нет: просто остаток стал плотнее']]];
+const p=pick(P);return CH(`${p[0]} Нарушен ли закон сохранения массы?`,p[1],p[2],{short:p[1]+'.',explain:`${p[1]}. Закон сохранения массы работает всегда, но нужно учитывать <b>все</b> вещества, в том числе газы из воздуха или улетевшие газы. В закрытом сосуде масса не меняется — так и проверял закон Ломоносов.`,
+explain2:'Представь, что ты взвешиваешь рюкзак, а друг тайком вытащил из него бутерброд. Вес уменьшился, но бутерброд не исчез — его унесли. Газы «уносятся» так же незаметно.'});});
+
+/* L1 — индексы и коэффициенты */
+RULE(1,'Чем коэффициент отличается от индекса в записи 3H₂O?','Коэффициент 3 — число молекул; индекс 2 — число атомов H в одной молекуле',['Коэффициент 3 — число атомов H; индекс 2 — число молекул','Это одно и то же, просто пишут по-разному','Коэффициент — масса, индекс — объём'],
+{short:'Коэффициент — сколько молекул, индекс — сколько атомов в молекуле.',explain:'3H₂O — это три молекулы воды. В каждой — 2 атома H (индекс) и 1 атом O. Всего атомов H: 3·2 = 6, атомов O: 3. Коэффициент умножает всю формулу.',
+explain2:'3 велосипеда, у каждого по 2 колеса: «3» — коэффициент (сколько велосипедов), «2» — индекс (колёс у одного). Колёс всего 6.'});
+G(1,()=>{for(;;){const f=pick(['H2SO4','Al2O3','H2O','Ca(OH)2','Al2(SO4)3','HNO3','CO2','Fe2O3','H3PO4','NH3','Cu(NO3)2','CaCO3','Fe(OH)3']);const c=parseF(f);const e=pick(Object.keys(c));const k=R(2,6);const ans=k*c[e];
+return {type:'num',q:`Сколько атомов <b>${e}</b> в записи <b>${k}</b>${C(f)}?`,ans,short:`${k} · ${c[e]} = ${ans}.`,
+explain:`В одной частице ${C(f)} атомов ${e}: ${c[e]}${/\(/.test(f)?' (не забудь индекс за скобкой)':''}. Коэффициент ${k} умножает всю формулу: ${k} · ${c[e]} = <b>${ans}</b>.`,
+explain2:`Запись ${k}${C(f)} — это ${k} одинаковых частицы ${Array(Math.min(k,4)).fill(C(f)).join(' + ')}${k>4?' + …':''}. В каждой по ${c[e]} ${e} → всего ${ans}.`};}});
+G(1,()=>{const e=pick([...SIMPLE,...HARD]);const k=ks(e);const a=atoms(e,k,0);const big=Object.keys(a).filter(x=>a[x]>1);const el=pick(big.length?big:Object.keys(a));
+return {type:'num',q:`Уравнение: ${show(e)}. Сколько атомов <b>${el}</b> в левой части?`,ans:a[el],
+short:`Слева ${el}: ${a[el]}, справа столько же.`,explain:`Считаем ${el} слева: ${e.sp.filter(x=>x.side===0&&parseF(x.f)[el]).map(x=>`${x.k}·${parseF(x.f)[el]}`).join(' + ')} = <b>${a[el]}</b>. Справа: ${e.sp.filter(x=>x.side===1&&parseF(x.f)[el]).map(x=>`${x.k}·${parseF(x.f)[el]}`).join(' + ')} = ${atoms(e,k,1)[el]} — столько же, уравнение уравнено.`,
+explain2:`Для каждого вещества: коэффициент × индекс ${el}. Потом складываем. Проверить себя можно справа — в уравненной реакции числа совпадают.`};});
+G(1,()=>{const P=[['2H₂O','две молекулы воды',['два атома водорода и один кислорода','одна молекула воды с двумя атомами кислорода','две молекулы водорода']],['3O₂','три молекулы кислорода',['шесть отдельных атомов кислорода, не связанных друг с другом','три атома кислорода','молекула озона']],['4Al','четыре атома алюминия',['одна молекула алюминия из четырёх атомов','четыре молекулы оксида алюминия','атом алюминия с валентностью IV']],['5CO₂','пять молекул углекислого газа',['пять атомов углерода и два атома кислорода','молекула из пяти атомов','пять атомов кислорода']]];
+const p=pick(P);return CH(`Что означает запись <b>${p[0]}</b>?`,p[1],p[2],{short:`Коэффициент — число частиц: ${p[1]}.`,explain:`Число перед формулой — коэффициент: сколько частиц взяли. ${p[0]} — это <b>${p[1]}</b>. Индексы внутри формулы показывают состав одной частицы.`,
+explain2:'Коэффициент отвечает на вопрос «сколько штук?», а индекс — «из чего сделана одна штука?».'});});
+
+/* L2 — уравниваем */
+RULE(2,'Что можно менять, когда уравниваешь химическую реакцию?','Только коэффициенты перед формулами',['Только индексы в формулах','И индексы, и коэффициенты — как удобнее','Можно дописать новые вещества'],
+{short:'Только коэффициенты; индекс изменит вещество.',explain:'Индексы задают состав вещества: H₂O — вода, H₂O₂ — перекись водорода. Если поменять индекс, получится другое вещество, и уравнение станет неправдой. Поэтому подбираем только коэффициенты — число молекул.',
+explain2:'Рецепт пиццы (формулу) менять нельзя — можно только решить, сколько пицц испечь (коэффициент).'});
+RULE(2,'Какое уравнение считается уравненным правильно?','Число атомов каждого элемента слева и справа одинаково, коэффициенты — наименьшие целые',['Число молекул слева и справа одинаково','Сумма коэффициентов слева равна сумме справа','Масса каждого вещества слева равна массе справа'],
+{short:'Атомы каждого элемента: слева = справа.',explain:'Уравнено — значит, для <b>каждого</b> элемента число атомов слева равно числу справа. Число молекул при этом может отличаться: в 2H₂ + O₂ → 2H₂O слева 3 молекулы, справа 2. И коэффициенты сокращают до наименьших.',
+explain2:'Проверка как в бухгалтерии: по каждому элементу «приход = расход». Количество молекул не обязано совпадать.'});
+G(2,()=>{const e=pick(SIMPLE);const ws=wrongs(e,3);if(ws.length<3)return null;
+return CH('Какое уравнение уравнено <b>верно</b>?',show(e),ws.map(k=>show(e,k)),{short:atomLine(e,ks(e))+' — слева и справа поровну.',
+explain:`Проверяем атомы в верном уравнении ${show(e)} (слева | справа):<br>${atomTable(e,ks(e))}<br>Во всех остальных вариантах хотя бы один элемент не сходится, например в ${show(e,ws[0])}: ${atomTable(e,ws[0]).split('<br>').filter(x=>x.includes('✘'))[0]}.`,
+explain2:`Самый быстрый способ — проверить каждый вариант по одному «капризному» элементу (обычно кислороду или водороду). Где не сошлось — выкидываем.`,explain3:`Схема: ${scheme(e)}. Подсказка: ${e.type==='c'?'начни с элемента, которого слева в молекуле 2, а справа — 3 или 1':'сначала уравняй металл, потом водород, кислород — в конце'}.`});});
+G(2,()=>{for(;;){const e=pick(SIMPLE);const k=ks(e);const idx=R(0,k.length-1);if(k[idx]===1&&Math.random()<0.6)continue;const kk=k.slice();kk[idx]=null;
+return {type:'num',q:`Какой коэффициент должен стоять вместо знака «?» в уравнении<br>${show(e,kk)}<br>(Если коэффициент не нужен — введи 1.)`,ans:k[idx],
+short:`${show(e)}.`,explain:`Считаем атомы, где знаем всё, и подбираем недостающее: ${show(e)}.<br>Проверка (слева | справа):<br>${atomTable(e,k)}`,
+explain2:`Возьми элемент, который есть в веществе с «?». ${(()=>{const p=parseF(e.sp[idx].f);const el=Object.keys(p)[0];const side=e.sp[idx].side;const oth=atoms(e,k,1-side)[el];const rest=e.sp.reduce((s,x,i)=>i!==idx&&x.side===side?s+(parseF(x.f)[el]||0)*x.k:s,0);return `Элемент ${el}: на другой стороне ${oth} ${H.plural(oth,'атом','атома','атомов')}, рядом с «?» уже ${rest}. Нужно ещё ${oth-rest}, а в одной частице ${C(e.sp[idx].f)} их ${p[el]} → ${oth-rest} : ${p[el]} = ${k[idx]}.`;})()}`};}});
+G(2,()=>{const P=[['H2 + O2 = H2O2','2H₂ + O₂ → 2H₂O','вода (H₂O) превратилась в перекись водорода (H₂O₂)'],['Al + O2 = AlO3','4Al + 3O₂ → 2Al₂O₃','оксид алюминия — это Al₂O₃, вещества «AlO₃» не существует'],['Na + Cl = NaCl','2Na + Cl₂ → 2NaCl','хлор — двухатомная молекула Cl₂, а не отдельный атом Cl'],['Mg + O = MgO','2Mg + O₂ → 2MgO','кислород существует в виде молекул O₂']];
+const p=pick(P);return CH(`Вася «уравнял» реакцию так: ${C(p[0].replace('=','→'))}. В чём ошибка и как правильно?`,`Изменил формулы веществ; правильно: ${p[1]}`,[`Всё верно, так и пишут`,'Ошибки нет, просто вместо стрелки надо писать «=»',`Нужно было добавить ещё одну стрелку`],
+{short:`Нельзя менять индексы: ${p[2]}.`,explain:`Вася подгонял <b>индексы</b> (или забыл, что газ — двухатомная молекула): ${p[2]}. Уравнивают только коэффициентами: <b>${p[1]}</b>.`,
+explain2:'Простые газы H₂, O₂, N₂, Cl₂ всегда пишутся с индексом 2. А формулы сложных веществ берутся по валентности и потом не меняются.'});});
+
+/* L3 — ищем коэффициент */
+RULE(3,'Слева 2 атома кислорода (O₂), справа 3 (в Al₂O₃). Как уравнять кислород?','Найти НОК(2, 3) = 6: поставить 3 перед O₂ и 2 перед Al₂O₃',['Поставить 3 перед O₂, а Al₂O₃ не трогать','Поменять O₂ на O₃','Поставить 2 перед O₂ и 3 перед Al₂O₃'],
+{short:'НОК числа атомов: 6 = 3·2 = 2·3.',explain:'Число атомов O слева и справа должно стать одинаковым. НОК(2, 3) = 6: 3O₂ даёт 6 атомов, 2Al₂O₃ даёт 6 атомов. Потом уравниваем Al: справа 4 → 4Al. Итог: 4Al + 3O₂ → 2Al₂O₃. Менять O₂ на O₃ нельзя — это озон!',
+explain2:'Как в задаче про НОК: «в одной коробке 2 конфеты, в другой 3 — сколько коробок взять, чтобы конфет было поровну?» По 6: три коробки по 2 и две по 3.'});
+G(3,()=>{const pool=[...SIMPLE.filter(e=>Math.max(...ks(e))>2),...HARD.slice(0,10)];const e=pick(pool);const k=ks(e);const idx=R(0,k.length-1);
+return {type:'num',q:`Расставь коэффициенты: ${scheme(e)}. Какой коэффициент получится перед <b>${C(e.sp[idx].f)}</b>${e.sp.filter(x=>x.f===e.sp[idx].f).length>1?(e.sp[idx].side?' (справа)':' (слева)'):''}? (Коэффициенты — наименьшие целые; если коэффициент не пишется, введи 1.)`,ans:k[idx],
+short:`${show(e)}.`,explain:`Уравненная реакция: <b>${show(e)}</b>.<br>Проверка (слева | справа):<br>${atomTable(e,k)}<br>Перед ${C(e.sp[idx].f)} стоит <b>${k[idx]}</b>.`,
+explain2:`План: сначала элементы кроме H и O, потом H, в конце O. Проверь себя в «уравнивателе» на вкладке «Теория» или пересчитай атомы в ответе: всё сходится.`};});
+G(3,()=>{const e=pick([...SIMPLE.filter(e=>Math.max(...ks(e))>1),...HARD.slice(0,8)]);const k=ks(e);const sum=k.reduce((a,b)=>a+b,0);
+return {type:'num',q:`Уравняй реакцию и найди <b>сумму всех коэффициентов</b> (единицы тоже считаются): ${scheme(e)}.`,ans:sum,
+short:`${show(e)}: ${k.join(' + ')} = ${sum}.`,explain:`Уравненная реакция: <b>${show(e)}</b>. Коэффициенты: ${k.join(', ')} (там, где ничего не написано, — 1). Сумма: ${k.join(' + ')} = <b>${sum}</b>.`,
+explain2:`Частая ловушка — забыть «невидимые» единицы. Перед ${e.sp.filter((x,i)=>k[i]===1).map(x=>C(x.f)).join(', ')||'каждой формулой'} ${k.includes(1)?'коэффициент 1 — его тоже нужно сложить.':'коэффициенты здесь все больше 1.'}`};});
+G(3,()=>{const e=pick(SIMPLE.filter(e=>e.sp.some(x=>/\(/.test(x.f))||/SO4|NO3|PO4/.test(e.s)));const ws=wrongs(e,3);if(ws.length<3)return null;
+return CH(`Уравняй, считая группы атомов (SO₄, NO₃, PO₄, OH) целиком: ${scheme(e)}. Какое уравнение верное?`,show(e),ws.map(k=>show(e,k)),
+{short:atomLine(e,ks(e))+'.',explain:`Верно: <b>${show(e)}</b>.<br>Атомы (слева | справа):<br>${atomTable(e,ks(e))}`,
+explain2:'Группу SO₄ (или NO₃, PO₄) удобно считать как одну «деталь»: сколько групп слева, столько и справа. Потом уравниваем металл и водород.'});});
+
+/* L4 — типы реакций */
+RULE(4,'Какая реакция называется реакцией <b>замещения</b>?','Между простым и сложным веществом, когда атомы простого вещества замещают атомы одного из элементов сложного',['Из двух или нескольких веществ образуется одно сложное','Из одного сложного вещества образуется несколько новых','Два сложных вещества обмениваются своими составными частями'],
+{short:'Простое + сложное → новое простое + новое сложное.',explain:'Замещение: A + BC → AC + B — простое вещество «выталкивает» элемент из сложного. Пример: Zn + 2HCl → ZnCl₂ + H₂. Остальные варианты — соединение, разложение и обмен.',
+explain2:'Как на танцах: одиночка (Zn) отбивает партнёршу (Cl) у пары (HCl), и в одиночестве остаётся H.'});
+RULE(4,'Чем реакция обмена отличается от замещения?','В обмене реагируют два сложных вещества, в замещении — простое и сложное',['В обмене всегда выделяется газ','В замещении образуется одно вещество','Ничем, это синонимы'],
+{short:'Обмен: сложное + сложное; замещение: простое + сложное.',explain:'Обмен: AB + CD → AD + CB — оба реагента сложные, они меняются частями (NaOH + HCl → NaCl + H₂O). Замещение: простое вещество (металл, H₂) + сложное. Газ может выделяться в обоих типах, это не признак.',
+explain2:'Обмен — две пары меняются партнёрами. Замещение — одиночка отбивает партнёра у пары.'});
+G(4,()=>{const e=pick(TYPED);const t=e.type;return CH(`К какому типу относится реакция ${show(e)}?`,TYN[t],Object.keys(TYN).filter(x=>x!==t).map(x=>TYN[x]),
+{short:`Это реакция ${TY[t]}.`,explain:`Смотрим на вещества: слева ${e.sp.filter(x=>!x.side).length} → справа ${e.sp.filter(x=>x.side).length}.<br>${t==='c'?'Несколько веществ дали <b>одно</b> — это <b>соединение</b>.':t==='d'?'<b>Одно</b> вещество распалось на несколько — это <b>разложение</b>.':t==='s'?`Простое вещество ${C(e.sp.find(x=>!x.side&&Object.keys(parseF(x.f)).length===1).f)} заняло место элемента в сложном, и выделилось простое ${C(e.sp.find(x=>x.side&&Object.keys(parseF(x.f)).length===1).f)} — это <b>замещение</b>.`:'Два сложных вещества обменялись частями — это <b>обмен</b>.'}`,
+explain2:`Алгоритм: 1) справа одно вещество? → соединение. 2) слева одно? → разложение. 3) есть простое вещество (из одного элемента) слева и справа? → замещение. 4) иначе — обмен.`});});
+G(4,()=>{const t=pick(['c','d','s','x']);const right=pick(TYPED.filter(e=>e.type===t));const ws=Object.keys(TY).filter(x=>x!==t).map(x=>pick(TYPED.filter(e=>e.type===x)));
+return CH(`Какая из реакций — реакция <b>${TY[t]}</b>?`,show(right),ws.map(e=>show(e)),{short:`${show(right)} — ${TYN[t]}.`,
+explain:`${show(right)} — <b>${TYN[t]}</b>.<br>Остальные: ${ws.map(e=>`${show(e)} — ${TYN[e.type]}`).join('; ')}.`,
+explain2:'Посчитай вещества до и после стрелки и посмотри, есть ли простые вещества: «много → одно» — соединение, «одно → много» — разложение, «простое + сложное» — замещение, «сложное + сложное → сложное + сложное» — обмен.'});});
+G(4,()=>{const P=[['Ржавление железа: железо соединяется с кислородом и водой','соединение'],['Из известняка при обжиге получают негашёную известь и углекислый газ','разложение'],['Цинковую пластинку опустили в раствор медного купороса — на ней осела медь','замещение'],['Соду гасят уксусом: два сложных вещества обмениваются частями, выделяется газ','обмен'],['Электролиз воды: вода разлагается на водород и кислород','разложение'],['Гашение извести: CaO + H₂O → Ca(OH)₂','соединение'],['Натрий бросили в воду — выделился водород, образовалась щёлочь','замещение'],['Кислоту нейтрализовали щёлочью — образовались соль и вода','обмен']];
+const p=pick(P);return CH(`Какой тип реакции? <i>${p[0]}</i>.`,p[1],Object.values(TYN).filter(x=>x!==p[1]),{short:`Это ${p[1]}.`,
+explain:`${p[0]}. ${p[1]==='соединение'?'Из нескольких веществ — одно':p[1]==='разложение'?'Одно вещество → несколько':p[1]==='замещение'?'Простое вещество вытесняет элемент из сложного':'Два сложных вещества обмениваются частями'} → <b>${p[1]}</b>.`,
+explain2:'Нарисуй схему: A + B → AB (соединение), AB → A + B (разложение), A + BC → AC + B (замещение), AB + CD → AD + CB (обмен). На какую похоже?'});});
+
+/* L5 — экзо/эндо */
+RULE(5,'Какая реакция называется экзотермической?','Реакция, при которой теплота выделяется',['Реакция, при которой теплота поглощается','Реакция, идущая только при нагревании','Реакция, в которой выделяется газ'],
+{short:'Экзо — теплота выходит наружу.',explain:'Экзотермическая реакция <b>выделяет</b> теплоту (горение, нейтрализация). Эндотермическая — <b>поглощает</b> (разложение мела, фотосинтез). Нужно ли нагревать для начала — не важно: спичку тоже надо поджечь, но горение — экзотермическое.',
+explain2:'«Экзо» — наружу (экзоскелет снаружи), «эндо» — внутрь. Тепло выходит наружу — экзо.'});
+RULE(5,'Что показывает термохимическое уравнение C + O₂ → CO₂ + 394 кДж?','При сгорании 1 моль углерода выделяется 394 кДж теплоты',['При сгорании 1 г углерода выделяется 394 кДж','Для реакции нужно затратить 394 кДж','Масса CO₂ равна 394 г'],
+{short:'Q относится к количествам из уравнения (в молях).',explain:'Тепловой эффект в термохимическом уравнении относится к тем количествам веществ, что стоят в уравнении: 1 моль C (12 г) + 1 моль O₂ → 1 моль CO₂ + 394 кДж. «+Q» справа — теплота выделяется.',
+explain2:'Это как ценник «394 кДж за 1 моль». За 2 моль — вдвое больше, за 0,5 моль — вдвое меньше.'});
+G(5,()=>{const P=[['Горение метана в газовой плите',1],['Вспышка магния в фейерверке',1],['Нейтрализация кислоты щёлочью (пробирка нагревается)',1],['Гашение извести водой (смесь кипит)',1],['Ржавление железа',1],['Горение водорода',1],['Термитная реакция 2Al + Fe₂O₃',1],['Дыхание: окисление глюкозы в клетках',1],['Разложение мела (CaCO₃) при обжиге',0],['Фотосинтез в листьях',0],['Разложение воды электрическим током',0],['Образование NO из азота и кислорода в разряде молнии',0],['Разложение гидроксида меди(II) при нагревании',0],['Разложение оксида ртути(II) при нагревании',0]];
+const p=pick(P);const o=['Экзотермическая (теплота выделяется)','Эндотермическая (теплота поглощается)'];
+return {type:'choice',q:`Экзо- или эндотермическая реакция? <i>${p[0]}</i>.`,opts:o,ans:p[1]?0:1,short:o[p[1]?0:1]+'.',
+explain:`${p[0]}: ${p[1]?'теплота <b>выделяется</b> — реакция экзотермическая. Горение, нейтрализация, окисление металлов, дыхание — все такие.':'теплота <b>поглощается</b> — реакция эндотермическая. Чтобы её поддерживать, нужно всё время подводить энергию (нагрев, свет, ток).'}`,
+explain2:p[1]?'Признак: становится горячо, появляется пламя или свет — энергия выходит наружу.':'Признак: реакция идёт, только пока её «кормят» энергией. Убери огонь, свет или ток — она остановится.'};});
+const TH=[['C + O2 = CO2',394],['2H2 + O2 = 2H2O',572],['CH4 + 2O2 = CO2 + 2H2O',890],['S + O2 = SO2',297],['2Mg + O2 = 2MgO',1204],['4P + 5O2 = 2P2O5',3010],['CaCO3 = CaO + CO2',-178],['N2 + O2 = 2NO',-180]].map(p=>EQ(p[0],null,{Q:p[1]}));
+const qStr=e=>`${show(e)} ${e.Q>0?'+':'−'} ${Math.abs(e.Q)} кДж`;
+G(5,()=>{const e=pick(TH);const sp=e.sp[0];const nn=pick([0.5,1.5,2,3,4,5,0.25,0.1,10]);const n=nn*sp.k;const Q=Math.abs(e.Q)*nn;
+return {type:'num',q:`Термохимическое уравнение: ${qStr(e)}. Сколько теплоты ${e.Q>0?'выделится':'поглотится'}, если в реакцию вступит ${N(n)} моль ${C(sp.f)}? Ответ в кДж.`,ans:Q,tol:0.06/Q,
+short:`${N(n)} / ${sp.k} · ${Math.abs(e.Q)} = ${N(rd(Q,3))} кДж.`,explain:`По уравнению ${sp.k} моль ${C(sp.f)} → ${Math.abs(e.Q)} кДж.<br>Пропорция: ${N(n)} моль → x кДж.<br>x = ${N(n)} · ${Math.abs(e.Q)} / ${sp.k} = <b>${N(rd(Q,3))} кДж</b>.`,
+explain2:`${N(n)} моль — это в ${N(nn)} раз ${nn<1?'меньше':'больше'}, чем в уравнении (${sp.k} моль). Теплоты тоже в ${N(nn)} раз ${nn<1?'меньше':'больше'}: ${Math.abs(e.Q)} · ${N(nn)} = ${N(rd(Q,3))} кДж.`};});
+G(5,()=>{const e=pick(TH.filter(x=>x.Q>0));const sp=e.sp[0];const M=Mr(sp.f);const nn=pick([0.5,1,2,3,0.25,5]);const n=nn*sp.k;const m=n*M;const Q=e.Q*nn;
+return {type:'num',q:`${qStr(e)}. Сколько теплоты выделится при сгорании ${N(rd(m,3))} г ${C(sp.f)}? Ответ в кДж.`,ans:Q,tol:0.06/Q,hint:'Сначала найди количество вещества n = m/M.',
+short:`n = ${N(rd(m,3))}/${N(M)} = ${N(n)} моль → ${N(rd(Q,3))} кДж.`,explain:`1) n(${C(sp.f)}) = ${N(rd(m,3))} / ${N(M)} = ${N(n)} моль.<br>2) По уравнению ${sp.k} моль → ${e.Q} кДж, значит ${N(n)} моль → ${N(n)} · ${e.Q} / ${sp.k} = <b>${N(rd(Q,3))} кДж</b>.`,
+explain2:`Частая ошибка — делить граммы прямо на коэффициент. Тепловой эффект «привязан» к молям: сначала переведи ${N(rd(m,3))} г в моли (÷ ${N(M)}), а потом пропорция с ${sp.k} моль.`};});
+
+/* L6 — сложные уравнения */
+RULE(6,'В каком порядке удобнее уравнивать атомы в сложной реакции?','Металлы → неметаллы (кроме O) → водород → кислород в конце',['Сначала кислород, потом всё остальное','В порядке, как элементы стоят в таблице Менделеева','Порядок не важен, всегда сразу получится'],
+{short:'Кислород — последним.',explain:'Кислород обычно есть почти в каждом веществе, и любое изменение коэффициента «сдвигает» его. Поэтому сначала уравнивают металлы и неметаллы, потом водород, а кислород — в самом конце: он сам подстроится одним коэффициентом (часто перед O₂).',
+explain2:'Как собирать пазл: сначала уголки и края (редкие элементы), а большое небо (кислород) — в конце, когда всё остальное уже на месте.'});
+G(6,()=>{const e=pick(HARD);const ws=wrongs(e,3);if(ws.length<3)return null;
+return CH(`Какое уравнение уравнено верно?<br><small>Схема: ${scheme(e)}</small>`,show(e),ws.map(k=>show(e,k)),{short:atomLine(e,ks(e))+' — поровну.',
+explain:`Верно: <b>${show(e)}</b>.<br>Атомы (слева | справа):<br>${atomTable(e,ks(e))}<br>В других вариантах есть ✘, например ${show(e,ws[0])}:<br>${atomTable(e,ws[0])}`,
+explain2:'Проверяй каждый вариант по одному элементу за раз — начни с кислорода, он чаще всего «не сходится» в неверных вариантах.'});});
+G(6,()=>{const e=pick(HARD);const k=ks(e);const idx=R(0,k.length-1);if(e.sp.filter(x=>x.f===e.sp[idx].f).length>1)return null;
+return {type:'num',q:`Уравняй: ${scheme(e)}. Какой коэффициент перед <b>${C(e.sp[idx].f)}</b>? (Наименьшие целые; если 1 — введи 1.)`,ans:k[idx],
+short:`${show(e)}.`,explain:`Уравненная реакция: <b>${show(e)}</b>.<br>Проверка (слева | справа):<br>${atomTable(e,k)}`,
+explain2:`${/O2 =|O2 \+/.test(e.s)&&/C\d*H/.test(e.s)?'Горение: C → CO₂, H → H₂O, затем считаем O справа и делим на 2 — это коэффициент O₂. Если дробь — удвой всё.':'Порядок: металлы → неметаллы → H → O. Группы атомов (SO₄, PO₄) — целиком.'} Получаем ${show(e)}.`};});
+G(6,()=>{const e=pick(HARD);const k=ks(e);const sum=k.reduce((a,b)=>a+b,0);
+return {type:'num',q:`Найди сумму коэффициентов в уравнении: ${scheme(e)}.`,ans:sum,short:`${show(e)}: сумма ${sum}.`,
+explain:`Уравниваем: <b>${show(e)}</b>.<br>Коэффициенты: ${k.join(', ')}. Сумма = ${k.join(' + ')} = <b>${sum}</b>.`,
+explain2:`Проверь атомы (слева | справа):<br>${atomTable(e,k)}<br>Не забудь посчитать коэффициенты 1.`};});
+
+/* L7 ★ */
+RULE(7,'Как уравнять реакцию алгебраическим методом?','Обозначить коэффициенты буквами и составить уравнение баланса для каждого элемента',['Подставлять случайные числа, пока не сойдётся','Сделать все коэффициенты равными','Сложить индексы всех веществ'],
+{short:'По уравнению на каждый элемент, потом решаем систему.',explain:'aA + bB → cC + dD: для каждого элемента пишем «атомов слева = атомов справа» — получается система линейных уравнений. Одну букву берём равной 1, находим остальные, при дробях умножаем на общий знаменатель.',
+explain2:'Это как задача на составление уравнений из алгебры: неизвестные — коэффициенты, условия — «атомов каждого элемента поровну».'});
+G(7,()=>{const n=R(1,8);const e=EQ(`C${n>1?n:''}H${2*n+2} + O2 = CO2 + H2O`,null);let k=[1,(3*n+1)/2,n,n+1];if(!Number.isInteger(k[1]))k=k.map(x=>x*2);const sum=k.reduce((a,b)=>a+b,0);
+if(!balanced(e,k))return null;
+return {type:'num',q:`★ Уравняй реакцию горения алкана: ${scheme(e)}. Найди сумму коэффициентов.`,ans:sum,hint:'C → CO₂, H → H₂O, потом кислород. Дробь — умножь всё на 2.',
+short:`${show(e,k)}: ${sum}.`,explain:`C: ${n} → ${n}CO₂. H: ${2*n+2} → ${n+1}H₂O. O справа: ${2*n} + ${n+1} = ${3*n+1} → O₂: ${N((3*n+1)/2)}.${k[0]===2?' Дробь — удваиваем всё.':''}<br><b>${show(e,k)}</b>; сумма ${k.join(' + ')} = <b>${sum}</b>.`,
+explain2:`Общая формула для CₙH₂ₙ₊₂: CₙH₂ₙ₊₂ + ${H.frac('3n + 1','2')}O₂ → nCO₂ + (n + 1)H₂O. Для n = ${n}: (3·${n} + 1)/2 = ${N((3*n+1)/2)}.`};},{star:true});
+G(7,()=>{const e=pick(STAR);const k=ks(e);const idx=R(0,k.length-1);if(e.sp.filter(x=>x.f===e.sp[idx].f).length>1)return null;
+return {type:'num',q:`★ Уравняй реакцию: ${scheme(e)}. Какой коэффициент перед <b>${C(e.sp[idx].f)}</b>?`,ans:k[idx],hint:'Попробуй алгебраический метод: буквы вместо коэффициентов.',
+short:`${show(e)}.`,explain:`Ответ: <b>${show(e)}</b>.<br>Проверка (слева | справа):<br>${atomTable(e,k)}`,
+explain2:`Алгебраический метод: обозначь коэффициенты ${e.sp.map((x,i)=>'abcdefg'[i]).join(', ')} и запиши баланс по каждому элементу. Положи один из них равным 1, найди остальные, избавься от дробей. Получится ${k.join(' : ')}.`};},{star:true});
+G(7,()=>{const e=pick(STAR);const ws=wrongs(e,3);if(ws.length<3)return null;
+return CH(`★ Какое уравнение уравнено верно?`,show(e),ws.map(k=>show(e,k)),{short:atomLine(e,ks(e)),
+explain:`Верно: <b>${show(e)}</b>.<br>(слева | справа)<br>${atomTable(e,ks(e))}<br>Например, в ${show(e,ws[0])}:<br>${atomTable(e,ws[0])}`,
+explain2:'В реакциях с HNO₃ и HCl часть кислоты идёт на соль, а часть — на газ. Поэтому коэффициент перед кислотой большой. Проверяй каждый элемент, особенно N, Cl и O.'});},{star:true});
+G(7,()=>{const e=pick(MASSD.filter(x=>x.sp.some(y=>y.side&&['CO2','O2','H2O'].includes(y.f))));const gas=e.sp.find(y=>y.side&&['CO2','O2'].includes(y.f))||e.sp.find(y=>y.f==='H2O');const k=pick([0.1,0.2,0.25,0.5,1]);const m0=e.sp[0].k*k*Mr(e.sp[0].f);const mg=gas.k*k*Mr(gas.f);const rest=m0-mg;
+return {type:'num',q:`★ В открытом тигле полностью прокалили ${fm(m0)} г ${C(e.sp[0].f)} (${show(e)}). ${gas.f==='H2O'?'Вода испарилась.':'Газ улетел.'} Какой стала масса твёрдого остатка? Ответ в граммах.`,ans:rd(rest,6),tol:0.002,hint:'Найди массу улетевшего вещества по уравнению (через моли).',
+short:`${fm(m0)} − ${fm(mg)} = ${fm(rest)} г.`,explain:`1) n(${C(e.sp[0].f)}) = ${fm(m0)} / ${N(Mr(e.sp[0].f))} = ${N(rd(e.sp[0].k*k,4))} моль.<br>2) По уравнению ${C(gas.f)}: ${N(rd(gas.k*k,4))} моль, m = ${N(rd(gas.k*k,4))} · ${N(Mr(gas.f))} = ${fm(mg)} г — улетело.<br>3) Остаток: ${fm(m0)} − ${fm(mg)} = <b>${fm(rest)} г</b>. Закон сохранения массы выполняется: улетевшая часть + остаток = исходная масса.`,
+explain2:`Можно сразу через остаток: твёрдые продукты — ${e.sp.filter(y=>y.side&&y!==gas).map(y=>C(y.f)).join(' и ')}. Их масса ${fm(rest)} г.`};},{star:true});
+G(7,()=>{const e=pick(MASSC.filter(x=>x.sp.some(y=>y.f==='O2')));const k=pick([0.1,0.2,0.25,0.5]);const ms=e.sp.map(x=>x.k*k*Mr(x.f));const iO=e.sp.findIndex(x=>x.f==='O2');const iM=e.sp.findIndex((x,i)=>x.side===0&&i!==iO);const iP=e.sp.length-1;
+return {type:'num',q:`★ ${fm(ms[iM])} г ${C(e.sp[iM].f)} сожгли в кислороде, получилось ${fm(ms[iP])} г ${C(e.sp[iP].f)}. Сколько граммов кислорода израсходовано?`,ans:rd(ms[iO],6),tol:0.002,
+short:`${fm(ms[iP])} − ${fm(ms[iM])} = ${fm(ms[iO])} г.`,explain:`По закону сохранения массы: m(${C(e.sp[iM].f)}) + m(O₂) = m(${C(e.sp[iP].f)}).<br>m(O₂) = ${fm(ms[iP])} − ${fm(ms[iM])} = <b>${fm(ms[iO])} г</b>.`,
+explain2:`Продукт «потяжелел» по сравнению с ${C(e.sp[iM].f)} ровно на массу присоединившегося кислорода — так Лавуазье и доказал, что при горении вещество соединяется с кислородом.`};},{star:true});
+G(7,()=>{const e=pick([...HARD,...STAR]);const k=ks(e);const L=k.filter((_,i)=>e.sp[i].side===0).reduce((a,b)=>a+b,0),Rr=k.filter((_,i)=>e.sp[i].side===1).reduce((a,b)=>a+b,0);const ask=R(0,1);
+return {type:'num',q:`★ Уравняй ${scheme(e)} и найди сумму коэффициентов <b>${ask?'продуктов':'исходных веществ'}</b>.`,ans:ask?Rr:L,
+short:`${show(e)}: ${ask?Rr:L}.`,explain:`Уравненная реакция: <b>${show(e)}</b>.<br>Исходные: ${k.filter((_,i)=>!e.sp[i].side).join(' + ')} = ${L}; продукты: ${k.filter((_,i)=>e.sp[i].side).join(' + ')} = ${Rr}.<br>Ответ: <b>${ask?Rr:L}</b>.`,
+explain2:`Проверка (слева | справа):<br>${atomTable(e,k)}`};},{star:true});
+
+window.TOPIC={id:'c8_reactions',title:'Химические уравнения',subtitle:'Химия · 8 класс',
+intro:`<p>Куда исчезает масса костра и почему ржавый гвоздь тяжелее нового? Закон сохранения массы, химические уравнения, как расставлять коэффициенты (есть интерактивный «уравниватель» с кнопками + и −), четыре типа реакций, экзо- и эндотермические реакции и тепловой эффект. В конце — олимпиадные уравнения и алгебраический метод.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Закон сохранения массы','Индексы и коэффициенты','Расставляем коэффициенты','Ищем коэффициент','Типы реакций','Экзо- и эндотермические реакции','Сложные уравнения','★ Олимпиадные задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
