@@ -16,6 +16,13 @@ const REM=(r,t)=>`<div class="box tip"><b>📌 Запомни</b>${r}<div style=
 const TD='padding:5px 10px;border:1px solid var(--line);text-align:center';
 function TT(head,rows,hl){return `<table style="border-collapse:collapse;margin:8px auto;font-size:15px"><tr>${head.map(h=>`<th style="${TD};background:var(--accent-soft);color:var(--accent-ink)">${h}</th>`).join('')}</tr>${rows.map((r,i)=>`<tr${hl&&hl.includes(i)?' style="background:var(--warn-soft)"':''}>${r.map(c=>`<td style="${TD}">${c===true?IL(1):c===false?IL(0):c}</td>`).join('')}</tr>`).join('')}</table>`;}
 
+/* ---------- «Зачем логика»: стили карточек ---------- */
+const WHY_GRID='display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px;margin:10px 0';
+const WHY_CARD='background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;line-height:1.5;min-width:0';
+const WHY_H='font-weight:700;font-size:17px;margin-bottom:4px;color:var(--accent-ink)';
+const WHY_CODES='display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:8px;margin:8px 0';
+const WHY_LANG='font-size:13px;color:var(--muted);margin-bottom:2px';
+
 /* ---------- SVG: number line ---------- */
 // rel: '>' '<' '>=' '<=' '=' '!='  shows region where x rel a holds
 function NL(a,rel,cap){const W=320,y=34,x0=20,step=28,lo=a-5;const X=v=>x0+(v-lo)*step;
@@ -61,8 +68,45 @@ function twoPreds(){for(;;){const a=numPred(),b=numPred();if(a.t!==b.t&&a.t.spli
 
 /* ---------- theory ---------- */
 const theory=[
+{title:'🎯 Зачем вообще нужна логика?',lvl:null,html:`
+<p class="hook">«Логика? Это же скучно, мне бы в Roblox». А вот прикол: <b>весь Roblox сделан из логики</b>. Каждая ловушка, каждый донат-магазин, каждый бот — это куча правил «если…, то…», «и», «или», «не». Кто понимает логику — тот не просто играет в игры, а <b>делает</b> их. И ещё его не разведут на робуксы. Смотри сам 👇</p>
+<div style="${WHY_GRID}">
+<div style="${WHY_CARD};grid-column:1/-1"><div style="${WHY_H}">🎮 Программирование и игры</div>
+Любое <b>if</b> в Roblox Studio (язык Lua) или в Python — это логика. Правило «<b>если</b> игрок коснулся лавы <b>И</b> у него <b>нет</b> щита — отнять жизнь» в коде выглядит почти так же:
+<div style="${WHY_CODES}">
+<div style="min-width:0"><div style="${WHY_LANG}">Lua (Roblox Studio)</div><pre class="code" style="margin:0;font-size:14px;resize:none">if touchedLava and not hasShield then
+  lives = lives - 1
+end</pre></div>
+<div style="min-width:0"><div style="${WHY_LANG}">Python</div><pre class="code" style="margin:0;font-size:14px;resize:none">if touched_lava and not has_shield:
+    lives = lives - 1</pre></div></div>
+<b>and</b> = И, <b>or</b> = ИЛИ, <b>not</b> = НЕ. Перепутаешь <b>and</b> и <b>or</b> — и лава будет убивать даже игроков со щитом. Такой баг за минуту находит тот, кто знает логику. Проверь сам:
+<div class="widget" id="w-lava" style="margin-bottom:0"></div></div>
+<div style="${WHY_CARD}"><div style="${WHY_H}">🤖 Нейросети и компьютеры</div>
+Компьютер «думает» всего тремя словами: <b>И</b>, <b>ИЛИ</b>, <b>НЕ</b>. Процессор в твоём телефоне собран из миллиардов крошечных <b>логических элементов</b>, и каждый делает одно из этих действий. Даже первую модель «нейрона» для нейросетей (1943 год) придумали как логический элемент И/ИЛИ.</div>
+<div style="${WHY_CARD}"><div style="${WHY_H}">🛡️ Чтобы тебя не развели</div>
+«Дай пароль — получишь 10 000 робуксов» — классический скам: логики тут ноль, есть только ловушка. Реклама: «<b>Если</b> купишь эти кроссовки, <b>то</b> станешь крутым» — проверь, следует ли одно из другого. А когда друг рассказывает историю и в ней концы не сходятся — ты первый заметишь враньё.</div>
+<div style="${WHY_CARD}"><div style="${WHY_H}">📚 Школа и ОГЭ</div>
+Доказательства в геометрии — чистая логика. В физике: «если сила больше — то и ускорение больше». В ОГЭ по информатике есть задание на логическое выражение (№&nbsp;3: «НЕ&nbsp;(X&nbsp;&gt;&nbsp;5) И (X&nbsp;чётное)»), а в ЕГЭ — таблицы истинности (№&nbsp;2). В ОГЭ по математике: «какие из утверждений верны» (№&nbsp;19) и доказательство (№&nbsp;24).</div>
+<div style="${WHY_CARD}"><div style="${WHY_H}">♟️ Стратегии</div>
+Думать на несколько ходов вперёд — это цепочка «если я так, то он так, а тогда я…». Так играют в шахматы. А в Among Us и Murder Mystery 2 ты вычисляешь, <b>кто убийца</b>: «если Ред был в электрощитовой, то он не мог быть в столовой…»</div>
+<div style="${WHY_CARD};grid-column:1/-1"><div style="${WHY_H}">💼 Профессии будущего</div>
+<b>Программист</b> и <b>геймдизайнер</b> пишут правила игры. <b>Детектив</b> ищет противоречия в показаниях. <b>Юрист</b> строит доказательства. <b>Врач</b> ставит диагноз: «температура И кашель, НО НЕТ сыпи — значит…». Везде одна и та же логика.</div>
+</div>
+<div class="box rule"><b>🚀 Что ты прокачаешь в этом разделе</b>
+<div style="display:grid;gap:6px;margin-top:6px">
+<div>💬 <b>Высказывания</b> — понимать, что на самом деле сказано, и не попадаться на словесные ловушки.</div>
+<div>🎭 <b>Рыцари и лжецы</b> — вычислять, кто врёт.</div>
+<div>🔎 <b>Логические таблицы</b> — распутывать детективы, где улик много и всё перемешано.</div>
+<div>⚖️ <b>Взвешивания и переливания</b> — находить решение за минимум ходов.</div>
+<div>🎲 <b>Чётность и инварианты</b> — за секунду понимать, что задача не решается, и не тратить на неё час.</div>
+<div>🐇 <b>Принцип Дирихле</b> — знать наверняка, даже когда всё случайно.</div>
+<div>🏆 <b>Игры и стратегии</b> — знать заранее, кто победит, и выигрывать у друзей.</div>
+<div>🧠 <b>Рассуждения и доказательства</b> — отстоять свою правоту в любом споре.</div>
+</div></div>`},
+
 {title:'Что такое высказывание',lvl:0,html:`
 <p class="hook">Открываешь чат на сервере Roblox, а там: «У меня 1000 робаксов!», «Кто идёт в Doors?», «Купи мне пета!», «2 + 2 = 5». Про какие из этих фраз можно сказать «это правда» или «это враньё»? Вот с этого вопроса и начинается логика.</p>
+<div class="box tip"><b>🎯 Где это пригодится</b><div style="display:grid;gap:5px;margin-top:4px"><div>🎮 Условие в <b>if</b> — это высказывание: оно либо <b>true</b> (И), либо <b>false</b> (Л). Код не может работать с «может быть».</div><div>📺 Реклама «Лучший сок в мире!» — не проверишь, значит, это не высказывание, а просто громкие слова. Факт можно проверить, а рекламу — нет.</div><div>💬 В споре в чате сначала пойми: человек что-то утверждает или просто кричит? С вопросом и с «вот это да!» спорить бессмысленно.</div><div>📚 ОГЭ по математике, задание 19: «Какие из утверждений верны?» — это ровно про истинные и ложные высказывания.</div></div></div>
 <div class="box rule"><b>Определение</b><b>Высказывание</b> — это предложение, про которое можно сказать: оно <b>истинно</b> (правда, И) или <b>ложно</b> (неправда, Л). Третьего не дано.</div>
 <p><b>Объясняю как другу.</b> Высказывание — это как ставка в игре «правда или ложь»: ты можешь проверить и сказать, кто выиграл. А на вопрос «Кто идёт в Doors?» ставку не сделаешь — он ничего не утверждает. Команда «Купи мне пета!» — тоже: это просьба, она не бывает правдой или ложью.</p>
 <p><b>НЕ высказывания:</b> вопросы, просьбы и команды, восклицания («Вот это да!»), а ещё предложения с неизвестным: «x + 2 = 5» — пока мы не знаем x, нельзя сказать, правда это или нет.</p>
@@ -125,8 +169,8 @@ ${REM('«Все» ⟷ «хотя бы один не». «Ни один» ⟷ «�
 {title:'«И» и «или»: составные высказывания',lvl:3,html:`
 <p class="hook">Вход в VIP-зону: «нужен пропуск <b>и</b> 10-й уровень». Бонус дня: «зайди в субботу <b>или</b> в воскресенье». Кажется, мелочь — одно слово. Но от него зависит, пустят тебя или нет!</p>
 <div class="box rule"><b>Правило</b>«A <b>и</b> B» истинно, только когда истинны <b>оба</b> высказывания.<br>«A <b>или</b> B» истинно, когда истинно <b>хотя бы одно</b> (одно или оба). Ложно — только когда оба ложны.</div>
-${TT(['A','B','A и B','A или B'],[[true,true,true,true],[true,false,false,true],[false,true,false,true],[false,false,false,false]])}
-<p><b>Покрути сам:</b> включай и выключай A и B и смотри, что станет с составными высказываниями.</p>
+<div id="tt-ab">${TT(['A','B','A и B','A или B'],[[true,true,true,true],[true,false,false,true],[false,true,false,true],[false,false,false,false]])}</div>
+<p><b>Покрути сам 👇</b> Нажимай на большие кнопки <b>A</b> и <b>B</b> в окошке ниже (или на строку таблицы) — и смотри, что станет с составными высказываниями. Подсвеченная строка таблицы — твой случай.</p>
 <div class="widget" id="w-ab"></div>
 ${STEPS('Пример 1 (лёгкий). «12 делится на 3 и на 5». Истинно?',[
 'Разбиваем на части: A = «12 делится на 3» — И; B = «12 делится на 5» — Л.',
@@ -532,8 +576,29 @@ G(7,()=>{const LIE=['Егор','Павел','Тимур','Платон'];const g
   explain:`Переберём, кто виноват, и посчитаем правдивые фразы:<br>${range(0,3).map(cc=>`Если съел ${NM[cc]}: ${val(cc).map((v,i)=>`${NM[i]} — ${v?'И':'Л'}`).join(', ')} → правдивых ${val(cc).filter(Boolean).length}${cc===c?' ✅':''}`).join('<br>')}<br>Нужно ${k===1?'1 правдивое':'3 правдивых'} — подходит только <b>${NM[c]}</b>.`,
   explain2:`Фраза «X врёт» истинна ровно тогда, когда фраза X ложна. Поэтому сначала оцени «обычные» фразы («Это …», «Это не …»), а потом — фразы про враньё. Только при варианте «${NM[c]}» число правдивых равно ${k===1?1:3}.`});}},'s');
 
+/* ---------- widget: лава и щит ---------- */
+function lavaWidget(root){const w=root.querySelector('#w-lava');if(!w)return;
+ const st={lava:true,shield:false,bug:false};
+ const v=x=>`<b style="color:${x?'var(--ok)':'var(--bad)'}">${x?'true':'false'}</b>`;
+ const r=()=>{const L=st.lava,S=st.shield,hit=st.bug?(L||!S):(L&&!S),op=st.bug?'or':'and';
+  w.innerHTML=`<b>Покрути правило игры</b>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+  <button class="btn ${L?'':'ghost'}" id="wl-l" style="min-width:150px">🔥 Лава: ${L?'коснулся':'не касался'}</button>
+  <button class="btn ${S?'':'ghost'}" id="wl-s" style="min-width:150px">🛡️ Щит: ${S?'есть':'нет'}</button>
+  <button class="btn ${st.bug?'warn':'ghost'}" id="wl-b" style="font-size:14px">${st.bug?'🐞 Баг включён: or':'🐞 Сломать код: and → or'}</button></div>
+  <div style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;line-height:1.7;overflow-x:auto">
+  <div>touchedLava ${op} not hasShield</div>
+  <div>= ${v(L)} ${op} not ${v(S)}</div>
+  <div>= ${v(L)} ${op} ${v(!S)}</div>
+  <div>= ${v(hit)}</div></div>
+  <div style="font-size:18px;margin-top:6px">${hit?'💔 <b>−1 жизнь!</b>':'💚 <b>Игрок цел</b>'} <span style="color:var(--muted);font-size:14px">${st.bug?(!L&&!S?'— даже не трогал лаву, а жизнь отняли! Вот он, баг.':L&&S?'— щит есть, а жизнь всё равно отняли. Баг!':'— смотри, что будет со щитом или без лавы.'):(L&&S?'— щит спас.':!L?'— лаву не трогал.':'— лава и нет щита: оба условия выполнены.')}</span></div>`;
+  w.querySelector('#wl-l').onclick=()=>{st.lava=!st.lava;r();};
+  w.querySelector('#wl-s').onclick=()=>{st.shield=!st.shield;r();};
+  w.querySelector('#wl-b').onclick=()=>{st.bug=!st.bug;r();};};
+ r();}
+
 /* ---------- widget ---------- */
-function onTheory(root){const w=root.querySelector('#w-ab');if(!w)return;
+function onTheory(root){lavaWidget(root);const w=root.querySelector('#w-ab');if(!w)return;
  const ctx=[['Егор в игре','Павел в игре'],['12 делится на 3','12 делится на 5'],['Сегодня суббота','Идёт дождь']];let st={a:true,b:false,c:0};
  const r=()=>{const [ta,tb]=ctx[st.c];const A=st.a,B=st.b;
   const res=[['A и B',A&&B,'нужны обе'],['A или B',A||B,'хватит одной'],['не A',!A,'переворачивает A'],['не B',!B,'переворачивает B'],['если A, то B',!A||B,'ложно только при A=И, B=Л']];
@@ -544,6 +609,7 @@ function onTheory(root){const w=root.querySelector('#w-ab');if(!w)return;
   <button class="btn ${B?'':'ghost'}" id="tB" style="min-width:140px">B: «${tb}» — ${B?'И':'Л'}</button></div>
   <div style="font-size:16px;line-height:1.8">${res.map(x=>`<div>«${x[0]}»: <span class="out" style="color:${x[1]?'var(--ok)':'var(--bad)'}">${x[1]?'И (правда)':'Л (ложь)'}</span> <span style="color:var(--muted);font-size:14px">— ${x[2]}</span></div>`).join('')}</div>
   <div style="font-size:14px;color:var(--muted);margin-top:4px">${(ctx[st.c][0]==='12 делится на 3')?'Подсказка: на самом деле 12 делится на 3 (И), но не делится на 5 (Л). Поставь так и проверь пример 1 и 2.':'Нажимай на A и B, чтобы менять их значения.'}</div>`;
+  const tt=root.querySelector('#tt-ab');if(tt){const rows=[...tt.querySelectorAll('tr')].slice(1),idx=A&&B?0:A?1:B?2:3;rows.forEach((tr,i)=>{tr.style.cursor='pointer';tr.style.outline=i===idx?'3px solid var(--accent)':'';tr.style.background=i===idx?'var(--accent-soft)':'';tr.onclick=()=>{st.a=i<2;st.b=i===0||i===2;r();w.scrollIntoView({behavior:'smooth',block:'nearest'});};});}
   w.querySelector('#tA').onclick=()=>{st.a=!st.a;r();};w.querySelector('#tB').onclick=()=>{st.b=!st.b;r();};
   w.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{st.c=+b.dataset.c;r();});};
  r();}
