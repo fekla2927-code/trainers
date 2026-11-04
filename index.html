@@ -157,6 +157,10 @@ pre.code.sol{background:var(--ok-soft)}
 :root[data-theme="dark"] .btn{color:#111}
 :root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
 :root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+
+.nudge-wrap{padding-top:14px;padding-bottom:0}.nudge-wrap+main{padding-top:0}
+.nudge{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--hl);border-radius:14px;padding:12px 16px;margin:0 0 14px;box-shadow:var(--shadow)}
+.nudge-t{flex:1 1 280px;line-height:1.5;font-size:15px}.nudge-b{flex:0 0 auto}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
 .grp{margin-bottom:32px;scroll-margin-top:16px}.grp h2{display:flex;align-items:center;gap:10px;font-size:24px}
 .grp h2 .ic{display:inline-grid;place-items:center;min-width:40px;height:40px;border-radius:12px;background:var(--accent-soft);color:var(--accent-ink);font-size:20px;padding:0 6px}
@@ -280,8 +284,23 @@ const P=window.PROF={
   try{const all=P.done();const prev=all[id];const now={...d,date:new Date().toISOString().slice(0,10)};
     if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
     localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  nudges:[
+    '{n}, нейронка решает быстро — но учится при этом она, а не ты. Твоя задача — научиться самому 🧠',
+    'Сфоткать задачу и переписать ответ — это работа ксерокса 📠, а не учёба. Ксерокс умнее не становится.',
+    'На контрольной в школе и на экзамене у мамы нейронки рядом не будет. Будешь только ты и твоя голова. Тренируй её сейчас 💪',
+    'Ошибка с разбором — это +1 к мозгу. Ответ, списанный у нейронки, — это +0. Выбирай, что тебе выгоднее 😉',
+    'Нейросети будут у всех. Выигрывать будут те, кто понимает больше нейросети. Будь таким, {n}.',
+    'Не получается? Нажми «Не понял» — тренажёр объяснит по-другому. Или приходи к маме. Решать за тебя — не вариант.',
+    'Чемпионы не ездят на тренировку на такси 🏃 Решай сам — только так растёт сила.',
+    '{n}, я в тебя верю: ты можешь решить это сам. Медленно и с ошибками — это нормально. Списать — нет. Мама ❤️',
+    'Чем больше решаешь сам, тем легче следующие темы. С нейронкой каждая новая тема будет всё труднее.',
+  ],
+  nudge(main){if(!main||document.querySelector('.nudge'))return;const m=P.nudges[Math.floor(Math.random()*P.nudges.length)].replace(/\{n\}/g,P.name());
+    const c=document.createElement('div');c.className='nudge';c.innerHTML=`<div class="nudge-t">🤖🚫 ${m}</div><button class="btn ghost nudge-b">Понял, решаю сам 💪</button>`;
+    const w=document.createElement('div');w.className='wrap nudge-wrap';w.appendChild(c);c.querySelector('button').onclick=()=>w.remove();main.parentNode.insertBefore(w,main);},
   mount(header,main){
     if(!header)return;
+    if(!document.getElementById('login'))P.nudge(main);
     const wrap=document.createElement('div');wrap.className='prof';
     wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
     const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
