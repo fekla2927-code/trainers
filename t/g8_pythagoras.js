@@ -1,0 +1,516 @@
+(function(){
+const {R,pick,shuffle,sample,range,plural,num:N}=H;
+/* =====================================================================
+   Geometry SVG helper (math coords, y up → auto-fit into ≤ 320 px)
+   ===================================================================== */
+const D2R=Math.PI/180;
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(a,k)=>[a[0]*k,a[1]*k];
+const len=a=>Math.hypot(a[0],a[1]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
+const unit=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l];};
+const polar=(p,L,d)=>[p[0]+L*Math.cos(d*D2R),p[1]+L*Math.sin(d*D2R)];
+const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+const foot=(p,a,b)=>{const d=sub(b,a);const t=dot(sub(p,a),d)/dot(d,d);return lerp(a,b,t);};
+const inter=(a,b,c,d)=>{const r=sub(b,a),s=sub(d,c);const den=r[0]*s[1]-r[1]*s[0];const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den;return add(a,mul(r,t));};
+const angAt=(v,a,b)=>{const u=unit(sub(a,v)),w=unit(sub(b,v));return Math.acos(Math.max(-1,Math.min(1,dot(u,w))))/D2R;};
+const r1=x=>Math.round(x*10)/10;
+const tw=(t,fs)=>{t=String(t).replace(/<[^>]+>/g,'');let w=0;for(const ch of t)w+=/[°·,.\s₁₂₃₄]/.test(ch)?fs*0.36:/[0-9]/.test(ch)?fs*0.56:fs*0.64;return w;};
+const SUB={A1:'A₁',A2:'A₂',A3:'A₃',A4:'A₄',B1:'B₁',B2:'B₂',B3:'B₃',B4:'B₄'};
+
+function geo(o){
+  const P={};for(const k in o.P)if(Array.isArray(o.P[k]))P[k]=o.P[k];const W=o.W||300,MH=o.maxH||220,pad=o.pad==null?30:o.pad;
+  const all=Object.values(P).concat(o.extra||[]);
+  const x0=Math.min(...all.map(p=>p[0])),x1=Math.max(...all.map(p=>p[0]));
+  const y0=Math.min(...all.map(p=>p[1])),y1=Math.max(...all.map(p=>p[1]));
+  const bw=Math.max(x1-x0,1e-6),bh=Math.max(y1-y0,1e-6);
+  const s=Math.min((W-2*pad)/bw,(MH-2*pad)/bh);
+  const w=Math.round(bw*s+2*pad),h=Math.round(bh*s+2*pad);
+  const X=p=>[pad+(p[0]-x0)*s,pad+(y1-p[1])*s];
+  const Q={};for(const k in P)Q[k]=X(P[k]);
+  const g=k=>Array.isArray(k)?X(k):Q[k];
+  const polys=o.poly||[];
+  const cen=pts=>[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];
+  const allC=cen(Object.values(Q));
+  const pstr=pts=>pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ');
+  const T=(x,y,t,fs,col,wt,anc)=>`<text x="${r1(x)}" y="${r1(y+fs*0.36)}" text-anchor="${anc||'middle'}" font-size="${fs}" font-weight="${wt||600}" fill="${col||'var(--ink)'}">${t}</text>`;
+  const place=(p,d,t,fs,gap)=>{const ww=tw(t,fs),hh=fs*0.78;const k=gap+0.5*(ww*Math.abs(d[0])+hh*Math.abs(d[1]));return [p[0]+d[0]*k,p[1]+d[1]*k];};
+  let out=`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${o.aria||'Чертёж'}" style="font-family:system-ui,sans-serif">`;
+  const LS=[];const ln=(A,B,attr)=>{LS.push([A,B]);return `<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" ${attr}/>`;};
+  if(o.grid){const G=o.grid;for(let x=G[0];x<=G[2]+1e-9;x++){const a=X([x,G[1]]),b=X([x,G[3]]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}
+    for(let y=G[1];y<=G[3]+1e-9;y++){const a=X([G[0],y]),b=X([G[2],y]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}}
+  (o.fill||[]).forEach(f=>{const pts=(f.pts||f).map(g);out+=`<polygon points="${pstr(pts)}" fill="${f.col||'var(--hl)'}" fill-opacity="${f.op||0.35}" stroke="none"/>`;});
+  polys.forEach(pl=>{out+=`<polygon points="${pstr(pl.map(g))}" fill="none" stroke="var(--fig)" stroke-width="2.2" stroke-linejoin="round"/>`;pl.forEach((k,i)=>LS.push([g(k),g(pl[(i+1)%pl.length])]));});
+  (o.seg||[]).forEach(sg=>{const op=sg[2]||{};let A=g(sg[0]),B=g(sg[1]);if(op.ext){const e=mul(sub(B,A),op.ext);A=sub(A,e);B=add(B,e);}
+    out+=ln(A,B,`stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||1.7}" ${op.dash?'stroke-dasharray="6 4"':''} stroke-linecap="round"`);});
+  (o.tick||[]).forEach(tk=>{const A=g(tk[0]),B=g(tk[1]),n=tk[2]||1;const e=unit(sub(B,A)),nn=[-e[1],e[0]],m=mid(A,B);
+    for(let i=0;i<n;i++){const c=add(m,mul(e,(i-(n-1)/2)*5));out+=ln(add(c,mul(nn,6)),sub(c,mul(nn,6)),'stroke="var(--fig)" stroke-width="1.7"');}});
+  (o.rt||[]).forEach(rt=>{const Vv=g(rt[0]),u=unit(sub(g(rt[1]),Vv)),ww=unit(sub(g(rt[2]),Vv)),k=10;const a=add(Vv,mul(u,k)),b=add(a,mul(ww,k)),c=add(Vv,mul(ww,k));LS.push([a,b],[b,c]);
+    out+=`<path d="M${r1(a[0])},${r1(a[1])} L${r1(b[0])},${r1(b[1])} L${r1(c[0])},${r1(c[1])}" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`;});
+  const angInfo=(o.ang||[]).map(an=>{const op=an[4]||{};const Vv=g(an[0]),A=g(an[1]),B=g(an[2]);
+    const a1=Math.atan2(A[1]-Vv[1],A[0]-Vv[0]);let dl=Math.atan2(B[1]-Vv[1],B[0]-Vv[0])-a1;while(dl>Math.PI)dl-=2*Math.PI;while(dl<=-Math.PI)dl+=2*Math.PI;
+    const th=Math.abs(dl);const rr=op.r||(th<0.75?26:19);const n=op.n||1;
+    for(let i=0;i<n;i++){const r=rr+i*4;const p=[Vv[0]+r*Math.cos(a1),Vv[1]+r*Math.sin(a1)],q=[Vv[0]+r*Math.cos(a1+dl),Vv[1]+r*Math.sin(a1+dl)];
+      out+=`<path d="M${r1(p[0])},${r1(p[1])} A${r},${r} 0 0 ${dl>0?1:0} ${r1(q[0])},${r1(q[1])}" fill="none" stroke="${op.col||'var(--accent)'}" stroke-width="1.6"/>`;
+      let prev=p;for(let j=1;j<=6;j++){const an2=a1+dl*j/6;const c=[Vv[0]+r*Math.cos(an2),Vv[1]+r*Math.sin(an2)];LS.push([prev,c]);prev=c;}}
+    return {an,op,Vv,a1,dl,th,rr,n};});
+  (o.dots||[]).forEach(k=>{const p=g(k);out+=`<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="2.8" fill="var(--fig)"/>`;});
+  /* ---- collision-aware label placement ---- */
+  const boxes=[];
+  const segRect=(a,b,c,hw,hh)=>{const xmin=c[0]-hw,xmax=c[0]+hw,ymin=c[1]-hh,ymax=c[1]+hh;let t0=0,t1=1,hit=true;const dx=b[0]-a[0],dy=b[1]-a[1];const pp=[-dx,dx,-dy,dy],qq=[a[0]-xmin,xmax-a[0],a[1]-ymin,ymax-a[1]];
+    for(let i=0;i<4;i++){if(Math.abs(pp[i])<1e-12){if(qq[i]<0){hit=false;break;}}else{const r=qq[i]/pp[i];if(pp[i]<0){if(r>t1){hit=false;break;}if(r>t0)t0=r;}else{if(r<t0){hit=false;break;}if(r<t1)t1=r;}}}
+    if(hit)return -1;const pr=p=>Math.hypot(Math.max(xmin-p[0],0,p[0]-xmax),Math.max(ymin-p[1],0,p[1]-ymax));
+    const ps=p=>{const d=sub(b,a);const t=Math.max(0,Math.min(1,dot(sub(p,a),d)/Math.max(dot(d,d),1e-9)));return len(sub(p,lerp(a,b,t)));};
+    return Math.min(pr(a),pr(b),ps([xmin,ymin]),ps([xmax,ymin]),ps([xmin,ymax]),ps([xmax,ymax]));};
+  const clr=(c,hw,hh)=>{let m=Math.min(c[0]-hw,w-c[0]-hw,c[1]-hh,h-c[1]-hh)+1;for(const L of LS)m=Math.min(m,segRect(L[0],L[1],c,hw,hh));for(const bx of boxes)m=Math.min(m,Math.max(Math.abs(c[0]-bx[0])-hw-bx[2],Math.abs(c[1]-bx[1])-hh-bx[3]));return m;};
+  const choose=(cands,t,fs,thr)=>{const hw=tw(t,fs)/2+1,hh=fs*0.4+1;let best=cands[0],bs=-1e9;for(const c of cands){const v=clr(c,hw,hh);if(v>=thr){best=c;break;}if(v>bs){bs=v;best=c;}}boxes.push([best[0],best[1],hw,hh]);return best;};
+  let labels='';
+  const vdir=k=>{
+    if(o.dir&&o.dir[k]!=null){const d=o.dir[k];return [Math.cos(d*D2R),-Math.sin(d*D2R)];}
+    const p=Q[k];
+    for(const pl of polys){const i=pl.indexOf(k);if(i<0)continue;const n=pl.length;const u1=unit(sub(g(pl[(i-1+n)%n]),p)),u2=unit(sub(g(pl[(i+1)%n]),p));let d=add(u1,u2);
+      if(len(d)>0.15)return mul(unit(d),-1);const c=cen(pl.map(g));d=[-u1[1],u1[0]];if(dot(d,sub(c,p))>0)d=mul(d,-1);return d;}
+    for(const pl of polys){for(let i=0;i<pl.length;i++){const A=g(pl[i]),B=g(pl[(i+1)%pl.length]);const f=foot(p,A,B);const t=dot(sub(p,A),sub(B,A))/dot(sub(B,A),sub(B,A));
+      if(len(sub(f,p))<1&&t>0.02&&t<0.98){const e=unit(sub(B,A));let d=[-e[1],e[0]];if(dot(d,sub(cen(pl.map(g)),p))>0)d=mul(d,-1);return d;}}}
+    let d=sub(p,allC);if(len(d)<4)d=[0.7,0.7];return unit(d);};
+  (o.txt||[]).forEach(tx=>{const arr=Array.isArray(tx[0]);const p=arr?X(tx[0]):X([tx[0],tx[1]]);const t=arr?tx[1]:tx[2];const op=(arr?tx[2]:tx[3])||{};const fs=op.fs||14;
+    boxes.push([p[0],p[1],tw(t,fs)/2+1,fs*0.4+1]);labels+=T(p[0],p[1],t,fs,op.col||'var(--ink)',op.wt||600,op.anc);});
+  const labs=o.lab||Object.keys(P);
+  labs.forEach(k=>{const t=(o.names&&o.names[k])||SUB[k]||k;const d0=vdir(k);const th0=Math.atan2(d0[1],d0[0]);const cands=[];
+    for(const gp of [5,9])for(let j=0;j<=12;j++)for(const sg of (j?[1,-1]:[1])){const th=th0+sg*j*15*D2R;cands.push(place(Q[k],[Math.cos(th),Math.sin(th)],t,15,gp));}
+    const p=choose(cands,t,15,2.5);labels+=T(p[0],p[1],t,15,'var(--accent-ink)',700);});
+  (o.side||[]).forEach(sd=>{const op=sd[3]||{};const A=g(sd[0]),B=g(sd[1]);const e=unit(sub(B,A));let n=[-e[1],e[0]];const t0=op.t==null?0.5:op.t;
+    let c=allC;for(const pl of polys){const i=pl.indexOf(sd[0]),j=pl.indexOf(sd[1]);if(i>=0&&j>=0&&(Math.abs(i-j)===1||Math.abs(i-j)===pl.length-1)){c=cen(pl.map(g));break;}}
+    if(dot(n,sub(c,lerp(A,B,t0)))>0)n=mul(n,-1);if(op.flip)n=mul(n,-1);const fs=op.fs||14;const gp=op.gap==null?4:op.gap;const cands=[];
+    for(const nn of [n,mul(n,-1)])for(const gg of [gp,gp+5])for(const dt of [0,0.1,-0.1,0.2,-0.2,0.3,-0.3])cands.push(place(lerp(A,B,Math.max(0.08,Math.min(0.92,t0+dt))),nn,sd[2],fs,gg));
+    const p=choose(cands,sd[2],fs,2);labels+=T(p[0],p[1],sd[2],fs,op.col||'var(--ink)',600);});
+  angInfo.forEach(({an,op,Vv,a1,dl,th,rr,n})=>{if(!an[3])return;const fs=op.fs||14;const rad=Math.max(tw(an[3],fs),fs)/2+2;const d=Math.max(rr+(n-1)*4+rad+3,(rad+3)/Math.sin(th/2));const cands=[];
+    for(const dd of [0,7,14,22,32])for(const f of [0,0.3,-0.3,0.6,-0.6]){const am=a1+dl/2+f*dl/2;cands.push([Vv[0]+(d+dd)*Math.cos(am),Vv[1]+(d+dd)*Math.sin(am)]);}
+    const p=choose(cands,an[3],fs,1.5);labels+=T(p[0],p[1],an[3],fs,'var(--accent-ink)',700);});
+  return out+labels+'</svg>';
+}
+
+/* ---------- shared utilities ---------- */
+const fig=s=>`<div class="fig">${s}</div>`;
+const sq=x=>x*x;
+const isInt=x=>Math.abs(x-Math.round(x))<1e-9;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<400;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+/* choice from correct + wrongs; null if not distinct */
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+/* radicals: n = k²·m */
+const rad=n=>{let k=1,m=n;for(let d=2;d*d<=m;d++)while(m%(d*d)===0){m/=d*d;k*=d;}return {k,m};};
+const RS=n=>{const {k,m}=rad(n);return m===1?String(k):(k===1?`√${m}`:`${k}√${m}`);};
+const radVal=raw=>{let s=String(raw).replace(/\s+/g,'').replace(/,/g,'.').replace(/[·*×]/g,'').replace(/[()]/g,'').replace(/[−–]/g,'-');
+  let m=s.match(/^(\d+(?:\.\d+)?)?√(\d+(?:\.\d+)?)$/);if(m){const k=m[1]?Number(m[1]):1;return k*k*Number(m[2]);}
+  if(/^\d+(\.\d+)?$/.test(s))return Number(s)*Number(s);return NaN;};
+/* task with answer √n (any equal form accepted: 5√2, √50) */
+const RT=(n,o)=>Object.assign({type:'text',ans:[RS(n)],right:RS(n),ansText:RS(n),keys:['√'],ph:'например: 3√2 или 7',check:raw=>Math.abs(radVal(raw)-n)<1e-9*Math.max(1,n)},o);
+const mark=s=>`<b style="color:var(--accent-ink)">${s}</b>`;
+
+/* =====================================================================
+   g8_pythagoras — теорема Пифагора
+   ===================================================================== */
+const PRIM=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[12,35,37],[9,40,41]];
+const triple=(maxC)=>{maxC=maxC||60;for(;;){const t=pick(PRIM);const k=R(1,Math.max(1,Math.floor(maxC/t[2])));if(t[2]*k<=maxC){const s=Math.random()<0.5?[t[0]*k,t[1]*k]:[t[1]*k,t[0]*k];return {a:s[0],b:s[1],c:t[2]*k,k,p:t};}}};
+const rot=(p,d)=>{const c=Math.cos(d*D2R),s=Math.sin(d*D2R);return [p[0]*c-p[1]*s,p[0]*s+p[1]*c];};
+/* right triangle: right angle at C, CB = a (along x), CA = b (along y) */
+function rtri(a,b,o){o=o||{};const r=o.rot||0;const P={C:rot([0,0],r),A:rot([0,b],r),B:rot([a,0],r)};const side=[];
+  if(o.sa!=null)side.push(['C','B',o.sa]);if(o.sb!=null)side.push(['C','A',o.sb]);if(o.sc!=null)side.push(['A','B',o.sc]);
+  return geo({P,poly:[['A','B','C']],fill:o.fill?[{pts:['A','B','C'],op:0.18}]:[],rt:[['C','A','B']],side,names:o.names,lab:o.lab,maxH:o.maxH||190,W:o.W||280});}
+const TRH=(t)=>`${t.a}² + ${t.b}² = ${t.a*t.a} + ${t.b*t.b} = ${t.c*t.c}`;
+
+/* big square a+b with 4 triangles; mode 1 = tilted square c², mode 2 = a² and b² */
+function proofSvg(a,b,mode,W){W=W||260;const S=a+b,k=(W-20)/S,X=v=>10+v*k;const P=(pts)=>pts.map(p=>X(p[0]).toFixed(1)+','+X(p[1]).toFixed(1)).join(' ');
+  let tris,squares,labels=[];
+  if(mode===1){tris=[[[0,0],[a,0],[0,S-a]],[[a,0],[S,0],[S,a]],[[S,a],[S,S],[S-a,S]],[[S-a,S],[0,S],[0,S-a]]];squares=[[[a,0],[S,a],[S-a,S],[0,S-a]]];labels=[[S/2,S/2,'c²']];}
+  else{tris=[[[a,0],[S,0],[S,a]],[[a,0],[a,a],[S,a]],[[0,a],[a,a],[a,S]],[[0,a],[0,S],[a,S]]];squares=[[[0,0],[a,0],[a,a],[0,a]],[[a,a],[S,a],[S,S],[a,S]]];labels=[[a/2,a/2,'a²'],[a+b/2,a+b/2,'b²']];}
+  let s=`<svg viewBox="0 0 ${W} ${W}" width="${W}" role="img" aria-label="Доказательство через площади" style="font-family:system-ui,sans-serif">`;
+  squares.forEach(q=>s+=`<polygon points="${P(q)}" fill="var(--hl)" fill-opacity=".45" stroke="var(--fig)" stroke-width="1.5"/>`);
+  tris.forEach(t=>s+=`<polygon points="${P(t)}" fill="var(--accent)" fill-opacity=".28" stroke="var(--fig)" stroke-width="1.5"/>`);
+  s+=`<rect x="10" y="10" width="${W-20}" height="${W-20}" fill="none" stroke="var(--fig)" stroke-width="2.2"/>`;
+  labels.forEach(l=>{const fs=l[2]==='c²'?20:Math.max(11,Math.min(20,(l[2]==='a²'?a:b)*k*0.42));s+=`<text x="${X(l[0])}" y="${X(l[1])+fs*0.36}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="var(--ink)">${l[2]}</text>`;});
+  return s+'</svg>';}
+/* grid with two points */
+function gridPts(A,B,o){o=o||{};const x0=Math.min(A[0],B[0])-1,x1=Math.max(A[0],B[0])+1,y0=Math.min(A[1],B[1])-1,y1=Math.max(A[1],B[1])+1;const C=[B[0],A[1]];
+  const seg=[['A','B',{sw:2.4,col:'var(--accent)'}]];if(o.legs)seg.push(['A','C',{dash:true}],['C','B',{dash:true}]);
+  return geo({P:{A,B,C},extra:[[x0,y0],[x1,y1]],grid:[x0,y0,x1,y1],seg,dots:['A','B'],lab:['A','B'],side:o.legs?[['A','C',String(Math.abs(B[0]-A[0])),{fs:13}],['C','B',String(Math.abs(B[1]-A[1])),{fs:13}]]:[],W:o.W||290,maxH:o.maxH||220,pad:14});}
+
+/* ---------- theory figures ---------- */
+const fT1=rtri(4,3,{sa:'a (катет)',sb:'b (катет)',sc:'c (гипотенуза)',fill:true,maxH:170,W:300});
+const fSq=(()=>{const P={C:[0,0],A:[0,3],B:[4,0]};const sqs=[[[0,0],[0,3],[-3,3],[-3,0]],[[0,0],[4,0],[4,-4],[0,-4]],[[0,3],[4,0],[7,4],[3,7]]];
+  return geo({P,extra:[[-3,-4],[7,7]],poly:[['C','A','B'],...sqs.map((q,i)=>{const ks=q.map((_,j)=>'q'+i+j);q.forEach((p,j)=>P['q'+i+j]=p);return ks;})],fill:[{pts:sqs[0],op:0.3},{pts:sqs[1],op:0.3},{pts:sqs[2],op:0.5}],rt:[['C','A','B']],txt:[[[-1.5,1.5],'9',{fs:14}],[[2,-2],'16',{fs:15}],[[3.5,3.5],'25',{fs:16}]],lab:[],maxH:260,W:260,pad:16});})();
+const fGarf=geo({P:{A:[0,3],B:[0,0],E:[4,0],D:[7,0],C:[7,4]},poly:[['A','B','D','C']],seg:[['A','E'],['E','C']],fill:[{pts:['A','E','C'],op:0.45}],rt:[['B','A','E'],['D','E','C'],['E','A','C']],side:[['A','B','a'],['B','E','b'],['E','D','a'],['D','C','b'],['A','E','c',{flip:true}],['E','C','c',{flip:true}]],lab:[],maxH:170,W:280});
+const fSqD=geo({P:{A:[0,0],B:[0,5],C:[5,5],D:[5,0]},poly:[['A','B','C','D']],seg:[['A','C',{col:'var(--accent)',sw:2.2}]],rt:[['D','A','C']],side:[['A','D','a'],['D','C','a'],['A','C','a√2',{flip:true,col:'var(--accent-ink)'}]],maxH:170,W:220});
+const fEq=geo({P:{A:[0,0],B:[3,5.196],C:[6,0],H:[3,0]},poly:[['A','B','C']],seg:[['B','H',{dash:true}]],rt:[['H','C','B']],tick:[['A','H',1],['H','C',1]],side:[['A','B','a'],['B','C','a'],['B','H','h',{flip:true}]],maxH:180,W:230});
+const fGrid=gridPts([1,1],[5,4],{legs:true,W:250,maxH:200});
+const fLad=geo({P:{A:[0,0],B:[0,12],C:[5,0],W1:[0,13.5],W2:[-1,0],G:[8,0]},poly:[],seg:[['W1','A',{sw:5,col:'var(--muted)'}],['W2','G',{sw:3,col:'var(--muted)'}],['B','C',{sw:3,col:'var(--accent)'}]],rt:[['A','C','B']],side:[['A','C','5 м'],['A','B','?',{flip:true}],['B','C','13 м']],lab:[],maxH:200,W:200});
+
+/* =====================================================================
+   THEORY
+   ===================================================================== */
+const theory=[
+{title:'Главная теорема школьной геометрии',lvl:0,html:`
+<p class="hook">4500 лет назад египетские строители брали верёвку с 12 равными узелками, натягивали её треугольником со сторонами <b>3, 4 и 5</b> — и получали идеально прямой угол для пирамиды. Без транспортира. Почему это работает? Ответ — теорема Пифагора. А ещё она помогает найти диагональ экрана телефона, длину лестницы и расстояние между точками на карте в игре.</p>
+<p>Сначала слова. В <b>прямоугольном</b> треугольнике один угол 90°.</p>
+<ul><li><b>Катеты</b> — две стороны, которые образуют прямой угол («стороны уголка»).</li><li><b>Гипотенуза</b> — сторона <b>напротив</b> прямого угла. Она всегда самая длинная.</li></ul>
+<div class="fig">${fT1}</div>
+<div class="box rule"><b>Теорема Пифагора</b>В прямоугольном треугольнике квадрат гипотенузы равен сумме квадратов катетов: <span class="m">c² = a² + b²</span>.</div>
+<div class="figrow"><div class="fig">${fSq}<div class="cap">Квадраты на катетах: 9 + 16. На гипотенузе: 25. Сошлось!</div></div></div>
+<p><b>Почему это вообще про квадраты:</b> «a²» — это буквально площадь квадрата со стороной a. Теорема говорит: два квадрата на катетах вместе весят столько же, сколько один квадрат на гипотенузе.</p>
+<div class="box ex"><b>Пример</b>Катеты 6 и 8. c² = 6² + 8² = 36 + 64 = 100, c = √100 = 10.</div>
+<div class="box err"><b>Главная ловушка</b>c = a + b — неверно! 6 + 8 = 14, а гипотенуза 10. Складываем <b>квадраты</b>, потом извлекаем корень.</div>
+<div class="fact">Сам Пифагор (VI век до н. э.) теорему, скорее всего, не открыл: вавилонская глиняная табличка «Плимптон 322» с пифагоровыми тройками старше его больше чем на тысячу лет. Но доказательство связывают с его школой.</div>`},
+{title:'Как найти катет',lvl:1,html:`
+<div class="box rule"><b>Катет</b>Из c² = a² + b² получаем <span class="m">b² = c² − a²</span>, то есть <span class="m">b = √(c² − a²)</span>.</div>
+<p>Логика простая: квадрат гипотенузы — это «целая пицца», квадрат одного катета — кусок. Второй кусок = целое минус известный кусок.</p>
+<div class="box ex"><b>Пример</b>Гипотенуза 13, катет 5. b² = 169 − 25 = 144, b = 12.</div>
+<div class="box err"><b>Ошибка</b>Сложить вместо вычитания: 169 + 25 = 194. Катет тогда вышел бы <b>длиннее</b> гипотенузы — так не бывает. Проверка: катет всегда меньше гипотенузы.</div>
+<div class="box tip"><b>Удобный трюк</b>c² − a² = (c − a)(c + a). Для 13 и 5: 8 · 18 = 144. Иногда так считать быстрее, особенно с большими числами: 41² − 40² = 1 · 81 = 81 → катет 9.</div>`},
+{title:'Почему это правда: доказательство через площади',lvl:2,html:`
+<p>Возьмём 4 одинаковых прямоугольных треугольника с катетами a, b и гипотенузой c и положим их в квадрат со стороной <b>a + b</b> двумя способами.</p>
+<div class="widget" id="w-pyth"></div>
+<ol class="steps"><li>Способ 1: треугольники в углах, в середине пустой квадрат со стороной <b>c</b>. Пустое место = <b>c²</b>.</li>
+<li>Способ 2: переложим те же треугольники парами в прямоугольники. Пустое место — два квадрата: <b>a² + b²</b>.</li>
+<li>Большой квадрат тот же, треугольники те же — значит, и пустое место одинаковое: <span class="m">c² = a² + b²</span>.</li></ol>
+<div class="box rule"><b>То же алгеброй</b>Площадь большого квадрата: <span class="m">(a + b)² = c² + 4 · ½ab</span>. Раскроем: a² + 2ab + b² = c² + 2ab. Убираем 2ab с обеих сторон: <span class="m">a² + b² = c²</span>.</div>
+<p><b>Доказательство Гарфилда.</b> Положи два треугольника «лесенкой» — получится трапеция с основаниями a и b и высотой a + b. Её площадь ½(a + b)² равна сумме трёх треугольников: ½ab + ½ab + ½c². Упрости — снова a² + b² = c².</p>
+<div class="fig">${fGarf}</div>
+<div class="fact">Это доказательство в 1876 году придумал Джеймс Гарфилд — через несколько лет он стал президентом США. А в книге Элиши Лумиса «The Pythagorean Proposition» собрано 367 разных доказательств теоремы.</div>`},
+{title:'Обратная теорема и пифагоровы тройки',lvl:3,html:`
+<div class="box rule"><b>Обратная теорема Пифагора</b>Если в треугольнике квадрат одной стороны равен сумме квадратов двух других, то этот треугольник <b>прямоугольный</b> (прямой угол — напротив большей стороны).</div>
+<p>Прямая теорема: «прямой угол есть → c² = a² + b²». Обратная: «c² = a² + b² → прямой угол есть». Вот почему египетская верёвка 3–4–5 работает: 9 + 16 = 25, значит угол прямой.</p>
+<div class="box tip"><b>Тест на тип треугольника</b>Пусть c — наибольшая сторона. Сравни c² с a² + b²:<br>• c² = a² + b² → прямоугольный;<br>• c² &lt; a² + b² → остроугольный;<br>• c² &gt; a² + b² → тупоугольный.<br>Представь «шарнир»: раздвигаешь угол шире 90° — сторона напротив растёт.</div>
+<div class="box rule"><b>Пифагорова тройка</b>Три натуральных числа a, b, c, для которых a² + b² = c². Самые популярные: (3; 4; 5), (5; 12; 13), (8; 15; 17), (7; 24; 25), (20; 21; 29).</div>
+<p>Умножишь тройку на любое число — снова тройка: 6, 8, 10; 9, 12, 15; 30, 40, 50. Все тройки можно получить формулой Евклида: <span class="m">m² − n², 2mn, m² + n²</span> (m &gt; n). Например, m = 2, n = 1 даёт 3, 4, 5.</p>
+<div class="box err"><b>Ловушка</b>Проверять надо квадраты, а не «на глаз». 6, 8, 11 похоже на тройку, но 36 + 64 = 100 ≠ 121 — тупоугольный.</div>`},
+{title:'Диагонали и корни',lvl:4,html:`
+<div class="box rule"><b>Диагональ прямоугольника</b>Диагональ режет прямоугольник a × b на два прямоугольных треугольника: <span class="m">d = √(a² + b²)</span>.<br><b>Диагональ квадрата</b> со стороной a: <span class="m">d = √(a² + a²) = a√2</span>.</div>
+<div class="fig">${fSqD}</div>
+<p>Часто ответ «некрасивый» — с корнем. Его упрощают: выносят из-под корня полный квадрат.</p>
+<div class="box rule"><b>Как упростить корень</b><span class="m">√(k² · m) = k√m</span>. Ищи в числе множитель 4, 9, 16, 25, 36, 49…<br>√50 = √(25 · 2) = 5√2; √72 = √(36 · 2) = 6√2; √48 = √(16 · 3) = 4√3.</div>
+<div class="box ex"><b>Пример</b>Прямоугольник 2 × 6: d = √(4 + 36) = √40 = √(4 · 10) = 2√10.</div>
+<div class="box err"><b>Ошибка</b>√(a² + b²) ≠ a + b. √(4 + 36) — это не 2 + 6 = 8. Корень из суммы по частям не берут.</div>
+<div class="box tip"><b>В тренажёре</b>Ответ с корнем вводи так: <b>5√2</b> (кнопка √ под полем). Подойдёт и √50 — но лучше упрощай.</div>`},
+{title:'Равнобедренный и равносторонний треугольник',lvl:5,html:`
+<p>В равнобедренном треугольнике высота к основанию — одновременно <b>медиана</b>: она делит основание пополам. И треугольник распадается на два прямоугольных.</p>
+<div class="box rule"><b>Высота равнобедренного</b>Боковая сторона b, основание a: <span class="m">h² = b² − (a/2)²</span>.</div>
+<div class="box ex"><b>Пример</b>Стороны 13, 13, 10. Половина основания 5, h² = 169 − 25 = 144, h = 12, площадь ½ · 10 · 12 = 60.</div>
+<div class="fig">${fEq}</div>
+<div class="box rule"><b>Равносторонний треугольник со стороной a</b><span class="m">h = a√3 / 2</span>, <span class="m">S = a²√3 / 4</span>.</div>
+<p>Откуда: h² = a² − (a/2)² = a² − a²/4 = 3a²/4, h = √3 · a / 2.</p>
+<div class="box err"><b>Ошибка</b>Забыть поделить основание пополам: h² = 13² − 10² — неверно. Катет прямоугольного треугольника — <b>половина</b> основания.</div>
+<div class="box tip"><b>Ромб</b>Диагонали ромба перпендикулярны и делятся пополам. Сторона ромба — гипотенуза: <span class="m">a² = (d₁/2)² + (d₂/2)²</span>.</div>`},
+{title:'Расстояние между точками на сетке',lvl:6,html:`
+<p>В игре персонаж стоит в клетке A, сундук — в клетке B. Сколько лететь по прямой? Пройди «по клеточкам»: столько-то вправо, столько-то вверх. Эти два шага — катеты, а путь по прямой — гипотенуза.</p>
+<div class="fig">${fGrid}</div>
+<div class="box rule"><b>Формула расстояния</b>Для A(x₁; y₁) и B(x₂; y₂): <span class="m">AB = √((x₂ − x₁)² + (y₂ − y₁)²)</span>.</div>
+<div class="box ex"><b>Пример</b>A(1; 1), B(5; 4): сдвиг 4 вправо и 3 вверх, AB = √(16 + 9) = 5.</div>
+<div class="box err"><b>Ошибка</b>Складывать сдвиги: 4 + 3 = 7 — это путь «по улицам» (манхэттенское расстояние), а не по прямой. И знак не важен: (−3)² = 9.</div>
+<div class="fact">В шахматах и в старых играх с клетками часто используют другие «расстояния»: король ходит по диагонали за один ход, поэтому для него от A до B max(4; 3) = 4 хода. Но настоящая длина отрезка — по Пифагору.</div>`},
+{title:'Пифагор в жизни',lvl:7,html:`
+<div class="box rule"><b>Когда звать Пифагора</b>Ищи прямой угол: стена и пол, север и восток, мачта и земля, ширина и высота экрана. Нарисуй треугольник, подпиши катеты и гипотенузу — и считай.</div>
+<div class="fig">${fLad}</div>
+<div class="box ex"><b>Лестница</b>Лестница 13 м, низ в 5 м от стены. Высота: √(169 − 25) = 12 м.</div>
+<div class="box ex"><b>Экран</b>«Диагональ 55 дюймов» — это длина диагонали экрана. Дюйм = 2,54 см. У экрана 16 : 9 ширина 16x, высота 9x, диагональ x√(256 + 81) = x√337 ≈ 18,36x.</div>
+<div class="box tip"><b>Маршрут из нескольких отрезков</b>Если идёшь 7 км на север, 3 на восток, ещё 5 на север — сначала сложи все «северные» куски (12) и все «восточные» (3). Расстояние до старта = √(12² + 3²).</div>
+<div class="fact">Строители до сих пор проверяют прямые углы фундамента правилом 3–4–5: отмеряют 3 м по одной стене, 4 м по другой — и диагональ между отметками должна быть ровно 5 м.</div>`},
+{title:'Идеи для задач со звёздочкой',lvl:8,html:`
+<div class="box rule"><b>1. Обозначь x и составь уравнение</b>Старинные задачи про бамбук и лотос: неизвестную длину обозначь x, найди прямоугольный треугольник, где стороны выражены через x, и запиши Пифагора. x² сократится — останется простое уравнение.</div>
+<div class="box rule"><b>2. Развёртка</b>Кратчайший путь по поверхности коробки — отрезок на развёртке. Перебери несколько развёрток и выбери самую короткую.</div>
+<div class="box rule"><b>3. Сумма и квадрат</b>(a + b)² = a² + b² + 2ab = c² + 2ab. Если известны a + b и c, то ab = ((a + b)² − c²) / 2 — и площадь ½ab найдена без самих катетов.</div>
+<div class="box rule"><b>4. Теорема «британского флага»</b>Для любой точки P и прямоугольника ABCD: <span class="m">PA² + PC² = PB² + PD²</span>. Доказательство: опусти перпендикуляры на стороны и распиши всё по Пифагору.</div>
+<div class="box rule"><b>5. Точки на окружности</b>Узлы сетки на расстоянии r от начала координат — это решения x² + y² = r² в целых числах. Пифагоровы тройки дают «косые» точки.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps"><li>c² = a² + b²; катет b = √(c² − a²).</li><li>Обратная: c² = a² + b² → прямоугольный; c² &lt; a² + b² → острый; c² &gt; a² + b² → тупой.</li>
+<li>Тройки: 3-4-5, 5-12-13, 8-15-17, 7-24-25, 20-21-29.</li><li>Диагональ квадрата a√2; прямоугольника √(a² + b²).</li>
+<li>Высота равностороннего a√3/2; равнобедренного √(b² − (a/2)²).</li><li>Расстояние: √((x₂ − x₁)² + (y₂ − y₁)²).</li></ul>`}
+];
+
+const NW=t=>`<span style="white-space:nowrap;font-size:17px">${t}</span>`;
+const symbols={tab:'Формулы',title:'Формулы темы',rows:[
+[NW('c² = a² + b²'),'Теорема Пифагора','Квадрат гипотенузы = сумма квадратов катетов.','6² + 8² = 10²'],
+[NW('b = √(c² − a²)'),'Катет','Из квадрата гипотенузы вычти квадрат известного катета.','√(169 − 25) = 12'],
+[NW('c² = a² + b² ⇒ 90°'),'Обратная теорема','Если равенство выполняется, угол напротив c прямой.','3, 4, 5 — прямоугольный'],
+[NW('d = a√2'),'Диагональ квадрата','Сторона, умноженная на √2 ≈ 1,41.','a = 5 → d = 5√2'],
+[NW('d = √(a² + b²)'),'Диагональ прямоугольника','Стороны прямоугольника — катеты.','9 × 12 → 15'],
+[NW('h = a√3/2'),'Высота равностороннего','Половина стороны, умноженная на √3.','a = 6 → 3√3'],
+[NW('√(k²m) = k√m'),'Упрощение корня','Выносим полный квадрат из-под корня.','√50 = 5√2'],
+[NW('AB = √(Δx² + Δy²)'),'Расстояние между точками','Сдвиги по x и по y — катеты.','(1;1), (5;4) → 5'],
+[NW('m² − n², 2mn, m² + n²'),'Формула Евклида','Даёт все пифагоровы тройки.','m = 3, n = 2 → 5, 12, 13']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Сначала найди прямой угол и гипотенузу (напротив него). Квадраты складываем, корень извлекаем в самом конце.</div>`};
+
+/* =====================================================================
+   GENERATORS
+   ===================================================================== */
+const LET='ABCDEKMNPST'.split('');
+/* ===== L0 ===== */
+G(0,()=>CH('Как звучит теорема Пифагора?','В прямоугольном треугольнике квадрат гипотенузы равен сумме квадратов катетов',
+ ['В прямоугольном треугольнике гипотенуза равна сумме катетов','В любом треугольнике квадрат большей стороны равен сумме квадратов двух других','В прямоугольном треугольнике квадрат гипотенузы равен квадрату суммы катетов'],
+ {short:'c² = a² + b², и только для прямоугольного треугольника.',
+ explain:'Теорема: <b>c² = a² + b²</b> — складываются <b>квадраты</b> катетов. «Гипотенуза равна сумме катетов» — неверно: 3 + 4 = 7, а гипотенуза 5. «Квадрат суммы» (a + b)² = a² + 2ab + b² — это больше, чем a² + b². И теорема только про <b>прямоугольные</b> треугольники.',
+ explain2:'Проверь на египетском треугольнике 3, 4, 5: 3² + 4² = 9 + 16 = 25 = 5² ✅. А 3 + 4 = 7 ≠ 5, и (3 + 4)² = 49 ≠ 25. Остаётся только один верный вариант.'}),{rule:true});
+G(0,()=>{const n=sample(LET,3);const r=pick([0,90,180,270,30,120,210,300]);const t=pick([[4,3],[3,4],[5,2.5],[2.6,4.2]]);
+ const pic=rtri(t[0],t[1],{rot:r,names:{C:n[2],A:n[0],B:n[1]},maxH:170});const hyp=n[0]+n[1];
+ return CH(`Какая сторона треугольника — гипотенуза?`,hyp,[n[2]+n[0],n[2]+n[1]],{pic,
+ short:`${hyp} лежит напротив прямого угла ${n[2]}.`,
+ explain:`Гипотенуза — сторона <b>напротив прямого угла</b>. Прямой угол отмечен значком «уголок» при вершине ${n[2]}. Напротив него — сторона, которая вершину ${n[2]} не содержит: <b>${hyp}</b>. Стороны ${n[2]}${n[0]} и ${n[2]}${n[1]} выходят из вершины прямого угла — это катеты.`,
+ explain2:`Простой тест: обе стороны прямого угла «касаются» его вершины ${n[2]}. Значит, в их названии есть буква ${n[2]}. Сторона без буквы ${n[2]} — гипотенуза: ${hyp}. И она самая длинная на рисунке.`});},{rule:true});
+G(0,()=>{const t=triple(40);const pic=rtri(t.a,t.b,{sa:String(t.a),sb:String(t.b),sc:'?',fill:true});
+ return {type:'num',q:`Катеты прямоугольного треугольника равны ${t.a} и ${t.b}. Найди гипотенузу.`,pic,ans:t.c,
+ hint:'Сложи квадраты катетов и извлеки корень.',short:`${TRH(t)}, c = ${t.c}.`,
+ explain:`По теореме Пифагора <span class="m">c² = a² + b²</span>.<br>c² = ${TRH(t)}.<br>c = √${t.c*t.c} = <b>${t.c}</b> (${t.c} · ${t.c} = ${t.c*t.c}).<div class="box err"><b>Не так</b>${t.a} + ${t.b} = ${t.a+t.b} — гипотенуза не равна сумме катетов, она всегда короче этой суммы.</div>`,
+ explain2:t.k>1?`Присмотрись: ${t.a} и ${t.b} — это ${t.p[0]}·${t.k} и ${t.p[1]}·${t.k} (в каком-то порядке). Значит, треугольник — увеличенный в ${t.k} раз треугольник ${t.p.join(', ')}. Гипотенуза: ${t.p[2]} · ${t.k} = ${t.c}.`:`Представь квадраты на катетах: площади ${t.a*t.a} и ${t.b*t.b}. Вместе ${t.c*t.c} — это площадь квадрата на гипотенузе. Какое число в квадрате даёт ${t.c*t.c}? ${t.c}.`};});
+G(0,()=>{const t=triple(30);const r=pick([0,90,180,270]);const pic=rtri(t.a,t.b,{rot:r,sa:String(t.a),sb:String(t.b),sc:'x',names:{C:'C',A:'A',B:'B'}});
+ return {type:'num',q:`Найди x.`,pic,ans:t.c,short:`x² = ${TRH(t)}, x = ${t.c}.`,
+ explain:`x лежит напротив прямого угла — это гипотенуза. x² = ${TRH(t)}, x = <b>${t.c}</b>.`,
+ explain2:`Проверь себя: гипотенуза длиннее каждого катета (${t.c} > ${Math.max(t.a,t.b)}), но короче их суммы (${t.c} < ${t.a+t.b}). И ${t.c}² = ${t.c*t.c} = ${t.a*t.a} + ${t.b*t.b} ✅.`};});
+
+/* ===== L1 ===== */
+G(1,()=>CH('Допиши формулу: если c — гипотенуза, a — катет, то второй катет b = …','√(c² − a²)',['√(c² + a²)','c − a','(c − a)²'],
+ {short:'b² = c² − a², поэтому b = √(c² − a²).',
+ explain:'Из c² = a² + b² вычтем a²: <b>b² = c² − a²</b>, значит b = √(c² − a²). Вариант √(c² + a²) дал бы число больше гипотенузы — а катет всегда короче гипотенузы. «c − a» — снова попытка работать без квадратов: для 5 и 3 получим 2, а катет 4.',
+ explain2:'Проверь на тройке 13, 5, 12: √(169 − 25) = √144 = 12 ✅. А 13 − 5 = 8, (13 − 5)² = 64, √(169 + 25) ≈ 13,9 — всё мимо. Значит, верна только √(c² − a²).'}),{rule:true});
+G(1,()=>{const t=triple(50);const pic=rtri(t.a,t.b,{sa:String(t.a),sb:'?',sc:String(t.c),fill:true});
+ return {type:'num',q:`Гипотенуза прямоугольного треугольника ${t.c}, один катет ${t.a}. Найди другой катет.`,pic,ans:t.b,
+ hint:'Из квадрата гипотенузы вычти квадрат известного катета.',short:`${t.c}² − ${t.a}² = ${t.c*t.c} − ${t.a*t.a} = ${t.b*t.b}, b = ${t.b}.`,
+ explain:`b² = c² − a² = ${t.c}² − ${t.a}² = ${t.c*t.c} − ${t.a*t.a} = ${t.b*t.b}.<br>b = √${t.b*t.b} = <b>${t.b}</b>.<div class="box err"><b>Ловушка</b>${t.c*t.c} + ${t.a*t.a} = ${t.c*t.c+t.a*t.a} — сложили вместо вычитания. Тогда катет получился бы длиннее гипотенузы.</div>`,
+ explain2:`Трюк с разностью квадратов: ${t.c}² − ${t.a}² = (${t.c} − ${t.a})(${t.c} + ${t.a}) = ${t.c-t.a} · ${t.c+t.a} = ${t.b*t.b}. Корень: ${t.b}. Проверка: ${t.a}² + ${t.b}² = ${t.a*t.a} + ${t.b*t.b} = ${t.c*t.c} = ${t.c}² ✅.`};});
+G(1,()=>{const t=triple(40);const ask=pick(['P','S']);const ans=ask==='P'?t.a+t.b+t.c:t.a*t.b/2;
+ const pic=rtri(t.a,t.b,{sa:String(t.a),sc:String(t.c)});
+ return {type:'num',q:`В прямоугольном треугольнике гипотенуза ${t.c}, катет ${t.a}. Найди ${ask==='P'?'периметр':'площадь'} треугольника.`,pic,ans,
+ hint:'Сначала найди второй катет.',short:`b = √(${t.c*t.c} − ${t.a*t.a}) = ${t.b}; ${ask==='P'?`P = ${t.a} + ${t.b} + ${t.c} = ${ans}`:`S = ½ · ${t.a} · ${t.b} = ${N(ans)}`}.`,
+ explain:`1) Второй катет: b² = ${t.c*t.c} − ${t.a*t.a} = ${t.b*t.b}, b = ${t.b}.<br>2) ${ask==='P'?`P = ${t.a} + ${t.b} + ${t.c} = <b>${ans}</b>.`:`Площадь прямоугольного треугольника — половина произведения катетов: S = ½ · ${t.a} · ${t.b} = <b>${N(ans)}</b>.<div class="box err"><b>Ошибка</b>½ · ${t.a} · ${t.c} — гипотенуза не высота к катету. Перемножаем именно катеты.</div>`}`,
+ explain2:`Задача в два шага: без второго катета ничего не посчитать. Шаг 1 — Пифагор (катет ${t.b}). Шаг 2 — ${ask==='P'?'сложить три стороны':'катеты — это «основание и высота», поэтому S = ½ · '+t.a+' · '+t.b}: ${N(ans)}.`};});
+
+/* ===== L2: proof ===== */
+G(2,()=>CH('Квадрат со стороной a + b составлен из 4 прямоугольных треугольников (катеты a, b, гипотенуза c) и квадрата со стороной c в середине. Какое равенство площадей верно?','(a + b)² = c² + 4 · ½ab',['(a + b)² = a² + b²','(a + b)² = c² + ab','(a + b)² = c² + 4ab'],
+ {short:'Большой квадрат = маленький квадрат + 4 треугольника по ½ab.',
+ explain:'Площадь большого квадрата (a + b)². Он состоит из квадрата c² и <b>четырёх</b> треугольников, у каждого площадь <b>½ab</b>. Значит, (a + b)² = c² + 4 · ½ab = c² + 2ab. Раскрываем: a² + 2ab + b² = c² + 2ab → a² + b² = c². Так и доказывается теорема.',
+ explain2:'Посчитай на числах a = 3, b = 4, c = 5: (3 + 4)² = 49. Квадрат c² = 25, четыре треугольника по ½ · 3 · 4 = 6 → 24. 25 + 24 = 49 ✅. Вариант «4ab» дал бы 25 + 48 = 73 — забыли ½.'}),{rule:true});
+G(2,()=>{const a=R(1,7),b=R(2,9);if(a===b)return null;const S=(a+b)**2,ans=a*a+b*b;
+ return {type:'num',q:`Квадрат со стороной ${a+b} разрезан, как на рисунке: 4 одинаковых прямоугольных треугольника с катетами ${a} и ${b} и квадрат в середине. Найди площадь среднего квадрата.`,pic:proofSvg(a,b,1,220),ans,
+ hint:'Из площади большого квадрата вычти 4 треугольника.',short:`${S} − 4 · ½ · ${a} · ${b} = ${S} − ${2*a*b} = ${ans}.`,
+ explain:`Большой квадрат: ${a+b}² = ${S}.<br>Один треугольник: ½ · ${a} · ${b} = ${N(a*b/2)}, четыре — ${2*a*b}.<br>Средний квадрат: ${S} − ${2*a*b} = <b>${ans}</b>.<br>Заметь: ${ans} = ${a}² + ${b}² — вот она, теорема Пифагора: сторона среднего квадрата — гипотенуза, и её квадрат равен ${a*a} + ${b*b}.`,
+ explain2:`Можно сразу: сторона среднего квадрата — гипотенуза треугольника с катетами ${a} и ${b}. Её квадрат c² = ${a*a} + ${b*b} = ${ans}. А площадь квадрата со стороной c — это и есть c². Два способа дали одно число — это и есть доказательство!${fig(proofSvg(a,b,2,200))}`};});
+G(2,()=>{const S1=R(5,60),S2=R(5,80);if(S1===S2)return null;const inv=Math.random()<0.4;const S3=S1+S2;
+ const qa=Math.sqrt(S1),qb=Math.sqrt(S2);const P={C:[0,0],A:[0,qa],B:[qb,0]};const sqs=[[[0,0],[0,qa],[-qa,qa],[-qa,0]],[[0,0],[qb,0],[qb,-qb],[0,-qb]],[[0,qa],[qb,0],[qb+qa,qb],[qa,qa+qb]]];
+ const labs=inv?[String(S1),'?',String(S3)]:[String(S1),String(S2),'?'];
+ const pic=geo({P,poly:[['C','A','B'],...sqs.map((q,i)=>{const ks=q.map((_,j)=>'q'+i+j);q.forEach((p,j)=>P['q'+i+j]=p);return ks;})],fill:sqs.map((q,i)=>({pts:q,op:i===2?0.45:0.28})),rt:[['C','A','B']],txt:[[[-qa/2,qa/2],labs[0],{fs:14}],[[qb/2,-qb/2],labs[1],{fs:14}],[[(qa+qb)/2,(qa+qb)/2],labs[2],{fs:15}]],lab:[],extra:[[-qa,-qb],[qa+qb,qa+qb]],maxH:240,W:240,pad:12});
+ return {type:'num',q:inv?`На сторонах прямоугольного треугольника построены квадраты. Площадь квадрата на одном катете ${S1}, на гипотенузе ${S3}. Найди площадь квадрата на другом катете.`:`На катетах прямоугольного треугольника построены квадраты площадью ${S1} и ${S2}. Найди площадь квадрата, построенного на гипотенузе.`,pic,ans:inv?S2:S3,
+ hint:'Площадь квадрата со стороной a — это a². Вспомни, что говорит теорема про a² и b².',short:inv?`${S3} − ${S1} = ${S2}.`:`${S1} + ${S2} = ${S3}.`,
+ explain:`Площадь квадрата на стороне — это квадрат этой стороны: a² = ${S1}${inv?'':`, b² = ${S2}`}. Теорема Пифагора: c² = a² + b², то есть <b>площадь квадрата на гипотенузе = сумма площадей квадратов на катетах</b>.<br>${inv?`b² = ${S3} − ${S1} = <b>${S2}</b>.`:`c² = ${S1} + ${S2} = <b>${S3}</b>.`}<br>Корни извлекать не надо — нужны именно площади.`,
+ explain2:`Представь, что квадраты — это лужи краски. Теорема говорит: краски в двух маленьких лужах ровно столько же, сколько в большой. ${inv?`В большой ${S3}, в одной маленькой ${S1} — в другой ${S3} − ${S1} = ${S2}.`:`${S1} + ${S2} = ${S3}.`}`};});
+G(2,()=>{const a=R(2,6),b=R(3,9);if(a===b)return null;const ans=(a*a+b*b)/2;const pic=geo({P:{A:[0,a],B:[0,0],E:[b,0],D:[a+b,0],C:[a+b,b]},poly:[['A','B','D','C']],seg:[['A','E'],['E','C']],fill:[{pts:['A','E','C'],op:0.45}],rt:[['B','A','E'],['D','E','C']],side:[['A','B',String(a)],['B','E',String(b)],['E','D',String(a)],['D','C',String(b)]],lab:[],maxH:170,W:280});
+ return {type:'num',q:`Трапеция «Гарфилда» сложена из двух прямоугольных треугольников с катетами ${a} и ${b} и закрашенного треугольника (см. рисунок). Найди площадь закрашенного треугольника.`,pic,ans,
+ hint:'Площадь трапеции минус два белых треугольника.',short:`½(${a} + ${b})² − ${a*b} = ${N((a+b)**2/2)} − ${a*b} = ${N(ans)}.`,
+ explain:`Трапеция: основания ${a} и ${b} (вертикальные стороны), высота ${a} + ${b} = ${a+b}. S = ½ · (${a} + ${b}) · ${a+b} = ${N((a+b)**2/2)}.<br>Два белых треугольника: 2 · ½ · ${a} · ${b} = ${a*b}.<br>Закрашенный: ${N((a+b)**2/2)} − ${a*b} = <b>${N(ans)}</b>.<br>Он прямоугольный и равнобедренный с катетами c, его площадь ½c². Получили ½c² = ½(${a}² + ${b}²) — снова теорема Пифагора!`,
+ explain2:`Короче: закрашенный треугольник — прямоугольный, его катеты — гипотенузы белых треугольников: c² = ${a*a} + ${b*b} = ${a*a+b*b}. Его площадь — половина произведения катетов: ½ · c · c = ½ · ${a*a+b*b} = ${N(ans)}.`};});
+
+/* ===== L3: converse, triples ===== */
+G(3,()=>CH('Какое утверждение — <b>обратная</b> теорема Пифагора?','Если квадрат одной стороны треугольника равен сумме квадратов двух других сторон, то треугольник прямоугольный',
+ ['Если треугольник прямоугольный, то квадрат гипотенузы равен сумме квадратов катетов','Если сумма двух сторон треугольника больше третьей, то треугольник прямоугольный','Если квадрат одной стороны больше суммы квадратов двух других, то треугольник прямоугольный'],
+ {short:'Обратная: «равенство квадратов → угол прямой».',
+ explain:'В обратной теореме условие и вывод меняются местами. Прямая: «треугольник прямоугольный → c² = a² + b²». Обратная: «<b>c² = a² + b² → треугольник прямоугольный</b>». Вариант «если прямоугольный, то…» — это сама теорема Пифагора, а не обратная. «Сумма двух сторон больше третьей» верно для любого треугольника. «Больше суммы квадратов» — это признак тупоугольного.',
+ explain2:'Пример из жизни: «если идёт дождь, асфальт мокрый» и обратное «если асфальт мокрый, шёл дождь». Тут обе версии про Пифагора верны, и обратная нужна, чтобы <b>проверять</b> прямой угол по длинам сторон — как египтяне с верёвкой 3–4–5.'}),{rule:true});
+G(3,()=>CH('Как проверить, является ли треугольник со сторонами a ≤ b ≤ c прямоугольным?','Сравнить c² и a² + b²: если равны — прямоугольный',['Сравнить c и a + b: если равны — прямоугольный','Проверить, что все стороны — целые числа','Проверить, что c — чётное число'],
+ {short:'Обратная теорема Пифагора: c² = a² + b² ⇔ прямой угол.',
+ explain:'Работает обратная теорема Пифагора: считаем c² и a² + b². Равны — угол напротив c прямой. Если c = a + b, треугольника вообще нет (он «сплющился» в отрезок). Целые или чётные стороны ничего не гарантируют: 2, 3, 4 — целые, но не прямоугольный.',
+ explain2:'Пример: 5, 12, 13 → 25 + 144 = 169 = 13² ✅ прямоугольный. 5, 12, 14 → 169 ≠ 196 ❌. Только квадраты дают ответ.'}),{rule:true});
+G(3,()=>{let a,b,c;const kind=R(0,2);if(kind===1){const t=triple(30);a=Math.min(t.a,t.b);b=Math.max(t.a,t.b);c=t.c;}else{a=R(3,15);b=R(a,18);c=R(b,a+b-1);if(c===b&&a===b)return null;}
+ const d=c*c-(a*a+b*b);const res=d===0?1:d<0?0:2;if(kind!==1&&res===1)return null;if(res!==kind&&kind!==1)return null;
+ const names=['остроугольный','прямоугольный','тупоугольный'];
+ return {type:'choice',q:`Стороны треугольника ${a}, ${b} и ${c}. Какой это треугольник?`,opts:names,ans:res,
+ short:`${c}² = ${c*c}, ${a}² + ${b}² = ${a*a+b*b}: ${res===1?'равны':res===0?'меньше':'больше'} → ${names[res]}.`,
+ explain:`Наибольшая сторона ${c}. Сравним её квадрат с суммой квадратов двух других:<br>${c}² = ${c*c}; ${a}² + ${b}² = ${a*a} + ${b*b} = ${a*a+b*b}.<br>${res===1?`Равны → по обратной теореме Пифагора треугольник <b>прямоугольный</b>.`:res===0?`${c*c} < ${a*a+b*b} → угол напротив большей стороны острый, значит, треугольник <b>остроугольный</b>.`:`${c*c} > ${a*a+b*b} → угол напротив большей стороны тупой: треугольник <b>тупоугольный</b>.`}`,
+ explain2:`Представь шарнир: две стороны ${a} и ${b} скреплены, а третья сторона — «резинка» между их концами. При прямом угле резинка была бы √${a*a+b*b} ≈ ${N(Math.round(Math.sqrt(a*a+b*b)*100)/100)}. У нас ${c} — ${res===1?'ровно столько же, угол прямой':res===0?'короче, значит угол сжали — он острый':'длиннее, значит угол раздвинули шире 90° — он тупой'}.`};});
+G(3,()=>{const cands=[];const good=sample(PRIM.slice(0,5),R(1,3)).map(t=>{const k=R(1,3);return t.map(x=>x*k);});good.forEach(t=>cands.push({t,ok:true}));
+ while(cands.length<5){const t=pick(PRIM);const k=R(1,3);const v=t.map(x=>x*k);const i=R(0,2);v[i]+=pick([-1,1,2]);v.sort((x,y)=>x-y);if(v[0]*v[0]+v[1]*v[1]===v[2]*v[2])continue;if(cands.some(c=>c.t.join()===v.join()))continue;cands.push({t:v,ok:false});}
+ const L=shuffle(cands);const opts=L.map(c=>c.t.join(', '));if(new Set(opts).size<5)return null;const ans=L.map((c,i)=>c.ok?i:-1).filter(i=>i>=0);
+ const chk=L.map(c=>`${c.t[0]}² + ${c.t[1]}² = ${c.t[0]**2+c.t[1]**2}${c.ok?' = ':' ≠ '}${c.t[2]**2} = ${c.t[2]}² ${c.ok?'✅':'❌'}`).join('<br>');
+ return {type:'multi',q:'Отметь все пифагоровы тройки (a² + b² = c²).',opts,ans,
+ short:`Подходят: ${ans.map(i=>opts[i]).join('; ')}.`,
+ explain:`Проверяем каждую тройку — сумма квадратов двух меньших чисел должна равняться квадрату большего:<br>${chk}`,
+ explain2:`Быстрый способ — узнать «известные» тройки и их кратные: 3-4-5, 5-12-13, 8-15-17, 7-24-25, 20-21-29, умноженные на 2, 3… Тройка, где одно число на 1–2 отличается от известной, уже не подходит: квадраты очень чувствительны.`};});
+G(3,()=>{const n=pick([12,24,30,36,40,48,56,60]);const right=[],other=[];
+ for(let a=1;a<n;a++)for(let b=a;b<n;b++){const c=n-a-b;if(c<b)continue;if(a+b<=c)continue;(a*a+b*b===c*c?right:other).push([a,b,c]);}
+ if(right.length!==1)return null;const r=right[0];const w=sample(other,3);if(w.length<3)return null;
+ return CH(`Египетский землемер завязал на верёвке ${n} узлов через равные промежутки и замкнул её в кольцо (получилось ${n} равных отрезков). Как натянуть треугольник, чтобы один угол получился прямым?`,`${r.join(', ')}`,w.map(x=>x.join(', ')),
+ {short:`${r[0]}² + ${r[1]}² = ${r[0]**2+r[1]**2} = ${r[2]}².`,
+ explain:`Нужно три стороны с суммой ${n}, для которых выполняется обратная теорема Пифагора: a² + b² = c².<br>${r[0]}² + ${r[1]}² = ${r[0]**2} + ${r[1]**2} = ${r[0]**2+r[1]**2} = ${r[2]}² ✅ — угол прямой.<br>Остальные варианты: ${w.map(x=>`${x[0]}² + ${x[1]}² = ${x[0]**2+x[1]**2} ≠ ${x[2]**2}`).join('; ')}.`,
+ explain2:`Знаменитая египетская верёвка — 12 узлов и треугольник 3, 4, 5. Если узлов ${n}, ищем тройку с суммой ${n}: ${r.join(' + ')} = ${n}. ${n%12===0&&r[0]*4===r[1]*3?`Это просто 3, 4, 5, умноженные на ${n/12}.`:'Это одна из известных троек (или кратная ей).'}`});});
+
+/* ===== L4: diagonals, radicals ===== */
+G(4,()=>CH('Чему равна диагональ квадрата со стороной a?','a√2',['2a','a²','a√3'],
+ {short:'d² = a² + a² = 2a², d = a√2.',
+ explain:'Диагональ делит квадрат на два прямоугольных треугольника с катетами a и a. По Пифагору d² = a² + a² = 2a², d = √2 · a = <b>a√2</b> ≈ 1,41a. «2a» — ошибка «сложили стороны»: диагональ короче, чем путь по двум сторонам.',
+ explain2:'Квадрат 1 × 1: диагональ √(1 + 1) = √2 ≈ 1,41. Больше стороны (1), но меньше двух сторон (2) ✅. Для стороны a всё в a раз больше: a√2.'}),{rule:true});
+G(4,()=>{const k=pick([2,3,4,5,6,7,8,10]),m=pick([2,3,5,6,7,10]);const n=k*k*m;const c=`${k}√${m}`;
+ return CH(`Упрости: √${n}.`,c,[`${k*k}√${m}`,`${m}√${k}`,`${k}√${m*2}`].filter(x=>x!==c),{
+ short:`√${n} = √(${k*k} · ${m}) = ${k}√${m}.`,
+ explain:`Ищем в ${n} множитель — полный квадрат: ${n} = ${k*k} · ${m}. Тогда <span class="m">√${n} = √${k*k} · √${m} = ${k}√${m}</span>.<div class="box err"><b>Ошибка</b>«${k*k}√${m}» — забыли извлечь корень из ${k*k}. Из-под корня выходит √${k*k} = ${k}, а не ${k*k}.</div>`,
+ explain2:`Проверка обратно: ${k}√${m} = √(${k}² · ${m}) = √(${k*k} · ${m}) = √${n} ✅. А ${k*k}√${m} = √(${k*k*k*k} · ${m}) = √${k**4*m} — совсем другое число.`});},{rule:true});
+G(4,()=>{const a=R(2,13);return RT(2*a*a,{q:`Найди диагональ квадрата со стороной ${a}.`,pic:geo({P:{A:[0,0],B:[0,1],C:[1,1],D:[1,0]},poly:[['A','B','C','D']],seg:[['A','C',{col:'var(--accent)',sw:2.2}]],side:[['A','D',String(a)],['A','C','d',{flip:true}]],maxH:150,W:200}),
+ hint:'d² = a² + a².',short:`d = √(${a*a} + ${a*a}) = √${2*a*a} = ${a}√2.`,
+ explain:`d² = ${a}² + ${a}² = ${a*a} + ${a*a} = ${2*a*a}.<br>d = √${2*a*a} = √(${a*a} · 2) = <b>${a}√2</b>.<br>(Готовая формула: d = a√2.)`,
+ explain2:`Можно сразу: у любого квадрата диагональ = сторона · √2. Сторона ${a} → <b>${a}√2</b> ≈ ${N(Math.round(a*Math.SQRT2*100)/100)}. Впиши ответ как «${a}√2» — кнопка √ под полем.`});});
+G(4,()=>{const t=triple(50);return {type:'num',q:`Стороны прямоугольника ${t.a} см и ${t.b} см. Найди его диагональ.`,pic:geo({P:{A:[0,0],B:[0,t.b],C:[t.a,t.b],D:[t.a,0]},poly:[['A','B','C','D']],seg:[['B','D',{col:'var(--accent)',sw:2.2}]],rt:[['A','D','B']],side:[['A','D',String(t.a)],['A','B',String(t.b)],['B','D','d',{flip:true}]],maxH:170,W:260}),ans:t.c,
+ short:`d = √(${t.a*t.a} + ${t.b*t.b}) = ${t.c} см.`,
+ explain:`Диагональ BD делит прямоугольник на два прямоугольных треугольника, стороны прямоугольника — катеты.<br>d² = ${TRH(t)}, d = <b>${t.c} см</b>.`,
+ explain2:`Треугольник ABD: прямой угол A, катеты AD = ${t.a} и AB = ${t.b}, гипотенуза BD. ${t.k>1?`${t.a} и ${t.b} — это тройка ${t.p.join('-')}, умноженная на ${t.k}, так что d = ${t.p[2]} · ${t.k} = ${t.c}.`:`${t.c}² = ${t.c*t.c} ✅.`}`};});
+G(4,()=>{const a=R(1,9),b=R(2,10);if(a>=b)return null;const n=a*a+b*b;if(isInt(Math.sqrt(n)))return null;if(rad(n).k===1&&Math.random()<0.6)return null;
+ return RT(n,{q:`Найди диагональ прямоугольника со сторонами ${a} и ${b}. Ответ упрости.`,hint:`d² = ${a}² + ${b}². Потом вынеси из-под корня полный квадрат.`,
+ short:`d = √(${a*a} + ${b*b}) = √${n} = ${RS(n)}.`,
+ explain:`d² = ${a}² + ${b}² = ${a*a} + ${b*b} = ${n}, d = √${n}${rad(n).k>1?` = √(${rad(n).k**2} · ${rad(n).m}) = <b>${RS(n)}</b>`:` — из ${n} полный квадрат не выносится, ответ <b>√${n}</b>`}.<div class="box err"><b>Ошибка</b>√(${a*a} + ${b*b}) ≠ ${a} + ${b} = ${a+b}. Корень из суммы не равен сумме корней.</div>`,
+ explain2:`Проверь примерно: √${n} ≈ ${N(Math.round(Math.sqrt(n)*100)/100)}. Это больше большей стороны (${b}) и меньше суммы сторон (${a+b}) — как и должно быть у диагонали.`});});
+G(4,()=>{const d=pick([4,6,8,10,12,14,16,20]);return {type:'num',q:`Диагональ квадрата равна ${d}. Найди площадь квадрата.`,pic:geo({P:{A:[0,0],B:[0,1],C:[1,1],D:[1,0]},poly:[['A','B','C','D']],seg:[['A','C',{col:'var(--accent)',sw:2.2}],['B','D',{dash:true}]],side:[['A','C',String(d),{t:0.3}]],maxH:150,W:200}),ans:d*d/2,
+ hint:'a² + a² = d². А a² — это и есть площадь!',short:`2a² = ${d*d}, S = a² = ${d*d/2}.`,
+ explain:`Пусть сторона a. По Пифагору a² + a² = d²: 2a² = ${d}² = ${d*d}, значит a² = ${d*d/2}.<br>Но a² — это площадь квадрата! S = <b>${d*d/2}</b>. Сторону (${RS(d*d/2)}) находить даже не нужно.`,
+ explain2:`Другой взгляд: квадрат — это ромб, его площадь = ½ · d₁ · d₂ = ½ · ${d} · ${d} = ${d*d/2}. Ответ тот же.`};});
+
+/* ===== L5: isosceles / equilateral ===== */
+G(5,()=>CH('Чему равна высота равностороннего треугольника со стороной a?','a√3 / 2',['a / 2','a√2 / 2','a√3'],
+ {short:'h² = a² − (a/2)² = 3a²/4 → h = a√3/2.',
+ explain:'Высота делит равносторонний треугольник на два прямоугольных: гипотенуза a, катет a/2. h² = a² − a²/4 = 3a²/4, h = <b>a√3/2</b> ≈ 0,87a. «a/2» — это половина основания, а не высота. «a√3» больше самой стороны — так не может быть: высота — катет, она короче гипотенузы a.',
+ explain2:'Число: a = 2. Половина основания 1, h = √(4 − 1) = √3 ≈ 1,73. По формуле a√3/2 = 2√3/2 = √3 ✅.'}),{rule:true});
+G(5,()=>CH('В равнобедренном треугольнике боковая сторона b, основание a. Как найти высоту к основанию?','h² = b² − (a/2)², потому что высота делит основание пополам',['h² = b² − a²','h² = b² + (a/2)²','h = b − a/2'],
+ {short:'Высота к основанию — медиана: катеты h и a/2, гипотенуза b.',
+ explain:'В равнобедренном треугольнике высота к основанию — ещё и <b>медиана</b>: делит основание пополам. Получается прямоугольный треугольник: гипотенуза b, катет a/2, другой катет h. Значит, <b>h² = b² − (a/2)²</b>. Типичная ошибка — взять всё основание a вместо половины.',
+ explain2:'Пример 13, 13, 10: h² = 169 − 25 = 144, h = 12 ✅. С ошибкой «b² − a²» вышло бы 169 − 100 = 69 — некрасиво и неверно.'}),{rule:true});
+G(5,()=>{const t=triple(40);const half=t.a,h=t.b,b=t.c;const base=2*half;const ask=pick(['h','S']);const ans=ask==='h'?h:half*h;
+ const pic=geo({P:{A:[0,0],B:[half,h],C:[base,0],H:[half,0]},poly:[['A','B','C']],seg:[['B','H',{dash:true}]],rt:[['H','C','B']],tick:[['A','B',1],['B','C',1]],side:[['A','C',String(base),{t:0.75}],['A','B',String(b)],['B','C',String(b)]],maxH:190,W:260});
+ return {type:'num',q:`Боковая сторона равнобедренного треугольника ${b}, основание ${base}. Найди ${ask==='h'?'высоту, проведённую к основанию':'площадь треугольника'}.`,pic,ans,
+ hint:'Высота делит основание пополам.',short:`h = √(${b*b} − ${half*half}) = ${h}${ask==='S'?`; S = ½ · ${base} · ${h} = ${ans}`:''}.`,
+ explain:`Высота BH — медиана, AH = ${base} : 2 = ${half}.<br>Треугольник ABH прямоугольный: h² = ${b}² − ${half}² = ${b*b} − ${half*half} = ${h*h}, h = ${h}.${ask==='S'?`<br>S = ½ · ${base} · ${h} = <b>${ans}</b>.`:`<br>Ответ: <b>${h}</b>.`}<div class="box err"><b>Ошибка</b>${b}² − ${base}² — взяли всё основание. ${b*b-base*base<=0?'Получилось бы отрицательное число — сразу видно, что неверно.':'Катет — половина основания.'}</div>`,
+ explain2:`Разрежь треугольник по высоте — получишь два одинаковых прямоугольных треугольника со сторонами ${half}, ?, ${b}. ${t.k>1?`Это тройка ${t.p.join('-')}, умноженная на ${t.k}`:`Это тройка ${t.p.join('-')}`}: ? = ${h}.${ask==='S'?` Сложи из двух половинок прямоугольник ${half} × ${h}: его площадь ${ans} — столько же, сколько у треугольника.`:''}`};});
+G(5,()=>{const k=R(1,9);const a=2*k;const n=3*k*k;
+ return RT(n,{q:`Найди высоту равностороннего треугольника со стороной ${a}.`,pic:geo({P:{A:[0,0],B:[3,5.196],C:[6,0],H:[3,0]},poly:[['A','B','C']],seg:[['B','H',{dash:true}]],rt:[['H','C','B']],side:[['A','C',String(a),{t:0.75}],['B','H','h',{flip:true}]],tick:[['A','B',1],['B','C',1],['A','C',1]],maxH:170,W:210}),
+ hint:'Половина стороны — катет, сторона — гипотенуза.',short:`h = ${a}√3/2 = ${RS(n)}.`,
+ explain:`Высота делит основание пополам: катет ${k}, гипотенуза ${a}.<br>h² = ${a}² − ${k}² = ${a*a} − ${k*k} = ${n}.<br>h = √${n} = ${k===1?'<b>√3</b>':`√(${k*k} · 3) = <b>${k}√3</b>`}.<br>По готовой формуле: h = a√3/2 = ${a}√3/2 = ${RS(n)} ✅.`,
+ explain2:`Запомни связку: в равностороннем треугольнике «половина стороны» и «высота» относятся как 1 : √3. Половина стороны ${k} → высота ${k}√3 ≈ ${N(Math.round(k*Math.sqrt(3)*100)/100)}.`});});
+G(5,()=>{const t=triple(30);const d1=2*t.a,d2=2*t.b;const pic=geo({P:{A:[0,0],B:[t.a,t.b],C:[2*t.a,0],D:[t.a,-t.b],O:[t.a,0]},poly:[['A','B','C','D']],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],rt:[['O','C','B']],side:[['A','B','?']],lab:['A','B','C','D'],dir:{A:180,C:0},maxH:190,W:240});
+ return {type:'num',q:`Диагонали ромба ${d1} и ${d2}. Найди сторону ромба.`,pic,ans:t.c,hint:'Диагонали ромба перпендикулярны и делятся точкой пересечения пополам.',
+ short:`(${d1}/2)² + (${d2}/2)² = ${t.a*t.a} + ${t.b*t.b} = ${t.c*t.c}, сторона ${t.c}.`,
+ explain:`Диагонали ромба <b>перпендикулярны</b> и <b>делятся пополам</b>. Они режут ромб на 4 одинаковых прямоугольных треугольника с катетами ${d1} : 2 = ${t.a} и ${d2} : 2 = ${t.b}. Сторона ромба — гипотенуза:<br>a² = ${t.a}² + ${t.b}² = ${t.c*t.c}, a = <b>${t.c}</b>.<div class="box err"><b>Ошибка</b>√(${d1}² + ${d2}²) = ${RS(d1*d1+d2*d2)} — взяли целые диагонали. Катеты — их <b>половинки</b>.</div>`,
+ explain2:`Посмотри на четвертинку ромба вокруг точки O: уголок 90°, «лучики» ${t.a} и ${t.b}, а сторона ромба их соединяет. Пифагор: √(${t.a*t.a} + ${t.b*t.b}) = ${t.c}.`};});
+
+/* ===== L6: distance on grid ===== */
+G(6,()=>CH('Как найти расстояние между точками A(x₁; y₁) и B(x₂; y₂)?','√((x₂ − x₁)² + (y₂ − y₁)²)',['(x₂ − x₁) + (y₂ − y₁)','√((x₂ + x₁)² + (y₂ + y₁)²)','(x₂ − x₁)² + (y₂ − y₁)²'],
+ {short:'Сдвиги по осям — катеты, отрезок AB — гипотенуза.',
+ explain:'От A до B: сдвиг по горизонтали |x₂ − x₁|, по вертикали |y₂ − y₁|. Это катеты прямоугольного треугольника, AB — гипотенуза. Поэтому <b>AB = √((x₂ − x₁)² + (y₂ − y₁)²)</b>. Без корня получится квадрат расстояния, а просто сумма сдвигов — путь «по клеточкам».',
+ explain2:'A(1; 1), B(4; 5): сдвиги 3 и 4, AB = √(9 + 16) = 5. Сумма сдвигов 7 — это длиннее, ломаная «вправо, потом вверх». Сумма координат (4 + 1)… вообще бессмысленна.'}),{rule:true});
+G(6,()=>{const t=pick([[3,4,5],[4,3,5],[6,8,10],[8,6,10],[5,12,13],[12,5,13]]);const A=[R(0,2),R(0,2)];const sx=1,sy=pick([1,-1]);const B=[A[0]+t[0]*sx,A[1]+t[1]*sy];
+ return {type:'num',q:`Сторона клетки равна 1. Найди длину отрезка AB.`,pic:gridPts(A,B),ans:t[2],hint:'Посчитай клетки по горизонтали и по вертикали.',
+ short:`Сдвиги ${t[0]} и ${t[1]}: √(${t[0]*t[0]} + ${t[1]*t[1]}) = ${t[2]}.`,
+ explain:`От A до B: ${t[0]} клеток по горизонтали и ${t[1]} по вертикали. Это катеты, AB — гипотенуза:<br>AB = √(${t[0]}² + ${t[1]}²) = √(${t[0]*t[0]} + ${t[1]*t[1]}) = √${t[2]*t[2]} = <b>${t[2]}</b>.<div class="box err"><b>Ошибка</b>${t[0]} + ${t[1]} = ${t[0]+t[1]} — это путь по линиям сетки, а не по прямой.</div>`,
+ explain2:`Нарисуй прямой угол: из A пройди по горизонтали до вертикали точки B, потом вверх или вниз до B.${fig(gridPts(A,B,{legs:true}))}Получился прямоугольный треугольник ${t[0]}, ${t[1]}, ? — это тройка, ? = ${t[2]}.`};});
+G(6,()=>{const dx=R(1,6),dy=R(1,6);const n=dx*dx+dy*dy;if(isInt(Math.sqrt(n)))return null;const A=[R(0,1),R(0,1)];const B=[A[0]+dx,A[1]+(Math.random()<0.5?dy:-dy)];
+ return RT(n,{q:`Сторона клетки равна 1. Найди длину отрезка AB (ответ может быть с корнем).`,pic:gridPts(A,B),hint:'Сдвиги по клеткам — катеты.',
+ short:`AB = √(${dx*dx} + ${dy*dy}) = √${n}${rad(n).k>1?' = '+RS(n):''}.`,
+ explain:`Сдвиг по горизонтали ${dx}, по вертикали ${dy}.<br>AB² = ${dx}² + ${dy}² = ${dx*dx} + ${dy*dy} = ${n}.<br>AB = <b>${RS(n)}</b>${rad(n).k>1?` (√${n} = √(${rad(n).k**2} · ${rad(n).m}))`:''}.`,
+ explain2:`${fig(gridPts(A,B,{legs:true}))}Пунктир — катеты ${dx} и ${dy}. Длина AB ≈ ${N(Math.round(Math.sqrt(n)*100)/100)} — чуть больше большего катета, как и должно быть.`});});
+G(6,()=>{const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[12,16,20]]);const s=Math.random()<0.5;const dx=(s?t[0]:t[1])*pick([1,-1]),dy=(s?t[1]:t[0])*pick([1,-1]);
+ const x1=R(-7,7),y1=R(-7,7);const x2=x1+dx,y2=y1+dy;const f=v=>N(v);
+ return {type:'num',q:`Найди расстояние между точками A(${f(x1)}; ${f(y1)}) и B(${f(x2)}; ${f(y2)}).`,ans:t[2],
+ short:`Δx = ${f(dx)}, Δy = ${f(dy)}; √(${dx*dx} + ${dy*dy}) = ${t[2]}.`,
+ explain:`x₂ − x₁ = ${f(x2)} − (${f(x1)}) = ${f(dx)}; y₂ − y₁ = ${f(y2)} − (${f(y1)}) = ${f(dy)}.<br>AB = √((${f(dx)})² + (${f(dy)})²) = √(${dx*dx} + ${dy*dy}) = √${t[2]**2} = <b>${t[2]}</b>.<div class="box err"><b>Про минусы</b>Квадрат отрицательного числа положителен: (${f(-Math.abs(dx))})² = ${dx*dx}. Поэтому знак разности не важен, важно аккуратно вычесть координаты.</div>`,
+ explain2:`Представь клетчатую карту: от A до B надо сдвинуться на ${Math.abs(dx)} по горизонтали и на ${Math.abs(dy)} по вертикали. Катеты ${Math.abs(dx)} и ${Math.abs(dy)} → гипотенуза ${t[2]}.`};});
+G(6,()=>{const P=[[0,0],[R(1,5),R(-2,4)],[R(-2,5),R(1,5)]];const v=(i,j)=>[P[j][0]-P[i][0],P[j][1]-P[i][1]];
+ const area2=v(0,1)[0]*v(0,2)[1]-v(0,1)[1]*v(0,2)[0];if(Math.abs(area2)<3)return null;
+ const L2=[[1,2],[0,2],[0,1]].map(([i,j])=>{const d=v(i,j);return d[0]*d[0]+d[1]*d[1];});const idx=[0,1,2].sort((a,b)=>L2[a]-L2[b]);const [s1,s2,s3]=idx.map(i=>L2[i]);
+ const res=s3===s1+s2?1:s3<s1+s2?0:2;if(res!==1&&Math.random()<0.55)return null;
+ const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]);const G0=[Math.min(...xs)-1,Math.min(...ys)-1,Math.max(...xs)+1,Math.max(...ys)+1];
+ const pic=geo({P:{A:P[0],B:P[1],C:P[2]},extra:[[G0[0],G0[1]],[G0[2],G0[3]]],grid:G0,poly:[['A','B','C']],fill:[{pts:['A','B','C'],op:0.25}],W:260,maxH:220,pad:14});
+ const nm=['BC','AC','AB'];const names=['остроугольный','прямоугольный','тупоугольный'];
+ return {type:'choice',q:'Вершины треугольника — узлы сетки. Какой это треугольник?',pic,opts:names,ans:res,
+ short:`Квадраты сторон ${s1}, ${s2}, ${s3}: ${s1} + ${s2} = ${s1+s2} ${res===1?'=':res===0?'>':'<'} ${s3} → ${names[res]}.`,
+ explain:`Найдём квадраты сторон по клеточкам (Пифагор): ${[0,1,2].map(i=>{const pr=[[1,2],[0,2],[0,1]][i];const d=v(pr[0],pr[1]);return `${nm[i]}² = ${d[0]*d[0]} + ${d[1]*d[1]} = ${L2[i]}`;}).join('; ')}.<br>Наибольший: ${s3}. Сумма двух других: ${s1} + ${s2} = ${s1+s2}.<br>${res===1?`Равны → по обратной теореме Пифагора <b>прямоугольный</b>.`:res===0?`${s3} < ${s1+s2} → <b>остроугольный</b>.`:`${s3} > ${s1+s2} → <b>тупоугольный</b>.`}`,
+ explain2:`Корни извлекать не нужно — сравниваем сразу квадраты длин. На глаз углы на сетке обманчивы, а числа — нет: ${s1} + ${s2} против ${s3}.`};});
+
+/* ===== L7: real life ===== */
+G(7,()=>CH('В какой задаче точно поможет теорема Пифагора?','Лестница прислонена к стене, известны её длина и расстояние от стены до низа',['Известны два угла треугольника, найти третий','Известны стороны прямоугольника, найти его периметр','Известна сторона квадрата, найти его площадь'],
+ {short:'Стена ⊥ пол — есть прямой угол, лестница — гипотенуза.',
+ explain:'Пифагор нужен, когда есть <b>прямоугольный треугольник</b> и две его стороны известны. Стена и пол образуют прямой угол, лестница — гипотенуза, расстояние до стены — катет. Третий угол ищется по сумме углов (180°), периметр и площадь — по своим формулам.',
+ explain2:'Ищи в условии слова-сигналы: «стена и пол», «на север, потом на восток», «вертикальный столб», «диагональ прямоугольника/экрана». Это прямой угол — значит, работает c² = a² + b².'}),{rule:true});
+G(7,()=>{const t=triple(30);const L=t.c,d=Math.min(t.a,t.b),h=Math.max(t.a,t.b);const P={A:[0,0],B:[0,h],C:[d,0],W1:[0,h*1.12],W2:[-d*0.15,0],G:[d*1.5,0]};
+ const pic=geo({P,seg:[['W1','A',{sw:5,col:'var(--muted)'}],['W2','G',{sw:3,col:'var(--muted)'}],['B','C',{sw:3,col:'var(--accent)'}]],rt:[['A','C','B']],side:[['A','C',d+' м'],['A','B','?',{flip:true}],['B','C',L+' м']],lab:[],maxH:200,W:220});
+ return {type:'num',q:`Лестницу длиной ${L} м прислонили к стене. Нижний конец стоит в ${d} м от стены. На какой высоте верхний конец касается стены? Ответ в метрах.`,pic,ans:h,
+ short:`√(${L*L} − ${d*d}) = ${h} м.`,
+ explain:`Стена, пол и лестница — прямоугольный треугольник: прямой угол между стеной и полом, лестница — гипотенуза ${L}, расстояние до стены — катет ${d}.<br>h² = ${L}² − ${d}² = ${L*L} − ${d*d} = ${h*h}, h = <b>${h} м</b>.`,
+ explain2:`Подумай как строитель: лестница не может достать выше своей длины (${L} м), но и чем дальше её низ от стены, тем ниже верх. Пифагор даёт точное число: ${h} м. Проверка: ${d}² + ${h}² = ${d*d+h*h} = ${L}² ✅.`};});
+G(7,()=>{const dg=pick([32,43,50,55,65,75]);const x=dg/Math.sqrt(337);const ask=pick(['w','h']);const val=(ask==='w'?16:9)*x*2.54;const ans=Math.round(val);
+ return {type:'num',tol:0.6/ans,q:`Телевизор с диагональю ${dg} дюймов, соотношение сторон 16 : 9. Найди ${ask==='w'?'ширину':'высоту'} экрана в сантиметрах (1 дюйм = 2,54 см). Округли до целых.`,ans,
+ hint:'Ширина 16x, высота 9x. Найди x по Пифагору.',short:`x = ${dg}/√337 ≈ ${N(Math.round(x*1000)/1000)} дюйма; ${ask==='w'?16:9}x ≈ ${N(Math.round(val/2.54*10)/10)} дюйма ≈ ${ans} см.`,
+ explain:`Пусть ширина 16x, высота 9x. По Пифагору (16x)² + (9x)² = ${dg}²: 256x² + 81x² = 337x² = ${dg*dg}.<br>x = ${dg}/√337 ≈ ${dg}/18,358 ≈ ${N(Math.round(x*1000)/1000)} дюйма.<br>${ask==='w'?'Ширина 16x':'Высота 9x'} ≈ ${N(Math.round(val/2.54*100)/100)} дюйма ≈ ${N(Math.round(val/2.54*100)/100)} · 2,54 ≈ <b>${ans} см</b>.`,
+ explain2:`Диагональ в дюймах переведём сразу в сантиметры: ${dg} · 2,54 = ${N(Math.round(dg*254)/100)} см. Диагональ «16 : 9» равна √337 ≈ 18,36 «частей». Одна часть ≈ ${N(Math.round(dg*2.54/Math.sqrt(337)*100)/100)} см, ${ask==='w'?'ширина 16':'высота 9'} частей ≈ ${ans} см.`};});
+G(7,()=>{const t=triple(30);const N1=t.b;let a1=R(1,N1-1);const E=t.a;const a2=N1-a1;
+ return {type:'num',q:`Дрон пролетел ${a1} км на север, потом ${E} км на восток, потом ещё ${a2} км на север. На каком расстоянии (в км) от точки старта он оказался?`,ans:t.c,
+ hint:'Сложи все перемещения на север вместе.',short:`На север ${a1} + ${a2} = ${N1}, на восток ${E}: √(${N1*N1} + ${E*E}) = ${t.c} км.`,
+ explain:`Итог перемещения: на север ${a1} + ${a2} = ${N1} км, на восток ${E} км. Север и восток перпендикулярны, поэтому расстояние по прямой — гипотенуза:<br>√(${N1}² + ${E}²) = √(${N1*N1} + ${E*E}) = √${t.c*t.c} = <b>${t.c} км</b>.<div class="box err"><b>Ошибка</b>${a1} + ${E} + ${a2} = ${a1+E+a2} — это длина пути, а не расстояние до старта.</div>`,
+ explain2:`Порядок движений не важен: можно мысленно сначала пролететь все ${N1} км на север, а потом ${E} км на восток — дрон окажется в той же точке. Это обычный прямоугольный треугольник с катетами ${N1} и ${E}.`};});
+G(7,()=>{const L=R(100,110),W=R(64,75);const d=Math.sqrt(L*L+W*W);const ans=Math.round(d);
+ return {type:'num',tol:0.55/ans,q:`Футбольное поле ${L} м × ${W} м. Нападающий бежит из одного угла поля в противоположный по прямой. Сколько метров он пробежит? Округли до целых.`,ans,
+ short:`√(${L*L} + ${W*W}) = √${L*L+W*W} ≈ ${N(Math.round(d*10)/10)} ≈ ${ans} м.`,
+ explain:`Путь — диагональ прямоугольника ${L} × ${W}:<br>d² = ${L}² + ${W}² = ${L*L} + ${W*W} = ${L*L+W*W}, d = √${L*L+W*W} ≈ ${N(Math.round(d*100)/100)} ≈ <b>${ans} м</b>.`,
+ explain2:`Оценка без калькулятора: ${ans}² = ${ans*ans} — это очень близко к ${L*L+W*W}, значит, d ≈ ${ans} м. По прямой выходит на ${L+W-ans} м короче, чем вдоль двух бровок (${L+W} м).`};});
+
+/* ===== L8: ★ ===== */
+G(8,()=>{const H=pick([16,18,20,24,25,30,32]);const d=R(4,H-4);const x=(H*H-d*d)/(2*H);if(!isInt(x*10))return null;
+ return CH(`Старинная задача: бамбук высотой ${H} ч. сломало ветром; верхушка коснулась земли в ${d} ч. от корня. Обозначим x — высоту излома. Какое уравнение верно?`,`x² + ${d}² = (${H} − x)²`,[`x² + (${H} − x)² = ${d}²`,`x + ${d} = ${H} − x`,`x² = ${d}² + (${H} − x)²`],
+ {short:`Катеты x и ${d}, гипотенуза — сломанная часть ${H} − x.`,
+ explain:`Стоящая часть x (вертикально) и расстояние ${d} по земле образуют прямой угол — это катеты. Сломанная верхушка длиной ${H} − x — гипотенуза. Пифагор: <b>x² + ${d}² = (${H} − x)²</b>. Отсюда x² + ${d*d} = ${H*H} − ${2*H}x + x², ${2*H}x = ${H*H-d*d}, x = ${N(x)} ч.`,
+ explain2:`Проверь, что лежит напротив прямого угла: прямой угол — между стволом и землёй, напротив него — наклонная сломанная часть. Значит, в квадрат «в одиночку» возводится именно ${H} − x.`});},{rule:true,star:true});
+G(8,()=>{const h=pick([1,2,3,4,5]);const d=pick([4,5,6,8,10,12]);const x=(d*d-h*h)/(2*h);if(x<=0||!isInt(x*4))return null;
+ return {type:'num',q:`Задача Бхаскары (Индия, XII век): цветок лотоса возвышался над водой на ${h} дм. Ветер отклонил его, и цветок коснулся воды на расстоянии ${d} дм от прежнего места. Стебель прямой. Найди глубину озера (в дм).`,ans:x,
+ hint:'Обозначь глубину x. Тогда длина стебля x + '+h+'.',short:`x² + ${d}² = (x + ${h})² → x = ${N(x)} дм.`,
+ explain:`Пусть глубина x. Стебель (от дна до цветка) длиной x + ${h}. После наклона стебель — гипотенуза, глубина x — вертикальный катет, ${d} — горизонтальный.<br>x² + ${d}² = (x + ${h})²<br>x² + ${d*d} = x² + ${2*h}x + ${h*h}<br>${2*h}x = ${d*d-h*h}, x = <b>${N(x)} дм</b>.`,
+ explain2:`Главный трюк — x² слева и справа сокращаются, и уравнение становится линейным. Проверка: стебель ${N(x+h)}, ${N(x)}² + ${d}² = ${N(x*x+d*d)} = ${N(x+h)}² ✅.`};},{star:true});
+G(8,()=>{let a,b,c,best;for(;;){a=R(1,12);b=R(1,12);c=R(1,12);const v=[(a+b)**2+c*c,(a+c)**2+b*b,(b+c)**2+a*a];best=Math.min(...v);if(isInt(Math.sqrt(best))&&new Set(v).size>1&&!(a===b&&b===c))break;}
+ const s=Math.sqrt(best);const v3=[[`(${a} + ${b})² + ${c}²`,(a+b)**2+c*c],[`(${a} + ${c})² + ${b}²`,(a+c)**2+b*b],[`(${b} + ${c})² + ${a}²`,(b+c)**2+a*a]];
+ return {type:'num',q:`Муравей ползёт по поверхности коробки ${a} × ${b} × ${c} см из одного угла в противоположный (по диагонали коробки). Найди длину самого короткого пути (в см).`,ans:s,
+ hint:'Разверни две соседние грани в один прямоугольник: путь станет отрезком. Проверь разные развёртки.',short:`min из √(${v3.map(x=>x[1]).join('), √(')}) = √${best} = ${s}.`,
+ explain:`Путь по двум соседним граням — на развёртке это диагональ прямоугольника. Есть три варианта развёртки:<br>${v3.map(x=>`√(${x[0]}) = √${x[1]}`).join('<br>')}<br>Самый короткий — √${best} = <b>${s} см</b>.<div class="box err"><b>Ловушка</b>√(${a}² + ${b}² + ${c}²) = √${a*a+b*b+c*c} — диагональ «сквозь» коробку. Муравей так не может: он ползёт по поверхности.</div>`,
+ explain2:`Представь, что коробку разрезали и разложили на столе две грани рядом: получается прямоугольник со сторонами (сумма двух рёбер) и (третье ребро). Муравей идёт по прямой — по диагонали этого прямоугольника. Меньше всего выходит, когда складываются <b>два меньших</b> ребра, а большее остаётся отдельно: ${s}.`};},{star:true});
+G(8,()=>{const t=triple(40);const s=t.a+t.b;const S=t.a*t.b/2;
+ return {type:'num',q:`Сумма катетов прямоугольного треугольника ${s}, гипотенуза ${t.c}. Найди площадь треугольника, <b>не находя</b> катеты по отдельности.`,ans:S,
+ hint:'(a + b)² = a² + b² + 2ab, а a² + b² = c².',short:`2ab = ${s}² − ${t.c}² = ${s*s-t.c*t.c}; S = ab/2 = ${N(S)}.`,
+ explain:`(a + b)² = a² + 2ab + b² = c² + 2ab.<br>${s}² = ${t.c}² + 2ab → 2ab = ${s*s} − ${t.c*t.c} = ${s*s-t.c*t.c}.<br>S = ½ab = 2ab : 4 = ${s*s-t.c*t.c} : 4 = <b>${N(S)}</b>.`,
+ explain2:`Вспомни картинку доказательства: квадрат со стороной a + b = ${s} состоит из квадрата c² = ${t.c*t.c} и четырёх треугольников. На треугольники остаётся ${s*s} − ${t.c*t.c} = ${s*s-t.c*t.c}, на один — ${N(S)}. (Катеты, кстати, ${t.a} и ${t.b}.)`};},{star:true});
+G(8,()=>{const a=R(2,9),b=R(2,9),c=R(2,9);const n=a*a+c*c-b*b;if(n<=0)return null;
+ const ok=x1=>x1<Math.min(a,b)&&b*b-x1*x1<c*c;const xs=[];for(let x1=0.05;x1<Math.min(a,b)-0.05;x1+=0.05)if(ok(x1))xs.push(x1);if(xs.length<3)return null;
+ const x1=xs[Math.floor(xs.length/2)],y1=Math.sqrt(a*a-x1*x1),y2=Math.sqrt(b*b-x1*x1),x2=Math.sqrt(c*c-y2*y2);if(Math.min(x1,y1,y2,x2)<0.4)return null;
+ return RT(n,{q:`Точка P внутри прямоугольника ABCD: PA = ${a}, PB = ${b}, PC = ${c}. Найди PD.`,hint:'Опусти из P перпендикуляры на стороны и распиши PA², PB², PC², PD² по Пифагору.',
+ short:`PA² + PC² = PB² + PD²: PD² = ${a*a} + ${c*c} − ${b*b} = ${n}, PD = ${RS(n)}.`,
+ pic:geo({P:{A:[-x1,-y1],B:[-x1,y2],C:[x2,y2],D:[x2,-y1],P:[0,0]},poly:[['A','B','C','D']],seg:[['P','A',{dash:true}],['P','B',{dash:true}],['P','C',{dash:true}],['P','D',{dash:true,col:'var(--accent)'}]],dots:['P'],maxH:170,W:260}),
+ explain:`Проведём через P прямые, параллельные сторонам. Пусть расстояния от P до сторон AB, BC, CD, DA равны x, y, z, w. Тогда по Пифагору:<br>PA² = x² + w², PB² = x² + y², PC² = z² + y², PD² = z² + w².<br>Видно: PA² + PC² = PB² + PD² (в обеих суммах все четыре квадрата).<br>PD² = ${a}² + ${c}² − ${b}² = ${a*a} + ${c*c} − ${b*b} = ${n}, PD = <b>${RS(n)}</b>.`,
+ explain2:`Это «теорема британского флага»: суммы квадратов расстояний до противоположных вершин равны. Проверь на центре квадрата: все четыре расстояния одинаковые — равенство очевидно. А для нашей точки ${a*a} + ${c*c} = ${b*b} + PD², PD² = ${n}.`});},{star:true});
+G(8,()=>{const r=pick([5,10,13,15,17,25]);let cnt=0;const pts=[];for(let x=-r;x<=r;x++)for(let y=-r;y<=r;y++)if(x*x+y*y===r*r){cnt++;if(x>0&&y>0)pts.push(`(${x}; ${y})`);}
+ return {type:'num',q:`Сколько точек с <b>целыми</b> координатами лежит на расстоянии ровно ${r} от начала координат?`,ans:cnt,
+ hint:`Нужны целые x, y с x² + y² = ${r*r}. Не забудь точки на осях и все четыре четверти.`,short:`На осях 4 точки, в каждой четверти ${pts.length}: 4 + 4 · ${pts.length} = ${cnt}.`,
+ explain:`Расстояние от (x; y) до начала координат — √(x² + y²). Нужно x² + y² = ${r*r} в целых числах.<br>• На осях: (±${r}; 0), (0; ±${r}) — 4 точки.<br>• В первой четверти (x, y > 0): ${pts.join(', ')} — это пифагоровы тройки с гипотенузой ${r}, ${pts.length} шт.<br>• Каждая такая точка даёт по одной в каждой из 4 четвертей (меняем знаки).<br>Итого 4 + 4 · ${pts.length} = <b>${cnt}</b>.`,
+ explain2:`Ищем катеты для гипотенузы ${r}: перебери x от 1 до ${r-1} и проверь, является ли ${r*r} − x² полным квадратом. Нашлось ${pts.length} решений в первой четверти. Знаки + и − по каждой координате дают ×4, плюс 4 точки на осях.`};},{star:true});
+G(8,()=>{const w=pick([8,9,10,12,15,16,18,20]),h=R(3,w-1);const x=(w*w-h*h)/(2*w);const ce=w-x;if(!isInt(ce*10))return null;
+ return {type:'num',q:`Прямоугольный лист ABCD: AD = ${w}, AB = ${h}. Его согнули так, что вершина C совпала с вершиной A. Линия сгиба пересекает сторону BC в точке E. Найди CE.`,ans:ce,
+ pic:geo({P:{A:[0,0],B:[0,h],C:[w,h],D:[w,0],E:[x,h],F:[w-x,0]},lab:['A','B','C','D','E'],poly:[['A','B','C','D']],seg:[['E','F',{dash:true,col:'var(--accent)',sw:2.2}],['A','C',{dash:true,col:'var(--muted)'}],['A','E',{col:'var(--muted)'}]],dots:['E'],side:[['A','D',String(w)],['A','B',String(h)]],maxH:170,W:270}),
+ hint:'Точки линии сгиба одинаково удалены от A и C. Значит, EA = EC. Обозначь EC = x.',short:`x² = (${w} − x)² + ${h}² → x = ${N(ce)}.`,
+ explain:`При сгибе C попадает в A, поэтому каждая точка линии сгиба одинаково удалена от A и C: EA = EC = x. Тогда BE = ${w} − x.<br>Треугольник ABE прямоугольный (угол B): AE² = AB² + BE²:<br>x² = ${h}² + (${w} − x)² = ${h*h} + ${w*w} − ${2*w}x + x²<br>${2*w}x = ${h*h+w*w}, x = <b>${N(ce)}</b>.`,
+ explain2:`Проверка: BE = ${w} − ${N(ce)} = ${N(x)}. AE² = ${h}² + ${N(x)}² = ${N(h*h+x*x)}, CE² = ${N(ce)}² = ${N(ce*ce)} ✅ — равны. Приём тот же, что у бамбука: обозначь x, найди прямоугольный треугольник, x² сократится.`};},{star:true});
+
+/* =====================================================================
+   WIDGET
+   ===================================================================== */
+function onTheory(root){const w=root.querySelector('#w-pyth');if(!w)return;
+  w.innerHTML=`<label>a = <output id="wpa">3</output><input type="range" id="wpA" min="1" max="8" step="1" value="3"></label>
+<label>b = <output id="wpb">4</output><input type="range" id="wpB" min="1" max="8" step="1" value="4"></label>
+<div class="row" style="margin:6px 0"><button class="btn ghost" id="wpT">Переложить треугольники</button></div>
+<div id="wpS" style="display:flex;justify-content:center"></div><div id="wpO" class="small" style="text-align:center;margin-top:6px"></div>`;
+  let mode=1;const A=w.querySelector('#wpA'),B=w.querySelector('#wpB');
+  const draw=()=>{const a=+A.value,b=+B.value;w.querySelector('#wpa').textContent=a;w.querySelector('#wpb').textContent=b;w.querySelector('#wpS').innerHTML=proofSvg(a,b,mode,250);
+    const c2=a*a+b*b;w.querySelector('#wpO').innerHTML=mode===1?`Пустое место — квадрат на гипотенузе: <span class="out">c² = ${c2}</span>, c = ${RS(c2)}${isInt(Math.sqrt(c2))?'':' ≈ '+N(Math.round(Math.sqrt(c2)*100)/100)}`:`Пустое место — два квадрата: <span class="out">a² + b² = ${a*a} + ${b*b} = ${c2}</span>. Столько же, сколько c²!`;};
+  A.oninput=B.oninput=draw;w.querySelector('#wpT').onclick=()=>{mode=3-mode;draw();};draw();}
+
+window.TOPIC={id:'g8_pythagoras',title:'Теорема Пифагора',subtitle:'Геометрия · 8 класс',
+intro:`<p>Самая знаменитая теорема геометрии: c² = a² + b². Разберём, что она значит, почему она верна (с живой картинкой-доказательством), обратную теорему, пифагоровы тройки, диагонали, высоты треугольников и расстояния на клетчатой сетке. В конце — старинные и олимпиадные задачи.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Гипотенуза по двум катетам','Как найти катет','Доказательство через площади','Обратная теорема и тройки','Диагонали и корни','Равнобедренный и равносторонний','Расстояние на сетке','Пифагор в жизни','★ Олимпиадные и старинные задачи'],
+gens};
+})();

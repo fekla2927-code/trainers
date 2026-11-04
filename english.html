@@ -160,6 +160,8 @@ pre.code.sol{background:var(--ok-soft)}
 .nudge-wrap{padding-top:14px;padding-bottom:0}.nudge-wrap+main{padding-top:0}
 .nudge{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--hl);border-radius:14px;padding:12px 16px;margin:0 0 14px;box-shadow:var(--shadow)}
 .nudge-t{flex:1 1 280px;line-height:1.5;font-size:15px}.nudge-b{flex:0 0 auto}
+
+.tts-hint{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;max-width:min(520px,calc(100vw - 32px));background:var(--card);color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--hl);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);line-height:1.5;font-size:15px}.tts-hint .btn{margin-top:10px}
 .gaps-text{font-size:20px;line-height:2.3}
 select.gap{font:inherit;font-size:18px;font-weight:600;padding:2px 6px;margin:0 2px;border-radius:8px;border:2px dashed var(--accent);background:var(--accent-soft);color:var(--accent-ink);min-width:44px;-webkit-appearance:menulist;appearance:menulist}
 select.gap.filled{border-style:solid}
@@ -187,8 +189,180 @@ textarea#ans{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px
 .say{color:var(--accent-ink);cursor:pointer;border-bottom:1px dashed currentColor}
 .say::after{content:" 🔊";font-size:.85em}
 .tr{font-family:"Lucida Sans Unicode","Arial Unicode MS","Segoe UI",sans-serif;color:var(--muted)}
+/* ===== игровой слой ===== */
+:root{--r-c:#7b8494;--r-r:#2f7bf0;--r-e:#9b4de0;--r-l:#e09a12}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--r-c:#a3abb8;--r-r:#6aa8ff;--r-e:#c08cff;--r-l:#ffc24d}}
+:root[data-theme="dark"]{--r-c:#a3abb8;--r-r:#6aa8ff;--r-e:#c08cff;--r-l:#ffc24d}
+/* цвет сайта из магазина */
+:root[data-accent="lime"]{--accent:#2e7d32;--accent-soft:#e3f3e4;--accent-ink:#1b5e20}
+:root[data-accent="violet"]{--accent:#7c3aed;--accent-soft:#efe7fd;--accent-ink:#5b21b6}
+:root[data-accent="sunset"]{--accent:#d9480f;--accent-soft:#fdeadf;--accent-ink:#9a3412}
+:root[data-accent="rose"]{--accent:#c2255c;--accent-soft:#fbe4ec;--accent-ink:#9d174d}
+@media (prefers-color-scheme: dark){
+ :root:not([data-theme="light"])[data-accent="lime"]{--accent:#81c784;--accent-soft:#1d3320;--accent-ink:#b5e3b7}
+ :root:not([data-theme="light"])[data-accent="violet"]{--accent:#b69cff;--accent-soft:#2c2347;--accent-ink:#d8cbff}
+ :root:not([data-theme="light"])[data-accent="sunset"]{--accent:#ffa36b;--accent-soft:#3b2518;--accent-ink:#ffcfae}
+ :root:not([data-theme="light"])[data-accent="rose"]{--accent:#f58cb3;--accent-soft:#3b1d29;--accent-ink:#ffc2d8}
+}
+:root[data-theme="dark"][data-accent="lime"]{--accent:#81c784;--accent-soft:#1d3320;--accent-ink:#b5e3b7}
+:root[data-theme="dark"][data-accent="violet"]{--accent:#b69cff;--accent-soft:#2c2347;--accent-ink:#d8cbff}
+:root[data-theme="dark"][data-accent="sunset"]{--accent:#ffa36b;--accent-soft:#3b2518;--accent-ink:#ffcfae}
+:root[data-theme="dark"][data-accent="rose"]{--accent:#f58cb3;--accent-soft:#3b1d29;--accent-ink:#ffc2d8}
+
+/* чип в шапке */
+.gm-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:3px 10px 3px 3px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.gm-chip:hover{border-color:var(--accent)}
+.gm-c-lv{color:var(--accent-ink)}.gm-c-st.off{opacity:.45;filter:grayscale(1)}
+.gm-homes{display:flex;gap:4px 14px;flex-wrap:wrap;align-items:center;margin-bottom:2px}
+.gm-chip.sm{font-size:13px;padding:1px 9px 1px 2px;gap:5px}.gm-chip.sm .gm-av{width:24px;height:24px;font-size:15px}
+.gm-homes a.home{display:inline-block}
+/* аватар и рамки */
+.gm-av{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);font-size:18px;line-height:1;flex:none;position:relative}
+.gm-av>span{display:block}
+.gm-av.big{width:64px;height:64px;font-size:38px}
+.gm-av.fr-silver{box-shadow:0 0 0 3px #b8c0cc}
+.gm-av.fr-gold{box-shadow:0 0 0 3px #e6b422,0 0 10px 1px rgba(230,180,34,.45)}
+.gm-av.fr-neon{box-shadow:0 0 0 3px #00d9ff,0 0 12px 2px rgba(0,217,255,.55)}
+.gm-av.fr-fire{box-shadow:0 0 0 3px #ff6a00,0 0 12px 3px rgba(255,80,0,.5)}
+.gm-av.fr-rainbow{background:conic-gradient(#ff4d4d,#ffb84d,#ffee4d,#4dff88,#4dd2ff,#9b6bff,#ff4d4d);padding:3px}
+.gm-av.fr-rainbow>span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:var(--accent-soft)}
+.gm-name{font-weight:800;font-size:22px;line-height:1.2}
+.gm-name.nc-sky{color:#1d7fd6}.gm-name.nc-mint{color:#0f9b77}.gm-name.nc-violet{color:#8b3fe0}.gm-name.nc-sun{color:#d97706}
+.gm-name.nc-rainbow{background:linear-gradient(90deg,#e5484d,#f59e0b,#16a34a,#0ea5e9,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gm-name.nc-sky{color:#6cb8ff}:root:not([data-theme="light"]) .gm-name.nc-mint{color:#5fe0b8}:root:not([data-theme="light"]) .gm-name.nc-violet{color:#c79bff}:root:not([data-theme="light"]) .gm-name.nc-sun{color:#ffc44d}}
+:root[data-theme="dark"] .gm-name.nc-sky{color:#6cb8ff}:root[data-theme="dark"] .gm-name.nc-mint{color:#5fe0b8}:root[data-theme="dark"] .gm-name.nc-violet{color:#c79bff}:root[data-theme="dark"] .gm-name.nc-sun{color:#ffc44d}
+.gm-title{font-size:14px;font-weight:600;color:var(--warn);margin-top:1px}
+
+/* панель персонажа */
+.gm-panel{position:fixed;z-index:60;top:72px;right:max(12px,env(safe-area-inset-right,0px));width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 160px);overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.22)}
+.gm-x{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-size:15px}
+.gm-p-head{display:flex;gap:12px;align-items:center;margin-bottom:10px;padding-right:30px}
+.gm-p-row{display:flex;justify-content:space-between;gap:12px;margin:10px 0}
+.gm-panel h4{margin:12px 0 4px;font-size:16px}
+.gm-p-btns{display:flex;flex-direction:column;gap:8px;margin-top:12px}.gm-p-btns .btn{justify-content:center;text-decoration:none}
+.gm-bar .progress{height:10px}
+/* задания дня */
+.gm-qs{list-style:none;padding:0;margin:6px 0}
+.gm-qs li{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}
+.gm-qs li:last-child{border-bottom:0}
+.gm-q-t{flex:1;min-width:0}.gm-q-t .progress{height:6px;margin:4px 0 0}
+.gm-q-r{flex:none;text-align:right;font-weight:700;font-size:14px}.gm-q-r small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.gm-qs li.ok .gm-q-t{color:var(--muted)}.gm-qs li.ok .progress i{background:var(--ok)}
+
+/* «Мой персонаж» */
+.gm-char{border:2px solid var(--accent);scroll-margin-top:16px}
+.gm-ch-top{display:flex;gap:16px;align-items:center}
+.gm-ch-id{flex:1;min-width:0}.gm-ch-lv{font-size:17px;margin-top:2px}
+.gm-xpbar{height:12px}
+.gm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.gm-stats>div{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.gm-stats b{display:block;font-size:20px}.gm-stats span{font-size:12.5px;color:var(--muted);line-height:1.3;display:block}
+@media (max-width:560px){.gm-stats{grid-template-columns:repeat(2,1fr)}}
+.gm-rev-btn{width:100%;justify-content:center;font-size:19px;padding:15px 18px;text-decoration:none;flex-wrap:wrap}
+.gm-rev-n{background:rgba(255,255,255,.22);border-radius:99px;padding:1px 10px;font-size:15px}
+.gm-char h3{margin:18px 0 4px}
+.gm-bd summary{list-style:none;cursor:pointer}.gm-bd summary::-webkit-details-marker{display:none}
+.gm-bd summary h3::after{content:" ▾";color:var(--muted);font-size:14px}
+/* ачивки — карточки с редкостью */
+.gm-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:8px;margin-top:8px}
+.gm-b{--rc:var(--r-c);border:1.5px solid color-mix(in srgb,var(--rc) 55%,transparent);border-radius:12px;padding:8px;text-align:center;background:color-mix(in srgb,var(--rc) 9%,var(--card));min-width:0}
+.gm-b.rar-r{--rc:var(--r-r)}.gm-b.rar-e{--rc:var(--r-e)}.gm-b.rar-l{--rc:var(--r-l)}
+.gm-b-ic{width:46px;height:46px;margin:0 auto 4px;border-radius:12px;display:grid;place-items:center;font-size:26px;background:color-mix(in srgb,var(--rc) 22%,var(--card));border:2px solid var(--rc)}
+.gm-b-n{font-weight:700;font-size:13.5px;line-height:1.25}
+.gm-b-r{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--rc);font-weight:700;margin-top:2px}
+.gm-b-d{font-size:11.5px;color:var(--muted);line-height:1.3;margin-top:2px}
+.gm-b.locked{filter:grayscale(1);opacity:.55;background:var(--card)}
+.gm-b.locked .gm-b-ic{background:var(--bg)}
+
+/* карта миров */
+.gm-worlds{scroll-margin-top:16px}
+.gm-world{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0;background:var(--bg)}
+.gm-w-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.gm-w-h .gm-w-ic{display:inline-grid;place-items:center;min-width:32px;height:32px;border-radius:10px;background:var(--accent-soft);color:var(--accent-ink);font-size:16px;padding:0 5px}
+.gm-w-h .small{margin-left:auto}
+.gm-path{display:flex;align-items:center;flex-wrap:wrap;row-gap:10px}
+.gm-node{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:2.5px solid var(--line);background:var(--card);color:var(--muted);font-weight:700;font-size:15px;text-decoration:none}
+.gm-node.done{border-color:var(--ok);background:var(--ok-soft);font-size:16px}
+.gm-node.next{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft);animation:gmPulse 1.6s ease-in-out infinite}
+.gm-node.boss{width:46px;height:46px;font-size:22px;border-radius:14px}
+.gm-node.boss.locked{opacity:.6}
+.gm-node.boss.next{border-color:var(--hl);background:var(--warn-soft)}
+.gm-link{flex:none;width:12px;height:4px;border-radius:2px;background:var(--line)}
+.gm-link.on{background:var(--ok)}
+.gm-w-next{margin-top:8px}.gm-w-next a{color:var(--accent-ink)}
+.gm-more summary{cursor:pointer;color:var(--accent-ink);font-weight:600;margin-top:8px}
+@keyframes gmPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent);transform:scale(1)}50%{box-shadow:0 0 0 8px transparent;transform:scale(1.08)}}
+
+/* магазин */
+.gm-preview{display:flex;gap:14px;align-items:center;padding:12px;border:1px dashed var(--line);border-radius:14px;margin:8px 0}
+.gm-shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.gm-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer;min-width:0}
+.gm-item:hover:not(:disabled){border-color:var(--accent)}
+.gm-item.on{border-color:var(--ok);background:var(--ok-soft)}
+.gm-item.lock{opacity:.55;cursor:default}
+.gm-s-av{font-size:32px;line-height:1.1}
+.gm-s-n{font-size:13px;font-weight:600}
+.gm-s-ti{font-size:13px;font-weight:700;color:var(--warn);text-align:center;line-height:1.25;min-height:2.5em;display:grid;place-items:center}
+.gm-s-p{font-size:12.5px;color:var(--muted);font-weight:600}
+.gm-item.on .gm-s-p{color:var(--ok)}
+.gm-sw{width:44px;height:28px;border-radius:8px;display:block;background:#3d5afe}
+.gm-sw[data-acc="lime"]{background:#2e7d32}.gm-sw[data-acc="violet"]{background:#7c3aed}.gm-sw[data-acc="sunset"]{background:#d9480f}.gm-sw[data-acc="rose"]{background:#c2255c}
+
+/* тосты */
+.gm-toasts{position:fixed;z-index:70;top:calc(env(safe-area-inset-top,0px) + 66px);right:max(12px,env(safe-area-inset-right,0px));width:min(340px,calc(100vw - 24px));display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.gm-toast{display:flex;gap:10px;align-items:center;background:var(--card);color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:14px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.18);opacity:0;transform:translateX(30px) scale(.96);transition:opacity .3s,transform .35s cubic-bezier(.2,1.4,.4,1)}
+.gm-toast.in{opacity:1;transform:none}.gm-toast.out{opacity:0;transform:translateX(20px)}
+.gm-toast.streak{border-left-color:#ff7a1a}.gm-toast.quest{border-left-color:var(--ok)}
+.gm-toast.badge{--rc:var(--r-c);border-left-color:var(--rc)}.gm-toast.rar-r{--rc:var(--r-r)}.gm-toast.rar-e{--rc:var(--r-e)}.gm-toast.rar-l{--rc:var(--r-l)}
+.gm-t-ic{flex:none;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:24px;background:var(--accent-soft)}
+.gm-toast.badge .gm-t-ic{background:color-mix(in srgb,var(--rc) 20%,var(--card));border:2px solid var(--rc)}
+.gm-toast.badge.in .gm-t-ic{animation:gmPop .6s ease-out}
+.gm-t-tx{min-width:0;line-height:1.3}.gm-t-tx b{display:block;font-size:15px}.gm-t-tx span{display:block;font-size:13px;color:var(--muted)}
+.gm-xp{position:fixed;z-index:71;top:calc(env(safe-area-inset-top,0px) + 70px);left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-weight:800;font-size:16px;border-radius:999px;padding:5px 14px;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.18);animation:gmFloat 1.3s ease-out forwards;white-space:nowrap}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gm-xp{color:#111}}
+:root[data-theme="dark"] .gm-xp{color:#111}
+@keyframes gmFloat{0%{opacity:0;transform:translate(-50%,10px) scale(.8)}15%{opacity:1;transform:translate(-50%,0) scale(1.08)}30%{transform:translate(-50%,0) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-24px)}}
+@keyframes gmPop{0%{transform:scale(.4) rotate(-20deg)}60%{transform:scale(1.2) rotate(6deg)}100%{transform:none}}
+/* новый уровень */
+.gm-lvlup{position:fixed;inset:0;z-index:80;display:grid;place-items:center;pointer-events:none;padding:16px}
+.gm-lu-card{background:var(--card);color:var(--ink);border:3px solid var(--hl);border-radius:24px;padding:22px 34px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,.3);opacity:0;transform:scale(.6);transition:opacity .3s,transform .5s cubic-bezier(.2,1.6,.4,1)}
+.gm-lvlup.in .gm-lu-card{opacity:1;transform:none}.gm-lvlup.out .gm-lu-card{opacity:0;transform:scale(.9)}
+.gm-lu-sm{font-size:13px;font-weight:800;letter-spacing:.14em;color:var(--warn)}
+.gm-lu-ic{font-size:64px;line-height:1.1;margin:6px 0}
+.gm-lvlup.in .gm-lu-ic{animation:gmPop .8s ease-out}
+.gm-lu-n{font-size:16px;color:var(--muted);font-weight:700}.gm-lu-name{font-size:32px;font-weight:900;color:var(--accent-ink)}
+.gm-lu-next{font-size:14px;color:var(--muted);margin-top:4px}
+/* конфетти */
+.gm-confetti{position:fixed;inset:0;z-index:79;pointer-events:none;overflow:hidden}
+.gm-confetti i{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;animation:gmFall 2s ease-in forwards}
+@keyframes gmFall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--dx),105vh) rotate(var(--r));opacity:.9}}
+@media (prefers-reduced-motion: reduce){
+ .gm-node.next{animation:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 40%,transparent)}
+ .gm-toast,.gm-lu-card{transition:none;transform:none}
+ .gm-xp{animation:none;opacity:1}
+ .gm-toast.badge.in .gm-t-ic,.gm-lvlup.in .gm-lu-ic{animation:none}
+}
+/* родитель */
+.gm-par{border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.gm-week{display:flex;gap:6px;align-items:flex-end;height:70px;margin:10px 0 2px}
+.gm-week>div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.gm-week i{display:block;width:100%;max-width:34px;background:var(--line);border-radius:4px 4px 0 0;min-height:2px}
+.gm-week i.ok{background:var(--ok)}.gm-week span{font-size:11px;color:var(--muted)}
+.gm-par-b{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.gm-chipb{--rc:var(--r-c);font-size:13px;border:1.5px solid var(--rc);border-radius:99px;padding:2px 9px;background:color-mix(in srgb,var(--rc) 10%,var(--card))}
+.gm-chipb.rar-r{--rc:var(--r-r)}.gm-chipb.rar-e{--rc:var(--r-e)}.gm-chipb.rar-l{--rc:var(--r-l)}
+/* Повторялка */
+.rv-hero h1{margin-top:0}
+.rv-boxes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.rv-box{border:1.5px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center;background:var(--bg)}
+.rv-box:nth-child(2){border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}.rv-box:nth-child(3){border-color:color-mix(in srgb,var(--accent) 50%,var(--line))}
+.rv-box:nth-child(4){border-color:color-mix(in srgb,var(--ok) 60%,var(--line))}.rv-box:nth-child(5){border-color:var(--ok);background:var(--ok-soft)}
+.rv-bx-n{font-size:24px;font-weight:800;color:var(--accent-ink)}.rv-bx-l{font-weight:700;font-size:14px}.rv-bx-i{font-size:12px;color:var(--muted);line-height:1.25}
+.rv-tm{font-size:19px}
+.rv-done .score{margin:0}
 </style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Тренажёры"><meta name="theme-color" content="#3d5afe"></head>
 <body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>window.GAME_MAP={"ids": ["a7_divisibility", "a7_factoring", "a7_func_linear", "a7_lin_eq", "a7_modulus", "a7_polynomials", "a7_powers", "a7_systems", "a7_word_problems", "a8_inequalities", "a8_int_powers", "a8_quad_param", "a8_quadratic", "a8_rational_eq", "a8_vieta", "c8_atom_structure", "c8_atoms", "c8_bonds", "c8_calc", "c8_classes", "c8_formulas", "c8_mole", "c8_reactions", "c8_solutions", "c8_substances", "chetyrehugolniki", "dispersiya", "drobi", "fsu", "g7_angle_sum", "g7_angles", "g7_basics", "g7_circle", "g7_isosceles", "g7_parallel", "g7_right_tri", "g7_triangles_eq", "g8_midline", "g8_pythagoras", "g8_similarity", "giperbola", "i_algorithms", "i_first_program", "i_for", "i_functions", "i_if", "i_lists", "i_neural", "i_oge", "i_strings", "i_variables", "i_while", "korni", "m5_decimals", "m6_circle", "m6_coordinates", "m6_divisibility", "m6_equations", "m6_fractions", "m6_logic", "m6_negative", "m6_olymp", "m6_percent", "m6_proportions", "mnozhestva", "p7_archimedes", "p7_density", "p7_forces", "p7_matter", "p7_measure", "p7_motion", "p7_pressure", "p7_work_energy", "p8_charge", "p8_circuits", "p8_current", "p8_heat", "p8_light", "p8_magnet", "p8_phase", "p8_power", "ploshchad", "s7_data", "s7_graphs", "s7_median", "s7_prob_intro", "s8_events", "s8_prob", "s8_trees", "s9_bernoulli", "s9_comb", "s9_geom_prob", "srednee", "vyrazheniya"], "worlds": [{"id": "Математика:5", "title": "Математика · 5 класс", "icon": "½", "grade": 5, "boss": "star", "stages": [{"id": "m5_decimals", "title": "Десятичные дроби"}]}, {"id": "Математика:6", "title": "Математика · 6 класс", "icon": "½", "grade": 6, "boss": "star", "stages": [{"id": "m6_divisibility", "title": "Делимость чисел"}, {"id": "m6_fractions", "title": "Обыкновенные дроби"}, {"id": "m6_proportions", "title": "Отношения и пропорции"}, {"id": "m6_percent", "title": "Проценты"}, {"id": "m6_negative", "title": "Положительные и отрицательные числа"}, {"id": "m6_equations", "title": "Уравнения и выражения"}, {"id": "m6_coordinates", "title": "Координатная плоскость"}, {"id": "m6_circle", "title": "Окружность и круг"}, {"id": "m6_logic", "title": "Логика и смекалка"}, {"id": "m6_olymp", "title": "Олимпиадная математика 6 класса"}]}, {"id": "Программирование:None", "title": "Программирование", "icon": "</>", "grade": null, "boss": "star", "stages": [{"id": "i_first_program", "title": "1. Первая программа"}, {"id": "i_variables", "title": "2. Переменные и ввод"}, {"id": "i_if", "title": "3. Условия"}, {"id": "i_for", "title": "4. Цикл for"}, {"id": "i_while", "title": "5. Цикл while"}, {"id": "i_strings", "title": "6. Строки"}, {"id": "i_lists", "title": "7. Списки"}, {"id": "i_functions", "title": "8. Функции"}, {"id": "i_algorithms", "title": "9. Алгоритмы"}, {"id": "i_oge", "title": "10. Задачи ОГЭ и олимпиад"}, {"id": "i_neural", "title": "11. Как работают нейросети"}]}, {"id": "Алгебра:7", "title": "Алгебра · 7 класс", "icon": "𝑥", "grade": 7, "boss": "star", "stages": [{"id": "vyrazheniya", "title": "Преобразование выражений"}, {"id": "a7_lin_eq", "title": "Линейные уравнения"}, {"id": "a7_word_problems", "title": "Текстовые задачи: составляем уравнение"}, {"id": "a7_func_linear", "title": "Функции. Линейная функция"}, {"id": "a7_powers", "title": "Степень с натуральным показателем"}, {"id": "a7_polynomials", "title": "Одночлены и многочлены"}, {"id": "fsu", "title": "Формулы сокращённого умножения"}, {"id": "a7_factoring", "title": "Разложение на множители"}, {"id": "a7_systems", "title": "Системы линейных уравнений"}, {"id": "a7_divisibility", "title": "Делимость и остатки"}, {"id": "a7_modulus", "title": "Модуль числа"}]}, {"id": "Алгебра:8", "title": "Алгебра · 8 класс", "icon": "𝑥", "grade": 8, "boss": "star", "stages": [{"id": "korni", "title": "Квадратные корни"}, {"id": "drobi", "title": "Рациональные дроби"}, {"id": "giperbola", "title": "Функция y = k/x. Гипербола"}, {"id": "a8_quadratic", "title": "Квадратные уравнения"}, {"id": "a8_vieta", "title": "Теорема Виета"}, {"id": "a8_quad_param", "title": "Квадратные уравнения с параметром"}, {"id": "a8_rational_eq", "title": "Дробно-рациональные уравнения"}, {"id": "a8_inequalities", "title": "Неравенства"}, {"id": "a8_int_powers", "title": "Степень с целым показателем"}]}, {"id": "Геометрия:7", "title": "Геометрия · 7 класс", "icon": "△", "grade": 7, "boss": "star", "stages": [{"id": "g7_basics", "title": "Точки, прямые, отрезки, углы"}, {"id": "g7_angles", "title": "Смежные и вертикальные углы"}, {"id": "g7_triangles_eq", "title": "Признаки равенства треугольников"}, {"id": "g7_isosceles", "title": "Равнобедренный треугольник"}, {"id": "g7_parallel", "title": "Параллельные прямые"}, {"id": "g7_angle_sum", "title": "Сумма углов треугольника"}, {"id": "g7_right_tri", "title": "Прямоугольный треугольник"}, {"id": "g7_circle", "title": "Окружность и построения"}]}, {"id": "Геометрия:8", "title": "Геометрия · 8 класс", "icon": "△", "grade": 8, "boss": "star", "stages": [{"id": "chetyrehugolniki", "title": "Четырёхугольники"}, {"id": "ploshchad", "title": "Площадь"}, {"id": "g8_pythagoras", "title": "Теорема Пифагора"}, {"id": "g8_similarity", "title": "Подобные треугольники"}, {"id": "g8_midline", "title": "Средняя линия и теорема Фалеса"}]}, {"id": "Вероятность и статистика:7", "title": "Вероятность и статистика · 7 класс", "icon": "🎲", "grade": 7, "boss": "star", "stages": [{"id": "s7_data", "title": "Таблицы и диаграммы"}, {"id": "srednee", "title": "Среднее, минимум, максимум, размах"}, {"id": "s7_median", "title": "Медиана и мода"}, {"id": "s7_graphs", "title": "Графы"}, {"id": "s7_prob_intro", "title": "Случайные опыты и частота"}]}, {"id": "Вероятность и статистика:8", "title": "Вероятность и статистика · 8 класс", "icon": "🎲", "grade": 8, "boss": "star", "stages": [{"id": "mnozhestva", "title": "Множества"}, {"id": "dispersiya", "title": "Дисперсия и рассеивание"}, {"id": "s8_prob", "title": "Вероятность случайного события"}, {"id": "s8_events", "title": "Сложение и умножение вероятностей"}, {"id": "s8_trees", "title": "Деревья и дерево эксперимента"}]}, {"id": "Вероятность и статистика:9", "title": "Вероятность и статистика · 9 класс", "icon": "🎲", "grade": 9, "boss": "star", "stages": [{"id": "s9_comb", "title": "Комбинаторика"}, {"id": "s9_geom_prob", "title": "Геометрическая вероятность"}, {"id": "s9_bernoulli", "title": "Испытания Бернулли"}]}, {"id": "Физика:7", "title": "Физика · 7 класс", "icon": "⚡", "grade": 7, "boss": "star", "stages": [{"id": "p7_measure", "title": "Физические величины и измерения"}, {"id": "p7_matter", "title": "Строение вещества"}, {"id": "p7_motion", "title": "Механическое движение"}, {"id": "p7_density", "title": "Масса и плотность"}, {"id": "p7_forces", "title": "Силы"}, {"id": "p7_pressure", "title": "Давление"}, {"id": "p7_archimedes", "title": "Сила Архимеда и плавание"}, {"id": "p7_work_energy", "title": "Работа, мощность, энергия"}]}, {"id": "Физика:8", "title": "Физика · 8 класс", "icon": "⚡", "grade": 8, "boss": "star", "stages": [{"id": "p8_heat", "title": "Теплота"}, {"id": "p8_phase", "title": "Агрегатные превращения"}, {"id": "p8_charge", "title": "Электрический заряд"}, {"id": "p8_current", "title": "Ток, напряжение, сопротивление"}, {"id": "p8_circuits", "title": "Электрические цепи"}, {"id": "p8_power", "title": "Работа и мощность тока"}, {"id": "p8_magnet", "title": "Магнитные явления"}, {"id": "p8_light", "title": "Световые явления"}]}, {"id": "Химия:8", "title": "Химия · 8 класс", "icon": "⚗️", "grade": 8, "boss": "star", "stages": [{"id": "c8_substances", "title": "Вещества и явления"}, {"id": "c8_atoms", "title": "Атомы и Периодическая система"}, {"id": "c8_atom_structure", "title": "Строение атома"}, {"id": "c8_bonds", "title": "Химическая связь"}, {"id": "c8_formulas", "title": "Формулы и валентность"}, {"id": "c8_mole", "title": "Количество вещества"}, {"id": "c8_reactions", "title": "Химические уравнения"}, {"id": "c8_classes", "title": "Классы неорганических веществ"}, {"id": "c8_solutions", "title": "Растворы"}, {"id": "c8_calc", "title": "Расчёты по уравнениям"}]}, {"id": "rus", "title": "Русский язык", "icon": "Аа", "grade": null, "boss": "rules", "stages": [{"id": "russkiy:5", "title": "5 класс", "page": "russkiy"}, {"id": "russkiy:6", "title": "6 класс", "page": "russkiy"}, {"id": "russkiy:7", "title": "7 класс", "page": "russkiy"}, {"id": "russkiy:8", "title": "8 класс", "page": "russkiy"}, {"id": "russkiy:9", "title": "9 класс", "page": "russkiy"}]}, {"id": "eng", "title": "Английский язык", "icon": "Ee", "grade": null, "boss": "rules", "stages": [{"id": "english:S", "title": "Старт", "page": "english"}, {"id": "english:P", "title": "2–4 класс", "page": "english"}, {"id": "english:5", "title": "5 класс", "page": "english"}, {"id": "english:6", "title": "6 класс", "page": "english"}, {"id": "english:7", "title": "7 класс", "page": "english"}, {"id": "english:8", "title": "8 класс", "page": "english"}, {"id": "english:9", "title": "9 класс", "page": "english"}]}], "focus": {"Артём": [7, 8, 9], "Павел": [5, 6]}, "titles": {"vyrazheniya": "Преобразование выражений", "a7_lin_eq": "Линейные уравнения", "a7_word_problems": "Текстовые задачи: составляем уравнение", "a7_func_linear": "Функции. Линейная функция", "a7_powers": "Степень с натуральным показателем", "a7_polynomials": "Одночлены и многочлены", "fsu": "Формулы сокращённого умножения", "a7_factoring": "Разложение на множители", "a7_systems": "Системы линейных уравнений", "a7_divisibility": "Делимость и остатки", "a7_modulus": "Модуль числа", "korni": "Квадратные корни", "drobi": "Рациональные дроби", "giperbola": "Функция y = k/x. Гипербола", "a8_quadratic": "Квадратные уравнения", "a8_vieta": "Теорема Виета", "a8_quad_param": "Квадратные уравнения с параметром", "a8_rational_eq": "Дробно-рациональные уравнения", "a8_inequalities": "Неравенства", "a8_int_powers": "Степень с целым показателем", "a9_functions": "Функции и их свойства", "a9_parabola": "Квадратичная функция", "a9_quad_ineq": "Неравенства второй степени", "a9_systems2": "Системы уравнений второй степени", "a9_arith_prog": "Арифметическая прогрессия", "a9_geom_prog": "Геометрическая прогрессия", "a9_nth_root": "Корень n-й степени", "a9_text_problems": "Сложные текстовые задачи", "g7_basics": "Точки, прямые, отрезки, углы", "g7_angles": "Смежные и вертикальные углы", "g7_triangles_eq": "Признаки равенства треугольников", "g7_isosceles": "Равнобедренный треугольник", "g7_parallel": "Параллельные прямые", "g7_angle_sum": "Сумма углов треугольника", "g7_right_tri": "Прямоугольный треугольник", "g7_circle": "Окружность и построения", "chetyrehugolniki": "Четырёхугольники", "ploshchad": "Площадь", "g8_pythagoras": "Теорема Пифагора", "g8_similarity": "Подобные треугольники", "g8_midline": "Средняя линия и теорема Фалеса", "g8_trig": "Синус, косинус, тангенс", "g8_circle": "Вписанные углы и окружности", "g9_vectors": "Векторы", "g9_coords": "Метод координат", "g9_sin_cos_theorems": "Теоремы синусов и косинусов", "g9_polygons_circle": "Правильные многоугольники и круг", "g9_motions": "Движения", "s7_data": "Таблицы и диаграммы", "srednee": "Среднее, минимум, максимум, размах", "s7_median": "Медиана и мода", "s7_graphs": "Графы", "s7_prob_intro": "Случайные опыты и частота", "mnozhestva": "Множества", "dispersiya": "Дисперсия и рассеивание", "s8_prob": "Вероятность случайного события", "s8_events": "Сложение и умножение вероятностей", "s8_trees": "Деревья и дерево эксперимента", "s9_comb": "Комбинаторика", "s9_geom_prob": "Геометрическая вероятность", "s9_bernoulli": "Испытания Бернулли", "s9_random_var": "Случайная величина", "p7_measure": "Физические величины и измерения", "p7_matter": "Строение вещества", "p7_motion": "Механическое движение", "p7_density": "Масса и плотность", "p7_forces": "Силы", "p7_pressure": "Давление", "p7_archimedes": "Сила Архимеда и плавание", "p7_work_energy": "Работа, мощность, энергия", "p8_heat": "Теплота", "p8_phase": "Агрегатные превращения", "p8_charge": "Электрический заряд", "p8_current": "Ток, напряжение, сопротивление", "p8_circuits": "Электрические цепи", "p8_power": "Работа и мощность тока", "p8_magnet": "Магнитные явления", "p8_light": "Световые явления", "p9_kinematics": "Равноускоренное движение", "p9_curve": "Движение по окружности", "p9_newton": "Законы Ньютона", "p9_momentum": "Импульс", "p9_energy": "Механическая энергия", "p9_waves": "Колебания, волны, звук", "p9_em": "Электромагнитное поле", "p9_nuclear": "Атом и ядро", "c8_substances": "Вещества и явления", "c8_atoms": "Атомы и Периодическая система", "c8_atom_structure": "Строение атома", "c8_bonds": "Химическая связь", "c8_formulas": "Формулы и валентность", "c8_mole": "Количество вещества", "c8_reactions": "Химические уравнения", "c8_classes": "Классы неорганических веществ", "c8_solutions": "Растворы", "c8_calc": "Расчёты по уравнениям", "c9_ed": "Электролитическая диссоциация", "c9_ionic": "Ионные уравнения", "c9_redox": "Окислительно-восстановительные реакции", "c9_halogens": "Галогены", "c9_nonmetals": "Неметаллы", "c9_metals": "Металлы", "c9_organic": "Начала органической химии", "russkiy": "Русский язык 5–9", "english": "Английский язык", "m5_decimals": "Десятичные дроби", "m6_divisibility": "Делимость чисел", "m6_fractions": "Обыкновенные дроби", "m6_proportions": "Отношения и пропорции", "m6_percent": "Проценты", "m6_negative": "Положительные и отрицательные числа", "m6_equations": "Уравнения и выражения", "m6_coordinates": "Координатная плоскость", "m6_circle": "Окружность и круг", "m6_logic": "Логика и смекалка", "m6_olymp": "Олимпиадная математика 6 класса", "i_first_program": "1. Первая программа", "i_variables": "2. Переменные и ввод", "i_if": "3. Условия", "i_for": "4. Цикл for", "i_while": "5. Цикл while", "i_strings": "6. Строки", "i_lists": "7. Списки", "i_functions": "8. Функции", "i_algorithms": "9. Алгоритмы", "i_oge": "10. Задачи ОГЭ и олимпиад", "i_neural": "11. Как работают нейросети", "i7_info": "Информация и её измерение", "i7_media": "Кодирование картинок и звука", "i8_numbers": "Системы счисления", "i8_logic": "Логика", "i8_executors": "Алгоритмы и исполнители", "i9_graphs": "Графы и пути", "i9_spreadsheets": "Электронные таблицы", "i9_files_net": "Файлы и интернет"}, "subj": {"vyrazheniya": "Алгебра", "a7_lin_eq": "Алгебра", "a7_word_problems": "Алгебра", "a7_func_linear": "Алгебра", "a7_powers": "Алгебра", "a7_polynomials": "Алгебра", "fsu": "Алгебра", "a7_factoring": "Алгебра", "a7_systems": "Алгебра", "a7_divisibility": "Алгебра", "a7_modulus": "Алгебра", "korni": "Алгебра", "drobi": "Алгебра", "giperbola": "Алгебра", "a8_quadratic": "Алгебра", "a8_vieta": "Алгебра", "a8_quad_param": "Алгебра", "a8_rational_eq": "Алгебра", "a8_inequalities": "Алгебра", "a8_int_powers": "Алгебра", "a9_functions": "Алгебра", "a9_parabola": "Алгебра", "a9_quad_ineq": "Алгебра", "a9_systems2": "Алгебра", "a9_arith_prog": "Алгебра", "a9_geom_prog": "Алгебра", "a9_nth_root": "Алгебра", "a9_text_problems": "Алгебра", "g7_basics": "Геометрия", "g7_angles": "Геометрия", "g7_triangles_eq": "Геометрия", "g7_isosceles": "Геометрия", "g7_parallel": "Геометрия", "g7_angle_sum": "Геометрия", "g7_right_tri": "Геометрия", "g7_circle": "Геометрия", "chetyrehugolniki": "Геометрия", "ploshchad": "Геометрия", "g8_pythagoras": "Геометрия", "g8_similarity": "Геометрия", "g8_midline": "Геометрия", "g8_trig": "Геометрия", "g8_circle": "Геометрия", "g9_vectors": "Геометрия", "g9_coords": "Геометрия", "g9_sin_cos_theorems": "Геометрия", "g9_polygons_circle": "Геометрия", "g9_motions": "Геометрия", "s7_data": "Вероятность и статистика", "srednee": "Вероятность и статистика", "s7_median": "Вероятность и статистика", "s7_graphs": "Вероятность и статистика", "s7_prob_intro": "Вероятность и статистика", "mnozhestva": "Вероятность и статистика", "dispersiya": "Вероятность и статистика", "s8_prob": "Вероятность и статистика", "s8_events": "Вероятность и статистика", "s8_trees": "Вероятность и статистика", "s9_comb": "Вероятность и статистика", "s9_geom_prob": "Вероятность и статистика", "s9_bernoulli": "Вероятность и статистика", "s9_random_var": "Вероятность и статистика", "p7_measure": "Физика", "p7_matter": "Физика", "p7_motion": "Физика", "p7_density": "Физика", "p7_forces": "Физика", "p7_pressure": "Физика", "p7_archimedes": "Физика", "p7_work_energy": "Физика", "p8_heat": "Физика", "p8_phase": "Физика", "p8_charge": "Физика", "p8_current": "Физика", "p8_circuits": "Физика", "p8_power": "Физика", "p8_magnet": "Физика", "p8_light": "Физика", "p9_kinematics": "Физика", "p9_curve": "Физика", "p9_newton": "Физика", "p9_momentum": "Физика", "p9_energy": "Физика", "p9_waves": "Физика", "p9_em": "Физика", "p9_nuclear": "Физика", "c8_substances": "Химия", "c8_atoms": "Химия", "c8_atom_structure": "Химия", "c8_bonds": "Химия", "c8_formulas": "Химия", "c8_mole": "Химия", "c8_reactions": "Химия", "c8_classes": "Химия", "c8_solutions": "Химия", "c8_calc": "Химия", "c9_ed": "Химия", "c9_ionic": "Химия", "c9_redox": "Химия", "c9_halogens": "Химия", "c9_nonmetals": "Химия", "c9_metals": "Химия", "c9_organic": "Химия", "russkiy": "Русский язык", "english": "Английский язык", "m5_decimals": "Математика", "m6_divisibility": "Математика", "m6_fractions": "Математика", "m6_proportions": "Математика", "m6_percent": "Математика", "m6_negative": "Математика", "m6_equations": "Математика", "m6_coordinates": "Математика", "m6_circle": "Математика", "m6_logic": "Математика", "m6_olymp": "Математика", "i_first_program": "Программирование", "i_variables": "Программирование", "i_if": "Программирование", "i_for": "Программирование", "i_while": "Программирование", "i_strings": "Программирование", "i_lists": "Программирование", "i_functions": "Программирование", "i_algorithms": "Программирование", "i_oge": "Программирование", "i_neural": "Программирование", "i7_info": "Информатика", "i7_media": "Информатика", "i8_numbers": "Информатика", "i8_logic": "Информатика", "i8_executors": "Информатика", "i9_graphs": "Информатика", "i9_spreadsheets": "Информатика", "i9_files_net": "Информатика"}, "grade": {"vyrazheniya": 7, "a7_lin_eq": 7, "a7_word_problems": 7, "a7_func_linear": 7, "a7_powers": 7, "a7_polynomials": 7, "fsu": 7, "a7_factoring": 7, "a7_systems": 7, "a7_divisibility": 7, "a7_modulus": 7, "korni": 8, "drobi": 8, "giperbola": 8, "a8_quadratic": 8, "a8_vieta": 8, "a8_quad_param": 8, "a8_rational_eq": 8, "a8_inequalities": 8, "a8_int_powers": 8, "g7_basics": 7, "g7_angles": 7, "g7_triangles_eq": 7, "g7_isosceles": 7, "g7_parallel": 7, "g7_angle_sum": 7, "g7_right_tri": 7, "g7_circle": 7, "chetyrehugolniki": 8, "ploshchad": 8, "g8_pythagoras": 8, "g8_similarity": 8, "g8_midline": 8, "s7_data": 7, "srednee": 7, "s7_median": 7, "s7_graphs": 7, "s7_prob_intro": 7, "mnozhestva": 8, "dispersiya": 8, "s8_prob": 8, "s8_events": 8, "s8_trees": 8, "s9_comb": 9, "s9_geom_prob": 9, "s9_bernoulli": 9, "p7_measure": 7, "p7_matter": 7, "p7_motion": 7, "p7_density": 7, "p7_forces": 7, "p7_pressure": 7, "p7_archimedes": 7, "p7_work_energy": 7, "p8_heat": 8, "p8_phase": 8, "p8_charge": 8, "p8_current": 8, "p8_circuits": 8, "p8_power": 8, "p8_magnet": 8, "p8_light": 8, "c8_substances": 8, "c8_atoms": 8, "c8_atom_structure": 8, "c8_bonds": 8, "c8_formulas": 8, "c8_mole": 8, "c8_reactions": 8, "c8_classes": 8, "c8_solutions": 8, "c8_calc": 8, "m5_decimals": 5, "m6_divisibility": 6, "m6_fractions": 6, "m6_proportions": 6, "m6_percent": 6, "m6_negative": 6, "m6_equations": 6, "m6_coordinates": 6, "m6_circle": 6, "m6_logic": 6, "m6_olymp": 6}, "kidGrade": {"Артём": 8, "Павел": 6}};</script>
 <script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
    Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
 (function(){
@@ -209,16 +383,18 @@ async function flush(){
 }
 const N=window.NOTIFY={TOPIC,
   send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  /* в очередь без отправки: уйдёт при уходе со страницы или при следующем открытии */
+  queue(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);},
   flush};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
 window.addEventListener('online',flush);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&rd().length)flush();});
 })();
 </script>
 <script>/* Who is studying: separate progress for each child on the same device */
 (function(){
 const LIST=['Артём','Павел'];
-try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}
-const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
 const P=window.PROF={
   list:LIST,
   get:G,
@@ -253,6 +429,7 @@ const P=window.PROF={
     wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
     const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
     wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(window.GAME){try{GAME.mount(header);}catch(e){}}
     if(!G()&&main){
       const c=document.createElement('div');c.className='card prof-ask';
       c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
@@ -261,6 +438,434 @@ const P=window.PROF={
     }
   }
 };
+})();
+</script>
+<script>/* Игровой слой: XP, уровни, 🔥 серия дней, 💎 кристаллы, ачивки, задания дня, магазин, карта миров.
+   Всё хранится отдельно для каждого ребёнка: PROF.key('trainer:game'). */
+(function(){
+"use strict";
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const now=()=>{try{if(window.__FAKE_NOW)return new Date(window.__FAKE_NOW);}catch(e){}return new Date();};
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseD=s=>{const a=String(s).split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);};
+const addDays=(s,n)=>{const d=parseD(s);d.setDate(d.getDate()+n);return ymd(d);};
+const diffDays=(a,b)=>{const x=parseD(a),y=parseD(b);return Math.round((Date.UTC(y.getFullYear(),y.getMonth(),y.getDate())-Date.UTC(x.getFullYear(),x.getMonth(),x.getDate()))/864e5);};
+const today=()=>ymd(now());
+const ruDate=s=>{if(!s)return '';const a=String(s).split('-');return a.length===3?`${a[2]}.${a[1]}.${a[0]}`:s;};
+const plural=(n,a,b,c)=>{const x=Math.abs(n)%100,y=x%10;if(x>10&&x<20)return c;if(y>1&&y<5)return b;if(y===1)return a;return c;};
+const reduced=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
+const LIST=()=>window.PROF?PROF.list:['Артём','Павел'];
+const NAME=()=>window.PROF?PROF.name():'Артём';
+const keyFor=(base,name)=>{const L=LIST();return name===L[0]?base:base+'@'+name;};
+const KEY=()=>window.PROF?PROF.key('trainer:game'):'trainer:game';
+const RKEY=()=>window.PROF?PROF.key('trainer:review'):'trainer:review';
+const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'null');}catch(e){return null;}};
+const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+
+/* ---------- уровни ---------- */
+const LV=[[0,'Нуб','🥚'],[150,'Новичок','🐣'],[400,'Игрок','🎮'],[800,'Скиллер','⚡'],[1400,'Про','😎'],[2200,'Мастер','🛡️'],
+  [3300,'Эксперт','🧪'],[4800,'Чемпион','🏆'],[6800,'Гроссмейстер','♟️'],[9500,'Легенда','🌟'],[13000,'Мифический','🐉'],[18000,'Бог знаний','👑']];
+function levelOf(xp){let i=0;while(i+1<LV.length&&xp>=LV[i+1][0])i++;
+  const cur=LV[i][0],nxt=i+1<LV.length?LV[i+1][0]:null;
+  return {n:i+1,name:LV[i][1],icon:LV[i][2],from:cur,to:nxt,pct:nxt?Math.round((xp-cur)/(nxt-cur)*100):100,left:nxt?nxt-xp:0};}
+
+/* ---------- ачивки ---------- */
+const RAR={c:['обычный','c'],r:['редкий','r'],e:['эпический','e'],l:['легендарный','l']};
+const C=s=>s.cnt||{};
+const BADGES=[
+ {id:'first',  i:'👣',n:'Первый шаг',       d:'Реши первую задачу правильно',              r:'c',t:s=>C(s).right>=1},
+ {id:'r10',    i:'🔟',n:'Разогрев',          d:'10 верных ответов с первого раза',         r:'c',t:s=>C(s).right>=10},
+ {id:'r100',   i:'💯',n:'Сотня',             d:'100 верных ответов с первого раза',        r:'r',t:s=>C(s).right>=100},
+ {id:'r1000',  i:'🏔️',n:'Тысячник',          d:'1000 верных ответов с первого раза',       r:'l',t:s=>C(s).right>=1000},
+ {id:'topic1', i:'🏁',n:'Первый чекпоинт',   d:'Пройди первую тему до конца',              r:'c',t:s=>C(s).topics>=1},
+ {id:'topic10',i:'📚',n:'Книжный червь',     d:'Пройди 10 тем до конца',                   r:'r',t:s=>C(s).topics>=10},
+ {id:'perfect',i:'💎',n:'Чистый забег',      d:'Пройди тему без единой ошибки с первого раза',r:'e',t:s=>C(s).perfect>=1},
+ {id:'star1',  i:'⭐',n:'Первая звезда',     d:'Реши первую олимпиадную задачу ★',         r:'r',t:s=>C(s).star>=1},
+ {id:'star10', i:'🌟',n:'Звездочёт',         d:'Реши 10 олимпиадных задач ★',              r:'e',t:s=>C(s).star>=10},
+ {id:'s3',     i:'🔥',n:'Искра',             d:'3 дня подряд по 50 XP',                    r:'c',t:s=>s.best>=3},
+ {id:'s7',     i:'🔥',n:'Неделя огня',       d:'7 дней подряд по 50 XP',                   r:'r',t:s=>s.best>=7},
+ {id:'s14',    i:'☄️',n:'Две недели в огне', d:'14 дней подряд по 50 XP',                  r:'e',t:s=>s.best>=14},
+ {id:'s30',    i:'🌋',n:'Вулкан',            d:'30 дней подряд по 50 XP',                  r:'l',t:s=>s.best>=30},
+ {id:'fix10',  i:'🛠️',n:'Работа над ошибками',d:'10 раз реши закрепление после ошибки',    r:'r',t:s=>C(s).fixed>=10},
+ {id:'rules25',i:'📜',n:'Знаток правил',     d:'25 верных ответов на вопросы о правилах',  r:'r',t:s=>C(s).rules>=25},
+ {id:'rev1',   i:'🧠',n:'Первая Повторялка', d:'Пройди Повторялку на сегодня',             r:'c',t:s=>C(s).reviews>=1},
+ {id:'rev7',   i:'🧠',n:'Железная память',   d:'7 дней Повторялки подряд',                 r:'e',t:s=>(s.rev&&s.rev.best||0)>=7},
+ {id:'daily3', i:'📅',n:'Всё по плану',      d:'Выполни все 3 задания дня',                r:'c',t:s=>C(s).dailyAll>=1},
+ {id:'lvl5',   i:'😎',n:'Уже Про',           d:'Дойди до 5 уровня',                        r:'r',t:s=>levelOf(s.xp).n>=5},
+ {id:'lvl10',  i:'🌟',n:'Живая легенда',     d:'Дойди до 10 уровня',                       r:'l',t:s=>levelOf(s.xp).n>=10},
+ {id:'world',  i:'🌍',n:'Покоритель мира',   d:'Пройди все этапы одного мира (все темы предмета за класс)',r:'l',t:s=>worldsDone().world},
+ {id:'boss',   i:'🐉',n:'Босс повержен',     d:'Пройди «Испытание ★» в конце мира',        r:'l',t:s=>worldsDone().boss},
+ {id:'shop1',  i:'🛍️',n:'Модник',            d:'Купи что-нибудь в Магазине',               r:'c',t:s=>(s.shop&&s.shop.owned||[]).length>=1},
+ {id:'early',  i:'🐦',n:'Ранняя пташка',     d:'Реши задачу до 8:00 утра',                 r:'r',t:s=>!!(s.flags&&s.flags.early)},
+ {id:'owl',    i:'🦉',n:'Сова-шутница',      d:'Ачивка-шутка: решал после 21:00. Даже совы спят! Мозг сохраняет выученное во сне — так что лучше занимайся днём 😴',r:'c',t:s=>!!(s.flags&&s.flags.owl)},
+ // секретные
+ {id:'x_combo',  sec:1,i:'⚡',n:'Комбо ×20',     d:'20 верных ответов подряд без единой ошибки', r:'e',t:s=>(C(s).comboBest||0)>=20},
+ {id:'x_back',   sec:1,i:'🦸',n:'Возвращение героя',d:'Вернулся к учёбе после перерыва в 3+ дня',r:'r',t:s=>!!(s.flags&&s.flags.back)},
+ {id:'x_weekend',sec:1,i:'🏖️',n:'Выходной герой',d:'Набрал 50 XP и в субботу, и в воскресенье',r:'r',t:s=>!!(s.flags&&s.flags.weekend)},
+ {id:'x_marathon',sec:1,i:'🏃',n:'Марафонец',     d:'300 XP за один день',                       r:'e',t:s=>Object.values(s.days||{}).some(v=>v>=300)},
+ {id:'x_rich',   sec:1,i:'🐷',n:'Копилка',       d:'Накопи 200 💎 одновременно',                r:'r',t:s=>(s.gems||0)>=200},
+ {id:'x_pi',     sec:1,i:'🥧',n:'Число π',       d:'Набери 314 XP — как первые цифры числа π = 3,14…',r:'c',t:s=>s.xp>=314},
+];
+
+/* ---------- карта миров (данные — window.GAME_MAP из сборки) ---------- */
+function doneMap(name){if(!name||name===NAME())return window.PROF?PROF.done():{};const v=rd(keyFor('trainer:done',name));return v||{};}
+function starOk(d,id){const a=d[id],b=d[id+':star'];if(a&&a.star==null&&!b)return true;const v=Math.max(a&&a.star!=null?a.star:-1,b?b.pct:-1);return v>=70;}
+function worldState(w,d){
+  const st=w.stages.map(s=>({...s,done:!!(d[s.id]&&(s.need==null||(d[s.id].best!=null?d[s.id].best:d[s.id].pct)>=s.need))}));
+  const all=st.length&&st.every(s=>s.done);
+  let boss=false;
+  if(all){boss=w.boss==='rules'?st.every(s=>{const r=d[s.id+':rules'];return r&&(r.best!=null?r.best:r.pct)>=90;}):st.every(s=>starOk(d,s.id));}
+  const nextI=st.findIndex(s=>!s.done);
+  return {st,all,boss,nextI,n:st.filter(s=>s.done).length};
+}
+function worldsDone(){const M=window.GAME_MAP;if(!M)return {world:false,boss:false};const d=doneMap();let world=false,boss=false;
+  M.worlds.forEach(w=>{const s=worldState(w,d);if(s.all)world=true;if(s.boss)boss=true;});return {world,boss};}
+
+/* ---------- задания дня ---------- */
+const QDEF={
+ right20:{t:'Реши 20 задач правильно с первого раза',g:20,v:s=>s.today.right},
+ right10:{t:'Реши 10 задач правильно с первого раза',g:10,v:s=>s.today.right},
+ combo10:{t:'Реши 10 задач подряд без ошибок',g:10,v:s=>s.today.comboMax},
+ xp150:  {t:'Набери 150 XP за день',g:150,v:s=>s.today.xp},
+ star1:  {t:'Реши 1 олимпиадную задачу ★',g:1,v:s=>s.today.star},
+ rule5:  {t:'Ответь верно на 5 вопросов о правилах',g:5,v:s=>s.today.rule},
+ fix3:   {t:'Исправь 3 ошибки: реши закрепление',g:3,v:s=>s.today.fixed},
+ topic1: {t:'Пройди одну тему до конца',g:1,v:s=>s.today.topic},
+ review: {t:'Пройди Повторялку на сегодня',g:1,v:s=>s.today.review},
+};
+const Q_XP=40,Q_GEMS=10;
+function hash(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h;}
+function pickQuests(s,name){
+  const h=hash(s.today.date+name);
+  const A=['right20','combo10','xp150'],B=['star1','rule5','fix3','topic1'];
+  const studied=Object.keys(doneMap()).length>0||Object.keys(((rd(window.PROF?PROF.key('ru-trainer:v1'):'ru-trainer:v1')||{}).stats)||{}).length>0;
+  return [A[h%A.length],B[(h>>>4)%B.length],studied?'review':'right10'];
+}
+
+/* ---------- магазин ---------- */
+const SHOP=[
+ {id:'av_fox',k:'av',v:'🦊',p:0,free:'Артём'},{id:'av_tiger',k:'av',v:'🐯',p:0,free:'Павел'},
+ {id:'av_panda',k:'av',v:'🐼',p:30},{id:'av_frog',k:'av',v:'🐸',p:30},{id:'av_peng',k:'av',v:'🐧',p:30},
+ {id:'av_lion',k:'av',v:'🦁',p:50},{id:'av_wolf',k:'av',v:'🐺',p:50},{id:'av_octo',k:'av',v:'🐙',p:50},
+ {id:'av_robot',k:'av',v:'🤖',p:80},{id:'av_alien',k:'av',v:'👾',p:80},{id:'av_dino',k:'av',v:'🦖',p:80},
+ {id:'av_ninja',k:'av',v:'🥷',p:100},{id:'av_wizard',k:'av',v:'🧙',p:100},{id:'av_dragon',k:'av',v:'🐲',p:150,lvl:4},{id:'av_unicorn',k:'av',v:'🦄',p:150,lvl:4},
+ {id:'fr_none',k:'fr',v:'none',n:'Без рамки',p:0},{id:'fr_silver',k:'fr',v:'silver',n:'Серебро',p:40},{id:'fr_gold',k:'fr',v:'gold',n:'Золото',p:80},
+ {id:'fr_neon',k:'fr',v:'neon',n:'Неон',p:120},{id:'fr_fire',k:'fr',v:'fire',n:'Огонь',p:150,lvl:3},{id:'fr_rainbow',k:'fr',v:'rainbow',n:'Радуга',p:200,lvl:5},
+ {id:'nc_base',k:'nc',v:'base',n:'Обычный',p:0},{id:'nc_sky',k:'nc',v:'sky',n:'Небесный',p:30},{id:'nc_mint',k:'nc',v:'mint',n:'Мятный',p:30},
+ {id:'nc_violet',k:'nc',v:'violet',n:'Фиолетовый',p:50},{id:'nc_sun',k:'nc',v:'sun',n:'Солнечный',p:50},{id:'nc_rainbow',k:'nc',v:'rainbow',n:'Радужный',p:150,lvl:4},
+ {id:'ac_base',k:'ac',v:'base',n:'Синий (обычный)',p:0},{id:'ac_lime',k:'ac',v:'lime',n:'Изумруд',p:60},{id:'ac_violet',k:'ac',v:'violet',n:'Аметист',p:60},
+ {id:'ac_sunset',k:'ac',v:'sunset',n:'Закат',p:60},{id:'ac_rose',k:'ac',v:'rose',n:'Малина',p:60},
+ {id:'ti_none',k:'ti',v:'',n:'Без титула',p:0},{id:'ti_frac',k:'ti',v:'Укротитель дробей',p:40},{id:'ti_form',k:'ti',v:'Повелитель формул',p:60},
+ {id:'ti_err',k:'ti',v:'Гроза ошибок',p:60},{id:'ti_ninja',k:'ti',v:'Ниндзя логики',p:80},{id:'ti_rev',k:'ti',v:'Мастер Повторялки',p:80},
+ {id:'ti_hack',k:'ti',v:'Хакер мозга',p:100,lvl:3},{id:'ti_cap',k:'ti',v:'Капитан Знание',p:120,lvl:5},{id:'ti_leg',k:'ti',v:'Легенда класса',p:200,lvl:8},
+];
+const SHOP_KINDS=[['av','Аватар'],['fr','Рамка аватара'],['nc','Цвет имени'],['ac','Цвет сайта'],['ti','Титул под именем']];
+function owns(s,it,name){return it.p===0&&(!it.free||it.free===name)||(s.shop.owned||[]).includes(it.id);}
+function eq(s,name){const e=s.shop.eq||{};const L=LIST();return {av:e.av||(name===L[1]?'🐯':'🦊'),fr:e.fr||'none',nc:e.nc||'base',ac:e.ac||'base',ti:e.ti||''};}
+
+/* ---------- состояние ---------- */
+function fresh(){return {v:1,xp:0,gems:0,days:{},streak:0,best:0,lastDay:null,lastActive:null,badges:{},cnt:{},flags:{},today:{date:today()},daily:{date:null,ids:[],done:{}},shop:{owned:[],eq:{}},rev:{last:null,streak:0,best:0}};}
+function norm(s,name){
+  s=s&&typeof s==='object'?s:fresh();const f=fresh();for(const k in f)if(s[k]==null)s[k]=f[k];
+  const t=today();
+  if(s.today.date!==t)s.today={date:t};
+  ['right','star','rule','fixed','xp','comboMax','review','topic','combo'].forEach(k=>{if(s.today[k]==null)s.today[k]=0;});
+  if(s.daily.date!==t){s.daily={date:t,ids:pickQuests(s,name||NAME()),done:{}};}
+  return s;
+}
+function load(name){name=name||NAME();return norm(rd(keyFor('trainer:game',name)),name);}
+function save(s){const ks=Object.keys(s.days).sort();if(ks.length>140)ks.slice(0,ks.length-140).forEach(k=>delete s.days[k]);wr(KEY(),s);}
+/* Серия: показываем, только если последний «засчитанный» день — сегодня или вчера */
+function liveStreak(s){if(!s.lastDay)return 0;const g=diffDays(s.lastDay,today());return g<=1?s.streak:0;}
+
+/* ---------- UI: тосты, конфетти ---------- */
+let host=null;
+/* тосты — сразу под липкой шапкой, чтобы не закрывать её */
+function topY(){try{const h=document.querySelector('header.top');if(h){const r=h.getBoundingClientRect();if(r.bottom>0)return Math.round(r.bottom+8);}}catch(e){}return 12;}
+function toastHost(){if(!(host&&document.body.contains(host))){host=document.createElement('div');host.className='gm-toasts';host.setAttribute('aria-live','polite');document.body.appendChild(host);}
+  host.style.top=topY()+'px';return host;}
+const queue=[];let showing=0;
+function toast(o){queue.push(o);pump();}
+function pump(){
+  if(!document.body)return;
+  while(showing<3&&queue.length){
+    const o=queue.shift();showing++;
+    const el=document.createElement('div');el.className='gm-toast '+(o.cls||'');
+    el.innerHTML=`<div class="gm-t-ic${o.rar?' rar-'+o.rar:''}">${o.icon||'✨'}</div><div class="gm-t-tx"><b>${o.title}</b>${o.text?`<span>${o.text}</span>`:''}</div>`;
+    toastHost().appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('in'));
+    setTimeout(()=>{el.classList.remove('in');el.classList.add('out');setTimeout(()=>{el.remove();showing--;pump();},reduced()?10:350);},o.ms||3800);
+  }
+}
+function xpPill(xp,gems){
+  if(!document.body)return;
+  const el=document.createElement('div');el.className='gm-xp';el.textContent=`+${xp} XP`+(gems?`  +${gems} 💎`:'');el.style.top=topY()+'px';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),reduced()?900:1300);
+}
+function confetti(n){
+  if(reduced()||!document.body)return;
+  const box=document.createElement('div');box.className='gm-confetti';box.setAttribute('aria-hidden','true');
+  const cols=['#3d5afe','#f2a623','#1e9e5a','#e5484d','#9b5de5','#00b8d9'];
+  for(let i=0;i<(n||70);i++){const p=document.createElement('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%cols.length];
+    p.style.animationDelay=(Math.random()*0.35)+'s';p.style.animationDuration=(1.4+Math.random()*1.1)+'s';p.style.setProperty('--dx',(Math.random()*160-80)+'px');p.style.setProperty('--r',(Math.random()*720-360)+'deg');
+    if(i%3===0){p.style.width='7px';p.style.height='7px';p.style.borderRadius='50%';}box.appendChild(p);}
+  document.body.appendChild(box);setTimeout(()=>box.remove(),3000);
+}
+function levelUp(lv){
+  if(!document.body)return;
+  const old=document.querySelector('.gm-lvlup');if(old)old.remove();
+  const el=document.createElement('div');el.className='gm-lvlup';el.setAttribute('role','status');
+  el.innerHTML=`<div class="gm-lu-card"><div class="gm-lu-sm">НОВЫЙ УРОВЕНЬ!</div><div class="gm-lu-ic">${lv.icon}</div><div class="gm-lu-n">Уровень ${lv.n}</div><div class="gm-lu-name">${esc(lv.name)}</div>${lv.to?`<div class="gm-lu-next">До следующего: ${lv.left} XP</div>`:'<div class="gm-lu-next">Это максимальный уровень. Ты — легенда!</div>'}</div>`;
+  document.body.appendChild(el);confetti(90);
+  requestAnimationFrame(()=>el.classList.add('in'));
+  const close=()=>{el.classList.add('out');setTimeout(()=>el.remove(),300);document.removeEventListener('pointerdown',close,true);};
+  setTimeout(close,4200);setTimeout(()=>document.addEventListener('pointerdown',close,true),400);
+}
+
+/* ---------- ядро: начисление ---------- */
+let sessionCombo=0;
+const COUNT={first:'right',star:'star',rule:'rules',fixed:'fixed',topic:'topics',perfect:'perfect',card:'cards',review:'reviews'};
+function add(xp,kind,opt){
+  opt=opt||{};
+  const name=NAME();const s=load(name);const t=today();const d=now();
+  const lvBefore=levelOf(s.xp).n;const gemBase=Math.floor(s.xp/10);
+  xp=Math.max(0,Math.round(xp||0));
+  s.xp+=xp;
+  let gems=Math.floor(s.xp/10)-gemBase;
+  if(opt.gems){gems+=opt.gems;}
+  s.gems+=gems;
+  const prevDayXp=s.days[t]||0;
+  s.days[t]=prevDayXp+xp;
+  if(kind!=='quest')s.today.xp+=xp;
+  const ck=COUNT[kind];if(ck)s.cnt[ck]=(s.cnt[ck]||0)+1;
+  if(kind==='first'||kind==='star'||kind==='rule'){
+    s.cnt.right=(s.cnt.right||0)+(kind==='first'?0:1);
+    if(kind==='first'||kind==='star'||kind==='rule')s.today.right++;
+    if(kind==='star')s.today.star++;
+    if(kind==='rule')s.today.rule++;
+    sessionCombo++;s.today.combo=(s.today.combo||0)+1;s.today.comboMax=Math.max(s.today.comboMax,s.today.combo);
+    s.cnt.comboBest=Math.max(s.cnt.comboBest||0,sessionCombo,s.today.combo);
+    const h=d.getHours();if(h<8&&h>=5)s.flags.early=1;if(h>=21||h<5)s.flags.owl=1;
+  }
+  if(kind==='fixed')s.today.fixed++;
+  if(kind==='topic')s.today.topic++;
+  if(kind==='review'){s.today.review++;
+    const r=s.rev;if(r.last!==t){r.streak=r.last&&diffDays(r.last,t)===1?r.streak+1:1;r.last=t;r.best=Math.max(r.best||0,r.streak);}}
+  // возвращение после перерыва
+  if(s.lastActive&&s.lastActive!==t&&diffDays(s.lastActive,t)>=4)s.flags.back=1;
+  if(xp>0)s.lastActive=t;
+  // серия дней: день засчитан, когда набрано ≥ 50 XP
+  let streakMsg=null;
+  if(prevDayXp<50&&s.days[t]>=50&&s.lastDay!==t){
+    s.streak=s.lastDay&&diffDays(s.lastDay,t)===1?s.streak+1:1;s.lastDay=t;s.best=Math.max(s.best,s.streak);streakMsg=s.streak;
+    const wd=d.getDay();const other=wd===0?addDays(t,-1):wd===6?addDays(t,1):null;if(other&&(s.days[other]||0)>=50)s.flags.weekend=1;
+  }
+  // задания дня
+  const qDone=[];
+  s.daily.ids.forEach(id=>{const q=QDEF[id];if(!q||s.daily.done[id])return;if((q.v(s)||0)>=q.g){s.daily.done[id]=t;qDone.push(id);}});
+  let qXp=0,qGems=0;
+  qDone.forEach(()=>{qXp+=Q_XP;qGems+=Q_GEMS;});
+  if(qXp){const gb=Math.floor(s.xp/10);s.xp+=qXp;s.days[t]+=qXp;const g2=Math.floor(s.xp/10)-gb+qGems;s.gems+=g2;gems+=g2;
+    if(s.daily.ids.every(id=>s.daily.done[id]))s.cnt.dailyAll=(s.cnt.dailyAll||0)+1;
+    if(prevDayXp<50&&s.days[t]>=50&&s.lastDay!==t){s.streak=s.lastDay&&diffDays(s.lastDay,t)===1?s.streak+1:1;s.lastDay=t;s.best=Math.max(s.best,s.streak);streakMsg=s.streak;}}
+  const newB=checkBadges(s);
+  save(s);
+  // ---- показываем ----
+  try{
+    if(xp&&!opt.quiet)xpPill(xp+qXp,gems);
+    qDone.forEach(id=>toast({icon:'📅',title:'Задание дня выполнено!',text:`${esc(QDEF[id].t)} · +${Q_XP} XP, +${Q_GEMS} 💎`,cls:'quest'}));
+    if(streakMsg!=null){toast({icon:'🔥',title:streakMsg>1?`${streakMsg} ${plural(streakMsg,'день','дня','дней')} подряд!`:'Огонёк зажжён!',text:streakMsg>1?'Сегодняшний день засчитан. Не потеряй серию завтра!':'Ты набрал 50 XP сегодня — день засчитан. Приходи завтра, и серия вырастет!',cls:'streak'});
+      if([7,14,30].includes(streakMsg)&&window.NOTIFY)try{(NOTIFY.queue||NOTIFY.send)(`${name}: 🔥 ${streakMsg} дней подряд!`,`${name} занимается ${streakMsg} дней подряд (каждый день не меньше 50 XP). Уровень ${levelOf(s.xp).n} «${levelOf(s.xp).name}», всего ${s.xp} XP.`,['fire']);}catch(e){}
+      if(streakMsg>=3)confetti(40);}
+    newB.forEach(b=>toast({icon:b.i,rar:b.r,title:`Ачивка: ${esc(b.n)}`,text:`${RAR[b.r][0]} · ${esc(b.d)}`,cls:'badge rar-'+b.r,ms:4500}));
+    const lv=levelOf(s.xp);
+    if(lv.n>lvBefore){levelUp(lv);if(window.NOTIFY)try{(NOTIFY.queue||NOTIFY.send)(`${name}: новый уровень ${lv.n}!`,`${name} теперь «${lv.name}» ${lv.icon} — уровень ${lv.n}. Всего ${s.xp} XP, серия 🔥 ${liveStreak(s)}.`,['tada']);}catch(e){}}
+  }catch(e){console.error(e);}
+  refresh();
+  return s;
+}
+function miss(){sessionCombo=0;const s=load();s.today.combo=0;save(s);}
+function checkBadges(s){
+  const out=[];const t=today();
+  BADGES.forEach(b=>{if(s.badges[b.id])return;let ok=false;try{ok=b.t(s);}catch(e){}if(ok){s.badges[b.id]=t;out.push(b);}});
+  return out;
+}
+/* проверка «статичных» ачивок (мир, босс) без начисления XP */
+function check(){const s=load();const nb=checkBadges(s);if(nb.length){save(s);nb.forEach(b=>toast({icon:b.i,rar:b.r,title:`Ачивка: ${esc(b.n)}`,text:`${RAR[b.r][0]} · ${esc(b.d)}`,cls:'badge rar-'+b.r,ms:4500}));refresh();}}
+
+/* ---------- Повторялка: сколько карточек ждёт ---------- */
+const REV_MAX=15,REV_NEW=8;
+function reviewInfo(name){
+  name=name||NAME();const r=rd(keyFor('trainer:review',name))||{};const cards=r.cards||{};const t=today();
+  const ses=(r.sessions||{})[t];
+  if(ses){if(ses.done)return {done:true,n:0,due:0};return {done:false,n:Math.max(0,ses.queue.length-ses.pos)+(ses.again||[]).length,started:true};}
+  const due=Object.values(cards).filter(c=>c.due<=t).length;
+  const d=doneMap(name);const pool=r.pool||{};
+  const intro={};Object.keys(cards).forEach(k=>{const src=k.split(':')[0];intro[src]=(intro[src]||0)+1;});
+  let est=0;
+  Object.keys(d).forEach(id=>{if(id.includes(':')||!window.GAME_MAP||!(window.GAME_MAP.ids||[]).includes(id))return;est+=pool[id]!=null?Math.max(0,pool[id]-(intro[id]||0)):5;});
+  const ru=(rd(keyFor('ru-trainer:v1',name))||{}).stats||{},en=(rd(keyFor('en-trainer:v1',name))||{}).stats||{};
+  est+=Object.keys(ru).filter(k=>!cards['ru:'+k]).length+Object.keys(en).filter(k=>!cards['en:'+k]).length;
+  /* материал прошлых лет (классы ниже текущего) считается изученным — его хватает надолго */
+  const M=window.GAME_MAP||{};const kg=(M.kidGrade||{})[name];
+  if(kg&&(Object.values(M.grade||{}).some(g=>g<kg)||kg>5))est+=REV_NEW;
+  const nNew=Math.min(Math.max(0,REV_NEW-((r.newDays||{})[t]||0)),est);
+  return {done:false,n:Math.min(REV_MAX,due+nNew),due,studied:est>0||Object.keys(cards).length>0};
+}
+
+/* ---------- шапка: чип ---------- */
+function avHtml(e,big){return `<span class="gm-av fr-${esc(e.fr)}${big?' big':''}"><span>${e.av}</span></span>`;}
+function applyCosmetics(s,name){const e=eq(s,name);try{if(e.ac&&e.ac!=='base')document.documentElement.dataset.accent=e.ac;else delete document.documentElement.dataset.accent;}catch(err){}}
+let chip=null,panel=null;
+function mount(header){
+  try{
+    if(!header||header.querySelector('.gm-chip'))return;
+    const name=NAME();let s=load(name);
+    // серия прервалась — мягкое сообщение один раз
+    if(s.streak>0&&s.lastDay&&diffDays(s.lastDay,today())>1){const lost=s.streak;s.streak=0;s.lostShown=today();save(s);
+      setTimeout(()=>toast({icon:'🌱',title:'Серия огоньков прервалась',text:`Ничего страшного — у всех бывают перерывы. Твой рекорд: ${lost} 🔥. Набери сегодня 50 XP, и начнётся новая серия!`,cls:'streak',ms:7000}),600);}
+    applyCosmetics(s,name);
+    chip=document.createElement('button');chip.type='button';chip.className='gm-chip';chip.setAttribute('aria-label','Мой персонаж: уровень, серия и кристаллы');
+    chip.onclick=e=>{e.stopPropagation();togglePanel();};
+    // на страницах тем чип и «Как это работает?» — в верхней строке со ссылкой «← Все тренажёры», чтобы шапка не разрасталась
+    const home=header.querySelector('.brand a.home');
+    if(home){const box=document.createElement('span');box.className='gm-homes';home.parentNode.insertBefore(box,home);box.appendChild(home);
+      if(!/guide\.html$/.test(location.pathname)){const a=document.createElement('a');a.className='home gm-help';a.href='guide.html';a.textContent='❓ Как это работает?';box.appendChild(a);}
+      chip.classList.add('sm');box.appendChild(chip);}
+    else{const before=header.querySelector('.theme-btn');header.insertBefore(chip,before||null);}
+    refresh();
+    setTimeout(check,800);
+  }catch(e){console.error(e);}
+}
+function refresh(){
+  try{
+    const name=NAME();const s=load(name);const lv=levelOf(s.xp);const st=liveStreak(s);const e=eq(s,name);
+    if(chip){chip.innerHTML=`${avHtml(e)}<span class="gm-c-lv">Ур. ${lv.n}</span><span class="gm-c-st${st?'':' off'}">🔥 ${st}</span><span class="gm-c-gm">💎 ${s.gems}</span>`;
+      chip.title=`${lv.name} · ${s.xp} XP · ${st} ${plural(st,'день','дня','дней')} подряд`;}
+    if(panel)renderPanel();
+    renderers.forEach(f=>{try{f();}catch(err){console.error(err);}});
+  }catch(e){console.error(e);}
+}
+const renderers=[];
+function questsHtml(s){
+  return `<ul class="gm-qs">${s.daily.ids.map(id=>{const q=QDEF[id];if(!q)return '';const v=Math.min(q.g,q.v(s)||0);const ok=!!s.daily.done[id];
+    return `<li class="${ok?'ok':''}"><span class="gm-q-ic">${ok?'✅':'⬜'}</span><span class="gm-q-t">${esc(q.t)}<span class="progress"><i style="width:${Math.round(v/q.g*100)}%"></i></span></span><span class="gm-q-r">${ok?'готово':`${v}/${q.g}`}<small>+${Q_XP} XP · +${Q_GEMS} 💎</small></span></li>`;}).join('')}</ul>`;
+}
+function togglePanel(){if(panel){closePanel();return;}panel=document.createElement('div');panel.className='gm-panel';panel.style.top=topY()+'px';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Мой персонаж');document.body.appendChild(panel);renderPanel();
+  setTimeout(()=>document.addEventListener('click',outside,true),0);}
+function outside(e){if(panel&&!panel.contains(e.target)&&!(chip&&chip.contains(e.target))){closePanel();}}
+function closePanel(){if(panel){panel.remove();panel=null;}document.removeEventListener('click',outside,true);}
+function renderPanel(){
+  const name=NAME();const s=load(name);const lv=levelOf(s.xp);const st=liveStreak(s);const e=eq(s,name);const ri=reviewInfo(name);const td=s.days[today()]||0;
+  const onIndex=!!document.getElementById('char');
+  panel.innerHTML=`<button class="gm-x" aria-label="Закрыть">✕</button>
+  <div class="gm-p-head">${avHtml(e,true)}<div><div class="gm-name nc-${esc(e.nc)}">${esc(name)}</div>${e.ti?`<div class="gm-title">«${esc(e.ti)}»</div>`:''}<div class="small">${lv.icon} Уровень ${lv.n} — ${esc(lv.name)}</div></div></div>
+  <div class="gm-bar"><div class="progress"><i style="width:${lv.pct}%"></i></div><div class="small">${s.xp} XP${lv.to?` · до уровня ${lv.n+1}: ${lv.left} XP`:' · максимум!'}</div></div>
+  <div class="gm-p-row"><div><b>🔥 ${st} ${plural(st,'день','дня','дней')} подряд</b><div class="small">Рекорд: ${s.best}. Сегодня: ${Math.min(td,50)}/50 XP${td>=50?' — день засчитан ✓':' до огонька'}</div></div><div><b>💎 ${s.gems}</b><div class="small">кристаллов</div></div></div>
+  <h4>📅 Задания дня</h4>${questsHtml(s)}
+  <div class="gm-p-btns"><a class="btn" href="review.html">🧠 Повторялка${ri.done?' ✓':ri.n?` (${ri.n})`:''}</a><a class="btn ghost" href="${onIndex?'#char':'index.html#char'}">👤 Персонаж и магазин</a><a class="btn ghost" href="guide.html">📘 Как тут всё устроено</a></div>`;
+  panel.querySelector('.gm-x').onclick=closePanel;
+  panel.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',closePanel));
+}
+
+/* ---------- главная: «Мой персонаж» ---------- */
+function badgeCard(b,date){
+  const locked=!date;const hide=locked&&b.sec;
+  return `<div class="gm-b ${locked?'locked':''} rar-${b.r}" title="${esc(hide?'Секретная ачивка: узнаешь, когда получишь':b.d)}"><div class="gm-b-ic">${hide?'❓':b.i}</div><div class="gm-b-n">${esc(hide?'???':b.n)}</div><div class="gm-b-r">${hide?'секретная':RAR[b.r][0]}</div><div class="gm-b-d">${locked?(hide?'Секрет':esc(b.d)):'получена '+ruDate(date)}</div></div>`;
+}
+function badgesHtml(s){
+  const got=BADGES.filter(b=>s.badges[b.id]).sort((a,b)=>String(s.badges[b.id]).localeCompare(String(s.badges[a.id])));
+  const rest=BADGES.filter(b=>!s.badges[b.id]);
+  return `<div class="gm-badges">${got.map(b=>badgeCard(b,s.badges[b.id])).join('')}${rest.map(b=>badgeCard(b,null)).join('')}</div>`;
+}
+function renderChar(el){
+  const draw=()=>{
+    const name=NAME();const s=load(name);const lv=levelOf(s.xp);const st=liveStreak(s);const e=eq(s,name);const ri=reviewInfo(name);
+    const nb=Object.keys(s.badges).length;
+    el.innerHTML=`<div class="gm-ch-top">${avHtml(e,true)}<div class="gm-ch-id"><div class="gm-name nc-${esc(e.nc)}">${esc(name)}</div>${e.ti?`<div class="gm-title">«${esc(e.ti)}»</div>`:''}
+      <div class="gm-ch-lv">${lv.icon} Уровень ${lv.n} — <b>${esc(lv.name)}</b></div>
+      <div class="progress gm-xpbar"><i style="width:${lv.pct}%"></i></div><div class="small">${s.xp} XP${lv.to?` · до уровня ${lv.n+1} «${esc(LV[lv.n][1])}» осталось ${lv.left} XP`:' · максимальный уровень!'}</div></div></div>
+    <div class="gm-stats"><div><b>🔥 ${st}</b><span>${plural(st,'день','дня','дней')} подряд · рекорд ${s.best}</span></div><div><b>✅ ${s.cnt.right||0}</b><span>верно с первого раза</span></div><div><b>💎 ${s.gems}</b><span>кристаллов</span></div><div><b>🏅 ${nb}/${BADGES.length}</b><span>ачивок</span></div></div>
+    <a class="btn gm-rev-btn" href="review.html">🧠 Повторялка на сегодня <span class="gm-rev-n">${ri.done?'✓ готово':ri.n?`${ri.n} ${plural(ri.n,'карточка','карточки','карточек')}`:'нет карточек'}</span></a>
+    ${!ri.done&&!ri.n&&!ri.started?'<p class="small" style="margin:6px 0 0">Карточки появятся, когда ты пройдёшь первую тему до конца.</p>':''}
+    <h3>📅 Задания дня <span class="small">— обновляются каждый день</span></h3>${questsHtml(s)}
+    <details class="gm-bd" open><summary><h3>🏅 Мои ачивки <span class="small">${nb} из ${BADGES.length}</span></h3></summary>${badgesHtml(s)}</details>`;
+  };
+  draw();renderers.push(draw);
+}
+
+/* ---------- карта миров ---------- */
+function renderWorlds(el,opts){
+  opts=opts||{};const href=opts.href||(i=>i+'.html');
+  const draw=()=>{
+    const M=window.GAME_MAP;if(!M){el.innerHTML='';return;}
+    const name=NAME();const d=doneMap(name);const mine=(M.focus&&M.focus[name])||null;
+    const one=w=>{const ws=worldState(w,d);
+      const nodes=ws.st.map((s,i)=>`${i?'<span class="gm-link'+(s.done?' on':'')+'"></span>':''}<a class="gm-node ${s.done?'done':i===ws.nextI?'next':''}" href="${esc(s.href||href(s.page||s.id))}" title="${esc(s.title)}" aria-label="${esc((i+1)+'. '+s.title+(s.done?' — пройдено':''))}">${s.done?'✅':i+1}</a>`).join('');
+      const bossT=w.boss==='rules'?'Испытание ★: проверка правил всех уровней на 90%':'Испытание ★: олимпиадный уровень всех тем на 70%';
+      let bossHref=href(w.stages[0].page||w.stages[0].id);if(ws.all&&!ws.boss){const miss=w.stages.find(s=>w.boss==='rules'?!(d[s.id+':rules']&&(d[s.id+':rules'].best||d[s.id+':rules'].pct)>=90):!starOk(d,s.id));if(miss)bossHref=miss.href||href(miss.page||miss.id);}
+      const boss=`<span class="gm-link${ws.boss?' on':''}"></span><a class="gm-node boss ${ws.boss?'done':ws.all?'next':'locked'}" href="${esc(bossHref)}" title="${esc(bossT)}" aria-label="${esc(bossT)}">${ws.boss?'🏆':ws.all?'🐉':'🔒'}</a>`;
+      const nx=ws.nextI>=0?ws.st[ws.nextI]:null;
+      return `<div class="gm-world"><div class="gm-w-h"><span class="gm-w-ic">${esc(w.icon)}</span><b>${esc(w.title)}</b><span class="small">${ws.n}/${ws.st.length} ✅${ws.boss?' · 🏆 босс пройден':''}</span></div>
+      <div class="gm-path">${nodes}${boss}</div>
+      <div class="small gm-w-next">${nx?`Следующий этап: <a href="${esc(nx.href||href(nx.page||nx.id))}">${esc(nx.title)} →</a>`:ws.boss?'Мир пройден полностью! 🎉':`Все этапы пройдены — осталось <b>Испытание ★</b>: ${esc(bossT.replace('Испытание ★: ',''))}.`}</div></div>`;};
+    const focus=mine?M.worlds.filter(w=>w.grade==null||mine.includes(w.grade)):M.worlds;
+    const other=mine?M.worlds.filter(w=>!(w.grade==null||mine.includes(w.grade))):[];
+    el.innerHTML=`<p class="small" style="margin-top:0">Каждый предмет — это <b>мир</b>, каждая тема — <b>этап</b> с чекпоинтом ✅. Проходи этапы по порядку: следующий мигает. В конце мира ждёт босс — <b>Испытание ★</b>.</p>
+    ${focus.map(one).join('')}${other.length?`<details class="gm-more"><summary>Другие миры (${other.length})</summary>${other.map(one).join('')}</details>`:''}`;
+  };
+  draw();renderers.push(draw);
+}
+
+/* ---------- магазин ---------- */
+function renderShop(el){
+  const draw=()=>{
+    const name=NAME();const s=load(name);const e=eq(s,name);const lv=levelOf(s.xp).n;
+    el.innerHTML=`<p class="small" style="margin-top:0">У тебя <b>💎 ${s.gems}</b>. Кристаллы даются за XP (примерно 1 💎 за каждые 10 XP) и за задания дня. Здесь только украшения для профиля — на учёбу они не влияют. <b>Кристаллы — не настоящие деньги</b>: их нельзя обменять на Robux. Robux — только за <a href="#quests">задания с наградой</a>.</p>
+    <div class="gm-preview">${avHtml(e,true)}<div><div class="gm-name nc-${esc(e.nc)}">${esc(name)}</div>${e.ti?`<div class="gm-title">«${esc(e.ti)}»</div>`:'<div class="small">без титула</div>'}</div></div>
+    ${SHOP_KINDS.map(([k,t])=>`<h3>${t}</h3><div class="gm-shop">${SHOP.filter(it=>it.k===k&&(!it.free||it.free===name)).map(it=>{
+      const own=owns(s,it,name);const on=e[k]===it.v||(k==='av'&&e.av===it.v);const lock=it.lvl&&lv<it.lvl&&!own;
+      const face=k==='av'?`<span class="gm-s-av">${it.v}</span>`:k==='fr'?`<span class="gm-av fr-${it.v}"><span>${e.av}</span></span>`:k==='nc'?`<span class="gm-name nc-${it.v}" style="font-size:16px">${esc(name)}</span>`:k==='ac'?`<span class="gm-sw" data-acc="${it.v}"></span>`:`<span class="gm-s-ti">${it.v?'«'+esc(it.v)+'»':'—'}</span>`;
+      return `<button class="gm-item ${on?'on':''} ${lock?'lock':''}" data-id="${it.id}" ${lock?'disabled':''}>${face}${it.n&&k!=='nc'?`<span class="gm-s-n">${esc(it.n)}</span>`:''}<span class="gm-s-p">${on?'надето ✓':own?'надеть':lock?`🔒 с ${it.lvl} уровня`:`💎 ${it.p}`}</span></button>`;}).join('')}</div>`).join('')}
+    <div class="errmsg" id="gmShopErr"></div>`;
+    el.querySelectorAll('.gm-item').forEach(b=>b.onclick=()=>{const r=buy(b.dataset.id);const m=el.querySelector('#gmShopErr');if(!r.ok&&m)m.textContent=r.msg;});
+  };
+  draw();renderers.push(draw);
+}
+function buy(id){
+  const name=NAME();const s=load(name);const it=SHOP.find(x=>x.id===id);if(!it)return {ok:false,msg:'Нет такого предмета.'};
+  if(!owns(s,it,name)){
+    if(it.lvl&&levelOf(s.xp).n<it.lvl)return {ok:false,msg:`Этот предмет открывается с ${it.lvl} уровня.`};
+    if(s.gems<it.p)return {ok:false,msg:`Не хватает кристаллов: нужно 💎 ${it.p}, у тебя 💎 ${s.gems}. Решай задачи и выполняй задания дня!`};
+    s.gems-=it.p;s.shop.owned.push(it.id);
+    toast({icon:k2icon(it),title:'Покупка!',text:`Теперь у тебя: ${esc(it.n||it.v)}`,cls:'quest'});
+  }
+  s.shop.eq=s.shop.eq||{};s.shop.eq[it.k]=it.v;
+  const nb=checkBadges(s);save(s);nb.forEach(b=>toast({icon:b.i,rar:b.r,title:`Ачивка: ${esc(b.n)}`,text:`${RAR[b.r][0]} · ${esc(b.d)}`,cls:'badge rar-'+b.r}));
+  applyCosmetics(s,name);refresh();return {ok:true};
+}
+function k2icon(it){return it.k==='av'?it.v:it.k==='fr'?'🖼️':it.k==='nc'?'🎨':it.k==='ac'?'🌈':'🏷️';}
+
+/* ---------- страница родителя ---------- */
+function parent(el){
+  let h='';
+  LIST().forEach(name=>{
+    const s=load(name);const lv=levelOf(s.xp);const st=liveStreak(s);const e=eq(s,name);const ri=reviewInfo(name);
+    const got=BADGES.filter(b=>s.badges[b.id]);
+    const last7=[];for(let i=6;i>=0;i--){const d=addDays(today(),-i);last7.push([d,s.days[d]||0]);}
+    h+=`<div class="gm-par"><div class="gm-p-head">${avHtml(e,true)}<div><div class="gm-name">${esc(name)}</div><div>${lv.icon} Уровень <b>${lv.n}</b> — ${esc(lv.name)} · <b>${s.xp}</b> XP · 💎 ${s.gems}</div>
+      <div>🔥 Серия: <b>${st}</b> ${plural(st,'день','дня','дней')} (рекорд ${s.best}) · ✅ верно с первого раза: ${s.cnt.right||0} · 🧠 Повторялок: ${s.cnt.reviews||0}${ri.done?' (сегодня пройдена)':''}</div></div></div>
+      <div class="gm-week">${last7.map(([d,v])=>`<div title="${ruDate(d)}: ${v} XP"><i style="height:${Math.min(100,v/2)}%" class="${v>=50?'ok':''}"></i><span>${d.slice(8)}</span></div>`).join('')}</div>
+      <div class="small">XP за последние 7 дней (зелёный столбик — день засчитан, ≥ 50 XP)</div>
+      <div class="gm-par-b">${got.length?got.map(b=>`<span class="gm-chipb rar-${b.r}" title="${esc(b.d)} · ${ruDate(s.badges[b.id])}">${b.i} ${esc(b.n)}</span>`).join(''):'<span class="small">Ачивок пока нет.</span>'}</div></div>`;
+  });
+  el.innerHTML=h;
+}
+
+window.GAME={add,miss,check,mount,refresh,toast,confetti,levelOf,load,reviewInfo,renderChar,renderWorlds,renderShop,buy,parent,
+  LV,BADGES,SHOP,QDEF,today,addDays,diffDays,now,ymd,keyFor,REV_MAX,REV_NEW,
+  _reset(){sessionCombo=0;}};
 })();
 </script>
 <script>/* Английский язык: реестр тем от «Старт» до 9 класса.
@@ -8376,7 +8981,22 @@ const TTS={voice:null,ok:'speechSynthesis' in window};
 function chooseVoice(){if(!TTS.ok)return;const vs=speechSynthesis.getVoices();const want=(window.CONF&&CONF.lang)||'en-GB';
   TTS.voice=vs.find(v=>v.lang===want&&/Daniel|Serena|Kate|Arthur|Google UK|Natural/i.test(v.name))||vs.find(v=>v.lang===want)||vs.find(v=>v.lang&&v.lang.startsWith('en-GB'))||vs.find(v=>v.lang&&v.lang.startsWith('en'))||null;}
 if(TTS.ok){chooseVoice();try{speechSynthesis.onvoiceschanged=chooseVoice;}catch(e){}}
-function speak(text,rate){if(!TTS.ok||!text)return false;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(text));u.lang=(TTS.voice&&TTS.voice.lang)||((window.CONF&&CONF.lang)||'en-GB');if(TTS.voice)u.voice=TTS.voice;u.rate=rate||0.9;speechSynthesis.speak(u);return true;}catch(e){return false;}}
+/* iPad Safari: silent mode mutes web speech; playing a tiny silent <audio> inside a tap switches the
+   audio session to "playback", so the voice is heard even with the mute switch on. Also: never call
+   speak() right after cancel() (iOS drops it), keep a reference to the utterance (GC bug), resume() a stuck queue. */
+let _unlocked=false,_u=null,_hinted=false;
+const SILENT='data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAACAgICA';
+function unlockAudio(){if(_unlocked)return;_unlocked=true;try{const a=new Audio(SILENT);a.setAttribute('playsinline','');a.volume=0.01;const p=a.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}}
+function ttsHint(){if(_hinted)return;_hinted=true;try{const d=document.createElement('div');d.className='tts-hint';
+  d.innerHTML='<b>🔇 Не слышно голоса?</b><br>1) Выключи беззвучный режим: открой Пункт управления (смахни вниз от правого верхнего угла) и проверь значок колокольчика 🔔.<br>2) Прибавь громкость кнопками на iPad.<br>3) Если всё равно тихо: Настройки → Универсальный доступ → Устный контент → Голоса → English — скачай голос (например, Daniel).<br><button class="btn ghost">Понятно</button>';
+  d.querySelector('button').onclick=()=>d.remove();document.body.appendChild(d);}catch(e){}}
+function speak(text,rate){if(!TTS.ok||!text)return false;unlockAudio();
+  try{if(!TTS.voice)chooseVoice();
+    const u=new SpeechSynthesisUtterance(String(text));u.lang=(TTS.voice&&TTS.voice.lang)||((window.CONF&&CONF.lang)||'en-GB');if(TTS.voice)u.voice=TTS.voice;u.rate=rate||0.9;u.volume=1;
+    let started=false;u.onstart=()=>{started=true;};_u=u;
+    const go=()=>{try{speechSynthesis.resume();speechSynthesis.speak(u);}catch(e){}setTimeout(()=>{if(!started&&!speechSynthesis.speaking)ttsHint();},2500);};
+    if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();setTimeout(go,150);}else go();
+    return true;}catch(e){return false;}}
 window.speak=speak;
 document.addEventListener('click',e=>{const el=e.target.closest('[data-say]');if(!el)return;e.preventDefault();speak(el.dataset.say||el.textContent,el.dataset.rate?+el.dataset.rate:(el.classList.contains('slow')?0.6:0.9));});
 function sayBtns(text){const t=esc(text);return `<span class="saybox"><button class="btn ghost sbtn" data-say="${t}">🔊 Послушать</button><button class="btn ghost sbtn slow" data-say="${t}">🐢 Медленно</button></span>`;}
@@ -8583,7 +9203,7 @@ function renderRecall(m,st){
     $('#recbox').innerHTML=`<div class="box rule" style="margin-top:12px"><b>Правило</b>${r.short||''}</div>
     <p>Сравни честно: ты вспомнил главное?</p>
     <div class="row"><button class="btn" id="recOk">✅ Да, вспомнил правильно</button><button class="btn warn" id="recNo">❌ Забыл или ошибся</button></div><div id="recMore"></div>`;
-    $('#recOk').onclick=()=>{const s=stat(st.rule);s.rc=(s.rc||0)+1;if(S.recallOnly){S.runR=(S.runR||0)+1;}advance();};
+    $('#recOk').onclick=()=>{const s=stat(st.rule);s.rc=(s.rc||0)+1;if(window.GAME){try{GAME.add(5,'rule');}catch(e){}}if(S.recallOnly){S.runR=(S.runR||0)+1;}advance();};
     $('#recNo').onclick=()=>{const s=stat(st.rule);s.rf=(s.rf||0)+1;if(S.recallOnly){S.runW=(S.runW||0)+1;}
       $('#recOk').disabled=true;$('#recNo').disabled=true;
       $('#recMore').innerHTML=`<div class="fb alt" style="margin-top:12px"><h3>Ничего страшного — повторим</h3>${r.theory2||''}<details style="margin-top:8px"><summary>Полное правило</summary>${theoryBlock(r)}</details></div>
@@ -8597,10 +9217,11 @@ function recordDone(){
   const tot=(S.runR||0)+(S.runW||0);if(!tot)return;
   const pct=Math.round((S.runR||0)/tot*100);
   const id=(window.CONF&&CONF.ls?'english':'russkiy')+':'+S.grade+(S.recallOnly?':rules':'');
+  if(window.GAME&&!S.recallOnly&&S.title===gLabel(S.grade)){try{GAME.add(50,'topic');if(!(S.runW||0))GAME.add(100,'perfect');}catch(e){}}
   if(S.recallOnly||S.title===gLabel(S.grade))PROF.record(id,{pct,total:tot,right:S.runR||0},(window.CONF&&CONF.ls?'Английский, ':'Русский язык, ')+gLabel(S.grade)+(S.recallOnly?' — проверка правил':' — пройден целиком'));
 }
 function renderEnd(m){
-  recordDone();
+  recordDone();if(window.GAME){try{GAME.check();}catch(e){}}
   const rs=[...new Set(S.path.filter(s=>s.rule).map(s=>s.rule))];
   m.innerHTML=`<div class="card" style="margin-top:20px"><h1>Готово! 🎉</h1><p>${esc(S.title)} пройден.</p>
   <ul class="res-list">${rs.map(r=>{const s=S.stats[r]||{r:0,w:0};return `<li><span>${esc(RU.reg[r].title)}</span><span><span class="ok-t">${s.r} верно</span>${s.w?` · <span class="bad-t">${s.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
@@ -8708,6 +9329,7 @@ function answer(it,f,val){
   const rulesHere=itemRules(it);
   if(!f||f.k!=='retry'){rulesHere.forEach(r=>{if(wrongRules.includes(r))stat(r).w++;else stat(r).r++;});}
   if(!f){if(ok)S.runR=(S.runR||0)+1;else S.runW=(S.runW||0)+1;}
+  if(window.GAME){try{if(!f){if(ok)GAME.add(10,'first');else GAME.miss();}else if(ok)GAME.add(5,'fixed');}catch(e){}}
   const fb=$('#fb');
   const sayFull=it.type==='gaps'?fullText(it,false).replace(/<[^>]+>/g,''):(it.sayAfter||'');
   const correctShow=it.type==='gaps'?`<div class="ans">Правильно: ${fullText(it,true)}</div>`:it.type==='spell'?`<div class="ans">Правильно: ${esc(Array.isArray(it.ans)?it.ans[0]:it.ans)}</div>`:it.type==='read'?it._readShown:`<div class="ans">Правильный ответ: ${it.opts[it.ans]}</div>`;

@@ -1,0 +1,442 @@
+(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const N=H.num, FR=H.frac, SQ=H.sqrt;
+const OV=s=>`<span style="text-decoration:overline">${s}</span>`;
+const XB=OV('x');
+const sum=a=>a.reduce((s,x)=>s+x,0);
+const rnd=x=>Math.round(x*1e6)/1e6;
+const sortN=a=>a.slice().sort((x,y)=>x-y);
+const mean=a=>rnd(sum(a)/a.length);
+const P=v=>v<0?`(${N(v)})`:N(v);
+const DN=x=>{const r=Math.round(x*100)/100;return Math.abs(r-x)<1e-9?N(x):'≈ '+N(r);};
+const SG=v=>v>0?'+'+N(v):N(v);
+const LS=a=>a.map(N).join(a.every(Number.isInteger)?', ':'; ');
+const plusExpr=a=>a.map((x,i)=>i===0?N(x):(x<0?' − '+N(-x):' + '+N(x))).join('');
+const NAMES=['Аня','Борис','Вика','Гоша','Даша','Егор','Женя','Зоя','Илья','Катя','Лёва','Мила','Ника','Олег'];
+const D=a=>{const m=sum(a)/a.length;return rnd(sum(a.map(x=>(x-m)*(x-m)))/a.length);};
+
+/* ---------- table helper ---------- */
+const TD='border:1px solid var(--line);padding:4px 10px;text-align:center';
+const TH=TD+';background:var(--accent-soft);color:var(--accent-ink);font-weight:600';
+function tbl(rows,o){o=o||{};
+  let h='<div style="overflow-x:auto;margin:8px 0"><table style="border-collapse:collapse;margin:0 auto;font-size:16px">';
+  rows.forEach((r,i)=>{h+='<tr>'+r.map((c,j)=>{const th=(o.head!==false&&i===0)||(o.firstCol&&j===0);const st=(th?TH:TD)+(o.lastBold&&i===rows.length-1?';font-weight:700':'');return `<${th?'th':'td'} style="${st}">${c}</${th?'th':'td'}>`;}).join('')+'</tr>';});
+  return h+'</table></div>';
+}
+/* x | x − x̄ | (x − x̄)² */
+function varTable(xs,m){const ds=xs.map(x=>rnd(x-m));const ss=rnd(sum(ds.map(d=>d*d)));
+  return tbl([['x',`x − ${XB}`,`(x − ${XB})²`]].concat(xs.map((x,i)=>[N(x),`${N(x)} − ${P(m)} = ${N(ds[i])}`,`${P(ds[i])}² = ${N(rnd(ds[i]*ds[i]))}`]),[['Сумма','0',N(ss)]]),{lastBold:true});}
+function varSteps(xs){const n=xs.length,m=mean(xs);const ss=rnd(sum(xs.map(x=>(x-m)*(x-m))));const d=rnd(ss/n);
+  return {m,ss,d,html:`1) Среднее: ${XB} = (${plusExpr(xs)}) : ${n} = ${N(sum(xs))} : ${n} = <b>${N(m)}</b>.<br>2) Отклонения и их квадраты:${varTable(xs,m)}3) Дисперсия — среднее квадратов отклонений: D = ${N(ss)} : ${n} = <b>${N(d)}</b>.`};}
+
+/* deviation vectors: n integers in [-r,r] with sum 0 */
+function devSet(n,o){o=o||{};const r=o.r||5;for(let t=0;t<300000;t++){const d=range(1,n-1).map(()=>R(-r,r));const last=-sum(d);if(Math.abs(last)>r)continue;d.push(last);const ss=sum(d.map(x=>x*x));if(ss===0)continue;
+  if(o.int&&ss%n)continue;if(o.sq){if(ss%n)continue;const q=Math.sqrt(ss/n);if(q!==Math.round(q))continue;}if(o.ok&&!o.ok(d,ss))continue;return shuffle(d);}throw new Error('devSet');}
+
+/* ---------- dot plot ---------- */
+function niceStep(span){for(const s of [1,2,5,10,20,25,50,100,200,250,500,1000])if(span/s<=10)return s;return 2000;}
+function dotplot(vals,o){o=o||{};
+  const W=o.w||320,pad=24;
+  let mn=Math.min(...vals),mx=Math.max(...vals);
+  if(o.lo!=null)mn=Math.min(mn,o.lo);if(o.hi!=null)mx=Math.max(mx,o.hi);
+  if(mn===mx){mn-=1;mx+=1;}
+  const st=niceStep(mx-mn);const lo=Math.floor(mn/st)*st,hi=Math.ceil(mx/st)*st;
+  const sx=v=>pad+(v-lo)/(hi-lo)*(W-2*pad);
+  const cols={};const pts=[];
+  sortN(vals).forEach(v=>{const k=Math.round(sx(v)/11);cols[k]=(cols[k]||0)+1;pts.push({v,x:sx(v),lv:cols[k]-1});});
+  const ms=Math.max(o.minStack||1,...Object.values(cols));
+  const top=14;const axisY=top+ms*13+4;const Hh=axisY+(o.mean!=null?50:26);
+  const cl=x=>Math.max(44,Math.min(W-44,x));
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="Точки на числовой прямой" style="font-family:system-ui,sans-serif">`;
+  if(o.label)s+=`<text x="6" y="12" font-size="13" font-weight="700" fill="var(--accent-ink)">${o.label}</text>`;
+  if(o.mean!=null){const x=sx(o.mean);s+=`<line x1="${x}" y1="${top-4}" x2="${x}" y2="${axisY}" stroke="var(--hl)" stroke-width="1.6" stroke-dasharray="4 3"/>`;}
+  s+=`<line x1="${pad-10}" y1="${axisY}" x2="${W-pad+10}" y2="${axisY}" stroke="var(--fig)" stroke-width="1.4"/>`;
+  const nt=Math.round((hi-lo)/st);
+  for(let i=0;i<=nt;i++){const t=lo+i*st;const x=sx(t);s+=`<line x1="${x}" y1="${axisY-4}" x2="${x}" y2="${axisY+4}" stroke="var(--fig)"/><text x="${x}" y="${axisY+17}" text-anchor="middle" font-size="11" fill="var(--ink)">${N(t)}</text>`;}
+  pts.forEach(p=>{const y=axisY-9-p.lv*13;s+=`<circle cx="${p.x}" cy="${y}" r="5.5" fill="var(--accent-ink)" fill-opacity=".85" stroke="var(--card)" stroke-width="1"/>`;});
+  if(o.mean!=null){const x=sx(o.mean);s+=`<path d="M${x},${axisY+21} l-6,9 h12 z" fill="var(--hl)"/><text x="${cl(x)}" y="${axisY+45}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-ink)">x̄ = ${N(o.mean)}</text>`;}
+  return s+'</svg>';
+}
+/* each value on its own row with a segment to the mean */
+function devPlot(vals,o){o=o||{};
+  const W=320,pad=40;const m=mean(vals);
+  let mn=Math.min(...vals),mx=Math.max(...vals);const st=niceStep(mx-mn||2);const lo=Math.floor(mn/st)*st,hi=Math.ceil(mx/st)*st;
+  const sx=v=>pad+(v-lo)/((hi-lo)||1)*(W-2*pad);
+  const top=10,rowH=20;const axisY=top+vals.length*rowH+8;const Hh=axisY+46;
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="Отклонения от среднего" style="font-family:system-ui,sans-serif">`;
+  const mxp=sx(m);
+  s+=`<line x1="${mxp}" y1="${top}" x2="${mxp}" y2="${axisY}" stroke="var(--hl)" stroke-width="1.8" stroke-dasharray="4 3"/>`;
+  vals.forEach((v,i)=>{const y=top+i*rowH+10;const x=sx(v);const d=rnd(v-m);
+    s+=`<line x1="${mxp}" y1="${y}" x2="${x}" y2="${y}" stroke="var(--accent-ink)" stroke-width="2.4" stroke-opacity=".55"/><circle cx="${x}" cy="${y}" r="5" fill="var(--accent-ink)"/>`;
+    const right=d>=0;s+=`<text x="${right?x+9:x-9}" y="${y+4}" text-anchor="${right?'start':'end'}" font-size="12" font-weight="600" fill="var(--ink)">${SG(d)}</text>`;});
+  s+=`<line x1="${pad-10}" y1="${axisY}" x2="${W-pad+10}" y2="${axisY}" stroke="var(--fig)" stroke-width="1.4"/>`;
+  const nt=Math.round((hi-lo)/st);for(let i=0;i<=nt;i++){const t=lo+i*st,x=sx(t);s+=`<line x1="${x}" y1="${axisY-4}" x2="${x}" y2="${axisY+4}" stroke="var(--fig)"/><text x="${x}" y="${axisY+17}" text-anchor="middle" font-size="11" fill="var(--ink)">${N(t)}</text>`;}
+  s+=`<path d="M${mxp},${axisY+21} l-6,9 h12 z" fill="var(--hl)"/><text x="${Math.max(44,Math.min(W-44,mxp))}" y="${axisY+44}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-ink)">x̄ = ${N(m)}</text>`;
+  return s+'</svg>';
+}
+/* scatter plot */
+function scatter(pts,o){o=o||{};
+  const W=320,Hh=240,L=44,Rm=12,T=24,B=40;
+  const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
+  const ax=(a,b)=>{const st=niceStep(b-a||1);return {st,lo:Math.floor(a/st)*st,hi:Math.ceil(b/st)*st};};
+  const pd=(a,b)=>[a-(b-a)*0.04,b+(b-a)*0.04];const X=ax(...pd(Math.min(...xs),Math.max(...xs))),Y=ax(...pd(Math.min(...ys),Math.max(...ys)));
+  const sx=v=>L+(v-X.lo)/(X.hi-X.lo)*(W-L-Rm),sy=v=>Hh-B-(v-Y.lo)/(Y.hi-Y.lo)*(Hh-B-T);
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="Диаграмма рассеивания" style="font-family:system-ui,sans-serif">`;
+  for(let v=Y.lo;v<=Y.hi+1e-9;v+=Y.st){const y=sy(v);s+=`<line x1="${L}" y1="${y}" x2="${W-Rm}" y2="${y}" stroke="var(--fig)" stroke-opacity=".15"/><text x="${L-6}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--ink)">${N(v)}</text>`;}
+  for(let v=X.lo;v<=X.hi+1e-9;v+=X.st){const x=sx(v);s+=`<line x1="${x}" y1="${T}" x2="${x}" y2="${Hh-B}" stroke="var(--fig)" stroke-opacity=".15"/><text x="${x}" y="${Hh-B+15}" text-anchor="middle" font-size="11" fill="var(--ink)">${N(v)}</text>`;}
+  s+=`<line x1="${L}" y1="${Hh-B}" x2="${W-Rm}" y2="${Hh-B}" stroke="var(--fig)" stroke-width="1.4"/><line x1="${L}" y1="${T}" x2="${L}" y2="${Hh-B}" stroke="var(--fig)" stroke-width="1.4"/>`;
+  s+=`<text x="${L}" y="${T-10}" font-size="12" font-weight="600" fill="var(--accent-ink)">↑ ${o.yl||'y'}</text><text x="${W-Rm}" y="${Hh-6}" text-anchor="end" font-size="12" font-weight="600" fill="var(--accent-ink)">${o.xl||'x'} →</text>`;
+  pts.forEach(p=>{s+=`<circle cx="${sx(p[0])}" cy="${sy(p[1])}" r="5" fill="var(--hl)" fill-opacity=".9" stroke="var(--fig)" stroke-width="1"/>`;});
+  if(o.trend){const [a,b]=o.trend;const x1=X.lo,x2=X.hi;const id='c'+Math.random().toString(36).slice(2,8);s+=`<clipPath id="${id}"><rect x="${L}" y="${T}" width="${W-L-Rm}" height="${Hh-B-T}"/></clipPath><line clip-path="url(#${id})" x1="${sx(x1)}" y1="${sy(a+b*x1)}" x2="${sx(x2)}" y2="${sy(a+b*x2)}" stroke="var(--accent-ink)" stroke-width="1.6" stroke-dasharray="6 4"/>`;}
+  return s+'</svg>';
+}
+const SCAT={
+ pos:{xg:'росту',xl:'рост, см',yl:'масса, кг',t:'рост и масса 12 учеников',make:()=>{const x=R(140,182);return [x,Math.round(0.8*x-85+R(-6,6))];},trend:[-85,0.8]},
+ neg:{xg:'температуре',xl:'температура, °C',yl:'чашек чая',t:'температура на улице и сколько чашек горячего чая продало кафе за день (12 дней)',make:()=>{const x=R(0,30);return [x,Math.round(80-2*x+R(-8,8))];},trend:[80,-2]},
+ none:{xg:'росту',xl:'рост, см',yl:'балл за тест',t:'рост 12 учеников и их баллы за тест по математике',make:()=>[R(140,182),R(40,100)]}
+};
+function scatData(kind){for(;;){const c=SCAT[kind];const pts=range(1,12).map(c.make);const s=pts.slice().sort((a,b)=>a[0]-b[0]);const l=mean(s.slice(0,6).map(p=>p[1])),r=mean(s.slice(6).map(p=>p[1]));
+  if(kind==='pos'&&r-l<8)continue;if(kind==='neg'&&l-r<12)continue;if(kind==='none'&&Math.abs(l-r)>4)continue;if(s[5][0]===s[6][0])continue;return {pts,l,r,mid:(s[5][0]+s[6][0])/2};}}
+
+/* ---------- theory ---------- */
+const clsA=[4,4,4,4,4,4],clsB=[5,3,5,3,5,3];
+const ex=[3,5,6,7,9];
+const theory=[
+{title:'Зачем нужен разброс: среднего мало',lvl:0,html:`
+<p>Среднее говорит, <b>вокруг какого числа</b> собраны данные. Но оно ничего не говорит о том, <b>насколько далеко</b> значения разбегаются от этого числа.</p>
+<div class="box ex"><b>Пример</b>Две группы по 6 человек написали контрольную.<br>Группа А: 4, 4, 4, 4, 4, 4 — среднее 4.<br>Группа Б: 5, 3, 5, 3, 5, 3 — среднее тоже 4!<br>Но в группе А все одинаковые, а в группе Б — то пятёрки, то тройки.</div>
+<div class="figrow"><div class="fig">${dotplot(clsA,{mean:4,lo:2,hi:5,w:250,label:'Группа А',minStack:6})}</div><div class="fig">${dotplot(clsB,{mean:4,lo:2,hi:5,w:250,label:'Группа Б',minStack:6})}</div></div>
+<p>Средние одинаковые, а картинки совсем разные. Значит, нужна ещё одна величина — <b>мера разброса</b> (рассеивания). Самую простую ты уже знаешь — <b>размах</b> (max − min). Но размах смотрит только на два крайних числа. Сегодня узнаем меру, которая учитывает <b>все</b> числа, — <b>дисперсию</b>.</p>
+<div class="box tip"><b>Аналогия</b>Два стрелка выбили в среднем по 8 очков. Один всегда попадает в 8, другой — то в 10, то в 6. Кому ты доверишь решающий выстрел? Тому, у кого разброс меньше.</div>`},
+{title:'Отклонение от среднего',lvl:1,html:`
+<div class="box rule"><b>Отклонение = значение − среднее</b><span class="m">x − ${XB}</span>. Показывает, насколько число больше (плюс) или меньше (минус) среднего.</div>
+<div class="box ex"><b>Пример</b>Набор 3, 5, 6, 7, 9. Среднее: (3 + 5 + 6 + 7 + 9) : 5 = 30 : 5 = 6.<br>Отклонения: 3 − 6 = −3, 5 − 6 = −1, 6 − 6 = 0, 7 − 6 = +1, 9 − 6 = +3.</div>
+<div class="fig">${devPlot(ex)}</div>
+<p class="small" style="text-align:center">Пунктир — среднее. Отрезок от пунктира до точки — это отклонение: вправо — плюс, влево — минус.</p>
+<div class="box err"><b>Частая ошибка</b>Вычитать наоборот (среднее − значение). Тогда все знаки перевернутся. Правило: <b>из значения вычитаем среднее</b>.</div>`},
+{title:'Сумма отклонений всегда 0',lvl:2,html:`
+<p>Сложим отклонения из примера: (−3) + (−1) + 0 + 1 + 3 = <b>0</b>. Это не случайность — так бывает <b>всегда</b>.</p>
+<div class="box rule"><b>Почему</b>Среднее — это точка равновесия. Всё, на сколько одни числа «перелезли» вверх, другие ровно на столько же «недотянули» вниз. Плюсы и минусы гасят друг друга.</div>
+<div class="box tip"><b>Аналогия с качелями</b>Если на качели посадить детей так, чтобы опора была в среднем, качели будут в равновесии. Отклонения — это «рычаги» слева (минус) и справа (плюс), и они уравновешивают друг друга.</div>
+<p>Из-за этого <b>среднее отклонение всегда равно 0</b> — и для группы А, и для группы Б. Значит, просто сложить отклонения, чтобы измерить разброс, нельзя. Нужно избавиться от минусов. Для этого отклонения <b>возводят в квадрат</b>: квадрат любого числа не меньше нуля, (−3)² = 9.</p>
+<div class="box ex"><b>Полезный приём</b>Если известны все отклонения, кроме одного, последнее найдётся сразу: оно уравновешивает сумму. Отклонения −2, +5, −4, ? → сумма известных −1 → последнее +1.</div>`},
+{title:'Дисперсия',lvl:3,html:`
+<div class="box rule"><b>Дисперсия — среднее арифметическое квадратов отклонений</b>D = ((x₁ − ${XB})² + (x₂ − ${XB})² + … + (xₙ − ${XB})²) : n</div>
+<ol class="steps"><li>Найди среднее ${XB}.</li><li>Найди отклонение каждого числа: x − ${XB}.</li><li>Возведи каждое отклонение в квадрат.</li><li>Сложи квадраты и раздели на количество чисел n.</li></ol>
+<div class="box ex"><b>Пример: 3, 5, 6, 7, 9</b>${varTable(ex,6)}D = 20 : 5 = <b>4</b>.</div>
+<div class="box ex"><b>Сравним группы</b>Группа А (все 4): все отклонения 0, D = 0.<br>Группа Б (5, 3, 5, 3, 5, 3): отклонения ±1, квадраты по 1, D = 6 : 6 = 1.<br>Дисперсия больше там, где разброс больше ✓.</div>
+<div class="box tip"><b>Что важно запомнить</b>• D ≥ 0 всегда (это среднее квадратов).<br>• D = 0 только если все числа одинаковые.<br>• Чем дальше числа от среднего, тем больше D. Далёкие числа влияют особенно сильно: отклонение 2 даёт 4, а отклонение 10 — уже 100.</div>
+<div class="box err"><b>Частая ошибка</b>Забыть возвести в квадрат (получится 0) или разделить не на n. В нашем учебнике делим на n — количество чисел.</div>`},
+{title:'Стандартное отклонение σ',lvl:4,html:`
+<p>У дисперсии есть неудобство: <b>единицы измерения в квадрате</b>. Если рост в сантиметрах, то отклонения в см, а их квадраты — в см² (квадратных сантиметрах). Странно измерять разброс роста «площадью»!</p>
+<div class="box rule"><b>Стандартное отклонение σ = √D</b>σ («сигма») — корень из дисперсии. Оно измеряется в <b>тех же единицах, что и данные</b>, и показывает, на сколько <b>обычно</b> значения отходят от среднего.</div>
+<div class="box ex"><b>Пример</b>Для набора 3, 5, 6, 7, 9 дисперсия D = 4, значит σ = √4 = <b>2</b>. Числа обычно отходят от среднего 6 примерно на 2.</div>
+<div class="box tip"><b>Связь в обе стороны</b>σ = √D и D = σ². Если σ = 5 см, то D = 25 см².</div>`},
+{title:'Сравнение разброса',lvl:5,html:`
+<p>Чтобы понять, где разброс больше, сравнивают дисперсии (или σ): у кого больше — у того значения разбросаны сильнее.</p>
+<div class="figrow"><div class="fig">${dotplot([9,10,10,10,11],{mean:10,lo:4,hi:16,w:250,label:'D = 0,4',minStack:3})}</div><div class="fig">${dotplot([5,8,10,12,15],{mean:10,lo:4,hi:16,w:250,label:'D = 11,6',minStack:3})}</div></div>
+<div class="box tip"><b>Без вычислений</b>Если точки на одной картинке стоят кучнее вокруг среднего — там дисперсия меньше. Например, 48, 50, 52 разбросаны меньше, чем 40, 50, 60.</div>
+<div class="box ex"><b>Интересный факт</b>Если добавить в набор число, <b>равное среднему</b>, дисперсия уменьшится: сумма квадратов не изменится (добавили 0), а делить будем на большее n.</div>`},
+{title:'Сдвиг и растяжение данных',lvl:6,html:`
+<div class="box rule"><b>Ко всем числам прибавили c</b>Дисперсия <b>не меняется</b>. Все точки сдвинулись вместе со средним, отклонения остались прежними.</div>
+<div class="box ex"><b>Пример</b>1, 2, 3 → D = (1 + 0 + 1) : 3 = 2/3. Прибавим 100: 101, 102, 103 — среднее 102, отклонения те же −1, 0, 1 → D та же.</div>
+<div class="box rule"><b>Все числа умножили на k</b>Отклонения умножаются на k, а их квадраты — на <b>k²</b>. Значит, <span class="m">D → k² · D</span>, а <span class="m">σ → |k| · σ</span>.</div>
+<div class="box ex"><b>Пример</b>3, 5, 6, 7, 9: D = 4, σ = 2. Умножим на 3: 9, 15, 18, 21, 27 — отклонения −9, −3, 0, 3, 9, квадраты 81, 9, 0, 9, 81 → D = 180 : 5 = 36 = 9 · 4, σ = 6 = 3 · 2.</div>
+<div class="box err"><b>Ловушка</b>При умножении на 3 дисперсия растёт <b>в 9 раз</b>, а не в 3. В 3 раза растёт σ.</div>`},
+{title:'Диаграмма рассеивания',lvl:7,html:`
+<p>Иногда у каждого объекта измеряют <b>две</b> величины: рост и массу ученика, температуру и продажи чая. Каждого ученика рисуют <b>точкой</b>: по горизонтали — одна величина, по вертикали — другая. Получается <b>диаграмма рассеивания</b>. По ней видно, связаны ли величины.</p>
+<div class="figrow">
+<div class="fig">${scatter([[142,30],[148,35],[150,33],[155,40],[158,38],[162,45],[165,43],[168,48],[171,52],[175,50],[178,57],[181,58]],{xl:'рост',yl:'масса'})}<div class="cap"><b>Положительная связь</b><br>больше x → обычно больше y</div></div>
+<div class="fig">${scatter([[2,78],[5,72],[7,60],[10,64],[12,55],[15,52],[17,40],[20,45],[22,33],[25,30],[27,25],[30,22]],{xl:'температура',yl:'чай'})}<div class="cap"><b>Отрицательная связь</b><br>больше x → обычно меньше y</div></div>
+<div class="fig">${scatter([[142,70],[148,95],[150,52],[155,80],[158,60],[162,92],[165,48],[168,75],[171,88],[175,55],[178,68],[181,90]],{xl:'рост',yl:'балл'})}<div class="cap"><b>Связи нет</b><br>точки разбросаны как попало</div></div>
+</div>
+<div class="box tip"><b>Как читать</b>Мысленно проведи через облако точек линию. Идёт вверх слева направо — связь положительная. Вниз — отрицательная. Облако круглое, линию не провести — связи нет.</div>
+<div class="box err"><b>Важно</b>Связь — это «обычно», а не «всегда»: бывает, что более высокий ученик легче. И связь не значит, что одно <i>вызывает</i> другое.</div>`},
+{title:'★ Быстрая формула для дисперсии',lvl:8,html:`
+<div class="box rule"><b>D = (среднее квадратов) − (квадрат среднего)</b><span class="m">D = ${OV('x²')} − (${XB})²</span></div>
+<div class="box ex"><b>Пример: 3, 5, 6, 7, 9</b>Квадраты: 9, 25, 36, 49, 81, их среднее (9 + 25 + 36 + 49 + 81) : 5 = 200 : 5 = 40.<br>Квадрат среднего: 6² = 36.<br>D = 40 − 36 = <b>4</b> — то же, что и обычным способом!</div>
+<div class="box tip"><b>Когда удобно</b>Когда среднее — некрасивое число или когда в задаче дано среднее квадратов. Отсюда же следует, что среднее квадратов не меньше квадрата среднего (ведь D ≥ 0).</div>`},
+{title:'Хитрости для олимпиадных задач',lvl:9,html:`
+<ol class="steps"><li><b>Равноотстоящие числа</b> (1, 2, …, 9 или 3, 6, 9, …) стоят симметрично вокруг среднего — отклонения получаются −k, …, −1, 0, 1, …, k (или умноженные на шаг).</li>
+<li><b>Добавили число, равное среднему</b>: сумма квадратов отклонений та же, а n на 1 больше.</li>
+<li><b>Наименьшая дисперсия</b> — когда числа как можно ближе друг к другу (к среднему). <b>Наибольшая</b> — когда числа «разбежались» к краям разрешённого промежутка.</li>
+<li><b>Две группы с одинаковым средним</b>: суммы квадратов отклонений складываются, n тоже складываются.</li></ol>`},
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>Отклонение = x − ${XB}. Сумма отклонений всегда 0.</li>
+<li>D = среднее квадратов отклонений (делим на n). D ≥ 0; D = 0 ⇔ все числа равны.</li>
+<li>σ = √D — в тех же единицах, что данные.</li>
+<li>+c ко всем: D не меняется. ·k: D·k², σ·|k|.</li>
+<li>Диаграмма рассеивания: вверх — положительная связь, вниз — отрицательная, облако — нет связи.</li>
+<li>★ D = ${OV('x²')} − (${XB})².</li></ul>`}
+];
+
+/* ---------- symbols ---------- */
+const symbols={tab:'Формулы',title:'Обозначения и формулы',rows:[
+[XB,'«икс с чертой» — среднее','Сумма значений : их количество.','2, 4, 9 →&nbsp;5'],
+['<span style="white-space:nowrap">x − '+XB+'</span>','отклонение','На сколько значение больше (+) или меньше (−) среднего.','2 − 5&nbsp;=&nbsp;−3'],
+['<span style="white-space:nowrap;font-size:19px">Σ(x − '+XB+')</span>','сумма отклонений','Всегда равна 0.','−3 − 1 + 4&nbsp;=&nbsp;0'],
+['<span style="white-space:nowrap;font-size:19px">(x − '+XB+')²</span>','квадрат отклонения','Всегда ≥ 0, далёкие числа дают большие квадраты.','(−3)²&nbsp;=&nbsp;9'],
+['D','«дисперсия»','Среднее арифметическое квадратов отклонений: сумма квадратов : n.','(9 + 1 + 16) : 3 ≈&nbsp;8,67'],
+['σ','«сигма» — стандартное отклонение','Корень из дисперсии. В тех же единицах, что и данные.','D&nbsp;=&nbsp;16 → σ&nbsp;=&nbsp;4'],
+['σ²','квадрат сигмы','То же, что дисперсия.','σ&nbsp;=&nbsp;3 → D&nbsp;=&nbsp;9'],
+['x + c','сдвиг','Дисперсия и σ не меняются.','D&nbsp;=&nbsp;4 → 4'],
+['k · x','растяжение','D умножается на k², σ — на |k|.','k&nbsp;=&nbsp;3: D·9, σ·3'],
+[OV('x²'),'среднее квадратов','Возводим все числа в квадрат и находим среднее.','1, 3 → (1 + 9) : 2&nbsp;=&nbsp;5'],
+['<span style="white-space:nowrap;font-size:19px">D = '+OV('x²')+' − '+XB+'²</span>','быстрая формула ★','Дисперсия = среднее квадратов минус квадрат среднего.','1, 3: 5 − 2²&nbsp;=&nbsp;1']
+],after:`<div class="box tip" style="margin-top:14px"><b>Порядок действий</b>среднее → отклонения → квадраты → их среднее (это D) → корень (это σ).</div>`};
+
+/* ---------- generators ---------- */
+const gens=[];
+const G=(lvl,make,star)=>gens.push({lvl,make,star});
+
+/* L0 */
+function twoGroups(n){for(;;){const m=pick([3,4]);const a=devSet(n,{r:1,ok:d=>d.filter(x=>x!==0).length>=2}).map(d=>m+d);const b=devSet(n,{r:2,ok:d=>d.filter(x=>Math.abs(x)===2).length>=2}).map(d=>m+d);if(a.concat(b).every(x=>x>=2&&x<=5))return {m,a,b};}}
+G(0,()=>{const g=twoGroups(6);
+return {type:'num',q:`Оценки двух групп за контрольную:<br>Группа А: ${g.a.join(', ')}<br>Группа Б: ${g.b.join(', ')}<br>Найди средний балл группы А, потом группы Б. Впиши средний балл группы Б и сравни его со средним группы А.`,ans:g.m,
+short:`У обеих групп ${sum(g.a)} : 6 = ${sum(g.b)} : 6 = ${g.m}. Средние равны, а разброс разный.`,
+explain:`Группа А: (${g.a.join(' + ')}) : 6 = ${sum(g.a)} : 6 = <b>${g.m}</b>.<br>Группа Б: (${g.b.join(' + ')}) : 6 = ${sum(g.b)} : 6 = <b>${g.m}</b>.<br>Средние <b>одинаковые</b>, хотя в группе Б оценки скачут гораздо сильнее (размах ${Math.max(...g.b)-Math.min(...g.b)} против ${Math.max(...g.a)-Math.min(...g.a)}). Вот почему одного среднего мало.`,
+explain2:`Посмотри на картинки: треугольник (среднее) в одном и том же месте, но точки группы Б разбежались дальше.<div class="figrow"><div class="fig">${dotplot(g.a,{mean:g.m,lo:2,hi:5,w:250,label:'Группа А'})}</div><div class="fig">${dotplot(g.b,{mean:g.m,lo:2,hi:5,w:250,label:'Группа Б'})}</div></div>`};});
+G(0,()=>{const g=twoGroups(6);const sw=Math.random()<.5;const A=sw?g.b:g.a,B=sw?g.a:g.b;const opts=['В группе А','В группе Б','Одинаково'];const ans=sw?0:1;
+const rA=Math.max(...A)-Math.min(...A),rB=Math.max(...B)-Math.min(...B);
+return {type:'choice',q:`Средний балл у двух групп одинаковый — ${g.m}.<br>Группа А: ${A.join(', ')}<br>Группа Б: ${B.join(', ')}<br>В какой группе оценки разбросаны <b>сильнее</b>?`,opts,ans,
+short:`Размах: А — ${rA}, Б — ${rB}. Сильнее разброс в группе ${sw?'А':'Б'}.`,
+explain:`Одинаковое среднее ничего не говорит о разбросе. Сравним, насколько оценки отходят от ${g.m}:<br>А: ${A.map(x=>SG(x-g.m)).join(', ')}<br>Б: ${B.map(x=>SG(x-g.m)).join(', ')}<br>В группе ${sw?'А':'Б'} отклонения по модулю больше (есть отклонения на 2), размах ${Math.max(rA,rB)} против ${Math.min(rA,rB)}. Разброс сильнее <b>в группе ${sw?'А':'Б'}</b>.`,
+explain2:`Представь, что оценки — это стрелы в мишени, а среднее ${g.m} — центр. В одной группе стрелы легли кучно, в другой — разлетелись.<div class="figrow"><div class="fig">${dotplot(A,{mean:g.m,lo:2,hi:5,w:250,label:'Группа А'})}</div><div class="fig">${dotplot(B,{mean:g.m,lo:2,hi:5,w:250,label:'Группа Б'})}</div></div>`};});
+G(0,()=>{for(;;){const m=R(12,20);const a=devSet(5,{r:2}).map(d=>m+d),b=devSet(5,{r:9,ok:d=>Math.max(...d)-Math.min(...d)>=12}).map(d=>m+d);
+const right='Средние равны, но во втором городе температура меняется сильнее';
+const opts=shuffle([right,'Раз средние равны, погода в городах одинаковая','В первом городе теплее','Во втором городе теплее']);
+return {type:'choice',q:`Температура (°C) в полдень за 5 дней:<br>Город 1: ${LS(a)}<br>Город 2: ${LS(b)}<br>Какой вывод верный?`,opts,ans:opts.indexOf(right),
+short:`Средние: ${N(sum(a))} : 5 = ${m} и ${N(sum(b))} : 5 = ${m}. Размах: ${Math.max(...a)-Math.min(...a)} и ${Math.max(...b)-Math.min(...b)}.`,
+explain:`1) Среднее города 1: ${N(sum(a))} : 5 = ${m}; города 2: ${N(sum(b))} : 5 = ${m}. В среднем одинаково тепло — поэтому «теплее» неверно.<br>2) Но размах: город 1 — ${Math.max(...a)} − ${Math.min(...a)} = ${Math.max(...a)-Math.min(...a)}, город 2 — ${Math.max(...b)} − ${P(Math.min(...b))} = ${Math.max(...b)-Math.min(...b)}.<br>Погода не одинаковая: <b>во втором городе температура скачет сильнее</b>.`,
+explain2:`Одним средним погоду не опишешь: в городе 2 то ${Math.min(...b)}°, то ${Math.max(...b)}° — нужна и куртка, и футболка. В городе 1 всё время около ${m}°.<div class="fig">${dotplot(b,{mean:m,label:'Город 2'})}</div>`};}});
+G(0,()=>{const m=10;const sets=[{k:'s',v:devSet(7,{r:1,ok:d=>d.filter(x=>x).length>=4}).map(d=>m+d)},{k:'m',v:devSet(7,{r:3,ok:d=>Math.max(...d.map(Math.abs))===3}).map(d=>m+d)},{k:'l',v:devSet(7,{r:6,ok:d=>d.filter(x=>Math.abs(x)>=5).length>=3}).map(d=>m+d)}];
+const o=shuffle(sets);const pic=s=>dotplot(s.v,{mean:m,lo:2,hi:18,w:220,minStack:3});
+return {type:'choice',pics:true,q:'У всех трёх наборов среднее одинаковое — 10. На какой картинке значения разбросаны <b>сильнее всего</b>?',opts:o.map(pic),ans:o.findIndex(s=>s.k==='l'),ansText:'где точки дальше всего от среднего 10',
+short:'Там точки дальше всего от треугольника (среднего).',
+explain:`Разброс — это то, насколько далеко точки стоят от среднего (треугольник на 10). Наборы: ${o.map(s=>LS(sortN(s.v))).join(' | ')}.<br>Самые далёкие точки у набора ${LS(sortN(sets[2].v))} — значит, разброс там наибольший.`,
+explain2:`Представь, что каждая точка привязана к треугольнику резинкой. Где резинки длиннее, там разброс больше. Самые длинные резинки — у набора ${LS(sortN(sets[2].v))}.`};});
+
+/* L1 — deviations */
+G(1,()=>{const m=R(5,30);const d=devSet(5,{r:6,ok:d=>d.filter(x=>Math.abs(x)>=2).length>=2});const xs=d.map(v=>m+v);const i=d.findIndex(v=>Math.abs(v)>=2);const x=xs[i];
+return {type:'num',q:`Набор: ${xs.join(', ')}. Найди отклонение числа ${x} от среднего.`,ans:d[i],
+hint:'Сначала найди среднее, потом вычти его из числа.',
+short:`${XB} = ${sum(xs)} : 5 = ${m}; ${x} − ${m} = ${N(d[i])}.`,
+explain:`1) Среднее: (${xs.join(' + ')}) : 5 = ${sum(xs)} : 5 = ${m}.<br>2) Отклонение = значение − среднее = ${x} − ${m} = <b>${N(d[i])}</b>.${d[i]<0?'<br>Минус значит, что число <b>меньше</b> среднего.':''}`,
+explain2:`Отклонение отвечает на вопрос «на сколько число отошло от среднего и в какую сторону».<div class="fig">${devPlot(xs)}</div>У числа ${x} отрезок идёт ${d[i]>0?'вправо — плюс':'влево — минус'}, длина ${Math.abs(d[i])}.`};});
+G(1,()=>{const m=R(150,170);const k=pick(['below','above','eq']);const x=k==='eq'?m:k==='below'?m-R(2,9):m+R(2,9);const nm=pick(NAMES);
+const opts=['Отрицательное','Положительное','Равно нулю'];const ans=k==='below'?0:k==='above'?1:2;
+return {type:'choice',q:`Средний рост в классе — ${m} см. Рост ${nm} — ${x} см. Каким будет отклонение роста ${nm} от среднего?`,opts,ans,
+short:`${x} − ${m} = ${N(x-m)}.`,
+explain:`Отклонение = рост − среднее = ${x} − ${m} = <b>${N(x-m)}</b>.<br>${k==='below'?'Значение меньше среднего → отклонение <b>отрицательное</b>.':k==='above'?'Значение больше среднего → отклонение <b>положительное</b>.':'Значение равно среднему → отклонение <b>ноль</b>.'}`,
+explain2:`Представь шкалу: среднее ${m} — это ноль отсчёта. Выше него — плюс, ниже — минус. ${nm} ${k==='below'?`ниже на ${m-x} см → −${m-x}`:k==='above'?`выше на ${x-m} см → +${x-m}`:'ровно на нуле отсчёта → 0'}.`};});
+G(1,()=>{const m=R(40,70),d=R(-12,12)||5;const nm=pick(NAMES);
+return {type:'num',q:`Средний результат класса в тесте — ${m} баллов. Отклонение результата ${nm} от среднего равно ${N(d)}. Сколько баллов у ${nm}?`,ans:m+d,
+short:`${m} + ${P(d)} = ${m+d}.`,
+explain:`Отклонение = результат − среднее, значит <b>результат = среднее + отклонение</b> = ${m} + ${P(d)} = <b>${m+d}</b>.`,
+explain2:`${d>0?`Плюс ${d} значит «на ${d} больше среднего»`:`Минус ${-d} значит «на ${-d} меньше среднего»`}: ${m} ${d>0?'+':'−'} ${Math.abs(d)} = ${m+d}. Проверка: ${m+d} − ${m} = ${N(d)} ✓.`};});
+G(1,()=>{for(;;){const m=R(10,40);const d=devSet(6,{r:8});const ab=d.map(Math.abs);const mx=Math.max(...ab);if(ab.filter(v=>v===mx).length>1)continue;const xs=d.map(v=>m+v);const i=ab.indexOf(mx);
+return {type:'num',q:`Набор: ${xs.join(', ')}. Какое число дальше всего от среднего? Запиши <b>его отклонение</b> (со знаком).`,ans:d[i],
+short:`${XB} = ${m}; дальше всего ${xs[i]}: ${xs[i]} − ${m} = ${N(d[i])}.`,
+explain:`1) Среднее: ${sum(xs)} : 6 = ${m}.<br>2) Отклонения: ${xs.map((x,j)=>`${x} − ${m} = ${N(d[j])}`).join('; ')}.<br>3) Дальше всего то, у которого отклонение больше <b>без учёта знака</b>: ${xs[i]}, отклонение <b>${N(d[i])}</b>.`,
+explain2:`На картинке это самый длинный отрезок от пунктира:<div class="fig">${devPlot(xs)}</div>Самый длинный — у ${xs[i]}: ${N(d[i])}.`};}});
+
+/* L2 — sum of deviations */
+G(2,()=>{for(;;){const m=R(5,25);const d=devSet(5,{r:5});const xs=d.map(v=>m+v);const ss=sum(d.map(v=>v*v)),sa=sum(d.map(Math.abs));const c=['0',N(ss),N(sa),N(m)];if(new Set(c).size<4)continue;const opts=shuffle(c);
+return {type:'choice',q:`Найди сумму отклонений чисел ${xs.join(', ')} от их среднего.`,opts,ans:opts.indexOf('0'),
+short:`${d.map(P).join(' + ')} = 0 — так всегда.`,
+explain:`Среднее: ${sum(xs)} : 5 = ${m}. Отклонения: ${d.map(SG).join(', ')}.<br>Сумма: ${d.map(P).join(' + ')} = <b>0</b>.<br>Так бывает <b>всегда</b>: плюсы и минусы уравновешивают друг друга. (${ss} — это сумма <i>квадратов</i> отклонений, ${sa} — сумма отклонений без знаков, ${m} — само среднее.)`,
+explain2:`Почему всегда 0: сумма отклонений = (сумма чисел) − n · ${XB} = ${sum(xs)} − 5 · ${m} = ${sum(xs)} − ${5*m} = 0. Ведь ${XB} как раз и равно сумме, делённой на n.<div class="fig">${devPlot(xs)}</div>`};}});
+G(2,()=>{const d=devSet(5,{r:7});
+return {type:'num',q:`Отклонения четырёх чисел набора от среднего: ${d.slice(0,4).map(SG).join('; ')}. В наборе 5 чисел. Найди отклонение пятого.`,ans:d[4],
+hint:'Сумма всех отклонений от среднего равна 0.',
+short:`Сумма должна быть 0: известные дают ${N(sum(d.slice(0,4)))}, значит пятое ${N(d[4])}.`,
+explain:`Сумма отклонений от среднего <b>всегда равна 0</b>.<br>Сумма известных: ${d.slice(0,4).map(P).join(' + ')} = ${N(sum(d.slice(0,4)))}.<br>Пятое должно «погасить» это: <b>${N(d[4])}</b>.`,
+explain2:`Представь весы: плюсы на одной чаше, минусы на другой. Плюсов: ${sum(d.slice(0,4).filter(v=>v>0))}, минусов: ${-sum(d.slice(0,4).filter(v=>v<0))}. Чтобы весы уравновесились, нужно добавить ${N(d[4])}.`};});
+G(2,()=>{const m=R(10,40);const d=devSet(4,{r:6});const xs=d.map(v=>m+v);
+return {type:'num',q:`Среднее четырёх чисел равно ${m}. Три из них: ${xs.slice(0,3).join(', ')}. Найди четвёртое, используя отклонения.`,ans:xs[3],
+short:`Отклонения ${d.slice(0,3).map(SG).join(', ')} → четвёртое ${SG(d[3])} → ${m} + ${P(d[3])} = ${xs[3]}.`,
+explain:`1) Отклонения трёх чисел от ${m}: ${xs.slice(0,3).map((x,i)=>`${x} − ${m} = ${N(d[i])}`).join('; ')}.<br>2) Сумма отклонений всех четырёх равна 0, значит отклонение четвёртого: ${N(d[3])}.<br>3) Четвёртое число: ${m} + ${P(d[3])} = <b>${xs[3]}</b>.`,
+explain2:`Проверим через сумму: сумма всех = ${m} · 4 = ${4*m}, известные дают ${sum(xs.slice(0,3))}, четвёртое ${4*m} − ${sum(xs.slice(0,3))} = ${xs[3]} ✓. Оба способа — одно и то же.`};});
+
+/* L3 — variance */
+G(3,()=>{const m=R(3,12);const xs=devSet(3,{r:3,int:true}).map(d=>m+d);const v=varSteps(xs);
+return {type:'num',q:`Найди дисперсию набора ${xs.join(', ')}.`,ans:v.d,hint:'Среднее → отклонения → квадраты → их среднее.',
+short:`${XB} = ${v.m}, сумма квадратов отклонений ${v.ss}, D = ${v.ss} : 3 = ${N(v.d)}.`,explain:v.html,
+explain2:`Посмотри на картинку: длина каждого отрезка — отклонение. Квадрат отклонения — это <b>площадь квадрата</b> со стороной, равной отрезку. Дисперсия — средняя площадь таких квадратов.<div class="fig">${devPlot(xs)}</div>Площади: ${xs.map(x=>`${P(rnd(x-v.m))}² = ${N(rnd((x-v.m)**2))}`).join(', ')}; вместе ${v.ss}; поровну на 3 → ${N(v.d)}.`};});
+G(3,()=>{const m=R(5,40);const xs=devSet(4,{r:5,int:true}).map(d=>m+d);const v=varSteps(xs);const nm=pick(NAMES);
+return {type:'num',q:`${nm} забросил мяч в кольцо в четырёх тренировках: ${xs.join(', ')} раз. Найди дисперсию.`,ans:v.d,
+short:`${XB} = ${v.m}; D = ${v.ss} : 4 = ${N(v.d)}.`,explain:v.html,
+explain2:`То же самое по шагам в одну строку:<br>D = (${xs.map(x=>`(${x} − ${v.m})²`).join(' + ')}) : 4 = (${xs.map(x=>N(rnd((x-v.m)**2))).join(' + ')}) : 4 = ${v.ss} : 4 = ${N(v.d)}.<div class="box err"><b>Проверь себя</b>Если у тебя вышло 0 — ты забыл возвести отклонения в квадрат.</div>`};});
+G(3,()=>{const m=R(10,30);const xs=devSet(5,{r:5}).map(d=>m+d);const v=varSteps(xs);
+return {type:'num',q:`Время (в минутах), которое Артём делал уроки в течение 5 дней: ${xs.join(', ')}. Найди дисперсию.`,ans:v.d,
+short:`${XB} = ${v.m}; D = ${v.ss} : 5 = ${N(v.d)}.`,explain:v.html,
+explain2:`Короткая запись: сначала все отклонения ${xs.map(x=>SG(x-v.m)).join(', ')} (их сумма 0 — проверка!), потом квадраты ${xs.map(x=>(x-v.m)**2).join(', ')}, сумма ${v.ss}, делим на 5: ${N(v.d)}.`};});
+G(3,()=>{const opts=shuffle(['Среднее арифметическое квадратов отклонений от среднего','Сумма отклонений от среднего','Среднее арифметическое отклонений от среднего','Разность наибольшего и наименьшего значений']);
+return {type:'choice',q:'Что такое <b>дисперсия</b> набора чисел?',opts,ans:opts.indexOf('Среднее арифметическое квадратов отклонений от среднего'),
+short:'D = среднее квадратов отклонений.',
+explain:`Дисперсия — <b>среднее арифметическое квадратов отклонений</b>.<br>• Сумма отклонений и их среднее <b>всегда 0</b> — они разброс не измеряют.<br>• Разность max и min — это размах, а не дисперсия.<br>Пример: 2, 4, 9 → ${XB} = 5, отклонения −3, −1, 4, квадраты 9, 1, 16, D = 26 : 3 ≈ 8,67.`,
+explain2:`Запомни цепочку слов с конца: «среднее — квадратов — отклонений». Отклонения → возвели в квадрат (чтобы убрать минусы) → нашли их среднее.`};});
+G(3,()=>{const all=R(2,9);const opts=shuffle(['Нет, никогда: это среднее квадратов, а квадраты не бывают отрицательными','Да, если все числа отрицательные','Да, если среднее отрицательное','Да, если чисел больше 10']);
+return {type:'choice',q:`Может ли дисперсия быть <b>отрицательной</b>? А когда она равна 0?`,opts,ans:opts.findIndex(o=>o.startsWith('Нет')),
+short:'Квадраты ≥ 0, их среднее ≥ 0. D = 0 только у одинаковых чисел.',
+explain:`Каждый квадрат отклонения ≥ 0: (−3)² = 9, 0² = 0. Среднее неотрицательных чисел тоже ≥ 0. Значит, <b>D ≥ 0 всегда</b>, даже для отрицательных чисел: у −5, −3, −1 среднее −3, отклонения −2, 0, 2, D = 8 : 3 ≈ 2,67 > 0.<br>D = 0 только если все отклонения 0 — то есть все числа одинаковые, например ${all}, ${all}, ${all}, ${all}.`,
+explain2:`Подумай о дисперсии как о «средней площади квадратов» со сторонами-отклонениями. Площадь не бывает отрицательной. Нулевая площадь — только если стороны нулевые, то есть разброса нет вообще.`};});
+G(3,()=>{const m=R(-4,3);const xs=devSet(5,{r:5,int:true}).map(d=>m+d);const v=varSteps(xs);
+return {type:'num',q:`Температура (°C) за 5 зимних дней: ${LS(xs)}. Найди дисперсию температуры.`,ans:v.d,hint:'С минусами аккуратно: квадрат отрицательного числа положителен.',
+short:`${XB} = ${N(v.m)}; D = ${v.ss} : 5 = ${N(v.d)}.`,explain:v.html,
+explain2:`Минусы в самих температурах не мешают: важны только <b>отклонения</b> от среднего ${N(v.m)}. Отметим их:<div class="fig">${devPlot(xs)}</div>Квадраты: ${xs.map(x=>N((x-v.m)**2)).join(', ')} → сумма ${v.ss} → D = ${N(v.d)}.`};});
+
+/* L4 — sigma */
+G(4,()=>{const s=pick([2,3,4,5,6,7,8,9,10,12,1.5,2.5,0.5]);const d=rnd(s*s);
+return {type:'num',q:`Дисперсия набора равна ${N(d)}. Найди стандартное отклонение σ.`,ans:s,
+short:`σ = √${N(d)} = ${N(s)}.`,
+explain:`σ = √D = ${SQ(N(d))} = <b>${N(s)}</b>, потому что ${N(s)}² = ${N(s)} · ${N(s)} = ${N(d)}.`,
+explain2:`Ищем число, которое при умножении само на себя даёт ${N(d)}. Попробуем: ${[s-1,s,s+1].filter(x=>x>0).map(x=>`${N(x)}² = ${N(rnd(x*x))}${x===s?' ✓':''}`).join(', ')}. Ответ ${N(s)}.`};});
+G(4,()=>{const n=pick([4,5]);const m=R(10,40);const xs=devSet(n,{r:6,sq:true}).map(d=>m+d);const v=varSteps(xs);const s=Math.sqrt(v.d);
+return {type:'num',q:`Найди стандартное отклонение σ набора ${xs.join(', ')}.`,ans:s,
+short:`D = ${v.ss} : ${n} = ${N(v.d)}, σ = √${N(v.d)} = ${s}.`,explain:v.html+`<br>4) σ = √D = ${SQ(N(v.d))} = <b>${s}</b>.`,
+explain2:`σ показывает «обычное» расстояние от среднего. Отклонения здесь: ${xs.map(x=>SG(x-v.m)).join(', ')}. Квадраты в среднем дают ${N(v.d)}, а корень возвращает нас к «длине»: ${s}. Числа обычно отходят от ${v.m} примерно на ${s}.`};});
+G(4,()=>{const c=pick([['рост учеников','сантиметрах','см'],['массу арбузов','килограммах','кг'],['время забега','секундах','с'],['цену тетрадей','рублях','₽']]);
+const want=pick(['σ','D']);const opts=[c[2],c[2]+'²','без единиц',c[2]+'³'];
+return {type:'choice',q:`Измеряли ${c[0]} в ${c[1]}. В каких единицах измеряется ${want==='σ'?'стандартное отклонение σ':'дисперсия D'}?`,opts,ans:want==='σ'?0:1,
+short:want==='σ'?`σ — в тех же единицах, что данные: ${c[2]}.`:`D — квадраты отклонений, поэтому ${c[2]}².`,
+explain:`Отклонение x − ${XB} измеряется в ${c[2]} (вычитаем ${c[2]} из ${c[2]}). Квадрат отклонения — в ${c[2]}², поэтому <b>D в ${c[2]}²</b>. А σ = √D возвращает нас обратно: <b>σ в ${c[2]}</b>. Ответ: <b>${want==='σ'?c[2]:c[2]+'²'}</b>.`,
+explain2:`Аналогия с квадратом: сторона 3 см → площадь 9 см². Площадь «в квадрате», сторона — нет. Дисперсия похожа на площадь (${c[2]}²), а σ — на сторону (${c[2]}). Именно поэтому придумали σ: её удобно сравнивать с самими данными.`};});
+G(4,()=>{const s=pick([2,3,4,5,6,7,8,9,11,1.5,0.5]);
+return {type:'num',q:`Стандартное отклонение роста учеников σ = ${N(s)} см. Найди дисперсию.`,ans:rnd(s*s),
+short:`D = σ² = ${N(s)}² = ${N(rnd(s*s))}.`,
+explain:`σ = √D, значит наоборот <b>D = σ²</b> = ${N(s)} · ${N(s)} = <b>${N(rnd(s*s))}</b> (см²).`,
+explain2:`Корень и квадрат — «обратные» действия: если √D = ${N(s)}, то D — число, корень из которого ${N(s)}. Это ${N(s)}² = ${N(rnd(s*s))}. Проверка: √${N(rnd(s*s))} = ${N(s)} ✓.`};});
+
+/* L5 — comparing */
+G(5,()=>{for(;;){const m=R(10,30),k=R(10,30);const a=devSet(4,{r:5,int:true}).map(d=>m+d),b=devSet(4,{r:5,int:true}).map(d=>k+d);const da=D(a),db=D(b);if(Math.abs(da-db)<1)continue;
+const opts=['У набора А','У набора Б','Одинаковые'];const ans=da>db?0:1;
+return {type:'choice',q:`А: ${a.join(', ')}<br>Б: ${b.join(', ')}<br>У какого набора дисперсия больше?`,opts,ans,
+short:`D(А) = ${N(da)}, D(Б) = ${N(db)}.`,
+explain:`<b>Набор А:</b><br>${varSteps(a).html}<br><br><b>Набор Б:</b><br>${varSteps(b).html}<br><br>${N(Math.max(da,db))} > ${N(Math.min(da,db))} → больше у набора <b>${ans?'Б':'А'}</b>.`,
+explain2:`Сравни отклонения: А — ${a.map(x=>SG(x-mean(a))).join(', ')}; Б — ${b.map(x=>SG(x-mean(b))).join(', ')}. Где отклонения по модулю больше, там и дисперсия больше. Особенно важны самые большие: квадрат усиливает их.`};}});
+G(5,()=>{const m=10;const sets=[{k:'s',v:devSet(6,{r:1,ok:d=>d.filter(x=>x).length>=4}).map(d=>m+d)},{k:'m',v:devSet(6,{r:3,ok:d=>d.filter(x=>Math.abs(x)>=2).length>=3}).map(d=>m+d)},{k:'l',v:devSet(6,{r:6,ok:d=>d.filter(x=>Math.abs(x)>=4).length>=4}).map(d=>m+d)}];
+const o=shuffle(sets);const pic=s=>dotplot(s.v,{mean:m,lo:2,hi:18,w:220,minStack:3});
+return {type:'choice',pics:true,q:'У трёх наборов среднее одинаковое — 10. На какой картинке <b>дисперсия наименьшая</b>?',opts:o.map(pic),ans:o.findIndex(s=>s.k==='s'),ansText:'где точки теснее всего вокруг 10',
+short:`Точки теснее всего около среднего: D ${DN(D(sets[0].v)).startsWith('≈')?'':'= '}${DN(D(sets[0].v))}.`,
+explain:`Дисперсия наименьшая там, где точки ближе всего к среднему.<br>${sets.map(s=>`${LS(sortN(s.v))}: D ${DN(D(s.v)).startsWith('≈')?'':'= '}${DN(D(s.v))}`).join('<br>')}<br>Наименьшая — у набора ${LS(sortN(sets[0].v))}.`,
+explain2:`Не считая: найди картинку, где точки «прилипли» к треугольнику. Там все отклонения 0 или ±1, их квадраты 0 или 1 — дисперсия маленькая.`};});
+G(5,()=>{const m=R(20,60),k=R(2,6),type=pick(['scale','shift','scale']);let a=[m-k,m,m+k],b;
+if(type==='scale'){const f=pick([2,3]);b=[m-f*k,m,m+f*k];}else{const c=R(10,50);b=a.map(x=>x+c);}
+const sw=Math.random()<.5;const A=sw?b:a,B=sw?a:b;const da=D(A),db=D(B);const opts=['У набора А','У набора Б','Одинаковые'];const ans=da===db?2:da>db?0:1;
+return {type:'choice',q:`Не вычисляя, определи, у какого набора дисперсия больше.<br>А: ${A.join(', ')}<br>Б: ${B.join(', ')}`,opts,ans,
+short:ans===2?'Наборы отличаются сдвигом — разброс одинаковый.':`Отклонения у набора ${ans?'Б':'А'} больше.`,
+explain:`Посмотри на отклонения от среднего:<br>А: среднее ${mean(A)}, отклонения ${A.map(x=>SG(x-mean(A))).join(', ')}.<br>Б: среднее ${mean(B)}, отклонения ${B.map(x=>SG(x-mean(B))).join(', ')}.<br>${ans===2?'Отклонения <b>одинаковые</b> — один набор просто сдвинут относительно другого. Дисперсии равны.':`У набора <b>${ans?'Б':'А'}</b> отклонения больше, значит и дисперсия больше (D(А) ${DN(da).startsWith("≈")?"":"= "}${DN(da)}, D(Б) ${DN(db).startsWith("≈")?"":"= "}${DN(db)}).`}`,
+explain2:ans===2?`Представь, что весь набор переехал по числовой прямой на ${Math.abs(mean(B)-mean(A))}. Точки сдвинулись все вместе — расстояния между ними не изменились, значит и разброс тот же.`:`В обоих наборах числа стоят симметрично вокруг среднего, но в одном шаг ${k}, а в другом — больше. Чем шире «шаг», тем больше разброс.`};});
+G(5,()=>{for(;;){const m=R(10,30);const xs=devSet(4,{r:5,int:true}).map(d=>m+d);const v=varSteps(xs);const c=[m,Math.max(...xs)+R(4,9),Math.min(...xs)-R(4,9),Math.max(...xs)+R(10,16)];if(new Set(c).size<4)continue;if(c.slice(1).some(x=>D(xs.concat([x]))<=v.d))continue;const opts=shuffle(c.map(N));
+const dn=rnd(v.ss/5);
+return {type:'choice',q:`Набор: ${xs.join(', ')} (среднее ${m}, дисперсия ${N(v.d)}). Какое число нужно <b>добавить</b> в набор, чтобы дисперсия <b>уменьшилась</b>?`,opts,ans:opts.indexOf(N(m)),
+short:`Добавим ${m} (= среднее): D = ${v.ss} : 5 = ${N(dn)} < ${N(v.d)}.`,
+explain:`Если добавить число, <b>равное среднему</b> (${m}), среднее не изменится, а новое отклонение — 0. Сумма квадратов отклонений останется ${v.ss}, но делить будем на 5, а не на 4:<br>D = ${v.ss} : 5 = <b>${N(dn)}</b> < ${N(v.d)}.<br>Далёкие числа (${c.slice(1).map(N).join(', ')}) имеют большие отклонения — с ними дисперсия только вырастет: ${c.slice(1).map(x=>`с ${x} D ${DN(D(xs.concat([x]))).startsWith('≈')?'':'= '}${DN(D(xs.concat([x])))}`).join(', ')}.`,
+explain2:`Дисперсия — «средний квадрат расстояния до центра». Если добавить точку прямо в центр (расстояние 0), среднее расстояние станет меньше — как если бы в класс с ростом «вразнобой» пришёл ученик ровно среднего роста.`};}});
+
+/* L6 — shift and scale */
+G(6,()=>{const d=R(2,30),c=R(3,50);
+return {type:'num',q:`Дисперсия набора чисел равна ${d}. К каждому числу прибавили ${c}. Чему равна дисперсия нового набора?`,ans:d,
+short:`Сдвиг не меняет дисперсию: ${d}.`,
+explain:`Если ко всем числам прибавить ${c}, среднее тоже увеличится на ${c}. Тогда каждое отклонение (x + ${c}) − (${XB} + ${c}) = x − ${XB} — <b>не изменилось</b>. Значит, и дисперсия та же: <b>${d}</b>.<div class="box err"><b>Ошибка</b>${d} + ${c} = ${d+c} — неверно: разброс не зависит от того, где стоит набор.</div>`,
+explain2:`Пример: 1, 2, 3 (D = 2/3) и ${1+c}, ${2+c}, ${3+c}. Нарисуй точки — они стоят с теми же промежутками, просто правее. Разброс одинаковый.<div class="figrow"><div class="fig">${dotplot([1,2,3],{mean:2,lo:0,hi:c+4,w:250})}</div><div class="fig">${dotplot([1+c,2+c,3+c],{mean:2+c,lo:0,hi:c+4,w:250})}</div></div>`};});
+G(6,()=>{const d=R(2,12),k=pick([2,3,4,5,10]);
+return {type:'num',q:`Дисперсия набора равна ${d}. Каждое число умножили на ${k}. Чему равна новая дисперсия?`,ans:d*k*k,hint:'Отклонения умножатся на k. А их квадраты?',
+short:`D · k² = ${d} · ${k*k} = ${d*k*k}.`,
+explain:`При умножении на ${k} каждое отклонение тоже умножается на ${k}, а его квадрат — на ${k}² = ${k*k}.<br>Новая D = ${d} · ${k*k} = <b>${d*k*k}</b>.<div class="box err"><b>Ошибка</b>${d} · ${k} = ${d*k} — так меняется σ, а не D.</div>`,
+explain2:`Маленький пример: 0 и 2 → среднее 1, отклонения ±1, D = 1. Умножим на ${k}: 0 и ${2*k} → среднее ${k}, отклонения ±${k}, D = ${k*k}. Выросла в ${k*k} раз, а не в ${k}.`};});
+G(6,()=>{const s=R(2,9),k=pick([2,3,4,5,-2,-3]);
+return {type:'num',q:`Стандартное отклонение набора σ = ${s}. Каждое число умножили на ${N(k)}. Чему равно новое σ?`,ans:Math.abs(k)*s,
+short:`σ · |k| = ${s} · ${Math.abs(k)} = ${Math.abs(k)*s}.`,
+explain:`D умножается на k² = ${k*k}, значит σ = √D умножается на √${k*k} = ${Math.abs(k)}.<br>Новое σ = ${s} · ${Math.abs(k)} = <b>${Math.abs(k)*s}</b>.${k<0?`<br>Знак минус «переворачивает» набор, но расстояния не становятся отрицательными — поэтому берём ${Math.abs(k)}, а не ${k}.`:''}`,
+explain2:`σ — это «обычное расстояние» до среднего. Если растянуть числовую прямую в ${Math.abs(k)} раз${k<0?' (и отразить)':''}, все расстояния станут в ${Math.abs(k)} раз${Math.abs(k)<5?'а':''} больше: ${s} → ${Math.abs(k)*s}.`};});
+G(6,()=>{const k=pick([2,3,4]);const opts=[`Увеличится в ${k} раза`,`Увеличится в ${k*k} раз`,'Не изменится',`Увеличится на ${k}`];
+return {type:'choice',q:`Все числа набора умножили на ${k}. Что произойдёт с дисперсией?`,opts,ans:1,
+short:`D умножается на ${k}² = ${k*k}.`,
+explain:`Отклонения умножаются на ${k}, квадраты отклонений — на ${k}² = ${k*k}. Значит, дисперсия увеличится <b>в ${k*k} раз</b>. В ${k} раза увеличится стандартное отклонение σ.<br>Пример: 1, 3 (D = 1) → ${k}, ${3*k} (отклонения ±${k}, D = ${k*k}).`,
+explain2:`Аналогия: если сторону квадрата увеличить в ${k} раза, площадь вырастет в ${k*k} раз. Дисперсия ведёт себя как площадь, σ — как сторона.`};});
+G(6,()=>{const d=R(2,10),k=pick([2,3,5]),c=pick([1,4,7,-3,10]);
+return {type:'num',q:`Дисперсия набора равна ${d}. Каждое число умножили на ${k}, а потом ${c>0?'прибавили':'вычли'} ${Math.abs(c)}. Найди новую дисперсию.`,ans:d*k*k,
+short:`Умножение: ·${k*k}; ${c>0?'прибавление':'вычитание'} ничего не меняет. ${d} · ${k*k} = ${d*k*k}.`,
+explain:`Действуем по шагам.<br>1) Умножили на ${k}: D стала ${d} · ${k}² = ${d*k*k}.<br>2) ${c>0?'Прибавили':'Вычли'} ${Math.abs(c)} — это сдвиг, дисперсию он не меняет.<br>Ответ: <b>${d*k*k}</b>.`,
+explain2:`Запомни: на разброс влияет только «растяжение» (умножение), а «перенос» (сложение и вычитание) — нет. Поэтому ${c>0?'+':'−'}${Math.abs(c)} можно просто не замечать.`};});
+
+/* L7 — scatter */
+const SOPTS=['Положительная связь: чем больше x, тем обычно больше y','Отрицательная связь: чем больше x, тем обычно меньше y','Связи не видно'];
+const scatTask=(kind)=>()=>{const c=SCAT[kind];const d=scatData(kind);const ans=kind==='pos'?0:kind==='neg'?1:2;
+ return {type:'choice',q:`На диаграмме рассеивания — ${c.t}. Какая связь между величинами? (x — по горизонтали, y — по вертикали)`,pic:scatter(d.pts,{xl:c.xl,yl:c.yl}),opts:SOPTS,ans,
+ short:`Слева (x < ${N(d.mid)}) в среднем y ≈ ${N(Math.round(d.l))}, справа ≈ ${N(Math.round(d.r))}.`,
+ explain:`Разделим точки пополам по горизонтали (по ${c.xg}) — левые 6 и правые 6.<br>У левых среднее по вертикали ≈ ${N(Math.round(d.l))}, у правых ≈ ${N(Math.round(d.r))}.<br>${kind==='pos'?'Справа точки в среднем выше → облако идёт <b>вверх</b> → связь <b>положительная</b>.':kind==='neg'?'Справа точки в среднем ниже → облако идёт <b>вниз</b> → связь <b>отрицательная</b>.':'Слева и справа почти одинаково → облако не наклонено → <b>связи не видно</b>.'}`,
+ explain2:kind==='none'?`Попробуй провести через точки линию — не получится: они разбросаны «облаком», без наклона. И по смыслу: высокий рост не помогает решать задачи по математике.`:`Проведём через облако линию — она идёт ${kind==='pos'?'вверх':'вниз'}:<div class="fig">${scatter(d.pts,{xl:c.xl,yl:c.yl,trend:c.trend})}</div>${kind==='pos'?'По смыслу: более высокие ученики обычно тяжелее.':'По смыслу: в жару горячий чай покупают реже.'}`};};
+G(7,scatTask('pos'));G(7,scatTask('neg'));G(7,scatTask('none'));
+G(7,()=>{const items=[{t:'Температура на улице и количество проданных пуховиков',k:1},{t:'Время, потраченное на подготовку, и балл за контрольную',k:0},{t:'Номер дома и рост его жильцов',k:2},{t:'Скорость машины и время на дорогу до дачи',k:1},{t:'Возраст ребёнка (от 1 до 12 лет) и его рост',k:0},{t:'Номер места в кинозале и любимый цвет зрителя',k:2}];
+const want=pick([0,1]);const right=pick(items.filter(i=>i.k===want));const others=sample(items.filter(i=>i.k!==want),3);const opts=shuffle([right,...others]);
+const lab=['положительная','отрицательная','нет связи'];
+return {type:'choice',q:`Для какой пары величин диаграмма рассеивания, скорее всего, покажет <b>${want?'отрицательную':'положительную'}</b> связь?`,opts:opts.map(o=>o.t),ans:opts.indexOf(right),
+short:`«${right.t}» — ${want?'одно растёт, другое уменьшается':'обе растут вместе'}.`,
+explain:`${want?'Отрицательная связь — когда одна величина растёт, а другая обычно уменьшается.':'Положительная связь — когда обе величины обычно растут вместе.'}<br>${opts.map(o=>`• ${o.t} — ${lab[o.k]}`).join('<br>')}`,
+explain2:`Задай вопрос: «Если первое станет больше, что обычно случится со вторым?» Больше → положительная, меньше → отрицательная, «ничего особенного» → нет связи. Для «${right.t}» ответ: ${want?'меньше':'больше'}.`};});
+
+/* L8 — ★ shortcut */
+G(8,()=>{for(;;){const n=4;const m=R(2,7);const xs=devSet(n,{r:3,int:true}).map(d=>m+d);if(Math.min(...xs)<1)continue;const sq=xs.map(x=>x*x);const ms=sum(sq)/n;if(ms!==Math.round(ms))continue;const d=ms-m*m;
+return {type:'num',q:`Найди дисперсию набора ${xs.join(', ')} по формуле <span class="m">D = ${OV('x²')} − (${XB})²</span>.`,ans:d,
+short:`${OV('x²')} = ${sum(sq)} : 4 = ${ms}, (${XB})² = ${m}² = ${m*m}, D = ${ms} − ${m*m} = ${d}.`,
+explain:`1) Среднее: ${XB} = ${sum(xs)} : 4 = ${m}, его квадрат ${m}² = ${m*m}.<br>2) Квадраты чисел: ${xs.map(x=>`${x}² = ${x*x}`).join(', ')}.<br>3) Среднее квадратов: ${OV('x²')} = ${sum(sq)} : 4 = ${ms}.<br>4) D = ${ms} − ${m*m} = <b>${d}</b>.`,
+explain2:`Проверим обычным способом:<br>${varSteps(xs).html}<br>Совпало ✓. Быстрая формула не требует считать каждое отклонение.`};}},true);
+G(8,()=>{const m=R(2,12),d=R(1,25);const ms=m*m+d;
+return {type:'num',q:`Среднее арифметическое набора чисел равно ${m}, а среднее арифметическое их квадратов равно ${ms}. Найди дисперсию.`,ans:d,
+short:`D = ${ms} − ${m}² = ${ms} − ${m*m} = ${d}.`,
+explain:`Быстрая формула: D = (среднее квадратов) − (квадрат среднего) = ${ms} − ${m}² = ${ms} − ${m*m} = <b>${d}</b>.<div class="box err"><b>Ошибка</b>${ms} − ${m} = ${ms-m} — забыли возвести среднее в квадрат.</div>`,
+explain2:`Почему формула работает, на примере 1 и 3: ${XB} = 2, квадраты 1 и 9, их среднее 5. D обычным способом: отклонения ±1, D = 1. По формуле: 5 − 2² = 1 ✓. В нашей задаче: ${ms} − ${m*m} = ${d}.`};},true);
+
+/* L9 — ★ olympiad */
+G(9,()=>{const [n,s]=pick([[5,1],[5,2],[5,3],[7,1],[7,2],[9,3],[11,1],[11,2],[13,1]]);const a=R(1,9);const xs=range(0,n-1).map(i=>a+i*s);const k=(n-1)/2;const m=a+k*s;
+const ss=2*s*s*k*(k+1)*(2*k+1)/6;const d=ss/n;
+return {type:'num',q:`Быстро найди дисперсию чисел ${xs.slice(0,3).join(', ')}, …, ${xs[n-1]} (${n} чисел, каждое следующее на ${s} больше).`,ans:d,
+hint:'Числа стоят симметрично вокруг среднего. Какими будут отклонения?',
+short:`Отклонения ±${s}, ±${2*s}, …, ±${k*s}; сумма квадратов ${ss}; D = ${ss} : ${n} = ${d}.`,
+explain:`1) Числа стоят симметрично, среднее — середина: ${XB} = ${m}.<br>2) Отклонения: ${range(-k,k).map(i=>N(i*s)).join(', ')}.<br>3) Квадраты: ${range(-k,k).map(i=>i*i*s*s).join(', ')}; их сумма = 2 · (${range(1,k).map(i=>i*i*s*s).join(' + ')}) = ${ss}.<br>4) D = ${ss} : ${n} = <b>${d}</b>.`,
+explain2:`${s>1?`Хитрость: наш набор — это 0, 1, …, ${n-1}, умноженные на ${s} и сдвинутые на ${a}. Сдвиг D не меняет, умножение даёт ·${s*s}. У 0, 1, …, ${n-1} отклонения ${range(-k,k).join(', ')}, D = ${ss/(s*s)} : ${n} = ${N(rnd(ss/(s*s)/n))}. Значит, D = ${N(rnd(ss/(s*s)/n))} · ${s*s} = ${d}.`:`Сдвиг не меняет дисперсию, поэтому можно сразу работать с отклонениями ${range(-k,k).join(', ')}. Квадраты попарно одинаковые: 2 · (${range(1,k).map(i=>i*i).join(' + ')}) = ${ss}, делим на ${n}: ${d}.`}`};},true);
+G(9,()=>{const n=R(4,11),d=(n+1)*R(1,3),m=R(5,30);const dn=n*d/(n+1);
+return {type:'num',q:`У набора из ${n} чисел среднее равно ${m}, а дисперсия равна ${d}. В набор добавили ещё одно число — ${m}. Найди новую дисперсию.`,ans:dn,
+hint:'Изменится ли среднее? А сумма квадратов отклонений?',
+short:`Сумма квадратов отклонений ${n}·${d} = ${n*d} не изменилась, n = ${n+1}: ${n*d} : ${n+1} = ${dn}.`,
+explain:`1) Добавили число, равное среднему, — среднее осталось ${m}.<br>2) Сумма квадратов отклонений была D · n = ${d} · ${n} = ${n*d}. Новое число добавило (${m} − ${m})² = 0, сумма осталась ${n*d}.<br>3) Теперь чисел ${n+1}: D = ${n*d} : ${n+1} = <b>${dn}</b>.`,
+explain2:`Пример поменьше: 1 и 3 (среднее 2, D = 1). Добавим 2: 1, 2, 3 — сумма квадратов отклонений та же 2, но делим на 3: D = 2/3 < 1. «Средний» ученик делает класс однороднее. Здесь ${d} → ${dn}.`};},true);
+G(9,()=>{const t=pick(['shift','scale','shift100','cut']);const A=range(1,10);let B,ans,why;
+if(t==='shift'){B=range(11,20);ans=2;why='Б — это А, сдвинутое на 10. Сдвиг не меняет дисперсию.';}
+else if(t==='shift100'){B=range(101,110);ans=2;why='Б — это А, сдвинутое на 100. Сдвиг не меняет дисперсию.';}
+else if(t==='scale'){B=range(1,10).map(x=>2*x);ans=1;why='Б — это А, умноженное на 2. Дисперсия умножается на 2² = 4: D(Б) = 4 · D(А).';}
+else{B=range(1,9).concat([5]);ans=0;why='Б — это А, в котором число 10 (самое далёкое от среднего 5,5) заменили на 5. Разброс уменьшился.';}
+const opts=['У набора А','У набора Б','Одинаковые'];const fmt=a=>a.length>6?`${a.slice(0,3).join(', ')}, …, ${a.slice(-2).join(', ')}`:a.join(', ');
+return {type:'choice',q:`Не вычисляя, сравни дисперсии.<br>А: 1, 2, 3, …, 10<br>Б: ${t==='cut'?'1, 2, 3, 4, 5, 6, 7, 8, 9, 5':fmt(B)}`,opts,ans,
+short:why,
+explain:`${why}<br>Проверка вычислением: D(А) = ${N(D(A))}, D(Б) = ${N(D(B))}.`,
+explain2:t==='cut'?`Подумай про точку 10: её отклонение от среднего 5,5 было 4,5 (квадрат 20,25). Заменили на 5 — точка оказалась почти в центре. Самая «далёкая» точка ушла в середину — разброс уменьшился.`:t==='scale'?`На числовой прямой точки Б стоят через 2, а не через 1: всё растянули вдвое. Расстояния ×2, квадраты расстояний ×4.`:`Нарисуй оба набора: точки Б — точно такие же, как точки А, просто правее. Расстояния между ними и до среднего те же.`};},true);
+G(9,()=>{for(;;){const n=pick([4,5]);const S=R(10,30);const r=S%n;if(!r)continue;const q=Math.floor(S/n);const d=rnd(r*(n-r)/(n*n));const xs=Array(n-r).fill(q).concat(Array(r).fill(q+1));const m=rnd(S/n);
+return {type:'num',q:`${n===4?'Четыре':'Пять'} <b>целых</b> чисел в сумме дают ${S}. Какая <b>наименьшая</b> возможная дисперсия у такого набора?`,ans:d,
+hint:'Дисперсия меньше, когда числа ближе друг к другу. Могут ли все числа быть равны?',
+short:`Числа как можно ближе: ${xs.join(', ')} → D = ${N(d)}.`,
+explain:`1) Среднее фиксировано: ${S} : ${n} = ${N(m)}.<br>2) Все числа равными быть не могут (${N(m)} — не целое). Ближе всего к среднему целые ${q} и ${q+1}: берём ${n-r} ${plural(n-r,'число','числа','чисел')} ${q} и ${r} ${plural(r,'число','числа','чисел')} ${q+1} — сумма ${S} ✓. Если какое-то число увести дальше (например, ${q-1}), его квадрат отклонения сильно вырастет.<br>3) Набор ${xs.join(', ')}: отклонения ${N(rnd(q-m))} (${n-r} раз) и ${SG(rnd(q+1-m))} (${r} раз).<br>D = (${n-r} · ${N(rnd((q-m)**2))} + ${r} · ${N(rnd((q+1-m)**2))}) : ${n} = <b>${N(d)}</b>.`,
+explain2:`Можно проверить быстрой формулой: среднее квадратов (${xs.map(x=>x+'²').join(' + ')}) : ${n} = ${N(rnd(sum(xs.map(x=>x*x))/n))}, квадрат среднего ${N(m)}² = ${N(rnd(m*m))}; D = ${N(rnd(sum(xs.map(x=>x*x))/n))} − ${N(rnd(m*m))} = ${N(d)}. Любой другой набор, например ${[q-1].concat(xs.slice(1,-1),[xs[n-1]+1]).join(', ')}, даёт больше: ${DN(D([q-1].concat(xs.slice(1,-1),[xs[n-1]+1])))}.`};}},true);
+G(9,()=>{const [n,M]=pick([[4,2],[4,4],[4,6],[4,10],[6,2],[6,4],[6,10],[5,5],[5,10]]);const k=Math.floor(n/2);const d=rnd(M*M*k*(n-k)/(n*n));const xs=Array(k).fill(0).concat(Array(n-k).fill(M));
+return {type:'num',q:`${n===4?'Четыре':n===5?'Пять':'Шесть'} чисел, каждое от 0 до ${M} (включительно). Какая <b>наибольшая</b> возможная дисперсия у такого набора?`,ans:d,
+hint:'Чтобы разброс был как можно больше, числа должны «разбежаться» к краям.',
+short:`Набор ${xs.join(', ')} → D = ${N(d)}.`,
+explain:`1) Чтобы разброс был наибольшим, все числа ставим на края: 0 или ${M} (сдвинуть число внутрь отрезка — значит приблизить его к остальным).<br>2) Сколько нулей? Лучше всего поровну${n%2?' (насколько возможно)':''}: ${k} ${plural(k,'ноль','нуля','нулей')} и ${n-k} ${plural(n-k,'число','числа','чисел')} ${M}.<br>3) Среднее: ${M*(n-k)} : ${n} = ${N(rnd(M*(n-k)/n))}. Отклонения: ${N(rnd(-M*(n-k)/n))} (${k} раз) и ${SG(rnd(M-M*(n-k)/n))} (${n-k} раз).<br>D = (${k} · ${N(rnd((M*(n-k)/n)**2))} + ${n-k} · ${N(rnd((M-M*(n-k)/n)**2))}) : ${n} = <b>${N(d)}</b>.`,
+explain2:`Сравним разные «расстановки по краям»: ${range(1,n-1).map(j=>{const s=Array(n-j).fill(0).concat(Array(j).fill(M));return `${j} ${plural(j,'раз','раза','раз')} по ${M}: D ${DN(D(s)).startsWith('≈')?'':'= '}${DN(D(s))}`;}).join('; ')}. Наибольшая — когда краёв поровну (${N(d)}).`};},true);
+G(9,()=>{for(;;){const n1=R(8,20),n2=R(8,20),d1=R(2,20),d2=R(2,20);const T=n1*d1+n2*d2,n=n1+n2;if((T*10)%n||d1===d2)continue;const d=rnd(T/n);const m=R(3,5);
+return {type:'num',q:`В двух классах средний балл за тест одинаковый — ${m}. В первом классе ${n1} учеников, дисперсия баллов ${d1}; во втором ${n2} учеников, дисперсия ${d2}. Найди дисперсию баллов всех учеников вместе.`,ans:d,
+hint:'Найди сумму квадратов отклонений в каждом классе.',
+short:`(${n1}·${d1} + ${n2}·${d2}) : ${n} = ${T} : ${n} = ${N(d)}.`,
+explain:`Средние одинаковые, поэтому общее среднее тоже ${m}, и отклонения каждого ученика не меняются.<br>1) Сумма квадратов отклонений в 1-м классе: D · n = ${d1} · ${n1} = ${n1*d1}.<br>2) Во 2-м: ${d2} · ${n2} = ${n2*d2}.<br>3) Вместе: ${n1*d1} + ${n2*d2} = ${T}, учеников ${n}.<br>4) D = ${T} : ${n} = <b>${N(d)}</b>.<div class="box err"><b>Ошибка</b>(${d1} + ${d2}) : 2 = ${N(rnd((d1+d2)/2))} — так можно, только если классы одинаковые по размеру.</div>`,
+explain2:`Это как среднее для двух групп: «сумма : количество». Только суммируем не баллы, а квадраты отклонений. Ответ ${N(d)} лежит между ${Math.min(d1,d2)} и ${Math.max(d1,d2)} и ближе к дисперсии класса, где учеников больше ✓.`};}},true);
+
+window.TOPIC={id:'dispersiya',title:'Дисперсия и рассеивание',subtitle:'Вероятность и статистика · 8 класс',
+intro:`<p>Среднее говорит, вокруг какого числа собраны данные, а <b>дисперсия</b> — насколько сильно они разбросаны. Разберём по шагам: отклонения, почему их сумма всегда 0, квадраты отклонений, дисперсию и стандартное отклонение σ. В конце — диаграммы рассеивания и быстрая формула. Перед этой темой полезно знать среднее и размах.</p>`,
+theory,symbols,figs:{},
+levels:['Зачем нужен разброс','Отклонения от среднего','Сумма отклонений равна 0','Дисперсия','Стандартное отклонение σ','Сравнение разброса','Сдвиг и растяжение данных','Диаграммы рассеивания','★ Быстрая формула для дисперсии','★ Задачи олимпиадного уровня'],
+gens};
+})();

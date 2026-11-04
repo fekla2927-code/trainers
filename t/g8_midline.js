@@ -1,0 +1,486 @@
+(function(){
+const {R,pick,shuffle,sample,range,plural,num:N}=H;
+/* =====================================================================
+   Geometry SVG helper (math coords, y up → auto-fit into ≤ 320 px)
+   ===================================================================== */
+const D2R=Math.PI/180;
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(a,k)=>[a[0]*k,a[1]*k];
+const len=a=>Math.hypot(a[0],a[1]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
+const unit=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l];};
+const polar=(p,L,d)=>[p[0]+L*Math.cos(d*D2R),p[1]+L*Math.sin(d*D2R)];
+const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+const foot=(p,a,b)=>{const d=sub(b,a);const t=dot(sub(p,a),d)/dot(d,d);return lerp(a,b,t);};
+const inter=(a,b,c,d)=>{const r=sub(b,a),s=sub(d,c);const den=r[0]*s[1]-r[1]*s[0];const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den;return add(a,mul(r,t));};
+const angAt=(v,a,b)=>{const u=unit(sub(a,v)),w=unit(sub(b,v));return Math.acos(Math.max(-1,Math.min(1,dot(u,w))))/D2R;};
+const r1=x=>Math.round(x*10)/10;
+const tw=(t,fs)=>{t=String(t).replace(/<[^>]+>/g,'');let w=0;for(const ch of t)w+=/[°·,.\s₁₂₃₄]/.test(ch)?fs*0.36:/[0-9]/.test(ch)?fs*0.56:fs*0.64;return w;};
+const SUB={A1:'A₁',A2:'A₂',A3:'A₃',A4:'A₄',B1:'B₁',B2:'B₂',B3:'B₃',B4:'B₄'};
+
+function geo(o){
+  const P={};for(const k in o.P)if(Array.isArray(o.P[k]))P[k]=o.P[k];const W=o.W||300,MH=o.maxH||220,pad=o.pad==null?30:o.pad;
+  const all=Object.values(P).concat(o.extra||[]);
+  const x0=Math.min(...all.map(p=>p[0])),x1=Math.max(...all.map(p=>p[0]));
+  const y0=Math.min(...all.map(p=>p[1])),y1=Math.max(...all.map(p=>p[1]));
+  const bw=Math.max(x1-x0,1e-6),bh=Math.max(y1-y0,1e-6);
+  const s=Math.min((W-2*pad)/bw,(MH-2*pad)/bh);
+  const w=Math.round(bw*s+2*pad),h=Math.round(bh*s+2*pad);
+  const X=p=>[pad+(p[0]-x0)*s,pad+(y1-p[1])*s];
+  const Q={};for(const k in P)Q[k]=X(P[k]);
+  const g=k=>Array.isArray(k)?X(k):Q[k];
+  const polys=o.poly||[];
+  const cen=pts=>[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];
+  const allC=cen(Object.values(Q));
+  const pstr=pts=>pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ');
+  const T=(x,y,t,fs,col,wt,anc)=>`<text x="${r1(x)}" y="${r1(y+fs*0.36)}" text-anchor="${anc||'middle'}" font-size="${fs}" font-weight="${wt||600}" fill="${col||'var(--ink)'}">${t}</text>`;
+  const place=(p,d,t,fs,gap)=>{const ww=tw(t,fs),hh=fs*0.78;const k=gap+0.5*(ww*Math.abs(d[0])+hh*Math.abs(d[1]));return [p[0]+d[0]*k,p[1]+d[1]*k];};
+  let out=`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${o.aria||'Чертёж'}" style="font-family:system-ui,sans-serif">`;
+  const LS=[];const ln=(A,B,attr)=>{LS.push([A,B]);return `<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" ${attr}/>`;};
+  if(o.grid){const G=o.grid;for(let x=G[0];x<=G[2]+1e-9;x++){const a=X([x,G[1]]),b=X([x,G[3]]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}
+    for(let y=G[1];y<=G[3]+1e-9;y++){const a=X([G[0],y]),b=X([G[2],y]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}}
+  (o.fill||[]).forEach(f=>{const pts=(f.pts||f).map(g);out+=`<polygon points="${pstr(pts)}" fill="${f.col||'var(--hl)'}" fill-opacity="${f.op||0.35}" stroke="none"/>`;});
+  polys.forEach(pl=>{out+=`<polygon points="${pstr(pl.map(g))}" fill="none" stroke="var(--fig)" stroke-width="2.2" stroke-linejoin="round"/>`;pl.forEach((k,i)=>LS.push([g(k),g(pl[(i+1)%pl.length])]));});
+  (o.seg||[]).forEach(sg=>{const op=sg[2]||{};let A=g(sg[0]),B=g(sg[1]);if(op.ext){const e=mul(sub(B,A),op.ext);A=sub(A,e);B=add(B,e);}
+    out+=ln(A,B,`stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||1.7}" ${op.dash?'stroke-dasharray="6 4"':''} stroke-linecap="round"`);});
+  (o.tick||[]).forEach(tk=>{const A=g(tk[0]),B=g(tk[1]),n=tk[2]||1;const e=unit(sub(B,A)),nn=[-e[1],e[0]],m=mid(A,B);
+    for(let i=0;i<n;i++){const c=add(m,mul(e,(i-(n-1)/2)*5));out+=ln(add(c,mul(nn,6)),sub(c,mul(nn,6)),'stroke="var(--fig)" stroke-width="1.7"');}});
+  (o.rt||[]).forEach(rt=>{const Vv=g(rt[0]),u=unit(sub(g(rt[1]),Vv)),ww=unit(sub(g(rt[2]),Vv)),k=10;const a=add(Vv,mul(u,k)),b=add(a,mul(ww,k)),c=add(Vv,mul(ww,k));LS.push([a,b],[b,c]);
+    out+=`<path d="M${r1(a[0])},${r1(a[1])} L${r1(b[0])},${r1(b[1])} L${r1(c[0])},${r1(c[1])}" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`;});
+  const angInfo=(o.ang||[]).map(an=>{const op=an[4]||{};const Vv=g(an[0]),A=g(an[1]),B=g(an[2]);
+    const a1=Math.atan2(A[1]-Vv[1],A[0]-Vv[0]);let dl=Math.atan2(B[1]-Vv[1],B[0]-Vv[0])-a1;while(dl>Math.PI)dl-=2*Math.PI;while(dl<=-Math.PI)dl+=2*Math.PI;
+    const th=Math.abs(dl);const rr=op.r||(th<0.75?26:19);const n=op.n||1;
+    for(let i=0;i<n;i++){const r=rr+i*4;const p=[Vv[0]+r*Math.cos(a1),Vv[1]+r*Math.sin(a1)],q=[Vv[0]+r*Math.cos(a1+dl),Vv[1]+r*Math.sin(a1+dl)];
+      out+=`<path d="M${r1(p[0])},${r1(p[1])} A${r},${r} 0 0 ${dl>0?1:0} ${r1(q[0])},${r1(q[1])}" fill="none" stroke="${op.col||'var(--accent)'}" stroke-width="1.6"/>`;
+      let prev=p;for(let j=1;j<=6;j++){const an2=a1+dl*j/6;const c=[Vv[0]+r*Math.cos(an2),Vv[1]+r*Math.sin(an2)];LS.push([prev,c]);prev=c;}}
+    return {an,op,Vv,a1,dl,th,rr,n};});
+  (o.dots||[]).forEach(k=>{const p=g(k);out+=`<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="2.8" fill="var(--fig)"/>`;});
+  /* ---- collision-aware label placement ---- */
+  const boxes=[];
+  const segRect=(a,b,c,hw,hh)=>{const xmin=c[0]-hw,xmax=c[0]+hw,ymin=c[1]-hh,ymax=c[1]+hh;let t0=0,t1=1,hit=true;const dx=b[0]-a[0],dy=b[1]-a[1];const pp=[-dx,dx,-dy,dy],qq=[a[0]-xmin,xmax-a[0],a[1]-ymin,ymax-a[1]];
+    for(let i=0;i<4;i++){if(Math.abs(pp[i])<1e-12){if(qq[i]<0){hit=false;break;}}else{const r=qq[i]/pp[i];if(pp[i]<0){if(r>t1){hit=false;break;}if(r>t0)t0=r;}else{if(r<t0){hit=false;break;}if(r<t1)t1=r;}}}
+    if(hit)return -1;const pr=p=>Math.hypot(Math.max(xmin-p[0],0,p[0]-xmax),Math.max(ymin-p[1],0,p[1]-ymax));
+    const ps=p=>{const d=sub(b,a);const t=Math.max(0,Math.min(1,dot(sub(p,a),d)/Math.max(dot(d,d),1e-9)));return len(sub(p,lerp(a,b,t)));};
+    return Math.min(pr(a),pr(b),ps([xmin,ymin]),ps([xmax,ymin]),ps([xmin,ymax]),ps([xmax,ymax]));};
+  const clr=(c,hw,hh)=>{let m=Math.min(c[0]-hw,w-c[0]-hw,c[1]-hh,h-c[1]-hh)+1;for(const L of LS)m=Math.min(m,segRect(L[0],L[1],c,hw,hh));for(const bx of boxes)m=Math.min(m,Math.max(Math.abs(c[0]-bx[0])-hw-bx[2],Math.abs(c[1]-bx[1])-hh-bx[3]));return m;};
+  const choose=(cands,t,fs,thr)=>{const hw=tw(t,fs)/2+1,hh=fs*0.4+1;let best=cands[0],bs=-1e9;for(const c of cands){const v=clr(c,hw,hh);if(v>=thr){best=c;break;}if(v>bs){bs=v;best=c;}}boxes.push([best[0],best[1],hw,hh]);return best;};
+  let labels='';
+  const vdir=k=>{
+    if(o.dir&&o.dir[k]!=null){const d=o.dir[k];return [Math.cos(d*D2R),-Math.sin(d*D2R)];}
+    const p=Q[k];
+    for(const pl of polys){const i=pl.indexOf(k);if(i<0)continue;const n=pl.length;const u1=unit(sub(g(pl[(i-1+n)%n]),p)),u2=unit(sub(g(pl[(i+1)%n]),p));let d=add(u1,u2);
+      if(len(d)>0.15)return mul(unit(d),-1);const c=cen(pl.map(g));d=[-u1[1],u1[0]];if(dot(d,sub(c,p))>0)d=mul(d,-1);return d;}
+    for(const pl of polys){for(let i=0;i<pl.length;i++){const A=g(pl[i]),B=g(pl[(i+1)%pl.length]);const f=foot(p,A,B);const t=dot(sub(p,A),sub(B,A))/dot(sub(B,A),sub(B,A));
+      if(len(sub(f,p))<1&&t>0.02&&t<0.98){const e=unit(sub(B,A));let d=[-e[1],e[0]];if(dot(d,sub(cen(pl.map(g)),p))>0)d=mul(d,-1);return d;}}}
+    let d=sub(p,allC);if(len(d)<4)d=[0.7,0.7];return unit(d);};
+  (o.txt||[]).forEach(tx=>{const arr=Array.isArray(tx[0]);const p=arr?X(tx[0]):X([tx[0],tx[1]]);const t=arr?tx[1]:tx[2];const op=(arr?tx[2]:tx[3])||{};const fs=op.fs||14;
+    boxes.push([p[0],p[1],tw(t,fs)/2+1,fs*0.4+1]);labels+=T(p[0],p[1],t,fs,op.col||'var(--ink)',op.wt||600,op.anc);});
+  const labs=o.lab||Object.keys(P);
+  labs.forEach(k=>{const t=(o.names&&o.names[k])||SUB[k]||k;const d0=vdir(k);const th0=Math.atan2(d0[1],d0[0]);const cands=[];
+    for(const gp of [5,9])for(let j=0;j<=12;j++)for(const sg of (j?[1,-1]:[1])){const th=th0+sg*j*15*D2R;cands.push(place(Q[k],[Math.cos(th),Math.sin(th)],t,15,gp));}
+    const p=choose(cands,t,15,2.5);labels+=T(p[0],p[1],t,15,'var(--accent-ink)',700);});
+  (o.side||[]).forEach(sd=>{const op=sd[3]||{};const A=g(sd[0]),B=g(sd[1]);const e=unit(sub(B,A));let n=[-e[1],e[0]];const t0=op.t==null?0.5:op.t;
+    let c=allC;for(const pl of polys){const i=pl.indexOf(sd[0]),j=pl.indexOf(sd[1]);if(i>=0&&j>=0&&(Math.abs(i-j)===1||Math.abs(i-j)===pl.length-1)){c=cen(pl.map(g));break;}}
+    if(dot(n,sub(c,lerp(A,B,t0)))>0)n=mul(n,-1);if(op.flip)n=mul(n,-1);const fs=op.fs||14;const gp=op.gap==null?4:op.gap;const cands=[];
+    for(const nn of [n,mul(n,-1)])for(const gg of [gp,gp+5])for(const dt of [0,0.1,-0.1,0.2,-0.2,0.3,-0.3])cands.push(place(lerp(A,B,Math.max(0.08,Math.min(0.92,t0+dt))),nn,sd[2],fs,gg));
+    const p=choose(cands,sd[2],fs,2);labels+=T(p[0],p[1],sd[2],fs,op.col||'var(--ink)',600);});
+  angInfo.forEach(({an,op,Vv,a1,dl,th,rr,n})=>{if(!an[3])return;const fs=op.fs||14;const rad=Math.max(tw(an[3],fs),fs)/2+2;const d=Math.max(rr+(n-1)*4+rad+3,(rad+3)/Math.sin(th/2));const cands=[];
+    for(const dd of [0,7,14,22,32])for(const f of [0,0.3,-0.3,0.6,-0.6]){const am=a1+dl/2+f*dl/2;cands.push([Vv[0]+(d+dd)*Math.cos(am),Vv[1]+(d+dd)*Math.sin(am)]);}
+    const p=choose(cands,an[3],fs,1.5);labels+=T(p[0],p[1],an[3],fs,'var(--accent-ink)',700);});
+  return out+labels+'</svg>';
+}
+
+/* ---------- shared utilities ---------- */
+const fig=s=>`<div class="fig">${s}</div>`;
+const sq=x=>x*x;
+const isInt=x=>Math.abs(x-Math.round(x))<1e-9;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<400;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+/* choice from correct + wrongs; null if not distinct */
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+/* radicals: n = k²·m */
+const rad=n=>{let k=1,m=n;for(let d=2;d*d<=m;d++)while(m%(d*d)===0){m/=d*d;k*=d;}return {k,m};};
+const RS=n=>{const {k,m}=rad(n);return m===1?String(k):(k===1?`√${m}`:`${k}√${m}`);};
+const radVal=raw=>{let s=String(raw).replace(/\s+/g,'').replace(/,/g,'.').replace(/[·*×]/g,'').replace(/[()]/g,'').replace(/[−–]/g,'-');
+  let m=s.match(/^(\d+(?:\.\d+)?)?√(\d+(?:\.\d+)?)$/);if(m){const k=m[1]?Number(m[1]):1;return k*k*Number(m[2]);}
+  if(/^\d+(\.\d+)?$/.test(s))return Number(s)*Number(s);return NaN;};
+/* task with answer √n (any equal form accepted: 5√2, √50) */
+const RT=(n,o)=>Object.assign({type:'text',ans:[RS(n)],right:RS(n),ansText:RS(n),keys:['√'],ph:'например: 3√2 или 7',check:raw=>Math.abs(radVal(raw)-n)<1e-9*Math.max(1,n)},o);
+const mark=s=>`<b style="color:var(--accent-ink)">${s}</b>`;
+
+/* =====================================================================
+   g8_midline — средняя линия, теорема Фалеса
+   ===================================================================== */
+const NM={A1:'A₁',A2:'A₂',A3:'A₃',A4:'A₄',A5:'A₅',B1:'B₁',B2:'B₂',B3:'B₃',B4:'B₄',B5:'B₅',A6:'A₆',B6:'B₆'};
+/* two parallels cutting an angle: OA1=a, A1A2=b on ray 1; OB1=c, B1B2=d on ray 2 (to scale) */
+function propFig(a,b,c,d,labs){const u=polar([0,0],1,8),v=polar([0,0],1,38);const P={O:[0,0],A1:mul(u,a),A2:mul(u,a+b),B1:mul(v,c),B2:mul(v,c+d)};
+  return geo({P,seg:[['O',mul(u,(a+b)*1.1),{sw:2}],['O',mul(v,(c+d)*1.1),{sw:2}],['A1','B1',{col:'var(--accent)'}],['A2','B2',{col:'var(--accent)'}]],extra:[mul(u,(a+b)*1.1),mul(v,(c+d)*1.1)],side:[['O','A1',labs[0]],['A1','A2',labs[1]],['O','B1',labs[2]],['B1','B2',labs[3]]],names:NM,dir:{O:200},maxH:190,W:290});}
+const triP=()=>({A:[0,0],C:[10,0],B:[R(20,55)/10,R(50,70)/10]});
+/* Thales picture: rays from O; n equal parts on ray 1, parallels to ray 2 */
+function thalesFig(n,o){o=o||{};const a1=o.a1==null?8:o.a1,a2=o.a2==null?38:o.a2;const u=polar([0,0],1,a1),v=polar([0,0],1,a2);const step=o.step||1.6;
+  const last=mul(u,n*step);const dir=sub(polar([0,0],1,a2),last);// direction from A_n to point on ray2
+  const P={O:[0,0]};const seg=[];const tick=[];const k2=o.k2||1.25;const Bn=inter(last,add(last,sub(mul(v,n*step*k2),last)),[0,0],v);const d=sub(Bn,last);
+  for(let i=1;i<=n;i++){P['A'+i]=mul(u,i*step);P['B'+i]=add(P['A'+i],mul(d,i/n));seg.push(['A'+i,'B'+i,{col:'var(--accent)',dash:i!==n&&!o.solid}]);}
+  for(let i=1;i<=n;i++)tick.push([i===1?'O':'A'+(i-1),'A'+i,1]);
+  seg.push(['O',mul(u,n*step*1.12),{sw:2}],['O',mul(v,n*step*k2*1.06),{sw:2}]);
+  const lab=o.lab||['O'].concat(range(1,n).map(i=>'A'+i),range(1,n).map(i=>'B'+i));
+  return geo({P,seg,tick:o.noTick?[]:tick,side:o.side||[],lab,names:NM,extra:[mul(u,n*step*1.12),mul(v,n*step*k2*1.06)],dir:Object.assign({O:200},o.dir||{}),maxH:o.maxH||190,W:o.W||290});}
+/* triangle with midline MN (M on AB, N on BC) */
+function midTri(P,o){o=o||{};P=Object.assign({},P);P.M=mid(P.A,P.B);P.N=mid(P.B,P.C);
+  return geo({P,poly:[['A','B','C']],seg:[['M','N',{sw:2.4,col:'var(--accent)'}]].concat(o.seg||[]),tick:[['A','M',1],['M','B',1],['B','N',2],['N','C',2]],fill:o.fill||[],side:o.side||[],lab:o.lab,maxH:o.maxH||190,W:o.W||280});}
+/* trapezoid ABCD (AD bottom = b, BC top = a) with midline MN */
+function trapP(a,b,h,sx){sx=sx==null?(b-a)/2:sx;return {A:[0,0],B:[sx,h],C:[sx+a,h],D:[b,0]};}
+function midTrap(P,o){o=o||{};P=Object.assign({},P);P.M=mid(P.A,P.B);P.N=mid(P.D,P.C);
+  return geo({P,poly:[['A','B','C','D']],seg:[['M','N',{sw:2.4,col:'var(--accent)'}]].concat(o.seg||[]),tick:[['A','M',1],['M','B',1],['D','N',2],['N','C',2]],fill:o.fill||[],side:o.side||[],lab:o.lab,maxH:o.maxH||180,W:o.W||290});}
+/* Varignon */
+function varFig(P,o){o=o||{};P=Object.assign({},P);P.K=mid(P.A,P.B);P.L=mid(P.B,P.C);P.M=mid(P.C,P.D);P.N=mid(P.D,P.A);
+  return geo({P,poly:[['A','B','C','D'],['K','L','M','N']],fill:[{pts:['K','L','M','N'],op:0.35}],seg:o.diag?[['A','C',{dash:true}],['B','D',{dash:true}]]:[],tick:[['A','K',1],['K','B',1],['B','L',2],['L','C',2],['C','M',3],['M','D',3],['D','N',4],['N','A',4]],side:o.side||[],lab:o.lab,maxH:o.maxH||200,W:o.W||290});}
+
+/* ---------- theory figures ---------- */
+const fTh=thalesFig(4,{noTick:false});
+const fMid=midTri({A:[0,0],C:[10,0],B:[3.5,6]},{side:[['A','C','a'],['M','N','a/2',{flip:true}]]});
+const fMidPar=(()=>{const P={A:[0,0],C:[10,0],B:[3.5,6]};P.M=mid(P.A,P.B);P.N=mid(P.B,P.C);P.K=[P.N[0]+5,P.N[1]];return geo({P,poly:[['A','B','C']],seg:[['M','N',{sw:2.4,col:'var(--accent)'}],['N','K',{dash:true}],['C','K',{dash:true}]],tick:[['A','M',1],['M','B',1],['B','N',2],['N','C',2]],fill:[{pts:['M','B','N'],op:0.3},{pts:['N','C','K'],op:0.3}],maxH:180,W:290});})();
+const fTrap=midTrap(trapP(4,10,5,2),{side:[['B','C','a'],['A','D','b'],['M','N','(a + b)/2',{flip:true}]]});
+const fTrapD=(()=>{const P=trapP(4,10,5,2);P.M=mid(P.A,P.B);P.N=mid(P.D,P.C);P.P=inter(P.M,P.N,P.A,P.C);P.Q=inter(P.M,P.N,P.B,P.D);
+  return geo({P,poly:[['A','B','C','D']],seg:[['M','N',{sw:2.4,col:'var(--accent)'}],['A','C',{dash:true}],['B','D',{dash:true}]],side:[['B','C','a'],['A','D','b'],['M','P','a/2',{flip:true}],['P','Q','(b − a)/2',{fs:12}]],lab:['A','B','C','D','M','N','P','Q'],maxH:200,W:300});})();
+const fVar=varFig({A:[0,0],B:[1.5,5],C:[7,6.2],D:[9,0.8]},{diag:true});
+function medFig(l1,l2){const P={A:[0,0],C:[10,0],B:[3.6,6.5]};P.M=mid(P.B,P.C);P.K=mid(P.A,P.C);P.L=mid(P.A,P.B);P.O=[(P.A[0]+P.B[0]+P.C[0])/3,(P.A[1]+P.B[1]+P.C[1])/3];
+  return geo({P,poly:[['A','B','C']],seg:[['A','M'],['B','K'],['C','L'],['L','M',{dash:true,col:'var(--accent)'}]],tick:[['B','M',1],['M','C',1],['A','L',2],['L','B',2]],side:[['A','O',l1,{t:0.5}],['O','M',l2,{t:0.5}]],dots:['O'],maxH:200,W:290});}
+const fMed=medFig('2x','x');
+
+/* =====================================================================
+   THEORY
+   ===================================================================== */
+const theory=[
+{title:'Теорема Фалеса: делим на равные части без линейки',lvl:0,html:`
+<p class="hook">Задача: разрезать полоску бумаги ровно на 7 равных частей, а линейки с делениями нет. Решение за 10 секунд: возьми тетрадь в линейку (строки идут через одинаковое расстояние), положи полоску наискосок так, чтобы её начало было на одной линии, а конец — на восьмой. Линии тетради разрежут её на 7 равных кусков. Это и есть теорема Фалеса.</p>
+<div class="box rule"><b>Теорема Фалеса</b>Если на одной из двух прямых отложить последовательно несколько <b>равных</b> отрезков и через их концы провести <b>параллельные</b> прямые, пересекающие вторую прямую, то они отсекут на второй прямой тоже <b>равные</b> отрезки.</div>
+<div class="fig">${fTh}</div>
+<p>OA₁ = A₁A₂ = A₂A₃ = A₃A₄ и A₁B₁ ∥ A₂B₂ ∥ A₃B₃ ∥ A₄B₄ → OB₁ = B₁B₂ = B₂B₃ = B₃B₄.</p>
+<div class="box err"><b>Ловушка</b>Отрезки на второй прямой равны <b>друг другу</b>, но не обязательно равны отрезкам на первой! Если вторая прямая идёт круче, кусочки на ней длиннее.</div>
+<div class="box err"><b>Без параллельности не работает</b>Если прямые не параллельны (разъезжаются веером), куски на второй прямой будут разными.</div>
+<div class="fact">В российских учебниках «теорема Фалеса» — про параллельные прямые. А в Германии и Франции «Satz des Thales» — совсем другая теорема: угол, опирающийся на диаметр окружности, прямой. Обе приписывают одному человеку — Фалесу Милетскому (VI век до н. э.), которого считают первым математиком, доказывавшим теоремы.</div>`},
+{title:'Пропорциональные отрезки',lvl:1,html:`
+<div class="box rule"><b>Обобщённая теорема Фалеса (о пропорциональных отрезках)</b>Параллельные прямые, пересекающие стороны угла, отсекают на сторонах угла <b>пропорциональные</b> отрезки: <span class="m">OA / AB = OC / CD</span>.</div>
+<div class="fig">${propFig(3,5,4.5,7.5,['3','5','4,5','?'])}</div>
+<p>Почему: если взять отрезки на первой стороне как сумму маленьких равных кусочков (3 = 3 кусочка, 5 = 5 кусочков) и через каждый провести параллельную, по теореме Фалеса на второй стороне тоже получатся равные кусочки — в той же пропорции.</p>
+<div class="box ex"><b>Пример</b>OA₁ = 3, A₁A₂ = 5, OB₁ = 4,5. Тогда B₁B₂ = 4,5 · 5/3 = 7,5. Проверка: 3 : 5 = 4,5 : 7,5 ✅.</div>
+<div class="box tip"><b>Как разделить отрезок AB в отношении 2 : 3</b>Проведи из A луч, отложи на нём 5 равных шагов циркулем, соедини последнюю отметку с B, а через вторую отметку проведи прямую, параллельную. Она разрежет AB в отношении 2 : 3.</div>
+<div class="box err"><b>Ошибка</b>Перепутать пары. Кусок OA соответствует куску OC (оба между вершиной и первой прямой), а AB — куску CD (оба между прямыми). Не сравнивай OA с CD.</div>`},
+{title:'Средняя линия треугольника',lvl:2,html:`
+<div class="box rule"><b>Определение</b><b>Средняя линия треугольника</b> — отрезок, соединяющий <b>середины двух сторон</b>.</div>
+<div class="box rule"><b>Теорема</b>Средняя линия треугольника <b>параллельна</b> третьей стороне и <b>равна её половине</b>: MN ∥ AC, <span class="m">MN = AC / 2</span>.</div>
+<div class="fig">${fMid}</div>
+<p><b>Почему ∥:</b> через середину M проведём прямую, параллельную AC. По теореме Фалеса (BM = MA) она разрежет BC тоже пополам — то есть пройдёт через N. Значит, это и есть MN.</p>
+<p><b>Почему половина:</b> треугольник MBN подобен ABC с k = ½ (общий угол B, BM/BA = BN/BC = ½). Поэтому MN = AC · ½.</p>
+<div class="widget" id="w-mid"></div>
+<div class="box err"><b>Не путай</b>Медиана — от вершины к середине противоположной стороны. Средняя линия — от середины к середине. У треугольника 3 медианы и 3 средние линии.</div>`},
+{title:'Средние линии: периметры и площади',lvl:3,html:`
+<p>Три средние линии делят треугольник на <b>4 равных</b> треугольника, каждый подобен исходному с k = ½.</p>
+<div class="box rule"><b>Следствия</b>• Периметр треугольника из средних линий = <span class="m">P / 2</span>.<br>• Площадь каждого из 4 маленьких треугольников = <span class="m">S / 4</span>.<br>• Средняя линия отсекает треугольник площадью S/4, а трапеция внизу — <span class="m">3S/4</span>.</div>
+<div class="fig">${geo({P:{A:[0,0],C:[10,0],B:[3.5,6],M:[1.75,3],N:[6.75,3],K:[5,0]},poly:[['A','B','C'],['M','N','K']],fill:[{pts:['M','N','K'],op:0.4},{pts:['M','B','N'],op:0.15},{pts:['A','M','K'],op:0.15},{pts:['K','N','C'],op:0.15}],maxH:170,W:270})}</div>
+<div class="box ex"><b>Пример</b>Стороны 6, 8, 10. Средние линии 3, 4, 5, их периметр 12 = 24 / 2. Если площадь 24, то средняя линия отрезает треугольник площадью 6.</div>
+<div class="box err"><b>Ошибка</b>Площадь «отрезанного» треугольника — не половина, а <b>четверть</b>: k = ½, а площади относятся как k² = ¼.</div>`},
+{title:'Средняя линия трапеции',lvl:4,html:`
+<div class="box rule"><b>Определение</b><b>Средняя линия трапеции</b> — отрезок, соединяющий <b>середины боковых сторон</b>.</div>
+<div class="box rule"><b>Теорема</b>Средняя линия трапеции параллельна основаниям и равна их <b>полусумме</b>: <span class="m">m = (a + b) / 2</span>.</div>
+<div class="fig">${fTrap}</div>
+<p><b>Почему:</b> проведём диагональ AC. Отрезок от M до диагонали — средняя линия ΔABC, он равен a/2. Отрезок от диагонали до N — средняя линия ΔACD, он равен b/2. Вместе (a + b)/2.</p>
+<div class="box ex"><b>Пример</b>Основания 4 и 10: m = 7. Обратно: m = 9, одно основание 5 → другое 2 · 9 − 5 = 13.</div>
+<div class="box tip"><b>Как запомнить</b>Средняя линия — «среднее арифметическое» оснований: она ровно посередине между ними и по длине тоже «посередине».</div>
+<div class="box err"><b>Ошибка</b>Соединить середины <b>оснований</b> — это не средняя линия. И m — не сумма и не полуразность оснований.</div>`},
+{title:'Трапеция: диагонали и площадь',lvl:5,html:`
+<div class="fig">${fTrapD}</div>
+<div class="box rule"><b>Диагонали режут среднюю линию</b>Средняя линия MN пересекает диагонали в точках P и Q: MP = QN = a/2, а <span class="m">PQ = (b − a)/2</span> — отрезок между серединами диагоналей.</div>
+<div class="box rule"><b>Площадь трапеции через среднюю линию</b><span class="m">S = m · h</span> (ведь ½(a + b) · h = m · h).</div>
+<div class="box ex"><b>Пример</b>Основания 4 и 10: MP = 2, PQ = 3, QN = 2 (всего 7 = m ✅). При высоте 5 площадь 7 · 5 = 35.</div>
+<div class="box tip"><b>Равнобедренная трапеция с углом 45°</b>Высоты, опущенные из концов меньшего основания, отрезают от большего основания по (b − a)/2. При угле 45° высота равна этому кусочку: h = (b − a)/2.</div>`},
+{title:'Теорема Вариньона',lvl:6,html:`
+<div class="box rule"><b>Теорема Вариньона</b>Середины сторон <b>любого</b> четырёхугольника — вершины <b>параллелограмма</b>. Его стороны параллельны диагоналям четырёхугольника и равны их половинам.</div>
+<div class="fig">${fVar}</div>
+<div class="widget" id="w-var"></div>
+<p><b>Почему:</b> KL — средняя линия ΔABC → KL ∥ AC, KL = AC/2. NM — средняя линия ΔADC → NM ∥ AC, NM = AC/2. Противоположные стороны равны и параллельны → параллелограмм.</p>
+<div class="box rule"><b>Следствия</b>• Периметр параллелограмма Вариньона = <span class="m">d₁ + d₂</span> (сумма диагоналей).<br>• Его площадь = <span class="m">S / 2</span> — половина площади четырёхугольника.<br>• Диагонали ⊥ → прямоугольник; диагонали равны → ромб; равны и ⊥ → квадрат.</div>
+<div class="fact">Пьер Вариньон доказал эту теорему в 1731 году — через 2000 лет после Евклида! Иногда простые и красивые факты ждут очень долго.</div>`},
+{title:'Медианы пересекаются в одной точке',lvl:7,html:`
+<div class="box rule"><b>Теорема о медианах</b>Три медианы треугольника пересекаются в одной точке, которая делит каждую медиану в отношении <b>2 : 1, считая от вершины</b>.</div>
+<div class="fig">${fMed}</div>
+<p><b>Почему (через среднюю линию):</b> пусть медианы AM и CL пересеклись в O. LM — средняя линия: LM ∥ AC, LM = AC/2. Треугольники LOM и COA подобны с k = ½ → OM = AO/2, то есть AO : OM = 2 : 1.</p>
+<div class="box ex"><b>Пример</b>Медиана 12 → от вершины до точки пересечения 8, от точки до стороны 4.</div>
+<div class="box err"><b>Ошибка</b>Перевернуть отношение: 2 : 1 — <b>от вершины</b>. Ближе к вершине — большой кусок.</div>
+<div class="fact">Точка пересечения медиан — центр тяжести треугольника. Вырежи треугольник из картона — он будет балансировать на кончике карандаша именно в этой точке.</div>`},
+{title:'Идеи для задач со звёздочкой',lvl:8,html:`
+<div class="box rule"><b>1. Видишь середину — проведи среднюю линию</b>Соедини её с другой серединой или проведи через неё прямую, параллельную стороне. Средняя линия переносит информацию «параллельно и вдвое».</div>
+<div class="box rule"><b>2. Достраивание</b>Если из вершины опущен перпендикуляр на биссектрису — продли его до пересечения со стороной: получится равнобедренный треугольник, и основание перпендикуляра окажется серединой.</div>
+<div class="box rule"><b>3. Неравенство для четырёхугольника</b>Отрезок, соединяющий середины противоположных сторон AB и CD, не больше полусуммы двух других сторон: MN ≤ (AD + BC)/2, и равенство — только при AD ∥ BC.</div>
+<div class="box rule"><b>4. Координаты середины</b>Середина отрезка: <span class="m">((x₁ + x₂)/2; (y₁ + y₂)/2)</span>. Вершины треугольника по серединам сторон: A = M₂ + M₃ − M₁ (по координатам).</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps"><li>Фалес: равные отрезки + параллельные прямые → равные отрезки.</li><li>Параллельные прямые отсекают на сторонах угла пропорциональные отрезки.</li>
+<li>Средняя линия треугольника ∥ стороне и равна её половине; отсекает ¼ площади.</li><li>Средняя линия трапеции = (a + b)/2; S = m · h; между серединами диагоналей (b − a)/2.</li>
+<li>Вариньон: середины сторон — параллелограмм, P = d₁ + d₂, S = S₀/2.</li><li>Медианы: точка пересечения делит 2 : 1 от вершины.</li></ul>`}
+];
+
+const NW=t=>`<span style="white-space:nowrap;font-size:17px">${t}</span>`;
+const symbols={tab:'Формулы',title:'Формулы темы',rows:[
+['∥','«параллельно»','Прямые не пересекаются, идут «как рельсы».','MN ∥ AC'],
+[NW('OA/AB = OC/CD'),'Пропорциональные отрезки','Параллельные прямые режут стороны угла в одинаковых пропорциях.','3 : 5 = 4,5 : 7,5'],
+[NW('MN = AC/2'),'Средняя линия треугольника','Соединяет середины двух сторон; ∥ третьей стороне.','AC = 14 → MN = 7'],
+[NW('m = (a + b)/2'),'Средняя линия трапеции','Полусумма оснований.','(4 + 10)/2 = 7'],
+[NW('(b − a)/2'),'Отрезок между серединами диагоналей трапеции','Полуразность оснований.','(10 − 4)/2 = 3'],
+[NW('S = m · h'),'Площадь трапеции','Средняя линия на высоту.','7 · 5 = 35'],
+[NW('P = d₁ + d₂'),'Периметр параллелограмма Вариньона','Сумма диагоналей четырёхугольника.','6 + 8 = 14'],
+[NW('AO : OM = 2 : 1'),'Точка пересечения медиан','Делит медиану 2 : 1 от вершины.','AM = 9 → AO = 6']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Середина + середина = средняя линия: параллельна и вдвое короче. В задачах ищи середины и соединяй их.</div>`};
+
+/* =====================================================================
+   GENERATORS
+   ===================================================================== */
+/* ===== L0: Thales ===== */
+G(0,()=>CH('Как звучит теорема Фалеса?','Если на одной прямой отложить равные отрезки и через их концы провести параллельные прямые, то на второй прямой они отсекут равные отрезки',['Если на одной прямой отложить равные отрезки и через их концы провести параллельные прямые, то на второй прямой получатся отрезки, равные отложенным','Если через концы равных отрезков провести любые прямые, то на второй прямой получатся равные отрезки','Параллельные прямые отсекают на любой прямой отрезки, равные расстоянию между ними'],
+ {short:'Равные отрезки + параллельные прямые → равные отрезки на второй прямой.',
+ explain:'Теорема Фалеса: равные отрезки на первой прямой + <b>параллельные</b> прямые через их концы → на второй прямой тоже <b>равные</b> отрезки — равные <b>между собой</b>. Равны ли они отрезкам на первой прямой — не утверждается (обычно нет). И прямые обязательно параллельные: «веер» из любых прямых даст разные куски.',
+ explain2:'Вспомни тетрадь в линейку: линии параллельны и идут с равным шагом. Положи линейку наискосок — линии разрежут её на равные кусочки. Но эти кусочки длиннее, чем расстояние между строками: чем круче наклон, тем длиннее.'}),{rule:true});
+G(0,()=>CH('Какое условие обязательно в теореме Фалеса?','Прямые, проведённые через концы отрезков, параллельны',['Прямые, проведённые через концы отрезков, перпендикулярны первой прямой','Две данные прямые параллельны','Отрезки на второй прямой равны отрезкам на первой'],
+ {short:'Секущие прямые должны быть параллельны друг другу.',
+ explain:'Главное условие — прямые A₁B₁, A₂B₂, … <b>параллельны между собой</b>. Перпендикулярность не нужна (хотя перпендикуляры к одной прямой тоже параллельны — частный случай). Сами две прямые могут пересекаться (стороны угла). Равенство отрезков на второй прямой — вывод, а не условие.',
+ explain2:'Если секущие не параллельны (например, расходятся лучами из одной точки), куски на второй прямой будут расти. Параллельность — это «одинаковый наклон», благодаря ей все куски получаются одинаковыми.'}),{rule:true});
+G(0,()=>{const n=R(3,6);const k=R(1,n-1);const step=R(2,6);const L=n*step*pick([1,1.5]);const ans=L*k/n;if(!isInt(ans*10))return null;
+ return {type:'num',q:`На стороне угла с вершиной O отложены равные отрезки OA₁ = A₁A₂ = … = A${'₀₁₂₃₄₅₆'[n-1]}A${'₀₁₂₃₄₅₆'[n]}. Через точки A₁, …, A${'₀₁₂₃₄₅₆'[n]} проведены параллельные прямые до пересечения с другой стороной в точках B₁, …, B${'₀₁₂₃₄₅₆'[n]}. OB${'₀₁₂₃₄₅₆'[n]} = ${N(L)}. Найди OB${'₀₁₂₃₄₅₆'[k]}.`,
+ pic:thalesFig(n,{lab:['O','A'+n,'B'+k,'B'+n]}),ans,
+ hint:'По теореме Фалеса OB₁ = B₁B₂ = … — все кусочки на второй стороне равны.',short:`Один кусок ${N(L)} : ${n} = ${N(L/n)}; OB${'₀₁₂₃₄₅₆'[k]} = ${k} · ${N(L/n)} = ${N(ans)}.`,
+ explain:`По теореме Фалеса параллельные прямые отсекают на второй стороне ${n} <b>равных</b> отрезков: OB₁ = B₁B₂ = … .<br>Один отрезок: ${N(L)} : ${n} = ${N(L/n)}.<br>OB${'₀₁₂₃₄₅₆'[k]} — это ${k} таких отрезков: ${k} · ${N(L/n)} = <b>${N(ans)}</b>.`,
+ explain2:`Как с шоколадкой: вся плитка ${N(L)} делится на ${n} одинаковых долек, а нам нужно ${k} из них. ${N(L)} · ${k}/${n} = ${N(ans)}.`};});
+G(0,()=>{const n=R(5,12);const L=pick([6,7,8,9,10,12,14,15,18,20,21,24]);const ans=L/n;if(!isInt(ans*100))return null;
+ return {type:'num',q:`Лайфхак Фалеса: полоску длиной ${L} см положили на тетрадь в линейку наискосок так, что её концы оказались на 1-й и ${n+1}-й линиях. Линии тетради (параллельные, через равные промежутки) разрезали полоску на части. Какова длина одной части (в см)?`,ans,
+ short:`Частей ${n}, каждая ${L} : ${n} = ${N(ans)} см.`,
+ explain:`Между 1-й и ${n+1}-й линиями ${n} промежутков. Линии параллельны и идут с равным шагом, поэтому по теореме Фалеса они режут полоску на ${n} <b>равных</b> частей.<br>${L} : ${n} = <b>${N(ans)} см</b>.<div class="box err"><b>Ловушка</b>${n+1} линий — это ${n} промежутков, а не ${n+1}. Как с забором: между 11 столбами 10 пролётов.</div>`,
+ explain2:`Посчитай промежутки на пальцах: с 1-й по 2-ю — один, со 2-й по 3-ю — второй, … с ${n}-й по ${n+1}-ю — ${n}-й. Значит, ${n} равных кусков по ${N(ans)} см.`};});
+
+/* ===== L1: proportional segments ===== */
+G(1,()=>CH('Стороны угла с вершиной O пересечены параллельными прямыми AC и BD (A, B — на одной стороне, C, D — на другой). Что верно?','OA / AB = OC / CD',['OA / AB = CD / OC','OA = OC и AB = CD','OA / OC = CD / AB'],
+ {short:'Параллельные прямые отсекают на сторонах угла пропорциональные отрезки.',
+ explain:'Обобщённая теорема Фалеса: параллельные прямые отсекают на сторонах угла <b>пропорциональные</b> отрезки — отношение кусков на одной стороне равно отношению соответствующих кусков на другой: <b>OA/AB = OC/CD</b>. Равенства отрезков нет (стороны наклонены по-разному). «Перевёрнутая» дробь CD/OC — ошибка порядка.',
+ explain2:'Числа: OA = 2, AB = 4 (отношение 1 : 2). Тогда и на другой стороне OC : CD = 1 : 2, например 3 и 6. Куски растянулись одинаково — в 1,5 раза.'}),{rule:true});
+G(1,()=>{const OA=R(2,8),AB=R(2,9);if(OA===AB)return null;const OC=OA*pick([1.5,2,0.5,1.25,3]);if(!isInt(OC*10))return null;const CD=OC*AB/OA;if(!isInt(CD*10))return null;
+ return {type:'num',q:`Стороны угла O пересечены параллельными прямыми A₁B₁ и A₂B₂ (A₁, A₂ на одной стороне, B₁, B₂ — на другой). OA₁ = ${OA}, A₁A₂ = ${AB}, OB₁ = ${N(OC)}. Найди B₁B₂.`,
+ pic:propFig(OA,AB,OC,CD,[String(OA),String(AB),N(OC),'?']),ans:CD,
+ short:`${OA} : ${AB} = ${N(OC)} : x → x = ${N(OC)} · ${AB}/${OA} = ${N(CD)}.`,
+ explain:`Параллельные прямые отсекают на сторонах угла пропорциональные отрезки: OA₁/A₁A₂ = OB₁/B₁B₂.<br>${OA}/${AB} = ${N(OC)}/x → x = ${N(OC)} · ${AB} / ${OA} = <b>${N(CD)}</b>.`,
+ explain2:`Посмотри, во сколько раз отрезки на второй стороне длиннее: OB₁ / OA₁ = ${N(OC)} / ${OA} = ${N(OC/OA)}. Значит, и B₁B₂ = A₁A₂ · ${N(OC/OA)} = ${AB} · ${N(OC/OA)} = ${N(CD)}.`};});
+G(1,()=>{const r=[R(1,5),R(1,5),R(1,5)];const tot=r[0]+r[1]+r[2];const L=tot*R(1,4);const i=R(0,2);const ans=L*r[i]/tot;
+ return {type:'num',q:`Три параллельные прямые пересекают две стороны угла. На первой стороне они отсекают от вершины последовательно отрезки длиной ${r.map(x=>x*R(1,1)).join(', ')} (см). На второй стороне эти же три отрезка вместе имеют длину ${L} см. Найди длину ${['первого','второго','третьего'][i]} отрезка на второй стороне.`,ans,
+ hint:'Отрезки на второй стороне пропорциональны отрезкам на первой.',short:`${L} · ${r[i]}/${tot} = ${N(ans)} см.`,
+ explain:`Отрезки на второй стороне в том же отношении ${r.join(' : ')}. Всего частей ${r.join(' + ')} = ${tot}, на одну часть ${L} : ${tot} = ${N(L/tot)} см.<br>${['Первый','Второй','Третий'][i]} отрезок: ${r[i]} · ${N(L/tot)} = <b>${N(ans)} см</b>.`,
+ explain2:`Коэффициент растяжения: на первой стороне все три отрезка вместе ${tot} см, на второй — ${L} см, то есть в ${N(L/tot)} раза длиннее. Каждый отрезок растягивается так же: ${r[i]} · ${N(L/tot)} = ${N(ans)}.`};});
+G(1,()=>{const m=R(1,5),n=R(1,5);if(m===n)return null;const AB=(m+n)*R(1,4);const ans=AB*m/(m+n);
+ return {type:'num',q:`Отрезок AB = ${AB} см надо разделить в отношении ${m} : ${n} (считая от A). Из точки A провели луч, отложили на нём ${m+n} равных шагов циркулем, соединили последнюю отметку с B и через ${m}-ю отметку провели прямую, параллельную. На каком расстоянии от A она пересечёт AB (в см)?`,ans,
+ short:`AB делится в отношении ${m} : ${n}: ${AB} · ${m}/${m+n} = ${N(ans)} см.`,
+ explain:`На луче отрезки ${m} шагов и ${n} шагов. Параллельные прямые отсекают на AB пропорциональные отрезки: AX : XB = ${m} : ${n}.<br>AX = ${AB} · ${m}/${m+n} = <b>${N(ans)} см</b>.`,
+ explain2:`Это классическое построение «деление отрезка в данном отношении». Каждый шаг на луче «отображается» на AB куском ${AB} : ${m+n} = ${N(AB/(m+n))} см. ${m} шагов → ${N(ans)} см.`};});
+
+/* ===== L2: midline of triangle ===== */
+G(2,()=>CH('Что называется средней линией треугольника?','Отрезок, соединяющий середины двух сторон треугольника',['Отрезок, соединяющий вершину с серединой противоположной стороны','Любой отрезок, параллельный стороне треугольника','Отрезок, соединяющий середину стороны с серединой высоты'],
+ {short:'Середина — середина.',
+ explain:'Средняя линия — отрезок между <b>серединами двух сторон</b>. «Вершина — середина противоположной стороны» — это <b>медиана</b>. Параллельных стороне отрезков бесконечно много, средняя линия — только один из них (тот, что посередине).',
+ explain2:'Отметь на двух сторонах середины (по чёрточке) и соедини — это средняя линия. У треугольника их три — по одной на каждую пару сторон.'}),{rule:true});
+G(2,()=>CH('Какое свойство у средней линии треугольника?','Она параллельна третьей стороне и равна её половине',['Она перпендикулярна третьей стороне и равна её половине','Она параллельна третьей стороне и равна ей','Она равна полусумме двух сторон, которые соединяет'],
+ {short:'MN ∥ AC и MN = AC/2.',
+ explain:'Теорема: средняя линия MN <b>параллельна</b> третьей стороне AC и <b>вдвое короче</b> неё. Почему вдвое: треугольник MBN — уменьшенная в 2 раза копия ABC (подобие с k = ½).',
+ explain2:'Представь: ты идёшь от середины одной стороны к середине другой — это «половинка пути» вдоль основания. Треугольник MBN — такой же формы, но в 2 раза меньше, поэтому MN = AC/2.'}),{rule:true});
+G(2,()=>{const AC=R(4,30);const inv=Math.random()<0.5;const P=triP();
+ return {type:'num',q:inv?`M и N — середины сторон AB и BC треугольника ABC. MN = ${N(AC/2)}. Найди AC.`:`M и N — середины сторон AB и BC треугольника ABC. AC = ${AC}. Найди MN.`,
+ pic:midTri(P,{side:inv?[['A','C','?'],['M','N',N(AC/2),{flip:true}]]:[['A','C',String(AC)],['M','N','?',{flip:true}]]}),ans:inv?AC:AC/2,
+ short:inv?`AC = 2 · MN = ${AC}.`:`MN = AC/2 = ${N(AC/2)}.`,
+ explain:`MN — средняя линия треугольника (соединяет середины AB и BC). Она равна половине третьей стороны: MN = AC/2.<br>${inv?`AC = 2 · ${N(AC/2)} = <b>${AC}</b>.`:`MN = ${AC} : 2 = <b>${N(AC/2)}</b>.`}${inv?'<div class="box err"><b>Ошибка</b>Поделить пополам вместо умножения: сторона в 2 раза <b>длиннее</b> средней линии.</div>':''}`,
+ explain2:`Треугольник MBN — копия ABC, уменьшенная в 2 раза (BM = BA/2, BN = BC/2, угол B общий). Значит, и MN — это AC, уменьшенная в 2 раза. ${inv?`Обратно: AC = ${N(AC/2)} · 2 = ${AC}.`:`${AC} / 2 = ${N(AC/2)}.`}`};});
+G(2,()=>{const P={A:[0,0],C:[10,0],B:[R(25,50)/10,R(55,70)/10]};P.M=mid(P.A,P.B);P.N=mid(P.B,P.C);P.K=mid(P.A,P.C);P.T=lerp(P.B,P.C,0.3);P.E=lerp(P.A,P.C,0.75);
+ const opts=['MN','BK','MT','NE'];const pic=geo({P,poly:[['A','B','C']],seg:[['M','N'],['B','K'],['M','T'],['N','E']],tick:[['A','M',1],['M','B',1],['B','N',2],['N','C',2],['A','K',3],['K','C',3]],dots:['M','N','K','T','E'],maxH:200,W:290});
+ return CH('Отмеченные чёрточками отрезки равны. Какой отрезок — средняя линия треугольника ABC?','MN',['BK','MT','NE'],{pic,
+ short:'M и N — середины AB и BC.',
+ explain:'Средняя линия соединяет <b>две середины</b> сторон. Чёрточки показывают: M — середина AB, N — середина BC, K — середина AC. Значит, MN — средняя линия. BK соединяет вершину с серединой — это медиана. MT и NE начинаются в середине, но заканчиваются не в середине (T и E — не середины).',
+ explain2:'Проверь оба конца отрезка: оба должны быть серединами сторон. У MN: M — середина (одна чёрточка с обеих сторон), N — середина (две чёрточки). Подходит только MN. Кстати, MK и NK тоже были бы средними линиями, но их не провели.'});});
+G(2,()=>{const a=R(3,15),b=R(3,15),c=R(3,15);if(!(a+b>c+1&&a+c>b+1&&b+c>a+1))return null;const which=R(0,2);const nm=['BC','AC','AB'],s=[a,b,c];const mids=['середины AB и AC','середины AB и BC','середины BC и AC'];
+ return {type:'num',q:`Стороны треугольника ABC: AB = ${c}, BC = ${a}, AC = ${b}. Найди отрезок, соединяющий ${mids[which]}.`,ans:s[which]/2,
+ hint:'Какую сторону НЕ задевает этот отрезок? Средняя линия равна половине именно её.',short:`Это средняя линия, параллельная ${nm[which]}: ${s[which]} / 2 = ${N(s[which]/2)}.`,
+ explain:`Отрезок, соединяющий ${mids[which]}, — средняя линия. Она параллельна <b>третьей</b> стороне — той, которую не соединяет: это ${nm[which]} = ${s[which]}.<br>Длина = ${s[which]} : 2 = <b>${N(s[which]/2)}</b>.<div class="box err"><b>Ловушка</b>Взять половину одной из сторон, на которых лежат середины. Средняя линия «смотрит» на противоположную сторону.</div>`,
+ explain2:`Нарисуй треугольник и отметь ${mids[which]}. Отрезок между ними идёт «вдоль» стороны ${nm[which]}, параллельно ей. Поэтому он равен её половине: ${N(s[which]/2)}.`};});
+
+/* ===== L3: perimeter, area ===== */
+G(3,()=>CH('Средняя линия отсекает от треугольника маленький треугольник. Какая доля площади у него?','¼ площади исходного (k = ½, площади — k²)',['½ площади исходного','⅓ площади исходного','¾ площади исходного'],
+ {short:'Подобие с k = ½ → площадь × ¼.',
+ explain:'Отсечённый треугольник подобен исходному с k = ½. Площади подобных фигур относятся как k² = <b>¼</b>. Оставшаяся трапеция — ¾. «Половина» — частая ошибка: половиной было бы, если бы площадь менялась как длина.',
+ explain2:'Три средние линии делят треугольник на 4 одинаковых треугольника. Отсечённый одной средней линией — один из этих четырёх: ¼.'}),{rule:true});
+G(3,()=>{const a=R(4,16),b=R(4,16),c=R(4,16);if(!(a+b>c+1&&a+c>b+1&&b+c>a+1))return null;const P=a+b+c;const inv=Math.random()<0.5;
+ return {type:'num',q:inv?`Периметр треугольника, вершины которого — середины сторон треугольника ABC, равен ${N(P/2)}. Найди периметр ABC.`:`Стороны треугольника ${a}, ${b} и ${c}. Найди периметр треугольника, вершины которого — середины сторон данного.`,ans:inv?P:P/2,
+ short:inv?`P = 2 · ${N(P/2)} = ${P}.`:`(${a} + ${b} + ${c}) / 2 = ${N(P/2)}.`,
+ explain:`Стороны треугольника из середин — средние линии, каждая вдвое короче соответствующей стороны. Поэтому и периметр вдвое меньше: P' = P/2.<br>${inv?`P = 2 · ${N(P/2)} = <b>${P}</b>.`:`${N(a/2)} + ${N(b/2)} + ${N(c/2)} = <b>${N(P/2)}</b>.`}`,
+ explain2:`Этот «серединный» треугольник подобен исходному с k = ½. Периметры подобных треугольников относятся как k. ${inv?`Значит, исходный в 2 раза больше: ${P}.`:`${P} · ½ = ${N(P/2)}.`}`};});
+G(3,()=>{const S=4*R(2,20);const ask=pick(['tri','trap']);const ans=ask==='tri'?S/4:3*S/4;const P=triP();
+ return {type:'num',q:`Площадь треугольника ABC равна ${S}. MN — средняя линия (M ∈ AB, N ∈ BC). Найди площадь ${ask==='tri'?'треугольника MBN':'трапеции AMNC'}.`,
+ pic:midTri(P,{fill:[{pts:ask==='tri'?['M','B','N']:['A','M','N','C'],op:0.35}]}),ans,
+ short:`S(MBN) = ${S}/4 = ${S/4}${ask==='trap'?`; трапеция ${S} − ${S/4} = ${ans}`:''}.`,
+ explain:`ΔMBN ∼ ΔABC с k = ½ (BM = BA/2, BN = BC/2, угол B общий). Площади относятся как k² = ¼: S(MBN) = ${S} : 4 = ${S/4}.${ask==='trap'?`<br>Трапеция AMNC = ${S} − ${S/4} = <b>${ans}</b>.`:` Ответ: <b>${ans}</b>.`}<div class="box err"><b>Ошибка</b>${S} : 2 = ${S/2} — «половина» неверна: k = ½, но площадь меняется в k² раз.</div>`,
+ explain2:`Проведи все три средние линии — треугольник распадётся на 4 одинаковых треугольника по ${S/4}. MBN — один из них, ${ask==='tri'?'ответ '+S/4:'а трапеция AMNC — остальные три: 3 · '+S/4+' = '+ans}.`};});
+G(3,()=>{const r=[R(2,7),R(2,7),R(2,7)];if(!(r[0]+r[1]>r[2]&&r[0]+r[2]>r[1]&&r[1]+r[2]>r[0]))return null;const tot=r[0]+r[1]+r[2];const P=2*tot*R(1,3);const mx=Math.max(...r);const ans=P/2*mx/tot;
+ return {type:'num',q:`Средние линии треугольника относятся как ${r.join(' : ')}, а периметр треугольника равен ${P}. Найди наибольшую среднюю линию.`,ans,
+ hint:'Сумма средних линий — половина периметра.',short:`Сумма средних линий ${P}/2 = ${P/2}; наибольшая ${P/2} · ${mx}/${tot} = ${N(ans)}.`,
+ explain:`Каждая средняя линия — половина стороны, поэтому их сумма — половина периметра: ${P} : 2 = ${P/2}.<br>Делим ${P/2} в отношении ${r.join(' : ')}: частей ${tot}, одна часть ${N(P/2/tot)}.<br>Наибольшая: ${mx} · ${N(P/2/tot)} = <b>${N(ans)}</b>.`,
+ explain2:`Другой путь: стороны относятся так же, как средние линии (${r.join(' : ')}). Наибольшая сторона: ${P} · ${mx}/${tot} = ${N(2*ans)}, а средняя линия — её половина: ${N(ans)}.`};});
+
+/* ===== L4: trapezoid midline ===== */
+G(4,()=>CH('Что называется средней линией трапеции?','Отрезок, соединяющий середины боковых сторон',['Отрезок, соединяющий середины оснований','Отрезок, соединяющий середины диагоналей','Перпендикуляр между основаниями, проходящий через центр'],
+ {short:'Середины боковых сторон.',
+ explain:'Средняя линия трапеции соединяет середины <b>боковых сторон</b> (тех, что не параллельны). Отрезок между серединами оснований — другой (он проходит через точку пересечения диагоналей, но это не средняя линия). Отрезок между серединами диагоналей лежит на средней линии, но короче неё.',
+ explain2:'Средняя линия идёт «посередине между основаниями», параллельно им — значит, начинается и заканчивается на боковых сторонах, ровно в их серединах.'}),{rule:true});
+G(4,()=>CH('Чему равна средняя линия трапеции с основаниями a и b?','(a + b) / 2',['(b − a) / 2','a + b','a · b / 2'],
+ {short:'Полусумма оснований.',
+ explain:'Средняя линия трапеции параллельна основаниям и равна их <b>полусумме</b>: m = (a + b)/2. Полуразность (b − a)/2 — это отрезок между серединами диагоналей. Сумма a + b вдвое больше нужного.',
+ explain2:'Проверь на прямоугольнике (это «трапеция» с равными основаниями a = b): средняя линия равна a. По формуле (a + a)/2 = a ✅. А (a − a)/2 = 0 — явно не то.'}),{rule:true});
+G(4,()=>{const a=R(2,14),b=R(a+2,26);if((a+b)%2&&Math.random()<0.5)return null;const P=trapP(a,b,Math.max(3,b*0.4),(b-a)*R(2,8)/10);
+ return {type:'num',q:`Основания трапеции ${a} и ${b}. Найди её среднюю линию.`,pic:midTrap(P,{side:[['B','C',String(a)],['A','D',String(b)],['M','N','?',{flip:true}]]}),ans:(a+b)/2,
+ short:`(${a} + ${b}) / 2 = ${N((a+b)/2)}.`,
+ explain:`Средняя линия трапеции равна полусумме оснований: m = (${a} + ${b}) / 2 = ${a+b} / 2 = <b>${N((a+b)/2)}</b>.`,
+ explain2:`Проведи диагональ AC: она разрежет среднюю линию на два куска — средние линии двух треугольников. Один равен ${a}/2 = ${N(a/2)}, другой ${b}/2 = ${N(b/2)}. Вместе ${N((a+b)/2)}.`};});
+G(4,()=>{const a=R(2,14),b=R(a+2,26);const m=(a+b)/2;const giveSmall=Math.random()<0.5;
+ return {type:'num',q:`Средняя линия трапеции ${N(m)}, ${giveSmall?'меньшее':'большее'} основание ${giveSmall?a:b}. Найди ${giveSmall?'большее':'меньшее'} основание.`,ans:giveSmall?b:a,
+ short:`2 · ${N(m)} − ${giveSmall?a:b} = ${giveSmall?b:a}.`,
+ explain:`m = (a + b)/2 → a + b = 2m = ${N(2*m)}.<br>Другое основание: ${N(2*m)} − ${giveSmall?a:b} = <b>${giveSmall?b:a}</b>.<div class="box err"><b>Ошибка</b>${N(m)} − ${giveSmall?a:b} = ${N(m-(giveSmall?a:b))} — забыли, что m — это <b>полу</b>сумма.</div>`,
+ explain2:`Средняя линия — среднее арифметическое оснований, «стоит посередине» между ними. От ${giveSmall?a:b} до ${N(m)} — ${N(Math.abs(m-(giveSmall?a:b)))}, значит, до другого основания ещё столько же: ${N(m)} ${giveSmall?'+':'−'} ${N(Math.abs(m-(giveSmall?a:b)))} = ${giveSmall?b:a}.`};});
+G(4,()=>{const p=R(1,5),q=R(2,7);if(p>=q||H.gcd(p,q)!==1)return null;const t=R(1,4);const a=p*t,b=q*t;const m=(a+b)/2;if(!isInt(m))return null;
+ return {type:'num',q:`Основания трапеции относятся как ${p} : ${q}, а средняя линия равна ${m}. Найди большее основание.`,ans:b,
+ hint:'Сумма оснований = 2m.',short:`a + b = ${2*m}; b = ${2*m} · ${q}/${p+q} = ${b}.`,
+ explain:`a + b = 2m = ${2*m}. Делим ${2*m} в отношении ${p} : ${q}: частей ${p+q}, одна часть ${N(2*m/(p+q))}.<br>Большее основание: ${q} · ${N(2*m/(p+q))} = <b>${b}</b> (меньшее ${a}).`,
+ explain2:`Через x: a = ${p}x, b = ${q}x. Средняя линия (${p}x + ${q}x)/2 = ${N((p+q)/2)}x = ${m} → x = ${t}. b = ${q} · ${t} = ${b}.`};});
+
+/* ===== L5: trapezoid problems ===== */
+G(5,()=>CH('Чему равен отрезок, соединяющий середины диагоналей трапеции с основаниями a < b?','(b − a) / 2',['(a + b) / 2','b − a','a / 2'],
+ {short:'Полуразность оснований.',
+ explain:'Средняя линия m = (a + b)/2 пересекает диагонали. Крайние её куски — средние линии треугольников с основанием a, каждый равен a/2. Середина: (a + b)/2 − a/2 − a/2 = <b>(b − a)/2</b>.',
+ explain2:'Пример: основания 4 и 10. Средняя линия 7 = 2 + 3 + 2. Средний кусок 3 = (10 − 4)/2 ✅.'}),{rule:true});
+G(5,()=>{const a=2*R(1,7),b=2*R(a/2+1,13);const ask=pick(['big','mid']);const ans=ask==='big'?b/2:(b-a)/2;
+ const P=trapP(a,b,Math.max(3,b*0.4));P.M=mid(P.A,P.B);P.N=mid(P.D,P.C);P.P=inter(P.M,P.N,P.A,P.C);P.Q=inter(P.M,P.N,P.B,P.D);
+ const pic=geo({P,poly:[['A','B','C','D']],seg:[['M','N',{sw:2.4,col:'var(--accent)'}],['A','C',{dash:true}]].concat(ask==='mid'?[['B','D',{dash:true}]]:[]),side:[['B','C',String(a)],['A','D',String(b)]].concat(ask==='big'?[['P','N','?',{flip:true}]]:[['P','Q','?',{flip:true}]]),lab:ask==='big'?['A','B','C','D','M','N','P']:['A','B','C','D','M','N','P','Q'],maxH:190,W:290});
+ return {type:'num',q:ask==='big'?`Основания трапеции ABCD: BC = ${a}, AD = ${b}. Диагональ AC пересекает среднюю линию MN в точке P. Найди PN.`:`Основания трапеции ${a} и ${b}. Найди расстояние между серединами её диагоналей (отрезок PQ на рисунке).`,pic,ans,
+ short:ask==='big'?`PN — средняя линия ΔACD: ${b}/2 = ${N(ans)}.`:`(${b} − ${a})/2 = ${N(ans)}.`,
+ explain:ask==='big'?`P — середина AC (средняя линия делит диагональ пополам). Отрезок PN соединяет середины AC и CD — это средняя линия треугольника ACD, параллельная AD.<br>PN = AD / 2 = ${b} / 2 = <b>${N(ans)}</b>.<div class="box err"><b>Ловушка</b>${a} / 2 = ${N(a/2)} — это MP, кусок в треугольнике ABC.</div>`:`MN = (${a} + ${b})/2 = ${N((a+b)/2)}. MP = QN = ${a}/2 = ${N(a/2)} (средние линии треугольников ABC и BCD с основанием BC).<br>PQ = ${N((a+b)/2)} − 2 · ${N(a/2)} = <b>${N(ans)}</b> = (${b} − ${a})/2.`,
+ explain2:ask==='big'?`Диагональ AC разрезает трапецию на два треугольника: верхний ABC (основание ${a}) и нижний ACD (основание ${b}). Средняя линия трапеции состоит из их средних линий: ${N(a/2)} + ${N(b/2)} = ${N((a+b)/2)} ✅. PN лежит в нижнем: ${N(b/2)}.`:`Запомни: «полусумма» — средняя линия, «полуразность» — отрезок между серединами диагоналей. (${b} − ${a}) / 2 = ${N(ans)}.`};});
+G(5,()=>{const m=R(4,20),h=R(2,12);
+ return {type:'num',q:`Средняя линия трапеции ${m} см, высота ${h} см. Найди площадь трапеции (в см²).`,ans:m*h,
+ short:`S = m · h = ${m} · ${h} = ${m*h} см².`,
+ explain:`S = ½(a + b) · h, а ½(a + b) — это средняя линия m. Значит, S = m · h = ${m} · ${h} = <b>${m*h} см²</b>.<div class="box err"><b>Ошибка</b>½ · ${m} · ${h} = ${N(m*h/2)} — лишняя половина: она уже «спрятана» в средней линии.</div>`,
+ explain2:`Отрежь от трапеции треугольники по бокам выше средней линии и переложи их вниз — получится прямоугольник ${m} × ${h}. Его площадь ${m*h}.`};});
+G(5,()=>{const a=R(2,10),d=R(2,6);const b=a+2*d;const h=d;const m=(a+b)/2;
+ const P=trapP(a,b,h);P.H=[d,0];
+ return {type:'num',q:`Равнобедренная трапеция: основания ${a} и ${b}, острый угол 45°. Найди площадь трапеции.`,pic:geo({P,poly:[['A','B','C','D']],seg:[['B','H',{dash:true}]],rt:[['H','D','B']],ang:[['A','D','B','45°']],side:[['B','C',String(a)],['A','D',String(b),{t:0.7}]],maxH:150,W:290}),ans:m*h,
+ hint:'Опусти высоту из B. Какой получится треугольник при угле 45°?',short:`AH = (${b} − ${a})/2 = ${d} = h; S = ${N(m)} · ${h} = ${N(m*h)}.`,
+ explain:`Высота BH отсекает от большего основания AH = (${b} − ${a})/2 = ${d}. Треугольник ABH прямоугольный с углом 45° → равнобедренный: h = AH = ${d}.<br>Средняя линия m = (${a} + ${b})/2 = ${N(m)}.<br>S = m · h = ${N(m)} · ${d} = <b>${N(m*h)}</b>.`,
+ explain2:`Две высоты из концов меньшего основания отрезают по краям два одинаковых треугольника; посередине прямоугольник ${a} × h. Края в сумме ${b} − ${a} = ${2*d}, каждый ${d}. Угол 45° → высота равна ${d}. S = ½ · (${a} + ${b}) · ${d} = ${N(m*h)}.`};});
+
+/* ===== L6: Varignon ===== */
+G(6,()=>CH('Середины сторон произвольного четырёхугольника последовательно соединили. Что получится?','Параллелограмм',['Ромб','Прямоугольник','Трапеция'],
+ {short:'Теорема Вариньона: всегда параллелограмм.',
+ explain:'Теорема Вариньона: для <b>любого</b> четырёхугольника середины сторон — вершины параллелограмма. Противоположные его стороны — средние линии треугольников с общей диагональю: обе ∥ этой диагонали и равны её половине. Ромб, прямоугольник — только в особых случаях.',
+ explain2:'Нарисуй «кривой» четырёхугольник и соедини середины сторон — увидишь параллелограмм. Даже у «бумеранга» (невыпуклого) это работает!'}),{rule:true});
+G(6,()=>CH('Стороны параллелограмма Вариньона…','параллельны диагоналям четырёхугольника и равны их половинам',['параллельны сторонам четырёхугольника и равны их половинам','перпендикулярны диагоналям и равны им','равны половинам сторон четырёхугольника'],
+ {short:'KL ∥ AC, KL = AC/2 (средняя линия ΔABC).',
+ explain:'Сторона KL соединяет середины AB и BC — это средняя линия ΔABC, поэтому <b>KL ∥ AC и KL = AC/2</b>. Значит, стороны параллелограмма «смотрят» на <b>диагонали</b>, а не на стороны четырёхугольника.',
+ explain2:'Проведи в четырёхугольнике диагональ AC: она отрезает треугольник ABC, и KL — его средняя линия. Отсюда же следует: периметр параллелограмма = AC + BD.'}),{rule:true});
+G(6,()=>{const d1=R(3,20),d2=R(3,20);if(Math.max(d1,d2)>2.5*Math.min(d1,d2))return null;const inv=Math.random()<0.4;
+ return {type:'num',q:inv?`Периметр четырёхугольника, вершины которого — середины сторон четырёхугольника ABCD, равен ${d1+d2}. Диагональ AC = ${d1}. Найди BD.`:`Диагонали четырёхугольника равны ${d1} и ${d2}. Найди периметр четырёхугольника с вершинами в серединах его сторон.`,
+ pic:(()=>{const u=polar([0,0],1,25),w=polar([0,0],1,105);return varFig({A:mul(u,-0.45*d1),C:mul(u,0.55*d1),B:mul(w,0.42*d2),D:mul(w,-0.58*d2)},{diag:true});})(),ans:inv?d2:d1+d2,
+ short:inv?`P = AC + BD → BD = ${d1+d2} − ${d1} = ${d2}.`:`P = ${d1} + ${d2} = ${d1+d2}.`,
+ explain:`Стороны параллелограмма Вариньона равны половинам диагоналей: две стороны по ${N(d1/2)} (½ AC) и две по ${inv?'½ BD':N(d2/2)}.<br>${inv?`P = 2 · ½AC + 2 · ½BD = AC + BD = ${d1+d2} → BD = <b>${d2}</b>.`:`P = 2 · ${N(d1/2)} + 2 · ${N(d2/2)} = ${d1} + ${d2} = <b>${d1+d2}</b>.`}`,
+ explain2:`Удобное правило: периметр «серединного» параллелограмма равен сумме диагоналей. Каждая диагональ «превращается» в две стороны, каждая по половине: ½d + ½d = d.`};});
+G(6,()=>{const v=pick([['перпендикулярны','прямоугольник'],['равны','ромб'],['равны и перпендикулярны','квадрат'],['не равны и не перпендикулярны','параллелограмм (не ромб и не прямоугольник)']]);const all=['прямоугольник','ромб','квадрат','параллелограмм (не ромб и не прямоугольник)'];
+ return CH(`Диагонали четырёхугольника ${v[0]}. Каким будет четырёхугольник с вершинами в серединах его сторон?`,v[1],all.filter(x=>x!==v[1]),
+ {short:'Стороны параллелограмма ∥ диагоналям и равны их половинам.',
+ explain:`Стороны «серединного» параллелограмма параллельны диагоналям и равны их половинам. ${v[1]==='прямоугольник'?'Диагонали ⊥ → соседние стороны ⊥ → <b>прямоугольник</b> (стороны разные, если диагонали разные).':v[1]==='ромб'?'Диагонали равны → все стороны равны (по половине диагонали) → <b>ромб</b>.':v[1]==='квадрат'?'Диагонали равны → стороны равны; диагонали ⊥ → углы прямые. Ромб + прямоугольник = <b>квадрат</b>.':'Без особых свойств диагоналей — обычный <b>параллелограмм</b>.'}`,
+ explain2:`Таблица: «⊥ диагонали» → прямые углы; «равные диагонали» → равные стороны. Свойства диагоналей исходного четырёхугольника превращаются в свойства <b>сторон</b> параллелограмма Вариньона.`});});
+G(6,()=>{const S=2*R(5,40);
+ return {type:'num',q:`Площадь выпуклого четырёхугольника ${S}. Найди площадь четырёхугольника, вершины которого — середины его сторон.`,pic:varFig({A:[0,0],B:[1,5],C:[7.5,6],D:[9,1]},{diag:false}),ans:S/2,
+ hint:'Каждый «уголок», отрезанный от четырёхугольника, — четверть треугольника.',short:`S/2 = ${S/2}.`,
+ explain:`Проведём диагональ AC. Уголки при B и при D — треугольники KBL и MDN — это ¼ от ΔABC и ¼ от ΔACD (средние линии, k = ½). Вместе ¼ · S(ABC) + ¼ · S(ACD) = ¼S. Так же через BD: уголки при A и C — ещё ¼S.<br>Все 4 уголка: ½S, параллелограмм: S − ½S = <b>${S/2}</b>.`,
+ explain2:`Площадь параллелограмма Вариньона всегда ровно половина. Проверь на квадрате 4 × 4 (S = 16): середины сторон дают повёрнутый квадрат со стороной √8, площадь 8 = 16/2 ✅.`};});
+
+/* ===== L7: medians ===== */
+G(7,()=>CH('Медианы треугольника пересекаются в точке O. В каком отношении O делит медиану?','2 : 1, считая от вершины',['1 : 2, считая от вершины','1 : 1 (пополам)','3 : 1, считая от вершины'],
+ {short:'От вершины до O — две трети медианы.',
+ explain:'Точка пересечения медиан делит каждую медиану в отношении <b>2 : 1 от вершины</b>: большой кусок у вершины, маленький — у стороны. Доказывается через среднюю линию: ΔLOM ∼ ΔCOA с k = ½.',
+ explain2:'Медиана 9 → AO = 6, OM = 3. Ближе к стороне — меньший кусок. «Центр тяжести тянется к стороне», потому что там больше «массы» треугольника.'}),{rule:true});
+G(7,()=>{const m=3*R(2,12);const ask=pick(['AO','OM']);const ans=ask==='AO'?2*m/3:m/3;
+ return {type:'num',q:`Медиана AM треугольника ABC равна ${m}. O — точка пересечения медиан. Найди ${ask}.`,pic:medFig(ask==='AO'?'?':'',ask==='OM'?'?':''),ans,
+ short:`${ask} = ${ask==='AO'?'⅔':'⅓'} · ${m} = ${ans}.`,
+ explain:`O делит AM в отношении 2 : 1 от вершины: всего 3 части, одна часть ${m} : 3 = ${m/3}.<br>${ask==='AO'?`AO = 2 части = <b>${ans}</b>.`:`OM = 1 часть = <b>${ans}</b>.`}`,
+ explain2:`AO вдвое длиннее OM, а вместе они — медиана ${m}. Подбором: ${2*m/3} + ${m/3} = ${m}, и ${2*m/3} = 2 · ${m/3} ✅.`};});
+G(7,()=>{const x=R(2,12);const giv=pick(['OM','AO']);const AO=2*x,OM=x;
+ return {type:'num',q:`O — точка пересечения медиан треугольника ABC, AM — медиана. ${giv==='OM'?`OM = ${OM}`:`AO = ${AO}`}. Найди медиану AM.`,ans:3*x,
+ short:`AM = ${giv==='OM'?`3 · ${OM}`:`${AO} · 3/2`} = ${3*x}.`,
+ explain:`AO : OM = 2 : 1. ${giv==='OM'?`OM — одна часть = ${OM}, AM = 3 части = <b>${3*x}</b>.`:`AO — две части = ${AO}, одна часть ${x}, AM = 3 части = <b>${3*x}</b>.`}<div class="box err"><b>Ошибка</b>${giv==='OM'?`2 · ${OM} = ${2*OM}`:`2 · ${AO} = ${2*AO}`} — неверно: медиана — это три части, а не две.</div>`,
+ explain2:`Нарисуй медиану как полоску из 3 одинаковых клеток: 2 клетки от вершины до O и 1 — от O до стороны. ${giv==='OM'?'1 клетка':'2 клетки'} = ${giv==='OM'?OM:AO} → 3 клетки = ${3*x}.`};});
+
+/* ===== L8: ★ ===== */
+G(8,()=>CH('В условии задачи даны середины двух сторон треугольника. Какой первый шаг чаще всего помогает?','Соединить середины: получится средняя линия, параллельная третьей стороне и равная её половине',['Провести биссектрису','Опустить все три высоты','Измерить углы транспортиром'],
+ {short:'Середина + середина = средняя линия.',
+ explain:'Две середины сторон сразу дают среднюю линию: она параллельна третьей стороне (появляются равные углы) и вдвое короче её (появляется отношение 1 : 2). Это главный ключ к задачам про середины.',
+ explain2:'Если середина только одна — проведи через неё прямую, параллельную стороне: по теореме Фалеса она попадёт в середину другой стороны, и снова получится средняя линия.'}),{rule:true,star:true});
+G(8,()=>{const t=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[2,5]]);const tt=t[0]/t[1];const ratio=tt/(2-tt);const AC=R(2,12)*(2*t[1]-t[0])/H.gcd(t[0],2*t[1]-t[0]);const AP=AC*ratio;if(!isInt(AP*10))return null;
+ const B=[3,6],A=[0,0],C=[10,0];const M=mid(B,C),K=lerp(A,M,tt);const Pp=inter(B,K,A,C);if(Math.abs(Pp[0]/10-ratio)>1e-9)return null;
+ const pic=geo({P:{A,B,C,M,K,P:Pp},poly:[['A','B','C']],seg:[['A','M'],['B','P',{col:'var(--accent)'}]],tick:[['B','M',1],['M','C',1]],dots:['K'],maxH:190,W:290});
+ return {type:'num',q:`В треугольнике ABC проведена медиана AM. Точка K на AM такова, что AK : KM = ${t[0]} : ${t[1]-t[0]}. Прямая BK пересекает AC в точке P. AC = ${AC}. Найди AP.`,pic,ans:AP,
+ hint:'Через M проведи прямую, параллельную BP, до пересечения с AC. M — середина BC: используй Фалеса в угле C, а потом пропорциональные отрезки в угле A.',
+ short:`Через M проведём MT ∥ BP: PT = TC; AP : PT = AK : KM. Итог AP = ${N(AP)}.`,
+ explain:`Проведём через M прямую MT ∥ BP (T на AC).<br>1) В угле C: M — середина BC, MT ∥ BP → по Фалесу T — середина PC: PT = TC = y.<br>2) В угле A: KP ∥ MT → AP : PT = AK : KM = ${t[0]} : ${t[1]-t[0]}. Пусть AP = ${t[0]}u, тогда PT = ${t[1]-t[0]}u = y.<br>3) AC = AP + 2y = ${t[0]}u + ${2*(t[1]-t[0])}u = ${2*t[1]-t[0]}u = ${AC} → u = ${N(AC/(2*t[1]-t[0]))}.<br>AP = ${t[0]} · ${N(AC/(2*t[1]-t[0]))} = <b>${N(AP)}</b>.`,
+ explain2:`Проверка через координаты: A(0; 0), C(1; 0), B — любая. Тогда AP : AC = ${t[0]} : ${2*t[1]-t[0]}${t[0]===1&&t[1]===2?' — классический ответ «K — середина AM ⇒ AP = AC/3»':''}. ${AC} · ${t[0]}/${2*t[1]-t[0]} = ${N(AP)}.`};},{star:true});
+G(8,()=>{const p=R(1,5),q=R(1,5);const ratio=(p+q)/p;if(!isInt(ratio*100))return null;
+ return {type:'num',q:`Диагонали трапеции делят её среднюю линию на три отрезка: крайние по ${p}, средний ${q}. Во сколько раз большее основание длиннее меньшего?`,ans:ratio,
+ hint:'Крайние куски — половины меньшего основания, средний — полуразность оснований.',short:`a = 2 · ${p} = ${2*p}, b = a + 2 · ${q} = ${2*p+2*q}; b/a = ${N(ratio)}.`,
+ explain:`Крайние отрезки — средние линии треугольников с меньшим основанием a: a/2 = ${p} → a = ${2*p}.<br>Средний — (b − a)/2 = ${q} → b = ${2*p} + ${2*q} = ${2*p+2*q}.<br>b : a = ${2*p+2*q} : ${2*p} = <b>${N(ratio)}</b>.`,
+ explain2:`Иначе: половина большего основания — это крайний кусок + средний: b/2 = ${p} + ${q} = ${p+q}, а половина меньшего — ${p}. Отношение ${p+q} : ${p} = ${N(ratio)}.${p===q?' (Классика: если все три куска равны, основания относятся как 1 : 2.)':''}`};},{star:true});
+G(8,()=>CH('В четырёхугольнике ABCD точки M и N — середины сторон AB и CD, AD = 10, BC = 6, MN = 8. Что можно утверждать?','AD ∥ BC',['AB ∥ CD','ABCD — ромб','Такого четырёхугольника не существует'],
+ {short:'MN = (AD + BC)/2 возможно только при AD ∥ BC.',
+ explain:'Возьмём середину P диагонали AC. MP — средняя линия ΔABC: MP ∥ BC, MP = 3. PN — средняя линия ΔACD: PN ∥ AD, PN = 5. По неравенству треугольника MN ≤ MP + PN = 8, и равенство возможно, только если P лежит на отрезке MN — то есть MP и PN на одной прямой. Тогда BC ∥ MN ∥ AD: <b>AD ∥ BC</b>, ABCD — трапеция с основаниями AD и BC (и MN — её средняя линия).',
+ explain2:'Если бы AD и BC не были параллельны, «ломаная» M → P → N имела бы излом, и MN было бы строго меньше 3 + 5 = 8. Раз MN ровно 8 — излома нет.'}),{star:true});
+G(8,()=>{let M1,M2,M3,A,B,C;for(;;){A=[R(-6,6),R(-6,6)];B=[R(-6,6),R(-6,6)];C=[R(-6,6),R(-6,6)];if(Math.abs((B[0]-A[0])*(C[1]-A[1])-(B[1]-A[1])*(C[0]-A[0]))<6)continue;M1=mid(B,C);M2=mid(A,C);M3=mid(A,B);break;}
+ const f=p=>`(${N(p[0])}; ${N(p[1])})`;
+ return {type:'num',q:`Середины сторон BC, AC и AB треугольника ABC — точки M₁${f(M1)}, M₂${f(M2)}, M₃${f(M3)}. Найди сумму координат вершины A (x + y).`,ans:A[0]+A[1],
+ hint:'AM₃M₁M₂ — параллелограмм (стороны — средние линии). Значит, A = M₂ + M₃ − M₁.',short:`A = M₂ + M₃ − M₁ = ${f(A)}; x + y = ${N(A[0]+A[1])}.`,
+ explain:`M₁M₂ и M₁M₃ — средние линии: M₁M₂ ∥ AB и = AM₃, M₁M₃ ∥ AC и = AM₂. Поэтому AM₃M₁M₂ — параллелограмм, и вершина A получается «достраиванием»: A = M₂ + M₃ − M₁ (по каждой координате).<br>x = ${N(M2[0])} + ${N(M3[0])} − ${N(M1[0])} = ${N(A[0])}; y = ${N(M2[1])} + ${N(M3[1])} − ${N(M1[1])} = ${N(A[1])}.<br>x + y = <b>${N(A[0]+A[1])}</b>.`,
+ explain2:`Через систему: M₂ = (A + C)/2, M₃ = (A + B)/2, M₁ = (B + C)/2. Сложим первые два и вычтем третье: M₂ + M₃ − M₁ = (2A)/2 = A. Проверка: середина A${f(A)} и B${f(B)} — ${f(mid(A,B))} = M₃ ✅.`};},{star:true});
+G(8,()=>{const S=pick([64,100,128,144,256,400,512,1024]);const n=R(2,5);const ans=S/2**n;if(!isInt(ans*100))return null;
+ return {type:'num',q:`Середины сторон квадрата площадью ${S} соединили — получился новый квадрат. С ним сделали то же самое, и так всего ${n} раз. Найди площадь последнего квадрата.`,ans,
+ short:`Каждый шаг — площадь пополам: ${S} / 2^${n} = ${N(ans)}.`,
+ explain:`По теореме Вариньона площадь «серединного» четырёхугольника — ровно половина исходной. После каждого шага площадь делится на 2:<br>${S} → ${range(1,n).map(i=>N(S/2**i)).join(' → ')}.<br>После ${n} шагов: ${S} / ${2**n} = <b>${N(ans)}</b>.`,
+ explain2:`Для квадрата это видно и без Вариньона: 4 отрезанных уголка — это 4 равнобедренных прямоугольных треугольника, которые вместе дают ровно половину. Каждый раз «половина уходит в уголки».`};},{star:true});
+G(8,()=>{const AB=R(4,14),BC=R(4,16);if(Math.abs(AB-BC)<3)return null;const AC=R(Math.abs(AB-BC)+3,AB+BC-3);const ans=Math.abs(BC-AB)/2;
+ const B=[0,0],C=[BC,0];const x=(AB*AB+BC*BC-AC*AC)/(2*BC);const A=[x,Math.sqrt(AB*AB-x*x)];const bis=unit(add(unit(A),unit(C)));const K=mul(bis,dot(A,bis));const M=mid(A,C);
+ const dKM=Math.hypot(K[0]-M[0],K[1]-M[1]);if(Math.abs(dKM-ans)>1e-6)return null;
+ const L=mul(bis,Math.max(AB,BC)*0.9);
+ return {type:'num',q:`В треугольнике ABC: AB = ${AB}, BC = ${BC}, AC = ${AC}. Из вершины A опущен перпендикуляр AK на биссектрису угла B. M — середина AC. Найди KM.`,ans,
+ pic:geo({P:{A,B,C,K,M},poly:[['A','B','C']],seg:[['B',L,{dash:true}],['A','K',{col:'var(--accent)'}],['K','M',{col:'var(--accent)',sw:2}]],rt:[['K','A','B']],tick:[['A','M',1],['M','C',1]],maxH:200,W:290}),
+ hint:'Продли AK до пересечения с BC в точке D. Какой получится треугольник ABD?',short:`BD = AB = ${AB}, K — середина AD; KM = DC/2 = |${BC} − ${AB}|/2 = ${N(ans)}.`,
+ explain:`Продлим AK до пересечения с прямой BC в точке D. В треугольнике ABD биссектриса BK — ещё и высота, значит, ABD равнобедренный: BD = BA = ${AB}, а K — середина AD.<br>Тогда KM соединяет середины AD и AC — это средняя линия ΔADC: KM = DC/2.<br>DC = |BC − BD| = |${BC} − ${AB}| = ${Math.abs(BC-AB)}, KM = <b>${N(ans)}</b>.<br>Заметь: длина AC = ${AC} не понадобилась!`,
+ explain2:`Приём «отражение»: точка A при симметрии относительно биссектрисы угла B попадает на луч BC в точку D с BD = BA. Перпендикуляр AK к биссектрисе как раз соединяет A и её отражение, K — середина. А дальше — средняя линия.`};},{star:true});
+
+/* =====================================================================
+   WIDGETS
+   ===================================================================== */
+function onTheory(root){
+  const w=root.querySelector('#w-mid');
+  if(w){w.innerHTML=`<p class="small" style="margin:0 0 4px">Двигай вершину B — следи за средней линией MN.</p><label>B: влево–вправо<input type="range" id="wmX" min="-2" max="12" step="0.5" value="3.5"></label><label>B: вверх–вниз<input type="range" id="wmY" min="1.5" max="8" step="0.5" value="6"></label><div id="wmS" style="display:flex;justify-content:center"></div><div id="wmO" class="small" style="text-align:center"></div>`;
+    const X=w.querySelector('#wmX'),Y=w.querySelector('#wmY');const draw=()=>{const B=[+X.value,+Y.value],A=[0,0],C=[10,0];
+      w.querySelector('#wmS').innerHTML=geo({P:{A,B,C},extra:[[-2,0],[12,8]],poly:[['A','B','C']],seg:[[mid(A,B),mid(B,C),{sw:2.6,col:'var(--accent)'}]],tick:[['A',mid(A,B),1],[mid(A,B),'B',1],['B',mid(B,C),2],[mid(B,C),'C',2]],side:[['A','C','AC = 10']],maxH:180,W:300});
+      const L=Math.hypot(mid(B,C)[0]-mid(A,B)[0],mid(B,C)[1]-mid(A,B)[1]);w.querySelector('#wmO').innerHTML=`MN = <span class="out">${N(Math.round(L*100)/100)}</span> = AC / 2, и MN всегда горизонтальна, как AC.`;};
+    X.oninput=Y.oninput=draw;draw();}
+  const v=root.querySelector('#w-var');
+  if(v){v.innerHTML=`<p class="small" style="margin:0 0 4px">Двигай вершину C — середины сторон всё равно дают параллелограмм.</p><label>C: влево–вправо<input type="range" id="wvX" min="2" max="12" step="0.5" value="7"></label><label>C: вверх–вниз<input type="range" id="wvY" min="-1" max="9" step="0.5" value="6"></label><div id="wvS" style="display:flex;justify-content:center"></div><div id="wvO" class="small" style="text-align:center"></div>`;
+    const X=v.querySelector('#wvX'),Y=v.querySelector('#wvY');const draw=()=>{const P={A:[0,0],B:[1.5,5],C:[+X.value,+Y.value],D:[9,0.8]};const d1=Math.hypot(P.C[0]-P.A[0],P.C[1]-P.A[1]),d2=Math.hypot(P.D[0]-P.B[0],P.D[1]-P.B[1]);
+      v.querySelector('#wvS').innerHTML=geo({P:Object.assign({},P,{K:mid(P.A,P.B),L:mid(P.B,P.C),M:mid(P.C,P.D),N:mid(P.D,P.A)}),extra:[[0,-1],[12,9]],poly:[['A','B','C','D'],['K','L','M','N']],fill:[{pts:['K','L','M','N'],op:0.35}],seg:[['A','C',{dash:true}],['B','D',{dash:true}]],lab:['A','B','C','D'],maxH:250,W:320,pad:22});
+      v.querySelector('#wvO').innerHTML=`AC + BD = ${N(Math.round(d1*100)/100)} + ${N(Math.round(d2*100)/100)} = <span class="out">${N(Math.round((d1+d2)*100)/100)}</span> = периметр закрашенного параллелограмма.`;};
+    X.oninput=Y.oninput=draw;draw();}
+}
+
+window.TOPIC={id:'g8_midline',title:'Средняя линия и теорема Фалеса',subtitle:'Геометрия · 8 класс',
+intro:`<p>Как разделить отрезок на равные части без делений на линейке, почему отрезок между серединами сторон всегда вдвое короче третьей стороны, чему равна средняя линия трапеции и что общего у всех четырёхугольников (теорема Вариньона). В конце — олимпиадные задачи на середины.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Теорема Фалеса','Пропорциональные отрезки','Средняя линия треугольника','Средние линии: периметр и площадь','Средняя линия трапеции','Трапеция: диагонали и площадь','Теорема Вариньона','Точка пересечения медиан','★ Олимпиадные задачи'],
+gens};
+})();

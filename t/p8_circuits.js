@@ -1,0 +1,493 @@
+(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+/* =====================================================================
+   Circuit helper: series–parallel networks → resistance, currents, SVG
+   leaf: {t:'R'|'L'|'A'|'V'|'W'|'K'|'X', r:Ом, n:'R₁', v:'4 Ом', on:true(K closed)}
+   series: {s:[…]}, parallel: {p:[…]}
+   ===================================================================== */
+const SUBD=s=>String(s).replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d]);
+const r2=x=>Math.round(x*100)/100;
+const rnd=(x,d)=>{const k=Math.pow(10,d);return Math.round(x*k)/k;};
+/* numeric task with sensible relative tolerance for an answer rounded to d decimals */
+const NUMT=(x,d,o)=>{const a=rnd(x,d);const A=Math.abs(a)||1;let tol=Math.max(0.6*Math.pow(10,-d)/A,0.004);tol=Math.min(tol,0.9/A,0.5);return Object.assign({type:'num',ans:a,tol},o||{});};
+function Rof(n){
+  if(n.s){let s=0;for(const c of n.s){const r=Rof(c);if(r===Infinity)return Infinity;s+=r;}return s;}
+  if(n.p){let g=0;for(const c of n.p){const r=Rof(c);if(r===0)return 0;if(r!==Infinity)g+=1/r;}return g?1/g:Infinity;}
+  switch(n.t){case 'A':case 'W':return 0;case 'V':case 'X':return Infinity;case 'K':return n.on?0:Infinity;default:return n.r;}
+}
+/* distribute current I / voltage U over the tree; leaves get .I and .U */
+function dist(n,I,U){
+  n.I=I;n.U=U;
+  if(n.s){const rs=n.s.map(Rof);const inf=rs.filter(r=>r===Infinity).length;
+    n.s.forEach((c,i)=>{if(inf){dist(c,0,rs[i]===Infinity?U/inf:0);}else dist(c,I,I*rs[i]);});return;}
+  if(n.p){const rs=n.p.map(Rof);const z=rs.filter(r=>r===0).length;
+    n.p.forEach((c,i)=>{const Ic=z?(rs[i]===0?I/z:0):(rs[i]===Infinity?0:U/rs[i]);dist(c,Ic,U);});}
+}
+function solveTree(n,U){const R=Rof(n);dist(n,R===0?Infinity:U/R,U);return R;}
+function leaves(n,out){out=out||[];if(n.s)n.s.forEach(c=>leaves(c,out));else if(n.p)n.p.forEach(c=>leaves(c,out));else out.push(n);return out;}
+const clone=n=>JSON.parse(JSON.stringify(n));
+/* nodal solver for arbitrary networks: edges [a,b,r], returns resistance between s and g */
+function Rnet(N,edges,s,g){
+  const M=[];for(let i=0;i<N;i++)M.push(new Array(N+1).fill(0));
+  for(const [a,b,r] of edges){const c=1/r;M[a][a]+=c;M[b][b]+=c;M[a][b]-=c;M[b][a]-=c;}
+  // fix V_s=1, V_g=0
+  for(const k of [s,g]){M[k].fill(0);M[k][k]=1;M[k][N]=k===s?1:0;}
+  for(let i=0;i<N;i++){let p=i;for(let j=i+1;j<N;j++)if(Math.abs(M[j][i])>Math.abs(M[p][i]))p=j;[M[i],M[p]]=[M[p],M[i]];
+    for(let j=0;j<N;j++)if(j!==i){const f=M[j][i]/M[i][i];for(let k=i;k<=N;k++)M[j][k]-=f*M[i][k];}}
+  const V=M.map((row,i)=>row[N]/row[i]);let I=0;for(const [a,b,r] of edges){if(a===s)I+=(V[a]-V[b])/r;else if(b===s)I+=(V[b]-V[a])/r;}
+  return 1/I;
+}
+/* ---------- drawing ---------- */
+const LW=66,LH=60,LT=30,ST=13;
+function dims(n){
+  if(n.s){const d=n.s.map(dims);const t=Math.max(...d.map(x=>x.t)),b=Math.max(...d.map(x=>x.h-x.t));n._d={w:d.reduce((a,x)=>a+x.w,0),h:t+b,t};return n._d;}
+  if(n.p){const d=n.p.map(dims);n._d={w:Math.max(...d.map(x=>x.w))+2*ST,h:d.reduce((a,x)=>a+x.h,0),t:d[0].t};return n._d;}
+  n._d={w:n.w||LW,h:LH,t:LT};return n._d;
+}
+const TX=(x,y,t,o)=>{o=o||{};return `<text x="${r2(x)}" y="${r2(y)}" text-anchor="${o.a||'middle'}" font-size="${o.fs||12}" font-weight="${o.wt||600}" fill="${o.c||'var(--ink)'}">${t}</text>`;};
+const WI=(x1,y1,x2,y2,o)=>`<line x1="${r2(x1)}" y1="${r2(y1)}" x2="${r2(x2)}" y2="${r2(y2)}" stroke="${(o&&o.c)||'var(--fig)'}" stroke-width="${(o&&o.sw)||2}" stroke-linecap="round"${o&&o.dash?' stroke-dasharray="5 4"':''}/>`;
+const DOT=(x,y)=>`<circle cx="${r2(x)}" cy="${r2(y)}" r="3.2" fill="var(--fig)"/>`;
+/* element symbol centred at 0,0, horizontal, total width 2*hw; returns [svg, hw] */
+function sym(t,o){o=o||{};const F='var(--fig)';
+  switch(t){
+    case 'R':return [`<rect x="-15" y="-6.5" width="30" height="13" fill="${o.hl?'var(--hl)':'var(--card)'}" fill-opacity="${o.hl?0.6:1}" stroke="${F}" stroke-width="2"/>`,15];
+    case 'L':{const g=o.glow;return [(g?`<circle r="${(11+12*Math.min(1,g))}" fill="var(--hl)" fill-opacity="${0.25+0.6*Math.min(1,g)}"/>`:'')+`<circle r="10" fill="var(--card)" stroke="${F}" stroke-width="2"/><path d="M-7,-7 L7,7 M-7,7 L7,-7" stroke="${F}" stroke-width="1.8"/>`,10];}
+    case 'X':return [`<circle r="10" fill="var(--card)" stroke="${F}" stroke-width="2" stroke-dasharray="3 3"/><path d="M-7,-7 L7,7 M-7,7 L7,-7" stroke="${F}" stroke-width="1.4" stroke-dasharray="2 2"/>`,10];
+    case 'A':case 'V':return [`<circle r="11" fill="var(--card)" stroke="${F}" stroke-width="2"/><text y="4.5" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent-ink)">${t}</text>`,11];
+    case 'K':return [o.on?`<circle cx="-12" r="2.6" fill="${F}"/><circle cx="12" r="2.6" fill="${F}"/><line x1="-12" y1="0" x2="12" y2="0" stroke="${F}" stroke-width="2"/>`:`<circle cx="-12" r="2.6" fill="${F}"/><circle cx="12" r="2.6" fill="${F}"/><line x1="-12" y1="0" x2="10" y2="-11" stroke="${F}" stroke-width="2"/>`,12];
+    case 'B':return [`<line x1="-4" y1="-15" x2="-4" y2="15" stroke="${F}" stroke-width="2"/><line x1="4" y1="-8" x2="4" y2="8" stroke="${F}" stroke-width="4.5"/>`,4];
+    case 'W':return ['',0];
+  }
+  return ['',0];
+}
+/* draw element between (x1,y) and (x2,y) (horizontal) or vertical when vert */
+function elem(t,x1,y1,x2,y2,o){o=o||{};const [g,hw]=sym(t,o);const cx=(x1+x2)/2,cy=(y1+y2)/2;const vert=Math.abs(x2-x1)<Math.abs(y2-y1);
+  let s='';if(vert){s+=WI(x1,y1,x1,cy-hw)+WI(x1,cy+hw,x1,y2);}else{s+=WI(x1,y1,cx-hw,y1)+WI(cx+hw,y1,x2,y1);}
+  if(t==='W'){s=WI(x1,y1,x2,y2);}
+  s+=`<g transform="translate(${r2(cx)},${r2(cy)})${vert?' rotate(90)':''}">${g}</g>`;
+  if(vert){if(o.n)s+=TX(cx+hw+6+(t==='B'?8:0),cy-(o.v?3:-4),o.n,{a:'start',c:'var(--accent-ink)',fs:13,wt:700});if(o.v)s+=TX(cx+hw+6+(t==='B'?8:0),cy+(o.n?12:4),o.v,{a:'start'});}
+  else{if(o.n)s+=TX(cx,cy-(t==='B'?20:o.glow!=null?27:16),o.n,{c:'var(--accent-ink)',fs:13,wt:700});if(o.v)s+=TX(cx,cy+(t==='B'?28:24),o.v);}
+  return s;
+}
+function drawNode(n,x,y){const d=n._d;let s='';
+  if(n.s){let cx=x;const ty=y+d.t;n.s.forEach(c=>{s+=drawNode(c,cx,ty-c._d.t);cx+=c._d.w;});return s;}
+  if(n.p){let cy=y;const xl=x+ST,xr=x+d.w-ST;const rows=[];
+    n.p.forEach(c=>{const ty=cy+c._d.t;rows.push(ty);s+=drawNode(c,xl,cy);if(xl+c._d.w<xr)s+=WI(xl+c._d.w,ty,xr,ty);cy+=c._d.h;});
+    s+=WI(x,rows[0],xl,rows[0])+WI(xr,rows[0],x+d.w,rows[0]);
+    s+=WI(xl,rows[0],xl,rows[rows.length-1])+WI(xr,rows[0],xr,rows[rows.length-1]);
+    rows.forEach((ty,i)=>{if(i<rows.length-1){s+=DOT(xl,ty)+DOT(xr,ty);}});
+    return s;}
+  const ty=y+d.t;return elem(n.t,x,ty,x+d.w,ty,{n:n.n,v:n.v,on:n.on,hl:n.hl,glow:n.glow});
+}
+/* full circuit: network on top, battery (and extras) on the bottom wire
+   o.bat: label under battery; o.bottom: extra leaves on the bottom wire (e.g. key, ammeter); o.noBat: draw open terminals */
+function circuit(net,o){o=o||{};dims(net);const d=net._d;const M=24,G=12;
+  const bottom=[{t:'B',n:o.batN||'',v:o.bat||''}].concat(o.bottom||[]);if(o.noBat)bottom.length=0;
+  const bw=bottom.length*60;const W=Math.max(d.w,bw)+2*M+2*G;const x0=(W-d.w)/2;
+  const T0=o.top||4;const yb=d.h+(o.noBat?18:30)+T0-4;const Hh=yb+(o.noBat?20:36);
+  let s=`<svg viewBox="0 0 ${r2(W)} ${r2(Hh)}" width="${Math.min(340,Math.round(W))}" role="img" aria-label="${o.aria||'Схема электрической цепи'}" style="font-family:system-ui,sans-serif">`;
+  s+=drawNode(net,x0,T0);const ty=T0+d.t;const xl=x0-G,xr=x0+d.w+G;
+  s+=WI(xl,ty,x0,ty)+WI(x0+d.w,ty,xr,ty);
+  if(o.noBat){s+=WI(xl,ty,xl,yb)+WI(xr,ty,xr,yb)+`<circle cx="${r2(xl)}" cy="${r2(yb)}" r="4" fill="var(--card)" stroke="var(--fig)" stroke-width="2"/><circle cx="${r2(xr)}" cy="${r2(yb)}" r="4" fill="var(--card)" stroke="var(--fig)" stroke-width="2"/>`+(o.ends?TX(xl,yb+18,o.ends[0],{c:'var(--accent-ink)',fs:13,wt:700})+TX(xr,yb+18,o.ends[1],{c:'var(--accent-ink)',fs:13,wt:700}):'');return s+'</svg>';}
+  s+=WI(xl,ty,xl,yb)+WI(xr,ty,xr,yb);
+  const seg=(xr-xl)/bottom.length;bottom.forEach((b,i)=>{s+=elem(b.t,xl+i*seg,yb,xl+(i+1)*seg,yb,{n:b.n,v:b.v,on:b.on});});
+  return s+'</svg>';
+}
+const Rl=(r,n,o)=>Object.assign({t:'R',r,n,v:o&&o.nov?'':fmtR(r)},o||{});
+const fmtR=r=>H.num(r)+' Ом';
+
+/* ---------- local helpers ---------- */
+const N=H.num;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<400;i++){const t=make();if(t)return t;}return null;}});};
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+const M=s=>`<span class="m">${s}</span>`;
+const F=H.frac;
+const nice=x=>isFinite(x)&&Math.abs(x*10-Math.round(x*10))<1e-9;
+const VALS=[1,2,3,4,5,6,8,10,12,15,18,20,24,30,36,40,60];
+const ser=a=>a.reduce((s,x)=>s+x,0);
+const par=a=>1/a.reduce((s,x)=>s+1/x,0);
+const par2s=(a,b)=>`${N(a)} · ${N(b)} / (${N(a)} + ${N(b)}) = ${N(a*b)} / ${N(a+b)} = ${N(rnd(a*b/(a+b),3))}`;
+/* name leaves R₁…Rₙ (or L₁…) in reading order; assign values */
+function nameLeaves(net,pref){leaves(net).forEach((l,i)=>{if(l.t==='R'||l.t==='L'||l.t==='X'){l.n=pref+SUBD(i+1);}});return net;}
+const RR=(r)=>({t:'R',r,v:fmtR(r)});
+/* mixed templates (functions of values array) */
+const TPL=[
+ {k:3,f:v=>({s:[RR(v[0]),{p:[RR(v[1]),RR(v[2])]}]}),how:v=>`R₂ и R₃ параллельно: ${par2s(v[1],v[2])} Ом. Плюс R₁ последовательно.`},
+ {k:3,f:v=>({p:[{s:[RR(v[0]),RR(v[1])]},RR(v[2])]}),how:v=>`R₁ и R₂ последовательно: ${N(v[0])} + ${N(v[1])} = ${N(v[0]+v[1])} Ом. Этот участок параллельно с R₃.`},
+ {k:4,f:v=>({s:[{p:[RR(v[0]),RR(v[1])]},{p:[RR(v[2]),RR(v[3])]}]}),how:v=>`Пара R₁‖R₂: ${par2s(v[0],v[1])} Ом. Пара R₃‖R₄: ${par2s(v[2],v[3])} Ом. Две пары последовательно.`},
+ {k:4,f:v=>({s:[{p:[{s:[RR(v[0]),RR(v[1])]},RR(v[2])]},RR(v[3])]}),how:v=>`R₁ + R₂ = ${N(v[0]+v[1])} Ом; параллельно с R₃: ${par2s(v[0]+v[1],v[2])} Ом; плюс R₄.`},
+ {k:4,f:v=>({p:[RR(v[0]),RR(v[1]),{s:[RR(v[2]),RR(v[3])]}]}),how:v=>`Нижняя ветка R₃ + R₄ = ${N(v[2]+v[3])} Ом. Три ветки параллельно: 1/R = 1/${N(v[0])} + 1/${N(v[1])} + 1/${N(v[2]+v[3])}.`},
+ {k:5,f:v=>({s:[RR(v[0]),{p:[RR(v[1]),{s:[RR(v[2]),{p:[RR(v[3]),RR(v[4])]}]}]}]}),how:v=>`Начинаем с самой глубины: R₄‖R₅ = ${par2s(v[3],v[4])} Ом; плюс R₃ → ${N(rnd(v[2]+par([v[3],v[4]]),3))} Ом; это параллельно с R₂; плюс R₁.`}
+];
+function mixed(ks,maxR){for(let it=0;it<3000;it++){const T=pick(ks.map(i=>TPL[i]));const v=Array.from({length:T.k},()=>pick(VALS));const net=nameLeaves(T.f(v),'R');const Rt=Rof(net);
+  if(!nice(Rt)||Rt>(maxR||200))continue;
+  // all intermediate parallel results should be nice
+  let ok=true;(function chk(n){if(n.p||n.s){const r=Rof(n);if(!nice(r)&&Math.abs(r*100-Math.round(r*100))>1e-9)ok=false;(n.p||n.s).forEach(chk);}})(net);if(!ok)continue;
+  return {T,v,net,Rt};}return null;}
+/* step-by-step explanation of a series–parallel tree */
+function stepsOf(net){const out=[];let k=0;
+  (function walk(n){if(!n.s&&!n.p)return n.n;const parts=(n.s||n.p).map(walk);const rs=(n.s||n.p).map(Rof);const r=Rof(n);k++;const name='R'+'₁₂₃₄₅₆₇₈₉'.charAt(0)+'';
+   const lab=`(${parts.join(n.s?' + ':' ‖ ')})`;
+   out.push(n.s?`${parts.join(' + ')}: ${rs.map(x=>N(rnd(x,3))).join(' + ')} = <b>${N(rnd(r,3))} Ом</b> (последовательно)`:rs.length===2?`${parts.join(' ‖ ')}: ${rs.map(x=>N(rnd(x,3))).join(' · ')} / (${rs.map(x=>N(rnd(x,3))).join(' + ')}) = <b>${N(rnd(r,3))} Ом</b> (параллельно)`:`${parts.join(' ‖ ')}: 1/R = ${rs.map(x=>'1/'+N(rnd(x,3))).join(' + ')} → R = <b>${N(rnd(r,3))} Ом</b> (параллельно)`);
+   return lab;})(net);
+  return '<ol class="steps">'+out.map(s=>'<li>'+s+'</li>').join('')+'</ol>';}
+
+/* free-form drawings */
+function resLine(x1,y1,x2,y2,o){o=o||{};const cx=(x1+x2)/2,cy=(y1+y2)/2;const a=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
+  return WI(x1,y1,x2,y2)+`<g transform="translate(${r2(cx)},${r2(cy)}) rotate(${r2(a)})"><rect x="-13" y="-5.5" width="26" height="11" fill="var(--card)" stroke="var(--fig)" stroke-width="1.8"/></g>`+(o.lab?TX(cx+(o.dx||0),cy+(o.dy||0)+4,o.lab,{fs:12,c:o.c||'var(--ink)'}):'');}
+const PT=(x,y,t,dx,dy)=>DOT(x,y)+(t?TX(x+(dx||0),y+(dy||0)+5,t,{fs:15,wt:700,c:'var(--accent-ink)'}):'');
+function ladderSvg(r1,r2){let s=`<svg viewBox="0 0 340 120" width="330" role="img" aria-label="Бесконечная цепочка резисторов" style="font-family:system-ui,sans-serif">`;
+  const yT=30,yB=100,x0=24,st=80;s+=PT(x0,yT,'A',-14,0)+PT(x0,yB,'B',-14,0);
+  for(let i=0;i<3;i++){const xa=x0+i*st,xb=xa+st;s+=resLine(xa,yT,xb,yT,{lab:r1,dy:-14});s+=WI(xa,yB,xb,yB);s+=resLine(xb,yT,xb,yB,{lab:r2,dx:27,dy:0});s+=DOT(xb,yT)+DOT(xb,yB);}
+  s+=TX(x0+3*st+46,(yT+yB)/2+5,'…',{fs:22});s+=WI(x0+3*st,yT,x0+3*st+34,yT)+WI(x0+3*st,yB,x0+3*st+34,yB);return s+'</svg>';}
+function cubeSvg(a,b){const P=[[40,190],[180,190],[180,70],[40,70],[125,145],[265,145],[265,25],[125,25]];
+  // 0-1-2-3 front, 4-5-6-7 back; [i,j,t,hidden]
+  const E=[[0,1,.5],[1,2,.5],[2,3,.5],[3,0,.5],[4,5,.72,1],[5,6,.5],[6,7,.5],[7,4,.2,1],[0,4,.6,1],[1,5,.5],[2,6,.5],[3,7,.5]];
+  let s=`<svg viewBox="0 0 300 215" width="290" role="img" aria-label="Куб из резисторов" style="font-family:system-ui,sans-serif">`;
+  E.forEach(([i,j,t,h])=>{const A=P[i],B=P[j];const cx=A[0]+(B[0]-A[0])*t,cy=A[1]+(B[1]-A[1])*t;const an=Math.atan2(B[1]-A[1],B[0]-A[0])*180/Math.PI;
+    s+=WI(A[0],A[1],B[0],B[1],{dash:!!h,sw:h?1.6:2})+`<g transform="translate(${r2(cx)},${r2(cy)}) rotate(${r2(an)})"><rect x="-12" y="-5" width="24" height="10" fill="var(--card)" stroke="var(--fig)" stroke-width="1.6"${h?' stroke-dasharray="3 2"':''}/></g>`;});
+  P.forEach(p=>{s+=DOT(p[0],p[1]);});
+  const lab=(i,t)=>{const p=P[i];const dx=p[0]<150?-14:14;const dy=p[1]>100?16:-6;return TX(p[0]+dx,p[1]+dy,t,{fs:15,wt:700,c:'var(--accent-ink)'});};
+  return s+lab(a,'A')+lab(b,'B')+'</svg>';}
+function bridgeSvg(v,names){const A=[30,100],B=[290,100],C=[160,30],D=[160,170];
+  let s=`<svg viewBox="0 0 320 200" width="310" role="img" aria-label="Мостовая схема" style="font-family:system-ui,sans-serif">`;
+  s+=resLine(A[0],A[1],C[0],C[1],{lab:v[0],dx:-26,dy:-12})+resLine(C[0],C[1],B[0],B[1],{lab:v[1],dx:26,dy:-12})+resLine(A[0],A[1],D[0],D[1],{lab:v[2],dx:-26,dy:14})+resLine(D[0],D[1],B[0],B[1],{lab:v[3],dx:26,dy:14})+resLine(C[0],C[1],D[0],D[1],{lab:v[4],dx:30,dy:0});
+  s+=PT(A[0],A[1],'A',-14,0)+PT(B[0],B[1],'B',14,0)+PT(C[0],C[1],'C',0,-14)+PT(D[0],D[1],'D',0,18);return s+'</svg>';}
+function k4Svg(r){const A=[40,170],B=[260,170],C=[150,20],D=[150,118];
+  let s=`<svg viewBox="0 0 300 200" width="290" role="img" aria-label="Четыре вершины, соединённые резисторами попарно" style="font-family:system-ui,sans-serif">`;
+  s+=resLine(...A,...B)+resLine(...A,...C)+resLine(...B,...C)+resLine(...A,...D)+resLine(...B,...D)+resLine(...C,...D);
+  s+=PT(...A,'A',-14,4)+PT(...B,'B',14,4)+PT(...C,'C',0,-12)+PT(...D,'D',0,20);return s+'</svg>';}
+function ringSvg(m,n){const cx=150,cy=110,r=70;const a1=-90,a2=-90+360*m/(m+n);const p=a=>[cx+r*Math.cos(a*Math.PI/180),cy+r*Math.sin(a*Math.PI/180)];
+  let s=`<svg viewBox="0 0 300 205" width="270" role="img" aria-label="Проволочное кольцо" style="font-family:system-ui,sans-serif">`;
+  const P1=p(a1),P2=p(a2);const big=m/(m+n)>0.5?1:0;
+  s+=`<path d="M${r2(P1[0])},${r2(P1[1])} A${r},${r} 0 ${big} 1 ${r2(P2[0])},${r2(P2[1])}" fill="none" stroke="var(--accent)" stroke-width="5"/>`;
+  s+=`<path d="M${r2(P2[0])},${r2(P2[1])} A${r},${r} 0 ${1-big} 1 ${r2(P1[0])},${r2(P1[1])}" fill="none" stroke="var(--fig)" stroke-width="5"/>`;
+  s+=WI(P1[0],P1[1],P1[0],P1[1]-18)+WI(P2[0],P2[1],P2[0]+(P2[0]>cx?24:-24),P2[1]);
+  s+=PT(P1[0],P1[1]-18,'A',16,-4)+PT(P2[0]+(P2[0]>cx?24:-24),P2[1],'B',P2[0]>cx?14:-14,0);
+  const am=p((a1+a2)/2),bm=p((a2+a1+360)/2);s+=TX(am[0]+(am[0]>cx?30:-30),am[1],`${m} ${plural(m,'часть','части','частей')}`,{fs:12,c:'var(--accent-ink)'})+TX(bm[0]+(bm[0]>cx?30:-30),bm[1]+(Math.abs(bm[0]-cx)<20?18:0),`${n} ${plural(n,'часть','части','частей')}`,{fs:12});
+  return s+'</svg>';}
+
+/* ---------- theory figures ---------- */
+const symRow=[['R','резистор'],['L','лампа'],['B','источник: длинная черта «+»'],['K','ключ (разомкнут)'],['A','амперметр'],['V','вольтметр']].map(([t,nm])=>`<div class="fig"><svg viewBox="0 0 110 50" width="110" style="font-family:system-ui,sans-serif">${elem(t,8,25,102,25,{})}</svg><div class="cap">${nm}</div></div>`).join('');
+const junc=`<div class="fig"><svg viewBox="0 0 220 70" width="220" style="font-family:system-ui,sans-serif">${WI(10,20,100,20)+WI(55,5,55,60)+DOT(55,20)+TX(55,68,'соединение — точка',{fs:11,wt:500})+WI(130,30,210,30)+WI(170,5,170,55)+TX(170,68,'пересечение без точки',{fs:11,wt:500})}</svg></div>`;
+const exSer=circuit({s:[RR(4),RR(8)].map((x,i)=>Object.assign(x,{n:'R'+SUBD(i+1)}))},{bat:'12 В'});
+const exPar=circuit({p:[RR(6),RR(3)].map((x,i)=>Object.assign(x,{n:'R'+SUBD(i+1)}))},{bat:'12 В'});
+const exMix=circuit(nameLeaves({s:[RR(2),{p:[RR(3),RR(6)]}]},'R'),{bat:'12 В'});
+const exBird=`<div class="fig"><svg viewBox="0 0 320 120" width="320" role="img" aria-label="Птица на проводе" style="font-family:system-ui,sans-serif">
+${WI(10,70,310,70,{sw:4})}
+<ellipse cx="160" cy="45" rx="26" ry="16" fill="var(--hl)" fill-opacity="0.6" stroke="var(--fig)" stroke-width="1.5"/><circle cx="182" cy="32" r="9" fill="var(--hl)" fill-opacity="0.6" stroke="var(--fig)" stroke-width="1.5"/><path d="M190,31 L198,33 L190,35" fill="var(--accent)"/>
+${WI(150,60,147,70,{sw:2})}${WI(170,60,173,70,{sw:2})}
+${TX(160,95,'между лапками ≈ 5 см провода: R ≈ 0,000005 Ом',{fs:12,wt:500})}${TX(160,112,'ток почти весь идёт по проводу, а не через птицу',{fs:12,wt:500})}
+${TX(30,60,'I →',{fs:13,c:'var(--accent-ink)'})}</svg></div>`;
+
+const theory=[
+{title:'Схемы: язык электриков',lvl:0,html:`
+<p class="hook">Почему, когда в старой ёлочной гирлянде перегорала одна лампочка, гасла <b>вся</b> гирлянда, а если перегорит лампочка в люстре — остальные горят? И почему птица сидит на проводе под напряжением 10 000 вольт и спокойно чистит перья? Ответ — в том, <b>как соединены</b> элементы цепи.</p>
+<p>Рисовать настоящие провода и лампы долго, поэтому физики договорились об <b>условных обозначениях</b>:</p>
+<div class="figrow">${symRow}</div>
+<div class="box rule"><b>Правила чтения схем</b>Провода рисуют прямыми линиями. <b>Точка</b> на пересечении — провода соединены (узел). Пересечение <b>без точки</b> — провода просто проходят друг над другом. У источника <b>длинная тонкая</b> черта — «+», короткая толстая — «−».</div>
+${junc}
+<div class="box tip"><b>Главный приём</b>Веди пальцем от «+» источника. Если путь <b>не разветвляется</b> — элементы соединены <b>последовательно</b>. Если ток в узле может пойти <b>разными путями</b>, которые потом снова сходятся, — эти ветки соединены <b>параллельно</b>.</div>`},
+{title:'Последовательное соединение',lvl:1,html:`
+<div class="box rule"><b>Последовательное соединение</b>Элементы идут друг за другом, без развилок.<br>• Ток одинаковый: ${M('I = I₁ = I₂')}<br>• Напряжения складываются: ${M('U = U₁ + U₂')}<br>• Сопротивления складываются: ${M('R = R₁ + R₂')}</div>
+<div class="fig">${exSer}</div>
+<p>Почему ток одинаковый? Заряду некуда свернуть: сколько вошло в R₁ — столько же вышло и прошло через R₂. Как машины на однополосной дороге через два моста подряд.</p>
+<p>Почему сопротивления складываются? Два резистора подряд — это как один длинный провод: длины складываются, значит и R.</p>
+<div class="box ex"><b>Пример по рисунку</b>${M('R = 4 + 8 = 12 Ом')}, ${M('I = 12 / 12 = 1 А')}.<br>${M('U₁ = 1 · 4 = 4 В')}, ${M('U₂ = 1 · 8 = 8 В')}; проверка: 4 + 8 = 12 В ✅.<br>Заметь: на большем сопротивлении — большее напряжение: ${M('U₁ / U₂ = R₁ / R₂')}.</div>
+<div class="box tip"><b>Гирлянда</b>Если N одинаковых лампочек включены последовательно в сеть 220 В, на каждой ${M('220 / N')} В. 20 лампочек → по 11 В. Поэтому мелкие лампы на 12 В можно соединить цепочкой и включить в розетку.</div>
+<div class="box err"><b>Минус последовательного соединения</b>Перегорела одна лампа — цепь разорвана, гаснут <b>все</b>. Именно так вели себя старые гирлянды.</div>`},
+{title:'Параллельное соединение',lvl:2,html:`
+<div class="box rule"><b>Параллельное соединение</b>Элементы подключены к одной и той же паре узлов.<br>• Напряжение одинаковое: ${M('U = U₁ = U₂')}<br>• Токи складываются: ${M('I = I₁ + I₂')}<br>• ${M('1/R = 1/R₁ + 1/R₂')}; для двух: ${M('R = '+F('R₁·R₂','R₁ + R₂'))}</div>
+<div class="fig">${exPar}</div>
+<p>Почему общее сопротивление <b>меньше</b> самого маленького? Каждая новая ветка — это ещё одна «полоса движения» для тока. Как открыть ещё одну кассу в магазине: очередь идёт быстрее.</p>
+<div class="box ex"><b>Пример по рисунку</b>${M('R = 6 · 3 / (6 + 3) = 18 / 9 = 2 Ом')}.<br>${M('I₁ = 12 / 6 = 2 А')}, ${M('I₂ = 12 / 3 = 4 А')}, ${M('I = 6 А')}; проверка: 12 / 2 = 6 А ✅.<br>Ток больше там, где сопротивление меньше: ${M('I₁ / I₂ = R₂ / R₁')}.</div>
+<div class="box tip"><b>Лайфхак</b>n одинаковых резисторов по R параллельно: ${M('R<sub>общ</sub> = R / n')}. Два по 10 Ом → 5 Ом, пять по 10 Ом → 2 Ом.</div>
+<div class="box err"><b>Типичная ошибка</b>${M('R = 1/R₁ + 1/R₂')} — и забыл перевернуть дробь! 1/6 + 1/3 = 1/2 — это <b>1/R</b>, а R = 2 Ом. Проверка здравым смыслом: ответ должен быть меньше самого маленького из сопротивлений.</div>
+<div class="fact">Все розетки и лампы в квартире включены <b>параллельно</b>: каждый прибор получает полные 220 В, и выключение одного не мешает остальным. Чем больше приборов включено, тем меньше общее сопротивление и тем больше общий ток через счётчик.</div>`},
+{title:'Сравни сам: последовательно или параллельно',lvl:[1,2],html:`
+<div class="widget" id="w-sp"></div>
+<p>Поиграй: поставь R₁ = R₂ и сравни общее сопротивление — при последовательном оно вдвое больше одного резистора, при параллельном — вдвое меньше. Сделай R₂ очень большим — при параллельном соединении общее R почти равно R₁ (большое сопротивление «почти не участвует»).</p>`},
+{title:'Смешанные цепи: разбираем по кусочкам',lvl:3,html:`
+<div class="box rule"><b>Алгоритм</b><ol class="steps"><li>Найди участки, где элементы точно соединены <b>только</b> последовательно или <b>только</b> параллельно (начинай с самой «глубины» схемы).</li><li>Замени каждый такой участок одним резистором.</li><li>Перерисуй схему — она стала проще. Повторяй, пока не останется один резистор.</li></ol></div>
+<div class="fig">${exMix}</div>
+<div class="box ex"><b>Пример по рисунку</b>R₂ и R₃ параллельно: ${M('3 · 6 / (3 + 6) = 2 Ом')}. Этот кусок последовательно с R₁: ${M('R = 2 + 2 = 4 Ом')}.</div>
+<div class="box err"><b>Ошибка</b>Складывать всё подряд: 2 + 3 + 6 = 11 Ом. Последовательно соединены только элементы <b>на одном пути без развилок</b>.</div>
+<div class="box tip"><b>Запись</b>Параллельное соединение удобно записывать значком ‖: ${M('R = R₁ + (R₂ ‖ R₃)')}.</div>`},
+{title:'Токи и напряжения в смешанной цепи',lvl:4,html:`
+<p>Когда общее сопротивление найдено, идём <b>обратно</b>: от целого к частям.</p>
+<div class="box ex"><b>Та же схема, U = 12 В</b><ol class="steps"><li>Общий ток: ${M('I = U / R = 12 / 4 = 3 А')}. Он идёт через R₁.</li><li>${M('U₁ = I·R₁ = 3 · 2 = 6 В')}.</li><li>На параллельном участке: ${M('U₂₃ = 12 − 6 = 6 В')} (или 3 А · 2 Ом).</li><li>${M('I₂ = 6 / 3 = 2 А')}, ${M('I₃ = 6 / 6 = 1 А')}. Проверка: 2 + 1 = 3 А ✅.</li></ol></div>
+<div class="box rule"><b>Главные проверки</b>Сумма токов в ветках = ток до развилки. Сумма напряжений по пути от «+» до «−» = напряжение источника.</div>
+<p>Идеальный <b>амперметр</b> (R = 0) — это просто провод, который считает ток. Идеальный <b>вольтметр</b> (R = ∞) — ток через него не идёт, его можно мысленно убрать из схемы.</p>`},
+{title:'Что изменится? Перегорела лампа, замкнули ключ, птица на проводе',lvl:[5,6],html:`
+<p>Источник в задачах будем считать <b>идеальным</b>: его напряжение не меняется, что бы мы ни подключали.</p>
+<div class="box rule"><b>Три события</b>• Лампа <b>перегорела</b> → её ветка разорвана (R = ∞), ток через неё не идёт.<br>• Участок <b>закоротили</b> проводом или ключом → его R = 0, весь ток идёт по проводу, элемент гаснет.<br>• Добавили ветку <b>параллельно</b> → общее R уменьшается.</div>
+<div class="box ex"><b>Пример</b>L₁ последовательно с параллельными L₂ и L₃ (все одинаковые). Перегорела L₃. Теперь L₁ и L₂ — просто последовательно: общее R выросло (было 1,5R, стало 2R), общий ток уменьшился → <b>L₁ стала тусклее</b>. Через L₂ раньше шла половина общего тока (I/2 = U/(3R)), теперь весь ток U/(2R) → <b>L₂ стала ярче</b>.</div>
+${exBird}
+<div class="box tip"><b>Почему птице не страшно</b>Птица на одном проводе подключена <b>параллельно</b> кусочку провода между лапками. У этого кусочка сопротивление крошечное, напряжение на нём — тысячные доли вольта. Ток выбирает путь по проводу. А вот коснуться <b>двух</b> проводов или провода и опоры — смертельно: там тысячи вольт.</div>`},
+{title:'★ Олимпиадные приёмы: симметрия и бесконечность',lvl:7,html:`
+<div class="box rule"><b>Приём 1: равные потенциалы</b>Если по симметрии две точки имеют одинаковый потенциал (напряжение между ними 0), то ток по проводнику между ними <b>не идёт</b>. Его можно убрать — или, наоборот, соединить эти точки проводом. Схема станет простой.</div>
+<div class="fig">${bridgeSvg(['2 Ом','4 Ом','3 Ом','6 Ом','R₅'])}</div>
+<p><b>Мост</b>: если ${M('R₁ / R₂ = R₃ / R₄')} (здесь 2/4 = 3/6), то точки C и D имеют одинаковый потенциал, ток через R₅ не идёт — его можно выкинуть: ${M('R = (2 + 4) ‖ (3 + 6) = 6 · 9 / 15 = 3,6 Ом')}.</p>
+<div class="box rule"><b>Приём 2: куб</b>12 одинаковых резисторов R по рёбрам куба, ток между противоположными вершинами. Ток I из A делится на <b>3 равные</b> части (симметрия), потом каждая — ещё на 2 (по I/6), потом снова собирается по 3 (I/3). Путь A→B: ${M('U = R·I/3 + R·I/6 + R·I/3 = 5/6 · IR')}, значит ${M('R<sub>AB</sub> = 5R/6')}.</div>
+<div class="fig">${cubeSvg(0,6)}</div>
+<div class="box rule"><b>Приём 3: бесконечная цепочка</b>Если отрезать от бесконечной цепочки первое звено, останется <b>такая же</b> бесконечная цепочка с тем же сопротивлением x. Поэтому ${M('x = R₁ + (R₂ ‖ x)')} — уравнение на x. Для R₁ = R₂ = R получаем ${M('x = R(1 + √5) / 2 ≈ 1,618R')} — «золотое сечение»!</div>
+<div class="fig">${ladderSvg('R','R')}</div>`},
+{title:'Шпаргалка',lvl:0,html:`
+<table class="sym"><tr><th></th><th>Последовательно</th><th>Параллельно</th></tr>
+<tr><td>Ток</td><td>одинаковый</td><td>складывается</td></tr>
+<tr><td>Напряжение</td><td>складывается</td><td>одинаковое</td></tr>
+<tr><td>Сопротивление</td><td>${M('R₁ + R₂')} (больше большего)</td><td>${M('R₁R₂/(R₁+R₂)')} (меньше меньшего)</td></tr>
+<tr><td>Деление</td><td>${M('U₁/U₂ = R₁/R₂')}</td><td>${M('I₁/I₂ = R₂/R₁')}</td></tr>
+<tr><td>Одна лампа погасла</td><td>гаснут все</td><td>остальные горят</td></tr></table>`}
+];
+
+const symbols={tab:'Формулы',title:'Формулы соединений',rows:[
+['R = R₁ + R₂','Последовательное: сопротивление','Сопротивления складываются','4 + 8 = 12 Ом'],
+['I = I₁ = I₂','Последовательное: ток','Ток одинаковый во всех элементах','—'],
+['U = U₁ + U₂','Последовательное: напряжение','Напряжение источника делится между элементами пропорционально R','4 В + 8 В = 12 В'],
+['1/R = 1/R₁ + 1/R₂','Параллельное: сопротивление','Складываются обратные величины. Для двух: R₁R₂/(R₁+R₂)','6 ‖ 3 = 2 Ом'],
+['U = U₁ = U₂','Параллельное: напряжение','Напряжение на всех ветках одинаковое','—'],
+['I = I₁ + I₂','Параллельное: ток','Ток делится между ветками, больше — где R меньше','2 А + 4 А = 6 А'],
+['R / n','n одинаковых параллельно','Сопротивление в n раз меньше одного','5 по 10 Ом → 2 Ом'],
+['‖','Значок «параллельно»','Краткая запись: R₁ ‖ R₂','2 + (3 ‖ 6) = 4 Ом'],
+['Ⓐ / Ⓥ','Идеальные приборы','Амперметр — провод (R = 0), вольтметр — разрыв (R = ∞)','—']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Сначала упрости схему до одного резистора, потом найди общий ток, потом иди обратно к частям.</div>`};
+
+/* =================== generators =================== */
+/* L0 — схемы */
+G(0,()=>{const T=[['R','резистор'],['L','лампа'],['B','источник тока (батарея)'],['K','ключ'],['A','амперметр'],['V','вольтметр']];const c=pick(T);const others=sample(T.filter(x=>x!==c),3);const all=shuffle([c].concat(others));
+ const opts=all.map(([t])=>`<svg viewBox="0 0 110 50" width="110" style="font-family:system-ui,sans-serif">${elem(t,8,25,102,25,{})}</svg>`);
+ return {type:'choice',pics:true,q:`Какой из значков обозначает на схеме <b>${c[1]}</b>?`,opts,ans:all.indexOf(c),short:`${c[1]} — вот так.`,
+ explain:`Запомни обозначения: резистор — прямоугольник; лампа — кружок с крестиком; источник — длинная и короткая черты; ключ — «откинутая» палочка; амперметр и вольтметр — кружки с буквами A и V. Нам нужен: <b>${c[1]}</b>.`,
+ explain2:'Подсказки: A — Ампер, V — Вольт. Крестик в лампе — как нить накала. Длинная черта источника — «плюс» (длинная, как палочка «+»). Ключ — разрыв, как приоткрытая дверь.'};},{rule:true});
+G(0,()=>CH('Как на схеме понять, где «плюс» у источника тока?','Длинная тонкая черта — «+», короткая толстая — «−»',['Короткая толстая черта — «+»','«Плюс» всегда слева','По схеме это определить нельзя'],{pic:`<div class="fig"><svg viewBox="0 0 110 50" width="110">${elem('B',8,25,102,25,{})}</svg></div>`,
+ short:'Длинная черта — «+».',explain:'В обозначении источника <b>длинная тонкая</b> черта — положительный полюс «+», <b>короткая толстая</b> — отрицательный «−». Ток во внешней цепи идёт от длинной черты к короткой.',
+ explain2:'Запоминалка: чтобы нарисовать «+», нужно больше линий, чем для «−» — у плюса и черта длиннее.'}),{rule:true});
+G(0,()=>{const kind=pick(['s','p','m']);let net;
+ if(kind==='s')net={s:Array.from({length:R(2,3)},()=>({t:'L'}))};else if(kind==='p')net={p:Array.from({length:R(2,3)},()=>({t:'L'}))};else net=pick([{s:[{t:'L'},{p:[{t:'L'},{t:'L'}]}]},{p:[{s:[{t:'L'},{t:'L'}]},{t:'L'}]}]);
+ nameLeaves(net,'L');const ans={s:'последовательно',p:'параллельно',m:'смешанно (есть и последовательные, и параллельные участки)'}[kind];
+ return CH('Как соединены лампы на схеме?',ans,['последовательно','параллельно','смешанно (есть и последовательные, и параллельные участки)','никак — цепь разомкнута'].filter(x=>x!==ans),{pic:circuit(net,{}),
+ short:`Лампы соединены ${ans.split(' (')[0]}.`,
+ explain:`Веди пальцем от «+» источника. ${kind==='s'?'Путь ни разу не разветвляется — все лампы на одном пути: это <b>последовательное</b> соединение.':kind==='p'?'Сразу после узла (точки) путь разветвляется на ветки, каждая с одной лампой, и ветки потом сходятся в другом узле: это <b>параллельное</b> соединение.':'Часть пути без развилок (последовательно), а на другом участке путь разветвляется (параллельно): это <b>смешанное</b> соединение.'}`,
+ explain2:'Признак параллельного соединения — <b>точки-узлы</b>, из которых выходят несколько проводов. Нет узлов вообще — значит всё последовательно. Есть и узлы, и элементы «на общем проводе» — смешанно.'});});
+G(0,()=>{const ok={s:[{t:'L',n:'L'},{t:'K',n:'K',on:true}]};const bad=[{s:[{t:'L',n:'L'},{t:'K',n:'K',on:false}]},{s:[{p:[{t:'L',n:'L'},{t:'W'}]},{t:'K',n:'K',on:true}]},{s:[{p:[{t:'L',n:'L'},{t:'K',n:'K',on:true}]}]}];
+ const all=shuffle([ok].concat(bad));return {type:'choice',pics:true,q:'На какой схеме лампа <b>горит</b>?',opts:all.map(n=>circuit(n,{})),ans:all.indexOf(ok),
+ short:'Цепь замкнута, и лампа не закорочена.',
+ explain:'Лампа горит, если через неё идёт ток: цепь <b>замкнута</b> (ключ замкнут), и лампа <b>не закорочена</b> проводом. Если ключ разомкнут — разрыв, тока нет. Если параллельно лампе стоит провод или замкнутый ключ, ток идёт по нему (R = 0), а лампа гаснет.',
+ explain2:'Ток ленивый: из двух параллельных путей он почти весь идёт туда, где сопротивление ноль. Провод параллельно лампе «ворует» весь ток.'};});
+
+/* L1 — последовательное */
+G(1,()=>CH('Что <b>одинаково</b> для всех элементов при последовательном соединении?','Сила тока',['Напряжение','Сопротивление','Ничего'],{
+ short:'Последовательно: I одинаковый.',explain:`При последовательном соединении у заряда <b>один путь</b> — сколько прошло через первый элемент, столько же и через второй. Поэтому <b>сила тока одинакова</b>: ${M("I = I₁ = I₂")}. Напряжения при этом делятся: ${M("U = U₁ + U₂")}.`.replace(/\$\{M\("([^"]*)"\)\}/g,(m,a)=>M(a)),
+ explain2:'Машины на однополосной дороге через два моста подряд: сколько машин в минуту проехало первый мост, столько и второй — свернуть некуда.'}),{rule:true});
+G(1,()=>CH('Какие формулы верны для <b>последовательного</b> соединения двух резисторов?',`${M('R = R₁ + R₂')}, ${M('U = U₁ + U₂')}`,[`${M('1/R = 1/R₁ + 1/R₂')}, ${M('U = U₁ + U₂')}`,`${M('R = R₁ + R₂')}, ${M('I = I₁ + I₂')}`,`${M('R = R₁ · R₂')}, ${M('U = U₁ = U₂')}`],{
+ short:'Последовательно: R и U складываются, I одинаковый.',explain:`Последовательно: <b>сопротивления</b> складываются (как один длинный провод) и <b>напряжения</b> складываются (источник делит своё напряжение между элементами). Ток одинаковый, поэтому ${M('I = I₁ + I₂')} — неверно. ${M('1/R = …')} — формула для параллельного.`,
+ explain2:'Проверь на числах: 4 Ом и 8 Ом подряд, 12 В. R = 12 Ом, I = 1 А в обоих. U₁ = 4 В, U₂ = 8 В — в сумме 12 В ✅.'}),{rule:true});
+G(1,()=>{const n=R(2,4);const v=Array.from({length:n},()=>pick(VALS.slice(0,13)));const net=nameLeaves({s:v.map(RR)},'R');const Rt=ser(v);
+ return NUMT(Rt,1,{q:'Найди общее сопротивление цепи. Ответ — в омах.',pic:circuit(net,{noBat:true,ends:['A','B']}),hint:'Резисторы на одном пути без развилок — последовательно: складываем.',
+ short:`${v.join(' + ')} = ${Rt} Ом.`,explain:`Все резисторы на одном пути без развилок — соединены <b>последовательно</b>. ${M('R = '+v.map((x,i)=>'R'+SUBD(i+1)).join(' + '))} = ${v.join(' + ')} = <b>${Rt} Ом</b>.`,
+ explain2:`Представь, что все резисторы — куски одного длинного провода. Сопротивления «кусков» складываются: ${v.join(' + ')} = ${Rt} Ом. Общее сопротивление больше самого большого (${Math.max(...v)} Ом) — так и должно быть.`});});
+G(1,()=>{const R1=pick([2,3,4,5,6,8,10,12]),R2=pick([2,3,4,6,8,10,12,15,20]);const I=pick([0.5,1,1.5,2,3]);const U=I*(R1+R2);if(U>60||U%0.5)return null;const ask=pick(['I','U1','U2']);
+ const net=nameLeaves({s:[RR(R1),RR(R2)]},'R');const ans=ask==='I'?I:ask==='U1'?I*R1:I*R2;
+ return NUMT(ans,2,{q:ask==='I'?'Какую силу тока покажет амперметр? Ответ — в амперах.':`Найди напряжение на резисторе ${ask==='U1'?'R₁':'R₂'}. Ответ — в вольтах.`,pic:circuit(net,{bat:N(U)+' В',bottom:[{t:'A'}]}),
+ hint:'Найди общее сопротивление, потом общий ток. Ток в последовательной цепи везде один.',
+ short:`R = ${R1+R2} Ом, I = ${N(U)} / ${R1+R2} = ${N(I)} А${ask!=='I'?`, U = ${N(I)} · ${ask==='U1'?R1:R2} = ${N(ans)} В`:''}.`,
+ explain:`1) ${M(`R = R₁ + R₂ = ${R1} + ${R2} = ${R1+R2} Ом`)}.<br>2) ${M(`I = U / R = ${N(U)} / ${R1+R2} = ${N(I)} А`)} — этот ток идёт через оба резистора и через амперметр.${ask!=='I'?`<br>3) ${M(`U${ask==='U1'?'₁':'₂'} = I·R${ask==='U1'?'₁':'₂'} = ${N(I)} · ${ask==='U1'?R1:R2} = ${N(ans)} В`)}.`:''}<div class="box err"><b>Ловушка</b>${N(U)} / ${ask==='U2'?R2:R1} = ${N(rnd(U/(ask==='U2'?R2:R1),3))} — делить напряжение источника на одно сопротивление нельзя: напряжение ${N(U)} В приложено ко всей цепи, а не к одному резистору.</div>`,
+ explain2:`Напряжение в последовательной цепи делится пропорционально сопротивлениям: ${R1} : ${R2}. Всего ${R1+R2} «долей», одна доля = ${N(U)} / ${R1+R2} = ${N(I)} В. Значит U₁ = ${R1} · ${N(I)} = ${N(I*R1)} В, U₂ = ${R2} · ${N(I)} = ${N(I*R2)} В, а ток = ${N(I)} А.`});});
+G(1,()=>{const U0=pick([4,5,10,11,20,22,44,55,110]);const n=220/U0;const ask=pick(['n','U']);
+ return NUMT(ask==='n'?n:U0,1,{q:ask==='n'?`🎄 Гирлянду собирают из одинаковых лампочек, каждая рассчитана на ${U0} В. Лампочки соединяют последовательно и включают в сеть 220 В. Сколько лампочек нужно, чтобы каждая работала в своём режиме?`:`🎄 Гирлянда из ${n} одинаковых лампочек, соединённых последовательно, включена в сеть 220 В. Какое напряжение на каждой лампочке? Ответ — в вольтах.`,
+ hint:'При последовательном соединении напряжения складываются.',short:ask==='n'?`220 / ${U0} = ${n} лампочек.`:`220 / ${n} = ${U0} В.`,
+ explain:`Последовательно: ${M('U = U₁ + U₂ + … + U<sub>n</sub>')}. Лампочки одинаковые, значит напряжение делится поровну: ${M('U₁ = 220 / n')}.<br>${ask==='n'?`${M(`n = 220 / ${U0} = ${n}`)}.`:`${M(`U₁ = 220 / ${n} = ${U0} В`)}.`}`,
+ explain2:`Как разделить 220 конфет поровну: ${ask==='n'?`по ${U0} штук каждому — хватит на ${n} человек.`:`между ${n} друзьями — каждому по ${U0}.`} Если одна лампочка перегорит — цепь разорвётся, и погаснут все.`});});
+G(1,()=>{const R1=pick([2,3,4,5,6,10,20]),R2=pick([3,4,6,8,10,12,15,30]);const U1=pick([1,2,3,4,5,6]);const U2=U1*R2/R1;if(!nice(U2))return null;const U=U1+U2;
+ return NUMT(U,1,{q:`Резисторы ${R1} Ом и ${R2} Ом соединены последовательно. Вольтметр на первом показывает ${U1} В. Какое напряжение у источника? Ответ — в вольтах.`,pic:circuit({s:[{p:[{t:'V'},Object.assign(RR(R1),{n:'R₁'})]},Object.assign(RR(R2),{n:'R₂'})]},{bat:'U = ?'}),
+ hint:'Найди ток через R₁ — он такой же и в R₂.',short:`I = ${U1} / ${R1} = ${N(rnd(U1/R1,4))} А; U₂ = ${N(U2)} В; U = ${N(U)} В.`,
+ explain:`1) Ток через R₁: ${M(`I = ${U1} / ${R1} = ${N(rnd(U1/R1,4))} А`)}. Он же идёт через R₂.<br>2) ${M(`U₂ = I·R₂ = ${N(rnd(U1/R1,4))} · ${R2} = ${N(U2)} В`)}.<br>3) ${M(`U = U₁ + U₂ = ${U1} + ${N(U2)} = ${N(U)} В`)}.`,
+ explain2:`Пропорция: ${M('U₂ / U₁ = R₂ / R₁')}. R₂ в ${N(rnd(R2/R1,3))} раза больше R₁ → U₂ = ${U1} · ${N(rnd(R2/R1,3))} = ${N(U2)} В. Вместе ${N(U)} В.`});});
+
+/* L2 — параллельное */
+G(2,()=>CH('Что <b>одинаково</b> для всех ветвей при параллельном соединении?','Напряжение',['Сила тока','Сопротивление','Мощность'],{
+ short:'Параллельно: U одинаковое.',explain:`Все ветви подключены к <b>одной и той же паре узлов</b>, значит напряжение на них одно и то же: ${M('U = U₁ = U₂')}. А токи разные и складываются: ${M('I = I₁ + I₂')}.`,
+ explain2:'Квартира: чайник, лампа и телефон включены в разные розетки, но каждый получает свои 220 В. Это и есть параллельное соединение.'}),{rule:true});
+G(2,()=>CH('По какой формуле находят общее сопротивление двух резисторов, соединённых <b>параллельно</b>?',M('R = R₁R₂ / (R₁ + R₂)'),[M('R = R₁ + R₂'),M('R = (R₁ + R₂) / (R₁R₂)'),M('R = 1/R₁ + 1/R₂')],{
+ short:'«Произведение делить на сумму».',explain:`Из ${M('1/R = 1/R₁ + 1/R₂ = (R₁ + R₂) / (R₁R₂)')} переворачиваем дробь: ${M('R = R₁R₂ / (R₁ + R₂)')}. Вариант ${M('1/R₁ + 1/R₂')} — это ещё <b>1/R</b>, дробь не перевёрнута.`,
+ explain2:'Проверка на 2 одинаковых по 10 Ом: должно получиться 5 Ом (вдвое меньше). 10·10/(10+10) = 5 ✅. А (10+10)/(10·10) = 0,2 — мимо.'}),{rule:true});
+G(2,()=>{for(;;){const a=pick(VALS.slice(1,14)),b=pick(VALS.slice(1,14));if(a===b)continue;const r=a*b/(a+b);if(!nice(r))continue;
+ const net=nameLeaves({p:[RR(a),RR(b)]},'R');
+ return NUMT(r,1,{q:'Найди общее сопротивление участка AB. Ответ — в омах.',pic:circuit(net,{noBat:true,ends:['A','B']}),hint:'Два резистора параллельно: произведение делить на сумму.',
+ short:`${par2s(a,b)} Ом.`,explain:`Резисторы соединены параллельно (оба между одними и теми же узлами). ${M('R = R₁R₂ / (R₁ + R₂)')} = ${par2s(a,b)} Ом.<br>Проверка: ${N(rnd(r,3))} < ${Math.min(a,b)} — меньше меньшего ✅.<div class="box err"><b>Не так</b>${a} + ${b} = ${a+b} — так складывают только при последовательном.</div>`,
+ explain2:`Через проводимости: ${M(`1/R = 1/${a} + 1/${b}`)} = ${N(rnd(1/a+1/b,4))}… Удобнее с общим знаменателем: ${M(`1/${a} + 1/${b} = (${b} + ${a}) / ${a*b} = ${a+b}/${a*b}`)}, переворачиваем: R = ${a*b}/${a+b} = ${N(rnd(r,3))} Ом.`});}});
+G(2,()=>{const a=pick([2,3,4,6]),b=pick([6,8,12,18,24]);if(a>=b)return null;const r=a*b/(a+b);const opts=[N(rnd(r,2)),N(a+b),N((a+b)/2),N(a)];if(new Set(opts).size<4)return null;
+ return CH(`Резисторы ${a} Ом и ${b} Ом соединили параллельно. Каким <b>может</b> быть общее сопротивление? (Выбери, не вычисляя долго.)`,opts[0]+' Ом',opts.slice(1).map(x=>x+' Ом'),{
+ short:`Параллельно R меньше меньшего (${a} Ом): ${N(rnd(r,2))} Ом.`,explain:`Правило: при параллельном соединении общее сопротивление <b>меньше самого маленького</b> из сопротивлений ветвей. Меньше ${a} Ом в списке только ${N(rnd(r,2))} Ом. Точно: ${par2s(a,b)} Ом.`,
+ explain2:`Если бы был только резистор ${a} Ом, R = ${a} Ом. Добавили ещё одну «дорожку» для тока — току стало легче, R стало <b>меньше</b> ${a}. Значит, ${a+b}, ${N((a+b)/2)} и ${a} Ом — не подходят.`});},{rule:true});
+G(2,()=>{const n=pick([2,3,4,5,6,10]);const R0=pick([10,12,20,30,60,100,120,240]);const r=R0/n;if(!nice(r))return null;
+ return NUMT(r,1,{q:`${n} ${plural(n,'одинаковый резистор','одинаковых резистора','одинаковых резисторов')} по ${R0} Ом соединили параллельно. Каково общее сопротивление? Ответ — в омах.`,hint:'n одинаковых параллельно: R / n.',
+ short:`${R0} / ${n} = ${N(r)} Ом.`,explain:`${M(`1/R = ${n} · 1/${R0} = ${n}/${R0}`)} → ${M(`R = ${R0} / ${n} = ${N(r)} Ом`)}.`,
+ explain2:`Каждый резистор — отдельная «дорожка». ${n} одинаковых дорожек — всё равно что одна, но в ${n} раз шире: сопротивление в ${n} раз меньше. ${R0} / ${n} = ${N(r)} Ом.`});});
+G(2,()=>{const U=pick([6,12,24,36,60,120]);const a=pick([2,3,4,6,10,12,20]),b=pick([3,4,6,12,15,30,60]);if(a===b)return null;const I1=U/a,I2=U/b;if(!nice(I1)||!nice(I2))return null;const ask=pick(['I','I2']);
+ const net=nameLeaves({p:[RR(a),RR(b)]},'R');
+ return NUMT(ask==='I'?I1+I2:I2,2,{q:ask==='I'?'Найди силу тока в неразветвлённой части цепи (показание амперметра). Ответ — в амперах.':'Найди силу тока в резисторе R₂. Ответ — в амперах.',pic:circuit(net,{bat:U+' В',bottom:[{t:'A'}]}),
+ hint:'На каждой ветке полное напряжение источника.',short:`I₁ = ${U}/${a} = ${N(I1)} А, I₂ = ${U}/${b} = ${N(I2)} А${ask==='I'?`, I = ${N(I1+I2)} А`:''}.`,
+ explain:`Параллельно: на каждом резисторе ${U} В.<br>${M(`I₁ = ${U} / ${a} = ${N(I1)} А`)}, ${M(`I₂ = ${U} / ${b} = ${N(I2)} А`)}.${ask==='I'?`<br>Токи складываются: ${M(`I = ${N(I1)} + ${N(I2)} = ${N(I1+I2)} А`)}.`:''}`,
+ explain2:`Через общее сопротивление: ${par2s(a,b)} Ом; I = ${U} / ${N(rnd(a*b/(a+b),3))} = ${N(I1+I2)} А. ${ask==='I2'?`Из него в R₂ идёт ${N(I2)} А (меньше там, где R больше).`:'Сходится ✅.'}`});});
+
+/* L3 — смешанные: сопротивление */
+G(3,()=>CH('Как правильно находить общее сопротивление смешанной цепи?','Заменять простые участки (только последовательные или только параллельные) одним резистором, начиная с самых «глубоких», и перерисовывать схему',['Сложить все сопротивления','Найти 1/R для всех резисторов сразу и сложить','Перемножить все сопротивления'],{
+ short:'Упрощаем по кусочкам, от глубины к краю.',explain:'Смешанную цепь нельзя посчитать одной формулой. <b>Алгоритм</b>: найди участок, где резисторы соединены только последовательно или только параллельно; замени его одним эквивалентным резистором; перерисуй; повторяй.',
+ explain2:'Это как матрёшка или скобки в выражении: (2 + (3 ‖ 6)) — сначала самая внутренняя скобка, потом внешняя.'}),{rule:true});
+const mixGen=(ks)=>()=>{const m=mixed(ks);if(!m)return null;
+ return NUMT(m.Rt,1,{q:'Найди общее сопротивление участка AB. Ответ — в омах.',pic:circuit(m.net,{noBat:true,ends:['A','B']}),hint:'Начни с участка, где резисторы соединены только параллельно или только последовательно, и замени его одним.',
+ short:`R<sub>AB</sub> = ${N(m.Rt)} Ом.`,explain:`${m.T.how(m.v)}<br>Пошагово:${stepsOf(m.net)}Ответ: <b>${N(m.Rt)} Ом</b>.`,
+ explain2:`Запиши схему как выражение со скобками и значком ‖ (параллельно), и считай от внутренних скобок к внешним:${stepsOf(m.net)}Проверка: общее R ${m.T.k===3&&m.net.p?'меньше':'больше'} ${m.net.p?'сопротивления любой ветки':'любого последовательного куска'} ✅.`});};
+G(3,mixGen([0,1]));
+G(3,mixGen([0,1]));
+G(3,mixGen([2,3]));
+G(3,mixGen([4,5]));
+
+/* L4 — смешанные: токи и напряжения */
+G(4,()=>CH('Как распределяется ток между двумя параллельными ветвями?','Обратно пропорционально сопротивлениям: больше тока — где R меньше',['Прямо пропорционально сопротивлениям','Всегда поровну','Весь ток идёт в ветку с большим сопротивлением'],{
+ short:`${M('I₁ / I₂ = R₂ / R₁')}.`,explain:`Напряжение на ветках одинаковое, ${M('I = U / R')} → где R меньше, там ток больше: ${M('I₁ / I₂ = R₂ / R₁')}. Поровну — только если R₁ = R₂.`,
+ explain2:'Две дороги из одного города в другой: широкая и узкая. Больше машин поедет по широкой (меньше сопротивление).'}),{rule:true});
+const curGen=(mode)=>()=>{const m=mixed([0,1,2,3]);if(!m)return null;const U=pick([6,12,24,36,48,60,120]);solveTree(m.net,U);const L=leaves(m.net);const k=R(0,L.length-1);const lf=L[k];
+ const val=mode==='I'?lf.I:mode==='U'?lf.U:m.net.I;if(!nice(val)||val>100)return null;const steps=L.map(l=>`${l.n}: I = ${N(rnd(l.I,3))} А, U = ${N(rnd(l.U,3))} В`).join('<br>');
+ return NUMT(val,2,{q:mode==='T'?'Найди силу тока в неразветвлённой части цепи. Ответ — в амперах.':mode==='I'?`Найди силу тока через резистор ${lf.n}. Ответ — в амперах.`:`Найди напряжение на резисторе ${lf.n}. Ответ — в вольтах.`,pic:circuit(m.net,{bat:U+' В'}),
+ hint:'1) Найди общее сопротивление. 2) Общий ток. 3) Иди обратно: напряжения на участках, токи в ветках.',
+ short:mode==='T'?`R = ${N(m.Rt)} Ом, I = ${U} / ${N(m.Rt)} = ${N(val)} А.`:`${lf.n}: ${mode==='I'?`I = ${N(rnd(val,3))} А`:`U = ${N(rnd(val,3))} В`}.`,
+ explain:`1) Общее сопротивление:${stepsOf(m.net)}2) Общий ток: ${M(`I = ${U} / ${N(m.Rt)} = ${N(rnd(m.net.I,3))} А`)}.<br>3) Идём обратно к частям (на последовательных кусках ток общий, на параллельных — общее напряжение):<br>${steps}<br>Ответ: <b>${N(rnd(val,3))}</b> ${mode==='U'?'В':'А'}.`,
+ explain2:`Проверь себя двумя правилами: сумма токов в параллельных ветках равна току до развилки, а сумма напряжений по любому пути от «+» до «−» равна ${U} В. Например, по пути через ${lf.n}: напряжения на участках этого пути в сумме дают ${U} В. Итог: ${mode==='T'?`I = ${N(val)} А`:`${lf.n} — ${N(rnd(val,3))} ${mode==='U'?'В':'А'}`}.`});};
+G(4,curGen('T'));
+G(4,curGen('I'));
+G(4,curGen('U'));
+G(4,()=>{const R1=pick([2,4,5,6,8,10]),R2=pick([3,6,12,4,20,30]),R3=pick([6,12,4,20,60,30]);if(R2===R3)return null;const I1=pick([1,2,3,0.5]);const U23=I1*R1*0;
+ // A1 in branch R2 reading known; find total current
+ const I2=pick([0.5,1,1.5,2,3]);const U=I2*R2;const I3=U/R3;if(!nice(I3*10)&&!nice(I3))return null;const It=I2+I3;if(!nice(It*10))return null;
+ const net={p:[{s:[Object.assign(RR(R2),{n:'R₁'}),{t:'A',n:'A₁'}]},Object.assign(RR(R3),{n:'R₂'})]};
+ return NUMT(It,2,{q:`Амперметр A₁ показывает ${N(I2)} А. Что показывает амперметр A? Ответ — в амперах.`,pic:circuit(net,{bat:'',bottom:[{t:'A',n:'A'}]}),
+ hint:'Найди напряжение на ветке с A₁ — оно такое же на второй ветке.',short:`U = ${N(I2)} · ${R2} = ${N(U)} В; I₂ = ${N(rnd(I3,3))} А; A: ${N(rnd(It,3))} А.`,
+ explain:`1) Напряжение на R₁: ${M(`U = ${N(I2)} · ${R2} = ${N(U)} В`)} (идеальный амперметр сопротивления не имеет).<br>2) На R₂ то же напряжение (параллельно): ${M(`I₂ = ${N(U)} / ${R3} = ${N(rnd(I3,3))} А`)}.<br>3) Амперметр A в неразветвлённой части: ${M(`I = ${N(I2)} + ${N(rnd(I3,3))} = ${N(rnd(It,3))} А`)}.`,
+ explain2:`Токи в параллельных ветках обратно пропорциональны R: ${M(`I₂ / I₁ = R₁ / R₂ = ${R2} / ${R3}`)} → I₂ = ${N(I2)} · ${R2} / ${R3} = ${N(rnd(I3,3))} А. Сумма — ${N(rnd(It,3))} А.`});});
+
+/* L5 — приборы в цепи */
+G(5,()=>CH('Какими считают сопротивления <b>идеальных</b> амперметра и вольтметра?','Амперметр: R = 0; вольтметр: R бесконечно большое',['Амперметр: R бесконечно большое; вольтметр: R = 0','Оба R = 0','Оба R бесконечно большие'],{
+ short:'Идеальный амперметр = провод, идеальный вольтметр = разрыв.',explain:'Амперметр включают последовательно — чтобы не мешать току, у него R ≈ 0 (идеальный — ровно 0, это просто провод). Вольтметр включают параллельно — чтобы не «отбирать» ток, у него R огромное (идеальный — бесконечное, ток через него не идёт).',
+ explain2:'Поэтому при расчётах: амперметр мысленно заменяй проводом, вольтметр — мысленно убирай из схемы (но помни, что он показывает напряжение между точками, к которым подключён).'}),{rule:true});
+G(5,()=>{const R1=pick([2,3,4,5,6,10]),R2=pick([2,4,6,8,10,12,20]);const U=pick([6,9,12,18,24,30]);const I=U/(R1+R2);if(!nice(I*10))return null;const U2=I*R2;if(!nice(U2*10))return null;const ask=pick(['A','V']);
+ const net={s:[Object.assign(RR(R1),{n:'R₁'}),{p:[{t:'V'},Object.assign(RR(R2),{n:'R₂'})]},{t:'A'}]};
+ return NUMT(ask==='A'?I:U2,2,{q:`Что показывает ${ask==='A'?'амперметр (в амперах)':'вольтметр (в вольтах)'}? Приборы идеальные.`,pic:circuit(net,{bat:U+' В'}),
+ hint:'Вольтметр мысленно убери: R₁ и R₂ последовательно.',short:`I = ${U} / ${R1+R2} = ${N(rnd(I,3))} А${ask==='V'?`, U₂ = ${N(rnd(U2,3))} В`:''}.`,
+ explain:`Идеальный вольтметр ток не берёт, амперметр — просто провод. Значит, R₁ и R₂ соединены последовательно: ${M(`R = ${R1} + ${R2} = ${R1+R2} Ом`)}, ${M(`I = ${U} / ${R1+R2} = ${N(rnd(I,3))} А`)} — это показание амперметра.${ask==='V'?`<br>Вольтметр подключён к концам R₂: ${M(`U₂ = I·R₂ = ${N(rnd(I,3))} · ${R2} = ${N(rnd(U2,3))} В`)}.`:''}`,
+ explain2:ask==='A'?`Ток в последовательной цепи один на всех — и через амперметр, и через R₁, R₂. ${U} В на ${R1+R2} Ом → ${N(rnd(I,3))} А.`:`Напряжение ${U} В делится между R₁ и R₂ в отношении ${R1} : ${R2}. На R₂ приходится ${R2}/${R1+R2} от ${U} В = ${N(rnd(U2,3))} В.`});});
+G(5,()=>{const R1=pick([4,6,8,10,12]),R2=pick([4,6,12,24,3]);if(R1===R2)return null;const UV=pick([6,12,24]);const I1=UV/R1,I2=UV/R2;if(!nice(I1*10)||!nice(I2*10))return null;
+ const net={s:[{p:[{t:'V'},{p:[Object.assign(RR(R1),{n:'R₁'}),Object.assign(RR(R2),{n:'R₂'})]}]},{t:'A'}]};
+ return NUMT(I1+I2,2,{q:`Вольтметр показывает ${UV} В. Что показывает амперметр? Ответ — в амперах.`,pic:circuit(net,{bat:''}),
+ hint:'Вольтметр показывает напряжение на обоих параллельных резисторах.',short:`${UV}/${R1} + ${UV}/${R2} = ${N(rnd(I1+I2,3))} А.`,
+ explain:`R₁ и R₂ параллельно, вольтметр подключён к тем же двум узлам → на каждом ${UV} В.<br>${M(`I₁ = ${UV} / ${R1} = ${N(rnd(I1,3))} А`)}, ${M(`I₂ = ${UV} / ${R2} = ${N(rnd(I2,3))} А`)}.<br>Амперметр в неразветвлённой части: ${M(`I = ${N(rnd(I1+I2,3))} А`)}.`,
+ explain2:`Через общее сопротивление: ${par2s(R1,R2)} Ом; I = ${UV} / ${N(rnd(R1*R2/(R1+R2),3))} = ${N(rnd(I1+I2,3))} А.`});});
+G(5,()=>{const n=pick([2,3,4]);const R0=pick([6,12,24]);const U=pick([12,24,36]);const Ib=U/R0;if(!nice(Ib*10))return null;
+ const net={p:Array.from({length:n},(_,i)=>({s:[{t:'L',n:'L'+SUBD(i+1)},...(i===0?[{t:'A',n:'A₁'}]:[])]}))};
+ return NUMT(Ib*n,2,{q:`${n} одинаковые лампы включены параллельно. Амперметр A₁ показывает ${N(Ib)} А. Что покажет амперметр A? Ответ — в амперах.`,pic:circuit(net,{bat:U+' В',bottom:[{t:'A',n:'A'}]}),
+ hint:'Лампы одинаковые и под одинаковым напряжением.',short:`${n} · ${N(Ib)} = ${N(Ib*n)} А.`,
+ explain:`Все лампы под одним напряжением и одинаковые → токи одинаковые, по ${N(Ib)} А. В неразветвлённой части токи складываются: ${M(`I = ${n} · ${N(Ib)} = ${N(rnd(Ib*n,3))} А`)}.`,
+ explain2:'Три одинаковые трубы от одного бака: из каждой течёт одинаково, а в общей трубе до развилки — сумма. Так и с токами.'});});
+
+/* L6 — что изменится */
+G(6,()=>CH('Как изменится общее сопротивление цепи, если параллельно к одному из её резисторов подключить ещё один резистор?','Уменьшится',['Увеличится','Не изменится','Зависит от напряжения источника'],{
+ short:'Новая параллельная ветка — ещё один путь для тока → R меньше.',explain:'Параллельное подключение добавляет току <b>ещё один путь</b>. Сопротивление этого участка становится меньше, чем было (меньше меньшего), значит, и общее сопротивление <b>уменьшается</b>.',
+ explain2:'Ещё одна открытая касса в супермаркете: очередь (сопротивление) только уменьшается, какой бы медленной ни была новая касса.'}),{rule:true});
+const NETS=[()=>({s:[{t:'L'},{p:[{t:'L'},{t:'L'}]}]}),()=>({p:[{t:'L'},{s:[{t:'L'},{t:'L'}]}]}),()=>({s:[{t:'L'},{t:'L'},{t:'L'}]}),()=>({p:[{t:'L'},{t:'L'},{t:'L'}]}),()=>({s:[{p:[{t:'L'},{t:'L'}]},{t:'L'}]})];
+const verdict=(a,b)=>b<1e-9?'погаснет':b>a*1.001?'станет ярче':b<a*0.999?'станет тусклее':'не изменится';
+const VER=['станет ярче','станет тусклее','не изменится','погаснет'];
+G(6,()=>{const net=nameLeaves(pick(NETS)(),'L');leaves(net).forEach(l=>l.r=1);const L=leaves(net);const k=R(0,L.length-1);let j=R(0,L.length-1);if(j===k)return null;
+ solveTree(net,1);const before=L.map(l=>l.I);const after0=clone(net);const La=leaves(after0);La[k].t='X';solveTree(after0,1);const after=La.map(l=>l.I);
+ const v=verdict(before[j],after[j]);const pic=circuit(net,{});
+ return CH(`Все лампы одинаковые, источник идеальный (его напряжение не меняется). Лампа <b>${L[k].n}</b> перегорела. Что произойдёт с лампой <b>${L[j].n}</b>?`,v,VER.filter(x=>x!==v),{pic,
+ short:`Ток через ${L[j].n}: было ${N(rnd(before[j],3))}·(U/R), стало ${N(rnd(after[j],3))}·(U/R) → ${v}.`,
+ explain:`Пусть U = 1, сопротивление каждой лампы R = 1 (так удобнее считать доли).<br><b>До:</b> общее сопротивление ${N(rnd(Rof(net),3))}, токи: ${L.map((l,i)=>`${l.n} — ${N(rnd(before[i],3))}`).join(', ')}.<br><b>После</b> (ветка с ${L[k].n} разорвана): общее сопротивление ${Rof(after0)===Infinity?'бесконечно (цепь разорвана)':N(rnd(Rof(after0),3))}, токи: ${La.map((l,i)=>`${L[i].n} — ${N(rnd(after[i],3))}`).join(', ')}.<br>Яркость зависит от тока: через ${L[j].n} ток ${N(rnd(before[j],3))} → ${N(rnd(after[j],3))}, значит лампа <b>${v}</b>.`,
+ explain2:`Рассуждение без чисел: ${after[j]<1e-9?`${L[j].n} стоит на том же единственном пути, что и ${L[k].n}, — путь разорван, ток не идёт.`:Math.abs(after[j]-before[j])<1e-9?`${L[j].n} подключена прямо к источнику своей веткой, а напряжение источника не изменилось, — значит, и ток через неё прежний.`:after[j]>before[j]?`Раньше ${L[j].n} делила ток с ${L[k].n}; теперь ${L[k].n} выбыла, и через ${L[j].n} идёт больше тока (хотя общий ток мог уменьшиться).`:`Перегорание разорвало одну из параллельных веток → общее сопротивление выросло → общий ток через ${L[j].n} уменьшился.`}`});});
+G(6,()=>{const pickNet=pick([()=>({s:[{t:'L'},{p:[{t:'L'},{t:'K',n:'K',on:false}]}]}),()=>({s:[{t:'L'},{t:'L'},{p:[{t:'L'},{t:'K',n:'K',on:false}]}]}),()=>({s:[{p:[{t:'L'},{t:'L'}]},{p:[{t:'L'},{t:'K',n:'K',on:false}]}]})]);
+ const net=nameLeaves(pickNet(),'L');const L=leaves(net).filter(l=>l.t==='L');L.forEach(l=>l.r=1);const j=R(0,L.length-1);
+ solveTree(net,1);const before=L.map(l=>l.I);const aft=clone(net);leaves(aft).forEach(l=>{if(l.t==='K')l.on=true;});solveTree(aft,1);const La=leaves(aft).filter(l=>l.t==='L');const after=La.map(l=>l.I);
+ const v=verdict(before[j],after[j]);
+ return CH(`Лампы одинаковые, источник идеальный. Ключ K <b>замкнули</b>. Что произойдёт с лампой <b>${L[j].n}</b>?`,v,VER.filter(x=>x!==v),{pic:circuit(net,{}),
+ short:`Ток через ${L[j].n}: ${N(rnd(before[j],3))} → ${N(rnd(after[j],3))} (в долях U/R) → ${v}.`,
+ explain:`Замкнутый ключ — провод с R = 0, подключённый параллельно лампе ${La[La.length-1].n}. Он её <b>закорачивает</b>: весь ток идёт через ключ, ${La[La.length-1].n} гаснет, а общее сопротивление цепи уменьшается.<br>Пусть U = 1, R лампы = 1. До: R = ${N(rnd(Rof(net),3))}, после: R = ${N(rnd(Rof(aft),3))}.<br>Ток через ${L[j].n}: ${N(rnd(before[j],3))} → ${N(rnd(after[j],3))}. Лампа <b>${v}</b>.`,
+ explain2:after[j]<1e-9?`${L[j].n} стоит параллельно ключу: у провода R = 0, у лампы R > 0 — ток весь «уходит» в провод, напряжение на лампе становится 0.`:`Ключ «выкинул» из цепи одну лампу → сопротивление цепи уменьшилось → общий ток вырос → ${L[j].n}, через которую идёт ${La.length>2&&j<2&&net.s[0].p?'половина общего тока':'общий ток'}, светит ярче.`});});
+G(6,()=>CH('🐦 Почему птица, сидящая на <b>одном</b> проводе высоковольтной линии, не получает удар током?','Она подключена параллельно короткому куску провода с ничтожным сопротивлением — напряжение между лапками крошечное',['У птицы очень большое сопротивление, и ток через неё не может пройти ни при каком напряжении','В проводах ЛЭП нет тока','Перья — идеальный изолятор, поэтому ток через птицу никогда не идёт'],{pic:exBird,
+ short:'Напряжение между лапками — тысячные доли вольта.',explain:`Птица и кусок провода между её лапками соединены <b>параллельно</b>. Сопротивление этого кусочка провода — миллионные доли ома, значит напряжение на нём (и на птице) ${M("U = I·R")} — тысячные доли вольта. Ток через птицу ничтожен. Опасно коснуться <b>двух</b> проводов или провода и заземлённой опоры — тогда к птице приложены тысячи вольт.`,
+ explain2:'Человек, стоящий на земле и коснувшийся провода, — совсем другое дело: между проводом и землёй тысячи вольт. Поэтому к упавшим проводам нельзя подходить.'}));
+G(6,()=>CH('Почему лампы и розетки в квартире включены <b>параллельно</b>, а не последовательно?','Каждый прибор получает полное напряжение сети и работает независимо от других',['Так общее сопротивление больше и ток меньше','Так меньше расходуется проводов','Так ток в каждом приборе одинаковый'],{
+ short:'Параллельно: у всех 220 В, выключение одного не мешает другим.',explain:'При параллельном соединении напряжение на каждом приборе равно напряжению сети (220 В) — все работают в своём режиме. Выключил или сломал один — остальные продолжают работать. При последовательном соединении 220 В делились бы между приборами, а выключение одного разорвало бы всю цепь.',
+ explain2:'Представь последовательную квартиру: чтобы горела лампа на кухне, обязательно включён чайник и телевизор. Неудобно!'}));
+
+/* L7 — ★ */
+G(7,()=>CH('★ Если по симметрии две точки цепи имеют <b>одинаковый потенциал</b>, то резистор, соединяющий их…','…можно убрать: ток через него не идёт',['…надо заменить проводом и удвоить остальные сопротивления','…получает самый большой ток в цепи','…можно убрать, только если его сопротивление очень велико'],{
+ short:'Нет разности потенциалов — нет тока (I = U/R = 0).',explain:`Если напряжение между точками ${M('U = 0')}, то по закону Ома ток через резистор между ними ${M('I = 0 / R = 0')} при любом R. Резистор можно убрать (или заменить проводом) — токи нигде не изменятся. Это главный приём для мостов и кубов.`,
+ explain2:'Два бака с водой на одной высоте, соединённые трубкой: вода по трубке не течёт, какой бы толстой она ни была.'}),{star:true,rule:true});
+G(7,()=>{const pairs=[[1,2],[2,4],[3,6],[1,6],[2,12],[5,10],'g'];const pr=pick(pairs);let r1,r2,ans,an;
+ if(pr==='g'){r1=r2=pick([2,4,10]);ans=r1*(1+Math.sqrt(5))/2;an=`${r1}(1 + √5) / 2`;}else{[r1,r2]=pr;ans=(r1+Math.sqrt(r1*r1+4*r1*r2))/2;an=N(ans);}
+ let x=r1;for(let i=0;i<200;i++)x=r1+r2*x/(r2+x); if(Math.abs(x-ans)>1e-9)return null;
+ return NUMT(ans,2,{q:`★ Найди сопротивление между точками A и B <b>бесконечной</b> цепочки: последовательные резисторы по ${r1} Ом, поперечные — по ${r2} Ом.${pr==='g'?' Ответ округли до сотых.':''} Ответ — в омах.`,pic:ladderSvg(r1+' Ом',r2+' Ом'),
+ hint:'Если отрезать первое звено, останется такая же бесконечная цепочка с тем же сопротивлением x.',short:`x = ${r1} + ${r2}·x / (${r2} + x) → x = ${pr==='g'?an+' ≈ ':''}${N(rnd(ans,3))} Ом.`,
+ explain:`Обозначим искомое сопротивление x. После первого звена (${r1} Ом последовательно, ${r2} Ом поперёк) стоит <b>та же</b> бесконечная цепочка с сопротивлением x. Она подключена параллельно поперечному резистору ${r2} Ом:<br>${M(`x = ${r1} + ${r2}x / (${r2} + x)`)}.<br>Умножим на (${r2} + x): ${M(`x(${r2} + x) = ${r1}(${r2} + x) + ${r2}x`)} → ${M(`x² − ${r1}x − ${r1*r2} = 0`)}.<br>Положительный корень: ${M(`x = (${r1} + √(${r1*r1} + ${4*r1*r2})) / 2 = ${pr==='g'?an+' ≈ ':''}${N(rnd(ans,3))} Ом`)}.`,
+ explain2:`Проверь «в лоб» на компьютере: возьми 1 звено (${r1} + ${r2} = ${r1+r2} Ом), потом 2 звена, 3, … С каждым звеном сопротивление приближается к ${N(rnd(ans,3))} Ом: уже 10 звеньев дают почти точно этот ответ. ${pr==='g'?'Число (1 + √5)/2 ≈ 1,618 — знаменитое «золотое сечение».':''}`});},{star:true});
+G(7,()=>{const E=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];const r=pick([6,12,24]);const v=pick([['opp',0,6],['face',0,2],['edge',0,1]]);
+ const ans=Rnet(8,E.map(([a,b])=>[a,b,r]),v[1],v[2]);const fr={opp:'5R/6',face:'3R/4',edge:'7R/12'}[v[0]];const fv={opp:5/6,face:3/4,edge:7/12}[v[0]];if(Math.abs(ans-fv*r)>1e-9)return null;
+ return NUMT(ans,2,{q:`★ Из 12 одинаковых резисторов по ${r} Ом спаяли каркас куба (каждое ребро — резистор). Найди сопротивление между вершинами A и B (${v[0]==='opp'?'противоположные вершины куба':v[0]==='face'?'противоположные вершины одной грани':'концы одного ребра'}). Ответ — в омах.`,pic:cubeSvg(v[1],v[2]),
+ hint:v[0]==='opp'?'По симметрии ток из A делится на 3 равные части; найди вершины с одинаковым потенциалом.':'Ищи вершины, которые по симметрии имеют одинаковый потенциал, — их можно соединить.',
+ short:`R<sub>AB</sub> = ${fr} = ${N(rnd(ans,3))} Ом.`,
+ explain:v[0]==='opp'?`Пусть в A входит ток I. Три ребра из A одинаковы по симметрии → по каждому I/3. Из каждой из трёх «соседних» вершин выходит по 2 ребра → по I/6. Затем в B сходятся три ребра по I/3.<br>Идём по любому пути A → B: ${M('U = R·I/3 + R·I/6 + R·I/3 = (5/6)·IR')}.<br>${M(`R<sub>AB</sub> = 5R/6 = 5 · ${r} / 6 = ${N(rnd(ans,3))} Ом`)}.`:v[0]==='face'?`Две вершины грани, соседние и с A, и с B, симметричны — их потенциалы равны, причём ровно посередине между A и B (если поменять местами A и B, картина не изменится). Такая же пара есть на задней грани. Значит, по 4 «поперечным» рёбрам между этими парами ток не идёт — убираем их.<br>Остаются два пути: через переднюю грань (два параллельных пути по 2R → R) и через заднюю (R + (R/2) + (R/2) + R = 3R).<br>${M('R<sub>AB</sub> = R ‖ 3R = 3R/4')} = 3 · ${r} / 4 = <b>${N(rnd(ans,3))} Ом</b>.`:`Есть красивая теорема (Фостера): если сложить сопротивления между концами <b>всех рёбер</b> схемы из одинаковых резисторов R, получится ${M('R·(число вершин − 1)')}. У куба 8 вершин → сумма 7R. Все 12 рёбер куба одинаковы по симметрии, значит для каждого ${M('R<sub>AB</sub> = 7R/12')} = 7 · ${r} / 12 = <b>${N(rnd(ans,3))} Ом</b>.<br>Проверка здравым смыслом: меньше R (есть обходные пути), но больше R/2.`,
+ explain2:`Сравни три ответа для куба: соседние вершины — 7R/12 ≈ 0,58R, вершины грани по диагонали — 3R/4 = 0,75R, противоположные вершины — 5R/6 ≈ 0,83R. Чем дальше вершины, тем больше сопротивление. Здесь R = ${r} Ом и нужен случай «${v[0]==='opp'?'противоположные':v[0]==='face'?'диагональ грани':'ребро'}»: ${fr} = ${N(rnd(ans,3))} Ом. (Все три ответа проверены точным расчётом токов в кубе.)`});},{star:true});
+G(7,()=>{const k=pick([[2,4,3,6],[1,2,3,6],[2,6,1,3],[4,2,6,3],[3,6,2,4],[10,20,5,10],[6,3,4,2]]);const r5=pick([1,5,7,10,100]);
+ const E=[[0,2,k[0]],[2,1,k[1]],[0,3,k[2]],[3,1,k[3]],[2,3,r5]];const ans=Rnet(4,E,0,1);const simple=(k[0]+k[1])*(k[2]+k[3])/(k[0]+k[1]+k[2]+k[3]);if(Math.abs(ans-simple)>1e-9||!nice(ans*10))return null;
+ return NUMT(ans,2,{q:`★ Найди сопротивление между точками A и B (сопротивления в омах).`,pic:bridgeSvg([k[0]+' Ом',k[1]+' Ом',k[2]+' Ом',k[3]+' Ом',r5+' Ом']),
+ hint:'Сравни отношения сопротивлений в верхней и нижней половинах моста.',short:`${k[0]}/${k[1]} = ${k[2]}/${k[3]} → мост уравновешен, R = ${N(rnd(ans,3))} Ом.`,
+ explain:`Отношения: ${M(`${k[0]} / ${k[1]} = ${k[2]} / ${k[3]}`)}. Значит, напряжение делится одинаково в верхней и нижней ветке, и точки C и D имеют <b>одинаковый потенциал</b>. Ток через резистор ${r5} Ом не идёт — его можно убрать!<br>Остаётся: (${k[0]} + ${k[1]}) ‖ (${k[2]} + ${k[3]}) = ${par2s(k[0]+k[1],k[2]+k[3])} Ом.`,
+ explain2:`Проверка числами (пока без резистора ${r5} Ом): подадим на AB напряжение ${k[0]+k[1]} В. Верхняя ветка (${k[0]+k[1]} Ом): ток 1 А, на резисторе ${k[0]} Ом — ${k[0]} В. Нижняя ветка (${k[2]+k[3]} Ом): ток ${N(rnd((k[0]+k[1])/(k[2]+k[3]),3))} А, на резисторе ${k[2]} Ом — ${N(rnd((k[0]+k[1])/(k[2]+k[3])*k[2],3))} В. Одинаково! Значит, у C и D равные потенциалы, и если вставить между ними резистор ${r5} Ом, ток по нему не пойдёт.`});},{star:true});
+G(7,()=>{const r=pick([2,3,4,6]);const E=[[0,1,r],[0,2,r],[1,2,r],[0,3,r],[1,3,r],[2,3,r]];const ans=Rnet(4,E,0,1);if(Math.abs(ans-r/2)>1e-9)return null;
+ return NUMT(ans,2,{q:`★ Четыре точки A, B, C, D попарно соединены шестью одинаковыми резисторами по ${r} Ом (каждая с каждой). Найди сопротивление между A и B. Ответ — в омах.`,pic:k4Svg(),
+ hint:'Точки C и D симметричны относительно A и B. Какой ток пойдёт по резистору CD?',short:`C и D равнопотенциальны → R<sub>AB</sub> = R/2 = ${N(ans)} Ом.`,
+ explain:`По симметрии точки C и D находятся «в одинаковом положении» относительно A и B, значит у них равные потенциалы — ток по CD не идёт, этот резистор убираем.<br>Остаются три параллельные ветки между A и B: прямая (${r} Ом), через C (${2*r} Ом), через D (${2*r} Ом).<br>${M(`1/R = 1/${r} + 1/${2*r} + 1/${2*r} = 2/${r}`)} → ${M(`R = ${r}/2 = ${N(ans)} Ом`)}.`,
+ explain2:`Ветки через C и D одинаковы: ${2*r} ‖ ${2*r} = ${r} Ом. Вместе с прямым резистором ${r} Ом: ${r} ‖ ${r} = ${N(ans)} Ом.`});},{star:true});
+G(7,()=>{const vals=new Set();const comb=n=>{if(n===1)return [1];let out=[];for(let k=1;k<n;k++)for(const a of comb(k))for(const b of comb(n-k)){out.push(a+b,a*b/(a+b));}return [...new Set(out.map(x=>Math.round(x*1e9)/1e9))];};
+ const c=comb(3);const ans=c.length;const R0=pick([6,12,30]);
+ return {type:'num',ans,q:`★ Есть три одинаковых резистора по ${R0} Ом. Сколько <b>различных</b> общих сопротивлений можно получить, если в цепи обязательно использовать <b>все три</b> резистора (соединяя их последовательно и/или параллельно)?`,
+ hint:'Варианты: все последовательно, все параллельно, и два смешанных способа.',short:`${c.sort((a,b)=>a-b).map(x=>N(rnd(x*R0,3))+' Ом').join(', ')} — ${ans} варианта.`,
+ explain:`Переберём:<br>1) все последовательно: 3R = ${3*R0} Ом;<br>2) все параллельно: R/3 = ${R0/3} Ом;<br>3) два параллельно + один последовательно: R/2 + R = 1,5R = ${N(1.5*R0)} Ом;<br>4) два последовательно, параллельно третьему: 2R ‖ R = 2R/3 = ${N(2*R0/3)} Ом.<br>Других способов нет — всего <b>${ans}</b>.`,
+ explain2:`Схемы удобно перебирать по «самому верхнему» соединению: либо вся цепь — это два куска последовательно (кусок из 1 и кусок из 2 резисторов), либо два куска параллельно. Кусок из 2 резисторов бывает 2R или R/2. Получается 2 + 2 = 4 случая, и все 4 значения разные.`};},{star:true});
+G(7,()=>{const pr=pick([[1,3],[1,2],[1,4],[2,3],[1,1],[3,5]]);const [m,n]=pr;const k=pick([1,2,4,5]);const R0=k*(m+n)*(m+n);const ans=R0*m*n/((m+n)*(m+n));
+ return NUMT(ans,2,{q:`★ Из однородной проволоки сопротивлением ${R0} Ом согнули кольцо. Контакты A и B делят кольцо на дуги, длины которых относятся как ${m} : ${n}. Каково сопротивление между A и B? Ответ — в омах.`,pic:ringSvg(m,n),
+ hint:'Две дуги — два параллельных проводника. Сопротивление дуги пропорционально её длине.',short:`${N(R0*m/(m+n))} ‖ ${N(R0*n/(m+n))} = ${N(ans)} Ом.`,
+ explain:`Дуги делят кольцо на ${m+n} равных частей по ${N(R0/(m+n))} Ом. Дуга из ${m} частей: ${N(R0*m/(m+n))} Ом, из ${n} частей: ${N(R0*n/(m+n))} Ом.<br>Ток идёт от A к B сразу по двум дугам → они соединены <b>параллельно</b>:<br>${par2s(R0*m/(m+n),R0*n/(m+n))} Ом.<div class="box err"><b>Ловушка</b>${R0} Ом — это сопротивление всей проволоки, если подключиться к её концам. В кольце ток идёт по двум путям сразу.</div>`,
+ explain2:`Общая формула: ${M('R<sub>AB</sub> = R₀·m·n / (m + n)²')} = ${R0} · ${m*n} / ${(m+n)*(m+n)} = ${N(ans)} Ом. Наибольшее значение — при подключении к диаметрально противоположным точкам (m = n): R₀/4.`});},{star:true});
+G(7,()=>{const R1=pick([1,2,3,4,6]);const R2=R1;const RV=pick([1,2,3])*R1;const U=pick([12,24,36]);const Rp=R2*RV/(R2+RV);const UV=U*Rp/(R1+Rp);if(!nice(UV*10))return null;
+ const net={s:[{t:'R',n:'R₁',v:R1+' кОм'},{p:[{t:'V'},{t:'R',n:'R₂',v:R2+' кОм'}]}]};
+ return NUMT(UV,2,{q:`★ Два резистора по ${R1} кОм соединены последовательно и подключены к источнику ${U} В. К резистору R₂ подключили <b>неидеальный</b> вольтметр с сопротивлением ${RV} кОм. Что он покажет? Ответ — в вольтах.`,pic:circuit(net,{bat:U+' В'}),
+ hint:'Вольтметр с сопротивлением R<sub>V</sub> — это ещё один резистор, параллельный R₂.',short:`R₂ ‖ R<sub>V</sub> = ${N(rnd(Rp,3))} кОм; U<sub>V</sub> = ${U} · ${N(rnd(Rp,3))} / ${N(rnd(R1+Rp,3))} = ${N(rnd(UV,3))} В.`,
+ explain:`Идеальный вольтметр показал бы ${U/2} В (половину). Но настоящий вольтметр «отбирает» ток: он параллелен R₂.<br>1) ${M(`R₂ ‖ R<sub>V</sub> = ${par2s(R2,RV)} кОм`)}.<br>2) Этот участок последовательно с R₁: ${M(`R = ${R1} + ${N(rnd(Rp,3))} = ${N(rnd(R1+Rp,3))} кОм`)}.<br>3) Напряжение делится пропорционально сопротивлениям: ${M(`U<sub>V</sub> = ${U} · ${N(rnd(Rp,3))} / ${N(rnd(R1+Rp,3))} = ${N(rnd(UV,3))} В`)}.<br>Вывод: вольтметр должен иметь сопротивление намного больше, чем участок, который он меряет.`,
+ explain2:`Через ток: ${M(`I = ${U} / ${N(rnd(R1+Rp,3))} кОм = ${N(rnd(U/(R1+Rp),3))} мА`)}. На R₁ падает ${N(rnd(U/(R1+Rp)*R1,3))} В, на параллельном участке — остальное: ${U} − ${N(rnd(U/(R1+Rp)*R1,3))} = ${N(rnd(UV,3))} В.`});},{star:true});
+
+/* ---------- interactive theory ---------- */
+function onTheory(root){const w=root.querySelector('#w-sp');if(!w)return;
+  w.innerHTML=`<b>Сравни два соединения</b>
+  <div class="row" style="margin:6px 0;gap:8px;display:flex;flex-wrap:wrap"><button class="btn" id="bS">Последовательно</button><button class="btn ghost" id="bP">Параллельно</button></div>
+  <label>U = <output id="suo"></output><input type="range" id="su" min="1" max="24" step="1" value="12"></label>
+  <label>R₁ = <output id="s1o"></output><input type="range" id="s1" min="1" max="30" step="1" value="4"></label>
+  <label>R₂ = <output id="s2o"></output><input type="range" id="s2" min="1" max="30" step="1" value="12"></label>
+  <div id="spic" class="fig"></div><div id="stxt" style="line-height:1.8;text-align:center"></div>`;
+  let mode='s';const g=id=>w.querySelector('#'+id);
+  const u=()=>{const U=+g('su').value,a=+g('s1').value,b=+g('s2').value;g('suo').textContent=U+' В';g('s1o').textContent=a+' Ом';g('s2o').textContent=b+' Ом';
+    const net=mode==='s'?{s:[{t:'R',r:a,n:'R₁',v:a+' Ом'},{t:'R',r:b,n:'R₂',v:b+' Ом'}]}:{p:[{t:'R',r:a,n:'R₁',v:a+' Ом'},{t:'R',r:b,n:'R₂',v:b+' Ом'}]};
+    const Rt=solveTree(net,U);const [L1,L2]=leaves(net);g('spic').innerHTML=circuit(net,{bat:U+' В',bottom:[{t:'A'}]});
+    const f=x=>N(rnd(x,2));
+    g('stxt').innerHTML=`R<sub>общ</sub> = <span class="out">${mode==='s'?`${a} + ${b} = ${f(Rt)}`:`${a}·${b}/(${a}+${b}) = ${f(Rt)}`} Ом</span><br>Амперметр: <span class="out">I = ${f(U/Rt)} А</span><br>R₁: I₁ = <span class="out">${f(L1.I)} А</span>, U₁ = <span class="out">${f(L1.U)} В</span> · R₂: I₂ = <span class="out">${f(L2.I)} А</span>, U₂ = <span class="out">${f(L2.U)} В</span><br><span class="small">${mode==='s'?'Ток одинаковый, напряжения складываются: '+f(L1.U)+' + '+f(L2.U)+' = '+U+' В':'Напряжение одинаковое, токи складываются: '+f(L1.I)+' + '+f(L2.I)+' = '+f(U/Rt)+' А'}</span>`;
+    g('bS').className='btn'+(mode==='s'?'':' ghost');g('bP').className='btn'+(mode==='p'?'':' ghost');};
+  g('bS').onclick=()=>{mode='s';u();};g('bP').onclick=()=>{mode='p';u();};w.querySelectorAll('input').forEach(i=>i.oninput=u);u();}
+
+window.TOPIC={id:'p8_circuits',title:'Электрические цепи',subtitle:'Физика · 8 класс',
+intro:`<p>Схемы, последовательное и параллельное соединение, смешанные цепи, амперметры и вольтметры в цепи, «что будет, если лампа перегорит», птицы на проводах. В конце — олимпиадные задачи: мосты, куб из резисторов, бесконечная цепочка.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Схемы и обозначения','Последовательное соединение','Параллельное соединение','Смешанные цепи: сопротивление','Смешанные цепи: токи и напряжения','Приборы в цепи','Что изменится?','★ Олимпиадные задачи'],
+gens};
+})();

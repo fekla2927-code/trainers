@@ -1,0 +1,500 @@
+(function(){
+const {R,pick,shuffle,sample,range,plural,num:N}=H;
+/* =====================================================================
+   Geometry SVG helper (math coords, y up → auto-fit into ≤ 320 px)
+   ===================================================================== */
+const D2R=Math.PI/180;
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(a,k)=>[a[0]*k,a[1]*k];
+const len=a=>Math.hypot(a[0],a[1]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1];
+const unit=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l];};
+const polar=(p,L,d)=>[p[0]+L*Math.cos(d*D2R),p[1]+L*Math.sin(d*D2R)];
+const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+const foot=(p,a,b)=>{const d=sub(b,a);const t=dot(sub(p,a),d)/dot(d,d);return lerp(a,b,t);};
+const inter=(a,b,c,d)=>{const r=sub(b,a),s=sub(d,c);const den=r[0]*s[1]-r[1]*s[0];const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den;return add(a,mul(r,t));};
+const angAt=(v,a,b)=>{const u=unit(sub(a,v)),w=unit(sub(b,v));return Math.acos(Math.max(-1,Math.min(1,dot(u,w))))/D2R;};
+const r1=x=>Math.round(x*10)/10;
+const tw=(t,fs)=>{t=String(t).replace(/<[^>]+>/g,'');let w=0;for(const ch of t)w+=/[°·,.\s₁₂₃₄]/.test(ch)?fs*0.36:/[0-9]/.test(ch)?fs*0.56:fs*0.64;return w;};
+const SUB={A1:'A₁',A2:'A₂',A3:'A₃',A4:'A₄',B1:'B₁',B2:'B₂',B3:'B₃',B4:'B₄'};
+
+function geo(o){
+  const P={};for(const k in o.P)if(Array.isArray(o.P[k]))P[k]=o.P[k];const W=o.W||300,MH=o.maxH||220,pad=o.pad==null?30:o.pad;
+  const all=Object.values(P).concat(o.extra||[]);
+  const x0=Math.min(...all.map(p=>p[0])),x1=Math.max(...all.map(p=>p[0]));
+  const y0=Math.min(...all.map(p=>p[1])),y1=Math.max(...all.map(p=>p[1]));
+  const bw=Math.max(x1-x0,1e-6),bh=Math.max(y1-y0,1e-6);
+  const s=Math.min((W-2*pad)/bw,(MH-2*pad)/bh);
+  const w=Math.round(bw*s+2*pad),h=Math.round(bh*s+2*pad);
+  const X=p=>[pad+(p[0]-x0)*s,pad+(y1-p[1])*s];
+  const Q={};for(const k in P)Q[k]=X(P[k]);
+  const g=k=>Array.isArray(k)?X(k):Q[k];
+  const polys=o.poly||[];
+  const cen=pts=>[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];
+  const allC=cen(Object.values(Q));
+  const pstr=pts=>pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ');
+  const T=(x,y,t,fs,col,wt,anc)=>`<text x="${r1(x)}" y="${r1(y+fs*0.36)}" text-anchor="${anc||'middle'}" font-size="${fs}" font-weight="${wt||600}" fill="${col||'var(--ink)'}">${t}</text>`;
+  const place=(p,d,t,fs,gap)=>{const ww=tw(t,fs),hh=fs*0.78;const k=gap+0.5*(ww*Math.abs(d[0])+hh*Math.abs(d[1]));return [p[0]+d[0]*k,p[1]+d[1]*k];};
+  let out=`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${o.aria||'Чертёж'}" style="font-family:system-ui,sans-serif">`;
+  const LS=[];const ln=(A,B,attr)=>{LS.push([A,B]);return `<line x1="${r1(A[0])}" y1="${r1(A[1])}" x2="${r1(B[0])}" y2="${r1(B[1])}" ${attr}/>`;};
+  if(o.grid){const G=o.grid;for(let x=G[0];x<=G[2]+1e-9;x++){const a=X([x,G[1]]),b=X([x,G[3]]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}
+    for(let y=G[1];y<=G[3]+1e-9;y++){const a=X([G[0],y]),b=X([G[2],y]);out+=`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="var(--line)" stroke-width="1"/>`;}}
+  (o.fill||[]).forEach(f=>{const pts=(f.pts||f).map(g);out+=`<polygon points="${pstr(pts)}" fill="${f.col||'var(--hl)'}" fill-opacity="${f.op||0.35}" stroke="none"/>`;});
+  polys.forEach(pl=>{out+=`<polygon points="${pstr(pl.map(g))}" fill="none" stroke="var(--fig)" stroke-width="2.2" stroke-linejoin="round"/>`;pl.forEach((k,i)=>LS.push([g(k),g(pl[(i+1)%pl.length])]));});
+  (o.seg||[]).forEach(sg=>{const op=sg[2]||{};let A=g(sg[0]),B=g(sg[1]);if(op.ext){const e=mul(sub(B,A),op.ext);A=sub(A,e);B=add(B,e);}
+    out+=ln(A,B,`stroke="${op.col||'var(--fig)'}" stroke-width="${op.sw||1.7}" ${op.dash?'stroke-dasharray="6 4"':''} stroke-linecap="round"`);});
+  (o.tick||[]).forEach(tk=>{const A=g(tk[0]),B=g(tk[1]),n=tk[2]||1;const e=unit(sub(B,A)),nn=[-e[1],e[0]],m=mid(A,B);
+    for(let i=0;i<n;i++){const c=add(m,mul(e,(i-(n-1)/2)*5));out+=ln(add(c,mul(nn,6)),sub(c,mul(nn,6)),'stroke="var(--fig)" stroke-width="1.7"');}});
+  (o.rt||[]).forEach(rt=>{const Vv=g(rt[0]),u=unit(sub(g(rt[1]),Vv)),ww=unit(sub(g(rt[2]),Vv)),k=10;const a=add(Vv,mul(u,k)),b=add(a,mul(ww,k)),c=add(Vv,mul(ww,k));LS.push([a,b],[b,c]);
+    out+=`<path d="M${r1(a[0])},${r1(a[1])} L${r1(b[0])},${r1(b[1])} L${r1(c[0])},${r1(c[1])}" fill="none" stroke="var(--fig)" stroke-width="1.5"/>`;});
+  const angInfo=(o.ang||[]).map(an=>{const op=an[4]||{};const Vv=g(an[0]),A=g(an[1]),B=g(an[2]);
+    const a1=Math.atan2(A[1]-Vv[1],A[0]-Vv[0]);let dl=Math.atan2(B[1]-Vv[1],B[0]-Vv[0])-a1;while(dl>Math.PI)dl-=2*Math.PI;while(dl<=-Math.PI)dl+=2*Math.PI;
+    const th=Math.abs(dl);const rr=op.r||(th<0.75?26:19);const n=op.n||1;
+    for(let i=0;i<n;i++){const r=rr+i*4;const p=[Vv[0]+r*Math.cos(a1),Vv[1]+r*Math.sin(a1)],q=[Vv[0]+r*Math.cos(a1+dl),Vv[1]+r*Math.sin(a1+dl)];
+      out+=`<path d="M${r1(p[0])},${r1(p[1])} A${r},${r} 0 0 ${dl>0?1:0} ${r1(q[0])},${r1(q[1])}" fill="none" stroke="${op.col||'var(--accent)'}" stroke-width="1.6"/>`;
+      let prev=p;for(let j=1;j<=6;j++){const an2=a1+dl*j/6;const c=[Vv[0]+r*Math.cos(an2),Vv[1]+r*Math.sin(an2)];LS.push([prev,c]);prev=c;}}
+    return {an,op,Vv,a1,dl,th,rr,n};});
+  (o.dots||[]).forEach(k=>{const p=g(k);out+=`<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="2.8" fill="var(--fig)"/>`;});
+  /* ---- collision-aware label placement ---- */
+  const boxes=[];
+  const segRect=(a,b,c,hw,hh)=>{const xmin=c[0]-hw,xmax=c[0]+hw,ymin=c[1]-hh,ymax=c[1]+hh;let t0=0,t1=1,hit=true;const dx=b[0]-a[0],dy=b[1]-a[1];const pp=[-dx,dx,-dy,dy],qq=[a[0]-xmin,xmax-a[0],a[1]-ymin,ymax-a[1]];
+    for(let i=0;i<4;i++){if(Math.abs(pp[i])<1e-12){if(qq[i]<0){hit=false;break;}}else{const r=qq[i]/pp[i];if(pp[i]<0){if(r>t1){hit=false;break;}if(r>t0)t0=r;}else{if(r<t0){hit=false;break;}if(r<t1)t1=r;}}}
+    if(hit)return -1;const pr=p=>Math.hypot(Math.max(xmin-p[0],0,p[0]-xmax),Math.max(ymin-p[1],0,p[1]-ymax));
+    const ps=p=>{const d=sub(b,a);const t=Math.max(0,Math.min(1,dot(sub(p,a),d)/Math.max(dot(d,d),1e-9)));return len(sub(p,lerp(a,b,t)));};
+    return Math.min(pr(a),pr(b),ps([xmin,ymin]),ps([xmax,ymin]),ps([xmin,ymax]),ps([xmax,ymax]));};
+  const clr=(c,hw,hh)=>{let m=Math.min(c[0]-hw,w-c[0]-hw,c[1]-hh,h-c[1]-hh)+1;for(const L of LS)m=Math.min(m,segRect(L[0],L[1],c,hw,hh));for(const bx of boxes)m=Math.min(m,Math.max(Math.abs(c[0]-bx[0])-hw-bx[2],Math.abs(c[1]-bx[1])-hh-bx[3]));return m;};
+  const choose=(cands,t,fs,thr)=>{const hw=tw(t,fs)/2+1,hh=fs*0.4+1;let best=cands[0],bs=-1e9;for(const c of cands){const v=clr(c,hw,hh);if(v>=thr){best=c;break;}if(v>bs){bs=v;best=c;}}boxes.push([best[0],best[1],hw,hh]);return best;};
+  let labels='';
+  const vdir=k=>{
+    if(o.dir&&o.dir[k]!=null){const d=o.dir[k];return [Math.cos(d*D2R),-Math.sin(d*D2R)];}
+    const p=Q[k];
+    for(const pl of polys){const i=pl.indexOf(k);if(i<0)continue;const n=pl.length;const u1=unit(sub(g(pl[(i-1+n)%n]),p)),u2=unit(sub(g(pl[(i+1)%n]),p));let d=add(u1,u2);
+      if(len(d)>0.15)return mul(unit(d),-1);const c=cen(pl.map(g));d=[-u1[1],u1[0]];if(dot(d,sub(c,p))>0)d=mul(d,-1);return d;}
+    for(const pl of polys){for(let i=0;i<pl.length;i++){const A=g(pl[i]),B=g(pl[(i+1)%pl.length]);const f=foot(p,A,B);const t=dot(sub(p,A),sub(B,A))/dot(sub(B,A),sub(B,A));
+      if(len(sub(f,p))<1&&t>0.02&&t<0.98){const e=unit(sub(B,A));let d=[-e[1],e[0]];if(dot(d,sub(cen(pl.map(g)),p))>0)d=mul(d,-1);return d;}}}
+    let d=sub(p,allC);if(len(d)<4)d=[0.7,0.7];return unit(d);};
+  (o.txt||[]).forEach(tx=>{const arr=Array.isArray(tx[0]);const p=arr?X(tx[0]):X([tx[0],tx[1]]);const t=arr?tx[1]:tx[2];const op=(arr?tx[2]:tx[3])||{};const fs=op.fs||14;
+    boxes.push([p[0],p[1],tw(t,fs)/2+1,fs*0.4+1]);labels+=T(p[0],p[1],t,fs,op.col||'var(--ink)',op.wt||600,op.anc);});
+  const labs=o.lab||Object.keys(P);
+  labs.forEach(k=>{const t=(o.names&&o.names[k])||SUB[k]||k;const d0=vdir(k);const th0=Math.atan2(d0[1],d0[0]);const cands=[];
+    for(const gp of [5,9])for(let j=0;j<=12;j++)for(const sg of (j?[1,-1]:[1])){const th=th0+sg*j*15*D2R;cands.push(place(Q[k],[Math.cos(th),Math.sin(th)],t,15,gp));}
+    const p=choose(cands,t,15,2.5);labels+=T(p[0],p[1],t,15,'var(--accent-ink)',700);});
+  (o.side||[]).forEach(sd=>{const op=sd[3]||{};const A=g(sd[0]),B=g(sd[1]);const e=unit(sub(B,A));let n=[-e[1],e[0]];const t0=op.t==null?0.5:op.t;
+    let c=allC;for(const pl of polys){const i=pl.indexOf(sd[0]),j=pl.indexOf(sd[1]);if(i>=0&&j>=0&&(Math.abs(i-j)===1||Math.abs(i-j)===pl.length-1)){c=cen(pl.map(g));break;}}
+    if(dot(n,sub(c,lerp(A,B,t0)))>0)n=mul(n,-1);if(op.flip)n=mul(n,-1);const fs=op.fs||14;const gp=op.gap==null?4:op.gap;const cands=[];
+    for(const nn of [n,mul(n,-1)])for(const gg of [gp,gp+5])for(const dt of [0,0.1,-0.1,0.2,-0.2,0.3,-0.3])cands.push(place(lerp(A,B,Math.max(0.08,Math.min(0.92,t0+dt))),nn,sd[2],fs,gg));
+    const p=choose(cands,sd[2],fs,2);labels+=T(p[0],p[1],sd[2],fs,op.col||'var(--ink)',600);});
+  angInfo.forEach(({an,op,Vv,a1,dl,th,rr,n})=>{if(!an[3])return;const fs=op.fs||14;const rad=Math.max(tw(an[3],fs),fs)/2+2;const d=Math.max(rr+(n-1)*4+rad+3,(rad+3)/Math.sin(th/2));const cands=[];
+    for(const dd of [0,7,14,22,32])for(const f of [0,0.3,-0.3,0.6,-0.6]){const am=a1+dl/2+f*dl/2;cands.push([Vv[0]+(d+dd)*Math.cos(am),Vv[1]+(d+dd)*Math.sin(am)]);}
+    const p=choose(cands,an[3],fs,1.5);labels+=T(p[0],p[1],an[3],fs,'var(--accent-ink)',700);});
+  return out+labels+'</svg>';
+}
+
+/* ---------- shared utilities ---------- */
+const fig=s=>`<div class="fig">${s}</div>`;
+const sq=x=>x*x;
+const isInt=x=>Math.abs(x-Math.round(x))<1e-9;
+const gens=[];
+const G=(lvl,make,o)=>{o=o||{};gens.push({lvl,star:o.star,rule:o.rule,make:()=>{for(let i=0;i<400;i++){const t=make();if(t){if(t.type==='num')t.ans=Math.round(t.ans*1e9)/1e9;return t;}}return null;}});};
+/* choice from correct + wrongs; null if not distinct */
+const CH=(q,correct,wrongs,extra)=>{const opts=shuffle([correct,...wrongs]);if(new Set(opts).size!==opts.length)return null;return Object.assign({type:'choice',q,opts,ans:opts.indexOf(correct)},extra||{});};
+/* radicals: n = k²·m */
+const rad=n=>{let k=1,m=n;for(let d=2;d*d<=m;d++)while(m%(d*d)===0){m/=d*d;k*=d;}return {k,m};};
+const RS=n=>{const {k,m}=rad(n);return m===1?String(k):(k===1?`√${m}`:`${k}√${m}`);};
+const radVal=raw=>{let s=String(raw).replace(/\s+/g,'').replace(/,/g,'.').replace(/[·*×]/g,'').replace(/[()]/g,'').replace(/[−–]/g,'-');
+  let m=s.match(/^(\d+(?:\.\d+)?)?√(\d+(?:\.\d+)?)$/);if(m){const k=m[1]?Number(m[1]):1;return k*k*Number(m[2]);}
+  if(/^\d+(\.\d+)?$/.test(s))return Number(s)*Number(s);return NaN;};
+/* task with answer √n (any equal form accepted: 5√2, √50) */
+const RT=(n,o)=>Object.assign({type:'text',ans:[RS(n)],right:RS(n),ansText:RS(n),keys:['√'],ph:'например: 3√2 или 7',check:raw=>Math.abs(radVal(raw)-n)<1e-9*Math.max(1,n)},o);
+const mark=s=>`<b style="color:var(--accent-ink)">${s}</b>`;
+
+/* =====================================================================
+   g8_similarity — подобные треугольники
+   ===================================================================== */
+const NM={A1:'A₁',B1:'B₁',C1:'C₁'};
+const NN=x=>N(x).replace(/^(−?)(\d+)/,(m,sg,d)=>sg+(d.length>4?d.replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0'):d));
+/* triangle with AB=c, BC=a, AC=b; A at origin, C on x-axis */
+const tri3=(a,b,c)=>{const x=(c*c+b*b-a*a)/(2*b);return {A:[0,0],C:[b,0],B:[x,Math.sqrt(Math.max(0,c*c-x*x))]};};
+const okTri=(a,b,c,m)=>{m=m||1;return a+b>c+m&&a+c>b+m&&b+c>a+m;};
+const randTri=(lo,hi)=>{for(;;){const a=R(lo,hi),b=R(lo,hi),c=R(lo,hi);if(okTri(a,b,c,1.5)&&new Set([a,b,c]).size===3)return [a,b,c];}};
+const row=(...s)=>`<div style="display:flex;gap:10px;align-items:flex-end;justify-content:center;flex-wrap:wrap">${s.join('')}</div>`;
+/* pair of similar triangles ABC and A1B1C1 (k), sides labels arrays [BC,AC,AB] */
+function simPair(a,b,c,k,L1,L2,o){o=o||{};const T=tri3(a,b,c);const sh=b+Math.max(1.5,0.3*Math.max(b,b*k));const P={A:T.A,B:T.B,C:T.C,A1:[sh,0],B1:[sh+T.B[0]*k,T.B[1]*k],C1:[sh+b*k,0]};
+  const side=[];const S=(p,q,t)=>{if(t!=null&&t!=='')side.push([p,q,String(t)]);};S('B','C',L1[0]);S('A','C',L1[1]);S('A','B',L1[2]);S('B1','C1',L2[0]);S('A1','C1',L2[1]);S('A1','B1',L2[2]);
+  const ang=o.ang===false?[]:[['A','B','C','',{n:1}],['B','A','C','',{n:2}],['A1','B1','C1','',{n:1}],['B1','A1','C1','',{n:2}]];
+  return geo({P,poly:[['A','B','C'],['A1','B1','C1']],fill:[{pts:['A','B','C'],op:0.15},{pts:['A1','B1','C1'],op:0.3}],side,ang,names:NM,maxH:o.maxH||170,W:o.W||320,pad:26});}
+/* nested: ΔABC with B on top, D on BA, E on BC, DE ∥ AC */
+function nestPar(t,labs,o){o=o||{};const P={A:[0,0],C:[10,0],B:[3.6,6.5]};P.D=lerp(P.B,P.A,t);P.E=lerp(P.B,P.C,t);
+  return geo({P,poly:[['A','B','C']],seg:[['D','E',{sw:2.2,col:'var(--accent)'}]],fill:o.fill||[{pts:['D','B','E'],op:0.3}],side:labs,ang:o.ang||[],maxH:o.maxH||190,W:280});}
+
+/* ---------- theory figures ---------- */
+const fPair=simPair(5,6,4,1.5,['a','b','c'],['ka','kb','kc'],{maxH:160});
+const fAA=(()=>{const P={A:[0,0],C:[7,0],B:[3,5.5]};const AB=len(P.B),k=0.55;P.D=lerp(P.A,P.B,k*7/AB);P.E=lerp(P.A,P.C,k*AB/7);
+  return geo({P,poly:[['A','B','C']],seg:[['D','E',{sw:2,col:'var(--accent)'}]],fill:[{pts:['A','D','E'],op:0.3}],ang:[['A','C','B','',{n:1}],['E','A','D','',{n:2}],['B','A','C','',{n:2}]],maxH:170,W:260});})();
+const fPar=nestPar(0.45,[],{ang:[['D','B','E','',{n:1}],['A','B','C','',{n:1}]]});
+const fAlt=(()=>{const P={C:[0,0],A:[0,4],B:[7,0]};P.H=foot(P.C,P.A,P.B);return geo({P,poly:[['A','B','C']],seg:[['C','H',{dash:true}]],rt:[['C','A','B'],['H','B','C']],side:[['A','H','p'],['H','B','q'],['C','H','h',{flip:true}]],fill:[{pts:['A','C','H'],op:0.3},{pts:['C','H','B'],op:0.12}],maxH:180,W:280});})();
+const fBis=(()=>{const T=tri3(8,5,7);const P={A:T.A,B:T.B,C:T.C};P.D=lerp(P.B,P.C,7/12);return geo({P,poly:[['A','B','C']],seg:[['A','D',{col:'var(--accent)',sw:2}]],ang:[['A','B','D','',{n:1}],['A','D','C','',{n:1,r:30}]],side:[['A','B','c'],['A','C','b'],['B','D','x'],['D','C','y']],maxH:180,W:260});})();
+function shadowFig(H,S,h,s,lab){const gx=S+Math.max(S*0.35,s*0.6,1.2);const P={O:[0,0],T:[0,H],E:[S,0],O2:[gx,0],T2:[gx,h],E2:[gx+s,0]};
+  return geo({P,seg:[['O','T',{sw:4,col:'var(--fig)'}],['T','E',{dash:true,col:'var(--hl)',sw:2}],['O2','T2',{sw:4,col:'var(--accent)'}],['T2','E2',{dash:true,col:'var(--hl)',sw:2}],[[-S*0.08,0],[gx+s*1.2+0.3,0],{col:'var(--muted)'}]],side:[['O','T',lab[0],{flip:true}],['O','E',lab[1]],['O2','T2',lab[2],{flip:true}],['O2','E2',lab[3]]],lab:[],extra:[[-S*0.08,0],[gx+s*1.2+0.3,0]],maxH:170,W:320,pad:24});}
+const fShadow=shadowFig(6,8,1.5,2,['H','L','h','l']);
+
+/* =====================================================================
+   THEORY
+   ===================================================================== */
+const theory=[
+{title:'Как Фалес измерил пирамиду тенью',lvl:0,html:`
+<p class="hook">Около 600 г. до н. э. греческий мудрец Фалес приехал в Египет. Жрецы спросили: «Какой высоты пирамида Хеопса?» Лестницы до вершины нет, рулетки тоже. Фалес воткнул в песок палку и дождался момента, когда тень палки стала равна её длине. «Сейчас и тень пирамиды равна её высоте», — сказал он. Почему это работает? Потому что треугольники «предмет + тень» <b>подобны</b>.</p>
+<p><b>Подобные фигуры</b> — одинаковые по форме, но, возможно, разные по размеру. Как фото и его увеличенная копия, как модель машинки и настоящая машина, как персонаж на маленьком и большом экране.</p>
+<div class="fig">${fPair}</div>
+<div class="box rule"><b>Определение</b>Треугольники ABC и A₁B₁C₁ <b>подобны</b> (ΔABC ∼ ΔA₁B₁C₁), если их углы соответственно равны (∠A = ∠A₁, ∠B = ∠B₁, ∠C = ∠C₁), а стороны пропорциональны:<br><span class="m">A₁B₁ / AB = B₁C₁ / BC = A₁C₁ / AC = k</span>.<br>Число <b>k</b> — коэффициент подобия.</div>
+<p><b>Соответственные стороны</b> лежат напротив равных углов. Порядок букв в записи ΔABC ∼ ΔKMN важен: A ↔ K, B ↔ M, C ↔ N, значит AB ↔ KM, BC ↔ MN, AC ↔ KN.</p>
+<div class="box ex"><b>Пример</b>ΔABC ∼ ΔKMN, AB = 4, BC = 6, KM = 10. Тогда k = 10 / 4 = 2,5 и MN = 6 · 2,5 = 15.</div>
+<div class="box err"><b>Ошибка «прибавить»</b>Стороны подобных треугольников отличаются не на одно и то же <b>число</b>, а в одно и то же <b>число раз</b>. Треугольник 3, 4, 5 и 5, 6, 7 не подобны (каждую сторону увеличили на 2), а 3, 4, 5 и 6, 8, 10 — подобны.</div>`},
+{title:'Первый признак: два угла',lvl:1,html:`
+<p>Проверять все углы и все стороны долго. Признаки подобия — это «короткие проверки».</p>
+<div class="box rule"><b>Первый признак подобия</b>Если два угла одного треугольника соответственно равны двум углам другого, то треугольники подобны.</div>
+<p><b>Почему хватает двух углов:</b> третий угол тогда тоже равен — ведь сумма углов треугольника всегда 180°. А «форма» треугольника полностью задаётся его углами.</p>
+<div class="fig">${fAA}</div>
+<div class="box ex"><b>Пример</b>В ΔABC на сторонах AB и AC взяли точки D и E так, что ∠AED = ∠ABC. Угол A общий → ΔADE ∼ ΔACB (именно в таком порядке!). Поэтому AD/AC = AE/AB = DE/CB.</div>
+<div class="box err"><b>Ловушка с порядком</b>Сначала выпиши пары равных углов, потом составляй пропорцию. Если ∠AED = ∠ABC, то E ↔ B, и сторона AE соответствует AB, а не AC.</div>
+<div class="box tip"><b>Где искать равные углы</b>Общий угол; вертикальные углы; накрест лежащие и соответственные при параллельных прямых; прямые углы.</div>`},
+{title:'Второй и третий признаки',lvl:2,html:`
+<div class="box rule"><b>Второй признак (две стороны и угол)</b>Если две стороны одного треугольника пропорциональны двум сторонам другого, а углы <b>между</b> этими сторонами равны, то треугольники подобны.</div>
+<div class="box rule"><b>Третий признак (три стороны)</b>Если три стороны одного треугольника пропорциональны трём сторонам другого, то треугольники подобны.</div>
+<p>Как проверять по третьему признаку: упорядочи стороны обоих треугольников по возрастанию и подели соответственно: меньшую на меньшую, среднюю на среднюю, большую на большую. Все три отношения равны → подобны.</p>
+<div class="box ex"><b>Пример</b>4, 6, 8 и 10, 15, 20: 10/4 = 15/6 = 20/8 = 2,5 → подобны, k = 2,5.<br>4, 6, 8 и 6, 9, 13: 6/4 = 1,5, 9/6 = 1,5, 13/8 = 1,625 → не подобны.</div>
+<div class="box err"><b>Ошибка</b>Во втором признаке угол должен быть <b>между</b> пропорциональными сторонами. Если равный угол лежит «сбоку», признак не работает.</div>`},
+{title:'Периметры и площади: k и k²',lvl:3,html:`
+<div class="box rule"><b>Правило</b>Отношение периметров подобных треугольников равно <b>k</b>. Отношение площадей равно <b>k²</b>.</div>
+<div class="widget" id="w-scale"></div>
+<p><b>Почему k²:</b> площадь — это «длина × длина» (½ · основание · высота). Основание выросло в k раз, высота тоже в k раз → площадь в k · k раз.</p>
+<div class="box ex"><b>Пример</b>Стороны увеличили в 3 раза: периметр × 3, площадь × 9. Если площади относятся как 4 : 25, то стороны — как 2 : 5.</div>
+<div class="box err"><b>Самая частая ошибка</b>Увеличить площадь в k раз вместо k². Пицца диаметром 40 см — это не «две пиццы по 20», а <b>четыре</b>!</div>
+<div class="fact">Это правило объясняет, почему гигантов не бывает. Увеличь муравья в 100 раз: сила мышц (пропорциональна площади сечения) вырастет в 10 000 раз, а вес (пропорционален объёму) — в 1 000 000 раз. Ноги подломятся. Это заметил ещё Галилей.</div>`},
+{title:'Прямая, параллельная стороне',lvl:4,html:`
+<div class="box rule"><b>Теорема</b>Прямая, параллельная стороне треугольника и пересекающая две другие стороны, отсекает треугольник, <b>подобный</b> данному.</div>
+<div class="fig">${fPar}</div>
+<p>Почему: DE ∥ AC, поэтому ∠BDE = ∠BAC и ∠BED = ∠BCA (соответственные углы). Угол B общий. По первому признаку ΔDBE ∼ ΔABC с k = BD / BA.</p>
+<div class="box ex"><b>Пример</b>BD = 3, DA = 6, AC = 12. Тогда BA = 9, k = 3 / 9 = ⅓, DE = 12 · ⅓ = 4.</div>
+<div class="box err"><b>Ловушка</b>k = BD / BA, а не BD / DA! Сравниваем треугольники целиком: сторона маленького к <b>всей</b> стороне большого.</div>
+<div class="box tip"><b>Трапеция</b>Диагонали трапеции ABCD (BC ∥ AD) пересекаются в O. Треугольники BOC и DOA подобны (накрест лежащие углы), k = BC / AD. Значит, диагонали делятся точкой O в отношении оснований: <span class="m">BO : OD = CO : OA = BC : AD</span>.</div>`},
+{title:'Пропорциональные отрезки в прямоугольном треугольнике',lvl:5,html:`
+<p>Опустим высоту CH из прямого угла на гипотенузу. Получились <b>три</b> подобных треугольника: большой ABC и два маленьких ACH и CBH (у каждого есть прямой угол и общий острый угол с большим).</p>
+<div class="fig">${fAlt}</div>
+<div class="box rule"><b>Формулы</b>Пусть высота h делит гипотенузу на отрезки p = AH и q = HB (проекции катетов).<br>• <span class="m">h² = p · q</span> — высота есть среднее пропорциональное отрезков гипотенузы;<br>• <span class="m">AC² = c · p</span>, <span class="m">BC² = c · q</span> — катет есть среднее пропорциональное гипотенузы и своей проекции.</div>
+<p>Откуда h² = pq: из ΔACH ∼ ΔCBH: AH/CH = CH/HB, то есть p/h = h/q.</p>
+<div class="box ex"><b>Пример</b>p = 4, q = 9: h = √36 = 6. Гипотенуза 13, катет AC = √(13 · 4) = √52 = 2√13.</div>
+<div class="box err"><b>Ошибка</b>Перепутать проекцию: катет AC «смотрит» на отрезок AH, который прилегает к нему (тот, что у вершины A), а не на HB.</div>`},
+{title:'Свойство биссектрисы',lvl:6,html:`
+<div class="box rule"><b>Свойство биссектрисы треугольника</b>Биссектриса делит противоположную сторону на отрезки, пропорциональные прилежащим сторонам: <span class="m">BD / DC = AB / AC</span>.</div>
+<div class="fig">${fBis}</div>
+<p>Простыми словами: отрезок, который ближе к длинной стороне, длиннее. «Кто больше — тому больше».</p>
+<div class="box ex"><b>Пример</b>AB = 6, AC = 9, BC = 10. BD : DC = 6 : 9 = 2 : 3. Всего 5 частей по 10 / 5 = 2: BD = 4, DC = 6.</div>
+<div class="box err"><b>Ошибка</b>Думать, что биссектриса делит сторону пополам — это делает <b>медиана</b>. Пополам выйдет, только если AB = AC.</div>
+<div class="box tip"><b>Почему так</b>Проведи через C прямую, параллельную биссектрисе, до пересечения с продолжением BA в точке K. Получится равнобедренный треугольник ACK (AK = AC), и по теореме о параллельной прямой BD/DC = BA/AK = AB/AC.</div>`},
+{title:'Тень, столб и пирамида',lvl:7,html:`
+<div class="box rule"><b>Метод тени</b>Солнечные лучи параллельны. Поэтому в один и тот же момент треугольники «предмет — тень — луч» подобны (прямой угол + одинаковый угол наклона лучей): <span class="m">H / L = h / l</span>.</div>
+<div class="fig">${fShadow}</div>
+<div class="widget" id="w-shadow"></div>
+<div class="box ex"><b>Пример</b>Палка 1,5 м даёт тень 2 м, столб — тень 8 м. H = 8 · 1,5 / 2 = 6 м.</div>
+<div class="box tip"><b>Пирамида</b>Тень пирамиды начинается не от центра основания! К видимой тени надо прибавить половину стороны основания — расстояние от центра до края.</div>
+<div class="box tip"><b>Метод зеркала</b>Положи зеркальце на землю и отойди так, чтобы увидеть в нём верхушку дерева. Угол падения равен углу отражения → треугольники подобны: H / (расстояние от зеркала до дерева) = (рост до глаз) / (расстояние от тебя до зеркала).</div>
+<div class="box rule"><b>Масштаб карты</b>Карта — подобная копия местности. Масштаб 1 : 10 000 — это k для длин. Для площадей — k² = 1 : 100 000 000.</div>`},
+{title:'Идеи для задач со звёздочкой',lvl:8,html:`
+<div class="box rule"><b>1. Квадрат, вписанный в треугольник</b>Квадрат стоит на основании a, высота треугольника h. Верхняя сторона квадрата отсекает подобный треугольник с высотой h − x: x / a = (h − x) / h → <span class="m">x = ah / (a + h)</span>.</div>
+<div class="box rule"><b>2. Площади в трапеции</b>Если площади треугольников BOC и AOD равны S₁ и S₂, то боковые треугольники имеют площадь √(S₁S₂) каждый, а вся трапеция — <span class="m">(√S₁ + √S₂)²</span>.</div>
+<div class="box rule"><b>3. Отрезок через точку пересечения диагоналей</b>Отрезок, параллельный основаниям a и b и проходящий через точку пересечения диагоналей, равен <span class="m">2ab / (a + b)</span>.</div>
+<div class="box rule"><b>4. Два столба</b>Столбы высотой a и b, тросы от верха каждого к основанию другого пересекаются на высоте <span class="m">ab / (a + b)</span> — <b>при любом расстоянии</b> между столбами!</div>
+<div class="box tip"><b>Главный приём</b>Ищи «песочные часы» (вертикальные углы + параллельные) и «вложенные» треугольники (общий угол + параллельная прямая). Записывай пропорцию через коэффициент k.</div>`},
+{title:'Шпаргалка',html:`
+<ul class="steps"><li>Подобие: углы равны, стороны пропорциональны, k = A₁B₁ / AB.</li><li>Признаки: два угла; две стороны и угол между ними; три стороны.</li>
+<li>Периметры — k, площади — k².</li><li>Прямая ∥ стороне отсекает подобный треугольник; k = BD / BA.</li>
+<li>h² = pq; катет² = c · проекция.</li><li>Биссектриса: BD / DC = AB / AC.</li><li>Тень: H / L = h / l.</li></ul>`}
+];
+
+const NW=t=>`<span style="white-space:nowrap;font-size:17px">${t}</span>`;
+const symbols={tab:'Формулы',title:'Знаки и формулы темы',rows:[
+['∼','«подобен»','ΔABC ∼ ΔKMN: треугольники одинаковой формы; порядок букв показывает соответствие вершин.','ΔABC ∼ ΔKMN'],
+['k','Коэффициент подобия','Во сколько раз стороны одного треугольника больше сторон другого.','k = KM / AB'],
+[NW('P₂ / P₁ = k'),'Периметры','Отношение периметров равно k.','k = 3 → P × 3'],
+[NW('S₂ / S₁ = k²'),'Площади','Отношение площадей равно квадрату k.','k = 3 → S × 9'],
+[NW('h² = p · q'),'Высота из прямого угла','Квадрат высоты = произведение отрезков гипотенузы.','4 · 9 = 36 → h = 6'],
+[NW('a² = c · a<sub>c</sub>'),'Катет и проекция','Квадрат катета = гипотенуза · проекция этого катета.','c = 25, a<sub>c</sub> = 9 → a = 15'],
+[NW('BD / DC = AB / AC'),'Свойство биссектрисы','Биссектриса делит сторону пропорционально прилежащим сторонам.','6 : 9 = 2 : 3'],
+[NW('H / L = h / l'),'Метод тени','Высоты относятся как длины теней.','1,5/2 = 6/8']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Сначала найди пары равных углов и выпиши соответствие вершин. Пропорцию составляй только из соответственных сторон.</div>`};
+
+/* =====================================================================
+   GENERATORS
+   ===================================================================== */
+/* ===== L0 ===== */
+G(0,()=>CH('Какие треугольники называются подобными?','У которых углы соответственно равны, а сходственные стороны пропорциональны',['У которых равны площади','У которых каждая сторона одного больше стороны другого на одно и то же число','У которых равны периметры'],
+ {short:'Подобие = та же форма: равные углы и пропорциональные стороны.',
+ explain:'Подобные треугольники — «одинаковые по форме»: их углы соответственно равны, а стороны пропорциональны (отличаются в одно и то же <b>число раз</b> k). Равные площади или периметры к форме отношения не имеют. «Больше на одно и то же число» — типичная ошибка: 3, 4, 5 и 5, 6, 7 — разные по форме (первый прямоугольный, второй нет).',
+ explain2:'Представь фотографию и её увеличенную копию: всё растянуто в одинаковое число раз, углы не изменились. Это и есть подобие. А если к каждой стороне «прибавить» 2 см — картинка исказится.'}),{rule:true});
+G(0,()=>CH('ΔABC ∼ ΔA₁B₁C₁. Что такое коэффициент подобия k?','Отношение соответственных сторон: k = A₁B₁ / AB',['Разность соответственных сторон: k = A₁B₁ − AB','Отношение площадей: k = S₁ / S','Отношение периметра к стороне'],
+ {short:'k = A₁B₁/AB = B₁C₁/BC = A₁C₁/AC.',
+ explain:'Коэффициент подобия показывает, <b>во сколько раз</b> стороны одного треугольника больше сходственных сторон другого: k = A₁B₁/AB = B₁C₁/BC = A₁C₁/AC. Разность ничего не говорит о форме. Отношение площадей равно не k, а k².',
+ explain2:'Пример: стороны 3, 4, 5 и 6, 8, 10. 6/3 = 8/4 = 10/5 = 2 — это и есть k. Площади при этом отличаются в 4 раза (k² = 4).'}),{rule:true});
+G(0,()=>{const [a,b,c]=randTri(3,9);const k=pick([1.5,2,2.5,0.5]);const ask=R(0,2);const known=(ask+1)%3;const s=[a,b,c],nm=['BC','AC','AB'],nm1=['B₁C₁','A₁C₁','A₁B₁'];const ans=s[ask]*k;
+ if(!isInt(ans*2)||!isInt(s[known]*k*2))return null;const L1=s.map(String),L2=['','',''];L2[known]=N(s[known]*k);L2[ask]='?';
+ return {type:'num',q:`ΔABC ∼ ΔA₁B₁C₁ (A ↔ A₁, B ↔ B₁, C ↔ C₁). AB = ${c}, BC = ${a}, AC = ${b}, ${nm1[known]} = ${N(s[known]*k)}. Найди ${nm1[ask]}.`,pic:simPair(a,b,c,k,L1,L2),ans,
+ hint:`Сначала найди k = ${nm1[known]} / ${nm[known]}.`,short:`k = ${N(s[known]*k)} / ${s[known]} = ${N(k)}; ${nm1[ask]} = ${s[ask]} · ${N(k)} = ${N(ans)}.`,
+ explain:`Сходственные стороны: ${nm1[known]} ↔ ${nm[known]}, ${nm1[ask]} ↔ ${nm[ask]}.<br>k = ${nm1[known]} / ${nm[known]} = ${N(s[known]*k)} / ${s[known]} = ${N(k)}.<br>${nm1[ask]} = ${nm[ask]} · k = ${s[ask]} · ${N(k)} = <b>${N(ans)}</b>.<div class="box err"><b>Ошибка «прибавить»</b>${nm1[known]} − ${nm[known]} = ${N(s[known]*k-s[known])}, и ${s[ask]} + ${N(s[known]*k-s[known])} = ${N(s[ask]+s[known]*k-s[known])} — неверно: стороны отличаются в одно и то же <b>число раз</b>, а не на одно и то же число.</div>`,
+ explain2:`Через пропорцию: ${nm1[ask]} / ${nm[ask]} = ${nm1[known]} / ${nm[known]}, то есть x / ${s[ask]} = ${N(s[known]*k)} / ${s[known]}. Крест-накрест: x = ${s[ask]} · ${N(s[known]*k)} / ${s[known]} = ${N(ans)}. ${k<1?'Второй треугольник меньше — и ответ меньше '+s[ask]+' ✅.':'Второй треугольник больше — и ответ больше '+s[ask]+' ✅.'}`};});
+G(0,()=>{const n=sample('KMNPRST'.split(''),3);const pairs=[['AB',n[0]+n[1]],['BC',n[1]+n[2]],['AC',n[0]+n[2]]];const q=pick(pairs);
+ return CH(`ΔABC ∼ Δ${n.join('')}. Какая сторона соответствует стороне ${q[0]}?`,q[1],pairs.map(p=>p[1]).filter(x=>x!==q[1]),
+ {short:`Порядок букв: A ↔ ${n[0]}, B ↔ ${n[1]}, C ↔ ${n[2]} → ${q[0]} ↔ ${q[1]}.`,
+ explain:`В записи подобия буквы стоят по парам: A ↔ ${n[0]}, B ↔ ${n[1]}, C ↔ ${n[2]}. Сторона ${q[0]} соединяет вершины ${q[0][0]} и ${q[0][1]}, им соответствуют ${q[1][0]} и ${q[1][1]}. Значит, ${q[0]} ↔ <b>${q[1]}</b>.`,
+ explain2:`Подпиши буквы друг под другом:<br>A B C<br>${n.join(' ')}<br>И «переведи» название стороны по этой табличке: ${q[0][0]} → ${q[1][0]}, ${q[0][1]} → ${q[1][1]}.`});});
+
+/* ===== L1: AA ===== */
+G(1,()=>CH('Как звучит первый признак подобия треугольников?','Если два угла одного треугольника соответственно равны двум углам другого, то треугольники подобны',['Если один угол одного треугольника равен углу другого, то треугольники подобны','Если две стороны одного треугольника равны двум сторонам другого, то треугольники подобны','Если два угла и сторона одного равны двум углам и стороне другого, то треугольники подобны'],
+ {short:'Два угла → подобны (третий угол равен автоматически).',
+ explain:'Первый признак: <b>два угла</b> одного треугольника соответственно равны двум углам другого → треугольники подобны. Одного угла мало (у треугольников с углом 50° может быть очень разная форма). «Два угла и сторона» — это признак <b>равенства</b>, он слишком сильный. «Две стороны равны» — без угла ничего не следует.',
+ explain2:'Проверь себя: углы 40° и 60° задают и третий угол — 80°. Значит, форма треугольника определена полностью, отличаться может только размер. Это и есть подобие.'}),{rule:true});
+G(1,()=>CH('Почему для подобия достаточно равенства <b>двух</b> углов?','Потому что третьи углы тоже равны: сумма углов треугольника 180°',['Потому что стороны тогда равны','Потому что у всех треугольников два угла равны','Это не так: нужны все три угла и стороны'],
+ {short:'∠C = 180° − ∠A − ∠B — одинаково в обоих треугольниках.',
+ explain:'Если ∠A = ∠A₁ и ∠B = ∠B₁, то ∠C = 180° − ∠A − ∠B = 180° − ∠A₁ − ∠B₁ = ∠C₁. Все три угла равны, и треугольники имеют одну и ту же форму. Стороны при этом могут быть разными — поэтому «подобны», а не «равны».',
+ explain2:'Пример: углы 30° и 70° → третий 80°. Кто бы ни нарисовал треугольник с углами 30° и 70°, третий угол у него обязательно 80°.'}),{rule:true});
+G(1,()=>{const a1=R(25,80),b1=R(25,80);const c1=180-a1-b1;if(c1<20)return null;const sim=Math.random()<0.5;let a2,b2;
+ if(sim){const pr=pick([[a1,c1],[b1,c1],[c1,a1],[a1,b1]]);a2=pr[0];b2=pr[1];}else{a2=a1;b2=b1+pick([-10,-5,5,10]);if(180-a2-b2<15||b2===c1||b2===a1)return null;}
+ const c2=180-a2-b2;const s1=[a1,b1,c1].sort((x,y)=>x-y).join(),s2=[a2,b2,c2].sort((x,y)=>x-y).join();const res=s1===s2;
+ return {type:'choice',q:`В ΔABC: ∠A = ${a1}°, ∠B = ${b1}°. В ΔKMN: ∠K = ${a2}°, ∠M = ${b2}°. Подобны ли эти треугольники?`,opts:['Да, подобны','Нет, не подобны'],ans:res?0:1,
+ short:`Третьи углы: ${c1}° и ${c2}°. Наборы углов ${s1.replace(/,/g,'°, ')}° и ${s2.replace(/,/g,'°, ')}° ${res?'совпадают':'разные'}.`,
+ explain:`Найдём третьи углы: ∠C = 180° − ${a1}° − ${b1}° = ${c1}°; ∠N = 180° − ${a2}° − ${b2}° = ${c2}°.<br>Углы ΔABC: ${a1}°, ${b1}°, ${c1}°. Углы ΔKMN: ${a2}°, ${b2}°, ${c2}°.<br>${res?'Наборы одинаковые (пусть и в другом порядке) → по первому признаку треугольники <b>подобны</b>.':'Наборы разные → треугольники <b>не подобны</b>.'}`,
+ explain2:`Совет: не сравнивай углы «по буквам» — ∠A не обязан соответствовать ∠K. Сравнивай <b>наборы</b> всех трёх углов. ${res?'Здесь у обоих '+s1.replace(/,/g,'°, ')+'°.':'Здесь наборы отличаются.'}`};});
+G(1,()=>{const AB=R(6,14),AC=R(6,14);if(AB===AC)return null;const k=pick([0.25,0.5,1/3,2/3,0.75,0.4,0.6]);const AD=k*AC,AE=k*AB;if(!isInt(AD)||!isInt(AE*2))return null;if(AD>=AB-0.5||AE>=AC-0.5)return null;
+ const th=58*D2R;const P={A:[0,0],B:[AB*Math.cos(th),AB*Math.sin(th)],C:[AC,0]};P.D=lerp(P.A,P.B,AD/AB);P.E=lerp(P.A,P.C,AE/AC);
+ const pic=geo({P,poly:[['A','B','C']],seg:[['D','E',{sw:2,col:'var(--accent)'}]],fill:[{pts:['A','D','E'],op:0.3}],ang:[['D','A','E','',{n:2}],['C','A','B','',{n:2}],['A','C','B','',{n:1}]],side:[['A','D',String(AD)],['A','E','?']],maxH:200,W:290});
+ return {type:'num',q:`В ΔABC на сторонах AB и AC взяты точки D и E так, что ∠ADE = ∠ACB. AB = ${AB}, AC = ${AC}, AD = ${AD}. Найди AE.`,pic,ans:AE,
+ hint:'Выпиши пары равных углов: ∠A общий, ∠ADE = ∠ACB. Какие вершины соответствуют?',short:`ΔADE ∼ ΔACB: AE/AB = AD/AC → AE = ${AB} · ${AD} / ${AC} = ${N(AE)}.`,
+ explain:`∠A — общий, ∠ADE = ∠ACB → ΔADE ∼ ΔACB по двум углам. Соответствие: A ↔ A, D ↔ C, E ↔ B.<br>Значит, AD/AC = AE/AB:<br>${AD}/${AC} = AE/${AB} → AE = ${AB} · ${AD} / ${AC} = <b>${N(AE)}</b>.<div class="box err"><b>Ловушка</b>«DE ∥ BC, значит AE/AC = AD/AB» — неверно! Здесь DE не параллельна BC (угол D равен углу <b>C</b>, а не B). Тогда вышло бы AE = ${N(AD*AC/AB)}.</div>`,
+ explain2:`Пиши соответствие по углам: вершина при равном угле в маленьком треугольнике (D) соответствует вершине при том же угле в большом (C). Тогда сторона AD (от общей вершины до D) ↔ AC, а AE ↔ AB. k = ${AD}/${AC}${isInt(AD/AC*100)?' = '+N(AD/AC):''}; AE = ${AB} · k = ${N(AE)}.`};});
+
+/* ===== L2: SAS, SSS ===== */
+G(2,()=>CH('Как звучит второй признак подобия?','Если две стороны одного треугольника пропорциональны двум сторонам другого и углы между этими сторонами равны, то треугольники подобны',['Если две стороны одного треугольника пропорциональны двум сторонам другого, то треугольники подобны','Если две стороны одного треугольника равны двум сторонам другого и есть равный угол, то треугольники подобны','Если две стороны пропорциональны, а углы, противолежащие им, равны, то треугольники подобны'],
+ {short:'Две стороны пропорциональны + угол МЕЖДУ ними равен.',
+ explain:'Второй признак: две стороны пропорциональны <b>и</b> угол, заключённый <b>между</b> ними, равен. Без угла треугольник можно «сложить» по-разному. Угол «сбоку» (противолежащий) не годится — с ним бывают разные треугольники.',
+ explain2:'Представь циркуль: две ножки заданной длины и угол раствора между ними. Он однозначно задаёт треугольник. Увеличим обе ножки в k раз, угол оставим — получим подобный треугольник.'}),{rule:true});
+G(2,()=>CH('Как звучит третий признак подобия?','Если три стороны одного треугольника пропорциональны трём сторонам другого, то треугольники подобны',['Если три стороны одного треугольника больше трёх сторон другого на одно и то же число, то треугольники подобны','Если периметры треугольников пропорциональны, то треугольники подобны','Если три угла одного треугольника пропорциональны трём углам другого, то треугольники подобны'],
+ {short:'Три стороны пропорциональны → подобны.',
+ explain:'Третий признак: <b>все три</b> стороны одного треугольника пропорциональны сторонам другого (a₁/a = b₁/b = c₁/c). «На одно и то же число больше» — не пропорция. Периметры пропорциональны у любых двух треугольников (одно число всегда можно поделить на другое) — это ничего не значит.',
+ explain2:'Проверка на числах: 3, 4, 5 и 6, 8, 10 → 2 = 2 = 2 ✅ подобны. 3, 4, 5 и 4, 5, 6 → 4/3, 5/4, 6/5 — разные, не подобны.'}),{rule:true});
+G(2,()=>{const [a,b,c]=randTri(3,10);const k=pick([1.5,2,2.5,3]);const sim=Math.random()<0.5;let t=[a,b,c].map(x=>x*k);if(!t.every(x=>isInt(x*2)))return null;
+ if(!sim){const i=R(0,2);t[i]+=pick([-1,1]);if(!okTri(t[0],t[1],t[2],0.5))return null;}
+ const s1=[a,b,c].sort((x,y)=>x-y),s2=t.slice().sort((x,y)=>x-y);const r=s2.map((x,i)=>x/s1[i]);const res=r.every(x=>Math.abs(x-r[0])<1e-9);if(res!==sim)return null;
+ const sh=shuffle(t);
+ return {type:'choice',q:`Стороны одного треугольника ${a}, ${b}, ${c}, другого — ${sh.map(N).join(', ')}. Подобны ли треугольники?`,opts:['Да, подобны','Нет, не подобны'],ans:res?0:1,
+ short:`${s2.map((x,i)=>N(x)+'/'+s1[i]).join(', ')} = ${r.map(x=>N(Math.round(x*1000)/1000)).join('; ')} → ${res?'подобны':'не подобны'}.`,
+ explain:`Упорядочим стороны: ${s1.join(' ≤ ')} и ${s2.map(N).join(' ≤ ')}. Делим меньшую на меньшую, среднюю на среднюю, большую на большую:<br>${s2.map((x,i)=>`${N(x)} / ${s1[i]} = ${N(Math.round(x/s1[i]*1000)/1000)}`).join('; ')}.<br>${res?`Все отношения равны (k = ${N(k)}) → по третьему признаку <b>подобны</b>.`:'Отношения разные → <b>не подобны</b>.'}`,
+ explain2:res?`Умножь стороны первого треугольника на ${N(k)}: ${s1.map(x=>N(x*k)).join(', ')} — ровно стороны второго.`:`Если бы треугольники были подобны с k = ${N(r[0])}, вторые стороны были бы ${s1.map(x=>N(Math.round(x*r[0]*100)/100)).join(', ')}. А у нас ${s2.map(N).join(', ')} — одна сторона «выбивается».`};});
+G(2,()=>{const AB=R(8,16),AC=R(8,16);if(AB===AC)return null;const k=pick([0.5,0.25,0.75,1/3,2/3]);const AD=k*AC,AE=k*AB;if(!isInt(AD)||!isInt(AE))return null;if(AD>=AB-1||AE>=AC-1)return null;
+ const BC=R(Math.abs(AB-AC)+2,AB+AC-2);const DE=BC*k;if(!isInt(DE*2))return null;
+ const T=tri3(BC,AC,AB);const P={A:T.A,B:T.B,C:T.C};P.D=lerp(P.A,P.B,AD/AB);P.E=lerp(P.A,P.C,AE/AC);
+ const pic=geo({P,poly:[['A','B','C']],seg:[['D','E',{sw:2,col:'var(--accent)'}]],fill:[{pts:['A','D','E'],op:0.3}],side:[['A','D',String(AD)],['A','E',String(AE),{t:0.5}],['D','E',N(DE),{flip:true}],['B','C','?']],maxH:200,W:290});
+ return {type:'num',q:`В ΔABC точки D ∈ AB и E ∈ AC: AB = ${AB}, AC = ${AC}, AD = ${AD}, AE = ${AE}, DE = ${N(DE)}. Найди BC.`,pic,ans:BC,
+ hint:`Сравни AD/AC и AE/AB. Угол A общий.`,short:`AD/AC = AE/AB = ${N(Math.round(k*1000)/1000)}, угол A общий → ΔADE ∼ ΔACB; BC = DE / k = ${BC}.`,
+ explain:`Проверим пропорцию: AD/AC = ${AD}/${AC} и AE/AB = ${AE}/${AB} — обе дроби равны ${N(Math.round(k*1000)/1000)}${isInt(1/k)?' = 1/'+(1/k):''}. Угол A между этими сторонами общий → по <b>второму признаку</b> ΔADE ∼ ΔACB (D ↔ C, E ↔ B).<br>Тогда DE/CB = k → BC = DE / k = ${N(DE)} / ${N(Math.round(k*1000)/1000)} = <b>${BC}</b>.<div class="box err"><b>Ловушка</b>AD/AB = ${AD}/${AB} ≠ AE/AC = ${AE}/${AC} — «прямое» соответствие не работает, DE не параллельна BC.</div>`,
+ explain2:`Главное — правильно поставить пары: маленькая сторона ${AD} пропорциональна стороне ${AC}, а ${AE} — стороне ${AB} (обе дроби дают одно число k). Сторона DE лежит против угла A в маленьком треугольнике, BC — против угла A в большом. Значит, BC = DE : k = ${BC}.`};});
+
+/* ===== L3: perimeters & areas ===== */
+G(3,()=>CH('Подобные треугольники, коэффициент подобия k. Чему равно отношение их площадей?','k²',['k','2k','√k'],
+ {short:'Площадь — «длина × длина», поэтому k · k = k².',
+ explain:'Площадь треугольника = ½ · основание · высота. В подобном треугольнике и основание, и высота умножаются на k, поэтому площадь умножается на <b>k · k = k²</b>. Отношение периметров — k (периметр — это длина).',
+ explain2:'Нарисуй квадратик 1 × 1 и квадрат 2 × 2: в большом помещается 4 маленьких, а не 2. С треугольниками так же: k = 2 → площадь × 4.'}),{rule:true});
+G(3,()=>CH('Подобные треугольники, коэффициент подобия k. Чему равно отношение их периметров?','k',['k²','2k','1/k'],
+ {short:'Периметр — сумма сторон; каждая умножена на k.',
+ explain:'Периметр — сумма длин сторон. Каждая сторона умножилась на k, значит, и сумма умножилась на <b>k</b>: P₁ = ka + kb + kc = k(a + b + c) = kP. Не путай с площадью (k²).',
+ explain2:'3, 4, 5 → P = 12. Увеличим в 3 раза: 9, 12, 15 → P = 36 = 12 · 3 ✅.'}),{rule:true});
+G(3,()=>{const k=pick([2,3,4,5,1.5,2.5,0.5]);const S=pick([4,6,8,10,12,16,20,24]);const S2=S*k*k;if(!isInt(S2*4))return null;const up=k>1;
+ return {type:'num',q:`Треугольники подобны, сходственные стороны ${up?'второго':'второго'} в ${up?N(k)+' раза больше':N(1/k)+' раза меньше'}, чем у первого. Площадь первого ${S} см². Найди площадь второго (в см²).`,ans:S2,
+ short:`k = ${N(k)}, k² = ${N(k*k)}; ${S} · ${N(k*k)} = ${N(S2)} см².`,
+ explain:`Коэффициент подобия k = ${N(k)}. Площади относятся как k² = ${N(k)}² = ${N(k*k)}.<br>S₂ = ${S} · ${N(k*k)} = <b>${N(S2)} см²</b>.<div class="box err"><b>Ошибка</b>${S} · ${N(k)} = ${N(S*k)} — умножили на k, а не на k².</div>`,
+ explain2:`Представь, что треугольник — плитка. ${up?`При увеличении сторон в ${N(k)} раза в большой треугольник помещается ${N(k*k)} маленьких копий`:`При уменьшении сторон в ${N(1/k)} раза маленький треугольник занимает 1/${N(1/(k*k))} площади`}. Отсюда ${N(S2)} см².`};});
+G(3,()=>{const m=R(1,6),n=R(2,9);if(m>=n||H.gcd(m,n)!==1)return null;const side=m*R(1,4);const S1=m*m,S2=n*n;const mul=R(1,3);const ans=side*n/m;
+ return {type:'num',q:`Площади двух подобных треугольников ${S1*mul} и ${S2*mul}. Сторона меньшего треугольника ${side}. Найди сходственную сторону большего.`,ans,
+ hint:'Отношение площадей = k². Найди k, извлекая корень.',short:`k² = ${S2*mul}/${S1*mul} = ${S2}/${S1} → k = ${n}/${m}; ${side} · ${n}/${m} = ${N(ans)}.`,
+ explain:`k² = S₂ / S₁ = ${S2*mul} / ${S1*mul} = ${S2}/${S1}.<br>k = √(${S2}/${S1}) = ${n}/${m}.<br>Сторона: ${side} · ${n}/${m} = <b>${N(ans)}</b>.<div class="box err"><b>Ошибка</b>${side} · ${S2}/${S1} = ${N(side*S2/S1)} — использовали отношение площадей вместо k. Для сторон нужен корень из него.</div>`,
+ explain2:`Обратная проверка: если стороны относятся как ${m} : ${n}, площади относятся как ${m*m} : ${n*n} = ${S1*mul} : ${S2*mul} ✅.`};});
+G(3,()=>{const v=pick([[40,20],[30,20],[36,24],[45,30],[32,24],[30,15],[42,28]]);const r=(v[0]/v[1])**2;
+ return {type:'num',q:`Пицца диаметром ${v[0]} см и пицца диаметром ${v[1]} см (одинаковой толщины). Во сколько раз больше теста в большой пицце?`,ans:r,
+ hint:'Круги подобны друг другу. Количество теста — это площадь.',short:`k = ${v[0]}/${v[1]} = ${N(v[0]/v[1])}, k² = ${N(r)}.`,
+ explain:`Все круги подобны, k = ${v[0]} / ${v[1]} = ${N(v[0]/v[1])}. Площади (и количество теста) относятся как k² = ${N(v[0]/v[1])}² = <b>${N(r)}</b>.<div class="box err"><b>Ловушка</b>«В ${N(v[0]/v[1])} раза» — так растёт только диаметр. Площадь растёт быстрее.</div>`,
+ explain2:`Проверь формулой площади круга S = πd²/4: ${v[0]}² : ${v[1]}² = ${v[0]**2} : ${v[1]**2} = ${N(r)}. ${r>=2?'Одна большая пицца выгоднее, чем две маленькие!':''}`};});
+
+/* ===== L4: parallel line ===== */
+G(4,()=>CH('Прямая, параллельная стороне AC треугольника ABC, пересекает AB в D и BC в E. Что верно?','ΔDBE ∼ ΔABC и BD/BA = BE/BC = DE/AC',['ΔDBE ∼ ΔABC и BD/DA = DE/AC','ΔDBE = ΔABC','DE = AC / 2 всегда'],
+ {short:'Параллельная прямая отсекает подобный треугольник; k = BD/BA.',
+ explain:'DE ∥ AC → соответственные углы равны: ∠BDE = ∠BAC, ∠BED = ∠BCA, а угол B общий. Значит, <b>ΔDBE ∼ ΔABC</b>, и k = BD/<b>BA</b> = BE/BC = DE/AC. Частая ошибка — делить на кусок DA вместо всей стороны BA. DE = AC/2 только если D — середина (это средняя линия).',
+ explain2:'Числа: BD = 2, DA = 6, AC = 16. BA = 8, k = 2/8 = ¼, DE = 4. Если взять BD/DA = 2/6, получим 16/3 — неверно.'}),{rule:true});
+G(4,()=>{const BD=R(2,8),DA=R(2,10);const AC=(BD+DA)*R(1,3);const DE=AC*BD/(BD+DA);if(!isInt(DE*2))return null;
+ return {type:'num',q:`В треугольнике ABC прямая DE ∥ AC (D ∈ AB, E ∈ BC). BD = ${BD}, DA = ${DA}, AC = ${AC}. Найди DE.`,pic:nestPar(BD/(BD+DA),[['B','D',String(BD)],['D','A',String(DA)],['A','C',String(AC)],['D','E','?',{flip:true}]]),ans:DE,
+ hint:'k = BD / BA, где BA = BD + DA.',short:`k = ${BD}/${BD+DA}; DE = ${AC} · ${BD}/${BD+DA} = ${N(DE)}.`,
+ explain:`ΔDBE ∼ ΔABC (DE ∥ AC). BA = ${BD} + ${DA} = ${BD+DA}, k = BD / BA = ${BD}/${BD+DA}.<br>DE = AC · k = ${AC} · ${BD}/${BD+DA} = <b>${N(DE)}</b>.<div class="box err"><b>Ловушка</b>${AC} · ${BD}/${DA} = ${N(AC*BD/DA)} — поделили на кусок DA, а надо на всю сторону BA.</div>`,
+ explain2:`Пропорция «маленький к большому»: DE/AC = BD/BA. Подставь: DE/${AC} = ${BD}/${BD+DA}. DE = ${N(DE)}. Проверка: DE меньше AC, ведь маленький треугольник внутри большого ✅.`};});
+G(4,()=>{const a=R(2,9),b=R(a+2,16);const d=(a+b)*R(1,3);const AO=d*b/(a+b),CO=d*a/(a+b);const ask=pick(['AO','CO']);const ans=ask==='AO'?AO:CO;
+ const P={A:[0,0],D:[b,0],B:[(b-a)/2+R(-1,1),Math.max(3,b*0.45)]};P.C=[P.B[0]+a,P.B[1]];P.O=inter(P.A,P.C,P.B,P.D);
+ const pic=geo({P,poly:[['A','B','C','D']],seg:[['A','C'],['B','D']],fill:[{pts:['B','O','C'],op:0.35},{pts:['A','O','D'],op:0.2}],side:[['B','C',String(a)],['A','D',String(b)]],maxH:190,W:290});
+ return {type:'num',q:`Основания трапеции ABCD: BC = ${a}, AD = ${b}. Диагональ AC = ${d} пересекает BD в точке O. Найди ${ask}.`,pic,ans,
+ hint:'ΔBOC ∼ ΔDOA. С каким k?',short:`CO : OA = ${a} : ${b}; ${ask} = ${d} · ${ask==='AO'?b:a}/${a+b} = ${N(ans)}.`,
+ explain:`BC ∥ AD → ∠OBC = ∠ODA, ∠OCB = ∠OAD (накрест лежащие). ΔBOC ∼ ΔDOA с k = BC/AD = ${a}/${b}.<br>Значит, CO : OA = ${a} : ${b}. Диагональ AC = ${d} делится на ${a} + ${b} = ${a+b} частей по ${N(d/(a+b))}.<br>${ask} = ${N(d/(a+b))} · ${ask==='AO'?b:a} = <b>${N(ans)}</b>.`,
+ explain2:`«Песочные часы»: верхний треугольник BOC маленький (основание ${a}), нижний AOD большой (основание ${b}). Каждый отрезок диагонали в нижнем треугольнике в ${N(b/a)} раза длиннее, чем в верхнем. AO = ${N(AO)}, CO = ${N(CO)}, вместе ${d} ✅.`};});
+G(4,()=>{const m=R(1,4),n=R(1,5);if(H.gcd(m,n)!==1)return null;const s=m*m*R(1,3);const big=s*(m+n)**2/(m*m);const ans=big-s;
+ return {type:'num',q:`В ΔABC прямая DE ∥ AC (D ∈ AB, E ∈ BC), BD : DA = ${m} : ${n}. Площадь треугольника DBE равна ${s}. Найди площадь трапеции ADEC.`,pic:nestPar(m/(m+n),[]),ans,
+ hint:'k = BD/BA = '+m+'/'+(m+n)+'. Площадь всего треугольника = S(DBE) / k².',short:`S(ABC) = ${s} · (${m+n}/${m})² = ${N(big)}; трапеция ${N(big)} − ${s} = ${N(ans)}.`,
+ explain:`ΔDBE ∼ ΔABC, k = BD/BA = ${m}/${m+n}.<br>Площади относятся как k²: S(ABC) = S(DBE) · (${m+n}/${m})² = ${s} · ${(m+n)**2}/${m*m} = ${N(big)}.<br>Трапеция = весь треугольник − маленький: ${N(big)} − ${s} = <b>${N(ans)}</b>.<div class="box err"><b>Ошибка</b>Считать, что площади делятся как ${m} : ${n} — так делятся отрезки, а площади — как квадраты.</div>`,
+ explain2:`Проверь через «доли»: маленький треугольник — это (${m}/${m+n})² = ${m*m}/${(m+n)**2} всей площади. Трапеция — остальные ${(m+n)**2-m*m}/${(m+n)**2}. Один «кусочек» = ${s}/${m*m} = ${N(s/(m*m))}, трапеция = ${(m+n)**2-m*m} · ${N(s/(m*m))} = ${N(ans)}.`};});
+
+/* ===== L5: right triangle ===== */
+G(5,()=>CH('В прямоугольном треугольнике высота h из прямого угла делит гипотенузу на отрезки p и q. Какое равенство верно?','h² = p · q',['h = p + q','h² = p² + q²','h = p · q'],
+ {short:'Высота — среднее пропорциональное отрезков гипотенузы.',
+ explain:'Высота делит треугольник на два подобных: p/h = h/q, откуда <b>h² = pq</b>. Высота — «среднее пропорциональное» (среднее геометрическое) отрезков. h² = p² + q² — это путаница с Пифагором: p и q не катеты одного треугольника.',
+ explain2:'Пример: p = 4, q = 9 → h = √36 = 6. Проверь Пифагором: катеты маленьких треугольников √(16 + 36) = √52 и √(81 + 36) = √117; 52 + 117 = 169 = 13² = (4 + 9)² ✅.'}),{rule:true});
+G(5,()=>CH('Катет прямоугольного треугольника — среднее пропорциональное между…','гипотенузой и проекцией этого катета на гипотенузу',['двумя отрезками гипотенузы','гипотенузой и другим катетом','высотой и гипотенузой'],
+ {short:'a² = c · a<sub>c</sub> (a<sub>c</sub> — проекция катета a).',
+ explain:'Катет AC и его проекция AH: ΔACH ∼ ΔABC (общий угол A, прямые углы). AH/AC = AC/AB → <b>AC² = AB · AH</b>: квадрат катета = гипотенуза × проекция <b>этого</b> катета. Между двумя отрезками гипотенузы — среднее пропорциональное для <b>высоты</b>.',
+ explain2:'Числа: гипотенуза 25, проекция катета 9 → катет √(25 · 9) = 15. Проверка: треугольник 15, 20, 25 — это 3, 4, 5 × 5 ✅.'}),{rule:true});
+G(5,()=>{const h=R(2,12);const divs=[];for(let p=1;p<h;p++)if((h*h)%p===0&&h*h/p<=5*p)divs.push(p);if(!divs.length)return null;const p=pick(divs),q=h*h/p;if(q>40)return null;
+ const P={C:[0,0]};const c=p+q;P.A=[0,Math.sqrt(c*p)];P.B=[Math.sqrt(c*q),0];P.H=foot(P.C,P.A,P.B);
+ return {type:'num',q:`Высота CH прямоугольного треугольника ABC (∠C = 90°) делит гипотенузу на отрезки AH = ${p} и HB = ${q}. Найди CH.`,pic:geo({P,poly:[['A','B','C']],seg:[['C','H',{dash:true}]],rt:[['C','A','B'],['H','B','C']],side:[['A','H',String(p)],['H','B',String(q)],['C','H','?',{flip:true}]],maxH:200,W:290}),ans:h,
+ short:`CH² = ${p} · ${q} = ${h*h}, CH = ${h}.`,
+ explain:`Высота из прямого угла — среднее пропорциональное отрезков гипотенузы: CH² = AH · HB = ${p} · ${q} = ${h*h}.<br>CH = <b>${h}</b>.`,
+ explain2:`Откуда формула: ΔACH ∼ ΔCBH (у обоих прямой угол, и ∠ACH = ∠B). Пропорция: AH/CH = CH/HB → ${p}/x = x/${q} → x² = ${p*q} → x = ${h}.`};});
+G(5,()=>{const t=pick([[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17],[12,16,20],[15,20,25],[7,24,25]]);const [a,b,c]=t;const pa=a*a/c;if(!isInt(pa*10))return null;
+ const P={C:[0,0],A:[0,a],B:[b,0]};P.H=foot(P.C,P.A,P.B);const inv=Math.random()<0.5;
+ return {type:'num',q:inv?`В прямоугольном треугольнике ABC (∠C = 90°) гипотенуза AB = ${c}, проекция катета AC на гипотенузу AH = ${N(pa)}. Найди катет AC.`:`В прямоугольном треугольнике ABC (∠C = 90°) гипотенуза AB = ${c}, катет AC = ${a}. Найди проекцию AH катета AC на гипотенузу.`,
+ pic:geo({P,poly:[['A','B','C']],seg:[['C','H',{dash:true}]],rt:[['C','A','B'],['H','B','C']],side:inv?[['A','H',N(pa)],['A','C','?']]:[['A','C',String(a)],['A','H','?']],maxH:200,W:290}),ans:inv?a:pa,
+ short:inv?`AC² = ${c} · ${N(pa)} = ${a*a}, AC = ${a}.`:`AH = AC² / AB = ${a*a}/${c} = ${N(pa)}.`,
+ explain:`Катет — среднее пропорциональное гипотенузы и своей проекции: <span class="m">AC² = AB · AH</span>.<br>${inv?`AC² = ${c} · ${N(pa)} = ${a*a}, AC = <b>${a}</b>.`:`AH = AC² / AB = ${a*a} / ${c} = <b>${N(pa)}</b>.`}<div class="box err"><b>Не перепутай</b>Проекция катета AC — отрезок AH, прилегающий к вершине A, а не HB.</div>`,
+ explain2:`Из подобия ΔACH ∼ ΔABC (общий угол A): AH/AC = AC/AB. ${inv?`Значит, AC = √(AB · AH) = √(${c} · ${N(pa)}) = √${a*a} = ${a}`:`AH = AC · AC / AB = ${a} · ${a} / ${c} = ${N(pa)}`}. Проверка: AH меньше AC, как и положено проекции ✅.`};});
+G(5,()=>{const p=R(2,9),k=R(1,4);const h=p*k;const q=h*h/p;if(q>48||q===p)return null;
+ return {type:'num',q:`Высота, проведённая из вершины прямого угла, равна ${h} и отсекает от гипотенузы отрезок ${p}. Найди гипотенузу.`,ans:p+q,
+ hint:'h² = p · q — найди второй отрезок.',short:`q = ${h*h}/${p} = ${q}; c = ${p} + ${q} = ${p+q}.`,
+ explain:`h² = p · q → q = h² / p = ${h*h} / ${p} = ${q}.<br>Гипотенуза = p + q = ${p} + ${q} = <b>${p+q}</b>.`,
+ explain2:`Сначала Пифагор в маленьком треугольнике? Можно, но длинно. Короче — формула h² = pq: ${h}² = ${p} · q, q = ${q}. Не забудь сложить оба отрезка — спрашивают всю гипотенузу.`};});
+
+/* ===== L6: bisector ===== */
+G(6,()=>CH('Биссектриса AD треугольника ABC делит сторону BC на отрезки BD и DC. Какое равенство верно?','BD / DC = AB / AC',['BD = DC','BD / DC = AC / AB','BD / DC = BC / AB'],
+ {short:'Отрезки пропорциональны прилежащим сторонам.',
+ explain:'Свойство биссектрисы: <b>BD/DC = AB/AC</b> — отрезок BD прилегает к стороне AB, DC — к AC. BD = DC — это свойство <b>медианы</b>. Обратная пропорция AC/AB — типичная путаница: ближе к длинной стороне — длинный отрезок.',
+ explain2:'Пример: AB = 3, AC = 6. Биссектриса «прижимается» к короткой стороне: BD : DC = 3 : 6 = 1 : 2.'}),{rule:true});
+G(6,()=>{const AB=R(3,12),AC=R(3,12);if(AB===AC)return null;const g=H.gcd(AB,AC);const parts=(AB+AC)/g;const BC=parts*R(1,3);if(!okTri(AB,AC,BC,1))return null;const BD=BC*AB/(AB+AC);
+ const T=tri3(BC,AC,AB);const P={A:T.A,B:T.B,C:T.C};P.D=lerp(P.B,P.C,AB/(AB+AC));
+ return {type:'num',q:`В треугольнике ABC: AB = ${AB}, AC = ${AC}, BC = ${BC}. AD — биссектриса. Найди BD.`,pic:geo({P,poly:[['A','B','C']],seg:[['A','D',{col:'var(--accent)',sw:2}]],ang:[['A','B','D','',{n:1}],['A','D','C','',{n:1,r:32}]],side:[['A','B',String(AB)],['A','C',String(AC)],['B','D','?']],maxH:190,W:290}),ans:BD,
+ short:`BD : DC = ${AB} : ${AC}; BD = ${BC} · ${AB}/${AB+AC} = ${N(BD)}.`,
+ explain:`BD/DC = AB/AC = ${AB}/${AC}${g>1?` = ${AB/g}/${AC/g}`:''}. Сторона BC делится на ${AB/g} + ${AC/g} = ${parts} частей.<br>Одна часть: ${BC} / ${parts} = ${N(BC/parts)}. BD = ${AB/g} · ${N(BC/parts)} = <b>${N(BD)}</b>.<div class="box err"><b>Ошибка</b>BD = ${N(BC/2)} — это половина, так делит медиана, а не биссектриса.</div>`,
+ explain2:`Через уравнение: BD = x, DC = ${BC} − x. x / (${BC} − x) = ${AB}/${AC} → ${AC}x = ${AB}(${BC} − x) → ${AB+AC}x = ${AB*BC} → x = ${N(BD)}. И проверка: BD прилегает к AB = ${AB}, ${AB<AC?'короткой':'длинной'} стороне — отрезок ${AB<AC?'короче':'длиннее'} DC ✅.`};});
+G(6,()=>{const BD=R(2,9),DC=R(2,9);if(BD===DC)return null;const AB=BD*R(1,3)*(H.gcd(BD,DC)===1?1:1);const AC=AB*DC/BD;if(!isInt(AC*2))return null;if(!okTri(AB,AC,BD+DC,0.8))return null;
+ return {type:'num',q:`AD — биссектриса треугольника ABC. BD = ${BD}, DC = ${DC}, AB = ${AB}. Найди AC.`,ans:AC,
+ short:`AC = AB · DC / BD = ${AB} · ${DC}/${BD} = ${N(AC)}.`,
+ explain:`BD/DC = AB/AC → AC = AB · DC / BD = ${AB} · ${DC} / ${BD} = <b>${N(AC)}</b>.`,
+ explain2:`Отношение отрезков ${BD} : ${DC}. Стороны в том же отношении: AB : AC = ${BD} : ${DC}. AB = ${AB} — это ${N(AB/BD)} · ${BD}, значит AC = ${N(AB/BD)} · ${DC} = ${N(AC)}.`};});
+G(6,()=>{const AB=R(4,12),AC=R(4,12);if(AB===AC)return null;const P2=AB+AC;const BC=R(Math.abs(AB-AC)+2,P2-2);const ans=BC*AC/(AB+AC);if(!isInt(ans*2))return null;
+ return {type:'num',q:`Периметр треугольника ABC равен ${AB+AC+BC}, BC = ${BC}, AB : AC = ${AB} : ${AC}. AD — биссектриса. Найди DC.`,ans,
+ hint:'Сначала найди AB и AC (их сумма = P − BC).',short:`AB + AC = ${P2}: AB = ${AB}, AC = ${AC}; DC = ${BC} · ${AC}/${P2} = ${N(ans)}.`,
+ explain:`AB + AC = ${AB+AC+BC} − ${BC} = ${P2}. При отношении ${AB} : ${AC} это ровно AB = ${AB}, AC = ${AC}.<br>По свойству биссектрисы BD : DC = AB : AC = ${AB} : ${AC}.<br>DC = ${BC} · ${AC}/${P2} = <b>${N(ans)}</b>.`,
+ explain2:`Хитрость: на самом деле AB и AC не нужны — достаточно их отношения ${AB} : ${AC}. BC делится в том же отношении: всего ${P2} частей, на DC приходится ${AC}. DC = ${BC} · ${AC} / ${P2} = ${N(ans)}.`};});
+
+/* ===== L7: application ===== */
+G(7,()=>CH('Почему по теням можно найти высоту дерева?','Солнечные лучи параллельны, поэтому треугольники «предмет — тень» подобны по двум углам',['Потому что тень всегда равна высоте предмета','Потому что треугольники «предмет — тень» равны','Потому что тень в 2 раза длиннее предмета'],
+ {short:'Прямой угол + одинаковый наклон лучей → подобие по первому признаку.',
+ explain:'В один момент все солнечные лучи падают под одним углом (они параллельны). Предмет стоит вертикально — прямой угол с землёй. Два угла равны → треугольники «предмет — тень — луч» <b>подобны</b>, и H/L = h/l. Тень равна высоте только в особый момент (когда Солнце на 45°) — им и воспользовался Фалес.',
+ explain2:'Палка 1 м даёт тень 1,5 м. Значит, сейчас у всего вокруг тень в 1,5 раза длиннее высоты. Тень дерева 12 м → дерево 12 / 1,5 = 8 м.'}),{rule:true});
+G(7,()=>{const h=pick([1,1.5,2]),l=pick([1.2,2,2.5,3,0.8,1.6]);const H0=R(3,Math.floor(5*h));const L=H0*l/h;if(!isInt(L*10))return null;
+ return {type:'num',q:`Палка высотой ${N(h)} м отбрасывает тень ${N(l)} м. В то же время тень от фонарного столба ${N(L)} м. Найди высоту столба (в м).`,pic:shadowFig(H0,L,h,l,['?',N(L)+' м',N(h)+' м',N(l)+' м']),ans:H0,
+ short:`H = ${N(L)} · ${N(h)} / ${N(l)} = ${H0} м.`,
+ explain:`Лучи параллельны → треугольники подобны: H / ${N(L)} = ${N(h)} / ${N(l)}.<br>H = ${N(L)} · ${N(h)} / ${N(l)} = <b>${H0} м</b>.`,
+ explain2:`Посмотри, во сколько раз тень столба длиннее тени палки: ${N(L)} / ${N(l)} = ${N(L/l)}. Во столько же раз столб выше палки: ${N(h)} · ${N(L/l)} = ${H0} м.`};});
+G(7,()=>{const a=pick([230,220,200,180,150]);const half=a/2;const stick=pick([1,2]);const sh=pick([1.5,2,2.5,3,4]);const H0=R(70,146);const shadow=H0*sh/stick-half;if(shadow<10||!isInt(shadow*10))return null;
+ return {type:'num',q:`Как Фалес: сторона квадратного основания пирамиды ${a} м. От края основания тень пирамиды тянется ещё на ${N(shadow)} м (тень направлена перпендикулярно стороне). В это время палка длиной ${stick} м даёт тень ${N(sh)} м. Найди высоту пирамиды (в м).`,ans:H0,
+ hint:'Вершина пирамиды — над центром основания. От центра до края половина стороны.',short:`Полная тень ${N(half)} + ${N(shadow)} = ${N(half+shadow)}; H = ${N(half+shadow)} · ${stick}/${N(sh)} = ${H0} м.`,
+ explain:`Вершина пирамиды находится над <b>центром</b> основания, поэтому «тень от вершины» отсчитывается от центра: L = ${N(half)} + ${N(shadow)} = ${N(half+shadow)} м.<br>Подобие: H / L = ${stick} / ${N(sh)} → H = ${N(half+shadow)} · ${stick} / ${N(sh)} = <b>${H0} м</b>.<div class="box err"><b>Ловушка</b>Взять только видимую тень ${N(shadow)} м — получится ${N(Math.round(shadow*stick/sh*10)/10)} м, слишком мало.</div>`,
+ explain2:`Представь пирамиду сбоку: это треугольник, вершина над серединой основания. Луч от вершины падает на землю в ${N(half+shadow)} м от точки под вершиной. Палка: на каждый метр высоты — ${N(sh/stick)} м тени. Значит, высота = ${N(half+shadow)} : ${N(sh/stick)} = ${H0} м.`};});
+G(7,()=>{const e=pick([1.5,1.6,1.7]);const d=pick([1,1.5,2,2.5]);const D=R(5,20);const H0=D*e/d;if(!isInt(H0*10))return null;
+ return {type:'num',q:`Артём положил зеркальце на землю в ${D} м от дерева и отошёл от зеркала на ${N(d)} м — так, что увидел в нём верхушку дерева. Его глаза на высоте ${N(e)} м. Найди высоту дерева (в м).`,ans:H0,
+ hint:'Угол падения равен углу отражения — получаются два подобных прямоугольных треугольника.',short:`H / ${D} = ${N(e)} / ${N(d)} → H = ${N(H0)} м.`,
+ explain:`Луч от верхушки отражается в зеркале и попадает в глаз; углы луча с землёй по обе стороны зеркала равны. Плюс прямые углы у дерева и у Артёма → треугольники подобны.<br>H / ${D} = ${N(e)} / ${N(d)} → H = ${D} · ${N(e)} / ${N(d)} = <b>${N(H0)} м</b>.`,
+ explain2:`Отношение «высота : расстояние до зеркала» одинаково для Артёма и дерева: у Артёма ${N(e)} : ${N(d)} = ${N(e/d)}. У дерева ${D} м до зеркала → высота ${D} · ${N(e/d)} = ${N(H0)} м.`};});
+G(7,()=>{const sc=pick([1000,2000,5000,10000]);const sMap=pick([2,3,4,5,6,8]);const real=sMap*sc*sc/10000;const unit=sc>=10000?'га':'м²';const ans=unit==='га'?real/10000:real;
+ return {type:'num',q:`На карте масштаба 1 : ${NN(sc)} участок занимает ${sMap} см². Какова его настоящая площадь в ${unit}?`,ans,
+ hint:'Масштаб — это k для длин. Для площадей нужен k².',short:`${sMap} · ${NN(sc)}² см² = ${NN(real)} м²${unit==='га'?' = '+N(ans)+' га':''}.`,
+ explain:`1 см на карте = ${NN(sc)} см = ${N(sc/100)} м на местности. Тогда 1 см² на карте = ${N(sc/100)} · ${N(sc/100)} = ${NN(sc*sc/10000)} м².<br>${sMap} см² → ${sMap} · ${NN(sc*sc/10000)} = ${NN(real)} м²${unit==='га'?` = ${N(ans)} га (1 га = 10 000 м²)`:''}. Ответ: <b>${N(ans)}</b>.<div class="box err"><b>Ловушка</b>${sMap} · ${NN(sc)} — умножили на масштаб один раз, как для длины.</div>`,
+ explain2:`Квадратик 1 × 1 см на карте — это квадрат ${N(sc/100)} × ${N(sc/100)} м на местности, его площадь ${NN(sc*sc/10000)} м². Таких квадратиков ${sMap}.`};});
+
+/* ===== L8: ★ ===== */
+G(8,()=>CH('Диагонали трапеции ABCD (BC ∥ AD) пересекаются в O. Какое утверждение верно?','ΔBOC ∼ ΔDOA, и BO : OD = BC : AD',['ΔBOC = ΔDOA','ΔBOC ∼ ΔDOA, и BO : OD = AD : BC','ΔAOB ∼ ΔCOD всегда'],
+ {short:'«Песочные часы»: накрест лежащие углы → подобие с k = BC/AD.',
+ explain:'BC ∥ AD, поэтому ∠OBC = ∠ODA и ∠OCB = ∠OAD (накрест лежащие). По двум углам <b>ΔBOC ∼ ΔDOA</b>, сходственные стороны: BO ↔ DO, BC ↔ DA. Значит, <b>BO : OD = BC : AD</b> — диагонали делятся в отношении оснований. Боковые треугольники AOB и COD в общем случае не подобны, зато у них равные площади.',
+ explain2:'Числа: BC = 3, AD = 6. Тогда каждый отрезок диагонали у короткого основания вдвое короче, чем у длинного: BO : OD = 1 : 2. Этот приём — ключ к большинству олимпиадных задач про трапецию.'}),{rule:true,star:true});
+G(8,()=>{const v=pick([[12,6],[10,15],[20,5],[30,20],[6,3],[14,35],[24,12],[18,9],[28,21],[36,12]]);const [a,h]=v;const x=a*h/(a+h);
+ const P={A:[0,0],C:[a,0],B:[a*0.38,h]};const L=lerp(P.A,P.B,x/h),Rr=lerp(P.C,P.B,x/h);const s0=L[0];P.M=[s0,0];P.N=[s0+x,0];P.Q=[s0+x,x];P.L=[s0,x];
+ if(Math.abs(Rr[0]-(s0+x))>1e-6)return null;
+ return {type:'num',q:`В треугольник с основанием ${a} и высотой ${h} вписан квадрат: две его вершины лежат на основании, а две другие — на боковых сторонах. Найди сторону квадрата.`,ans:x,
+ pic:geo({P,poly:[['A','B','C'],['M','L','Q','N']],fill:[{pts:['M','L','Q','N'],op:0.35}],side:[['A','C',String(a)]],lab:['A','B','C'],maxH:190,W:280}),
+ hint:'Верхняя сторона квадрата отсекает от треугольника маленький подобный треугольник. Какая у него высота?',short:`x/${a} = (${h} − x)/${h} → x = ${a}·${h}/(${a}+${h}) = ${N(x)}.`,
+ explain:`Пусть сторона квадрата x. Верхняя сторона квадрата параллельна основанию и отсекает треугольник, подобный исходному. Его основание x, высота ${h} − x.<br>x / ${a} = (${h} − x) / ${h} → ${h}x = ${a}(${h} − x) → ${a+h}x = ${a*h} → x = <b>${N(x)}</b>.`,
+ explain2:`Формула-шпаргалка: x = ah / (a + h) = ${a} · ${h} / ${a+h} = ${N(x)}. Проверка: маленький треугольник с основанием ${N(x)} и высотой ${N(h-x)}; отношения ${N(x)}/${a} = ${N(Math.round(x/a*1000)/1000)} и ${N(h-x)}/${h} = ${N(Math.round((h-x)/h*1000)/1000)} равны ✅.`};},{star:true});
+G(8,()=>{const p=R(1,6),q=R(2,9);if(p>=q)return null;const S1=p*p,S2=q*q;const ans=(p+q)**2;
+ return {type:'num',q:`Диагонали трапеции ABCD (BC ∥ AD) пересекаются в точке O. Площадь треугольника BOC равна ${S1}, треугольника AOD — ${S2}. Найди площадь трапеции.`,ans,
+ hint:'Отношение BO : OD = √(S₁ : S₂). Треугольники ABO и BOC имеют общую высоту из B… из A.',short:`(√${S1} + √${S2})² = (${p} + ${q})² = ${ans}.`,
+ explain:`ΔBOC ∼ ΔDOA, k² = ${S1}/${S2} → k = ${p}/${q}, то есть BO : OD = ${p} : ${q}.<br>Треугольники ABO и AOD имеют общую высоту из A, поэтому S(ABO) : S(AOD) = BO : OD = ${p} : ${q} → S(ABO) = ${S2} · ${p}/${q} = ${p*q}. Так же S(COD) = ${p*q}.<br>S = ${S1} + ${S2} + ${p*q} + ${p*q} = <b>${ans}</b> = (√${S1} + √${S2})².`,
+ explain2:`Красивый факт: боковые треугольники равновелики, и каждый равен √(S₁ · S₂) = √${S1*S2} = ${p*q}. Тогда сумма S₁ + 2√(S₁S₂) + S₂ — это полный квадрат (√S₁ + √S₂)² = ${ans}.`};},{star:true});
+G(8,()=>{const a=R(1,5),b=R(1,5),c=R(1,5);const ans=(a+b+c)**2;
+ return {type:'num',q:`Через точку внутри треугольника провели три прямые, параллельные его сторонам. Они разрезали треугольник на 6 частей, три из которых — треугольники с площадями ${a*a}, ${b*b} и ${c*c}. Найди площадь исходного треугольника.`,ans,
+ hint:'Каждый маленький треугольник подобен большому. Стороны маленьких «складываются» в сторону большого.',short:`(√${a*a} + √${b*b} + √${c*c})² = ${a+b+c}² = ${ans}.`,
+ explain:`Каждый из трёх маленьких треугольников подобен исходному (стороны параллельны). Пусть площадь исходного S, тогда коэффициенты подобия √(${a*a}/S), √(${b*b}/S), √(${c*c}/S).<br>На одной стороне большого треугольника основания трёх маленьких треугольников (с учётом параллелограммов) в сумме дают всю сторону, поэтому k₁ + k₂ + k₃ = 1:<br>(${a} + ${b} + ${c}) / √S = 1 → √S = ${a+b+c}, S = <b>${ans}</b>.`,
+ explain2:`Проверь на частном случае: точка — центр тяжести, все три треугольника равны, площадь каждого S/9, √ = √S/3. Сумма трёх корней = √S ✅. Здесь √S = ${a} + ${b} + ${c} = ${a+b+c}.`};},{star:true});
+G(8,()=>{const H0=pick([4,4.5,5,6]),h=pick([1.5,1.6,1.8,2]);const v=pick([1,1.2,1.5,2]);const ans=v*H0/(H0-h);if(!isInt(ans*100))return null;
+ return {type:'num',q:`Под фонарём высотой ${N(H0)} м Артём (рост ${N(h)} м) уходит от столба со скоростью ${N(v)} м/с. С какой скоростью движется конец его тени (в м/с)?`,ans,
+ hint:'Пусть Артём на расстоянии x от столба, конец тени на расстоянии y. Из подобия найди y через x.',short:`y = x · ${N(H0)}/(${N(H0)} − ${N(h)}); скорость ${N(v)} · ${N(H0)}/${N(H0-h)} = ${N(ans)} м/с.`,
+ explain:`Пусть Артём на расстоянии x от столба, конец тени — на расстоянии y. Треугольники «фонарь — основание столба — конец тени» и «голова — ноги — конец тени» подобны:<br>${N(H0)} / y = ${N(h)} / (y − x) → ${N(H0)}(y − x) = ${N(h)}y → y = ${N(H0)}x / ${N(H0-h)}.<br>y пропорционально x с коэффициентом ${N(Math.round(H0/(H0-h)*1000)/1000)}, значит, и скорость конца тени в столько же раз больше: ${N(v)} · ${N(H0)}/${N(H0-h)} = <b>${N(ans)} м/с</b>.`,
+ explain2:`Интересно, что ответ не зависит от того, где сейчас Артём: тень растёт равномерно. Через 1 с он в ${N(v)} м от старта, конец тени — в ${N(ans)} м. Скорость самой тени (её длины) = ${N(ans)} − ${N(v)} = ${N(ans-v)} м/с.`};},{star:true});
+G(8,()=>{const [a,b,c]=randTri(4,12);const g=H.gcd(b+c,a);if(!isInt((b+c)/a*100))return null;
+ return {type:'num',q:`В треугольнике ABC: BC = ${a}, AC = ${b}, AB = ${c}. Биссектрисы пересекаются в точке I. В каком отношении I делит биссектрису AD, считая от вершины A? Ответ — число AI : ID (можно дробью, например 7/3).`,ans:(b+c)/a,
+ hint:'BD найди по свойству биссектрисы AD. Потом посмотри на биссектрису BI в треугольнике ABD.',short:`BD = ${a}·${c}/${b+c}; AI : ID = AB : BD = (b + c) : a = ${b+c} : ${a} = ${N((b+c)/a)}.`,
+ explain:`1) AD — биссектриса: BD = BC · AB/(AB + AC) = ${a} · ${c}/${b+c}.<br>2) В треугольнике ABD отрезок BI — биссектриса угла B. По её свойству AI : ID = AB : BD = ${c} : (${a}·${c}/${b+c}) = ${b+c} : ${a}.<br>AI : ID = (b + c) : a = ${(b+c)/g} : ${a/g} = <b>${N((b+c)/a)}</b>.`,
+ explain2:`Запомни красивую формулу: центр вписанной окружности делит биссектрису из A в отношении (b + c) : a — сумма прилежащих сторон к противолежащей. Здесь (${b} + ${c}) : ${a}.`};},{star:true});
+G(8,()=>{const v=pick([[3,6],[4,12],[6,12],[10,15],[12,20],[6,10],[4,6],[12,24],[20,30],[6,9],[9,18]]);const [a,b]=shuffle(v);const ans=a*b/(a+b);const d=Math.round(Math.max(a,b)*(0.9+Math.random()*0.5));
+ const P={A:[0,0],B:[d,0],C:[0,a],D:[d,b]};P.X=inter(P.C,P.B,P.A,P.D);P.Y=[P.X[0],0];
+ return {type:'num',q:`Два вертикальных столба высотой ${a} м и ${b} м стоят на расстоянии ${d} м. От верха каждого столба к основанию другого натянуты тросы. На какой высоте (в м) тросы пересекаются?`,ans,
+ pic:geo({P,seg:[['A','C',{sw:3}],['B','D',{sw:3}],['C','B',{col:'var(--accent)'}],['A','D',{col:'var(--accent)'}],['X','Y',{dash:true}],[[-0.6,0],[d+0.6,0],{col:'var(--muted)'}]],extra:[[-0.6,0],[d+0.6,0]],side:[['A','C',a+' м',{flip:true}],['B','D',b+' м'],['X','Y','?',{flip:true}]],lab:['X'],maxH:200,W:260}),
+ hint:'Обозначь высоту x, а точку под пересечением — Y. Запиши два подобия: x/a и x/b.',short:`x/${a} + x/${b} = 1 → x = ${a}·${b}/(${a}+${b}) = ${N(ans)} м.`,
+ explain:`Пусть X — точка пересечения на высоте x, Y — точка земли под ней. AY = m, YB = n, m + n = ${d}.<br>Из подобия (трос от верха ${b}-метрового столба): x / ${b} = m / ${d}. Из второго подобия: x / ${a} = n / ${d}.<br>Сложим: x/${b} + x/${a} = (m + n)/${d} = 1 → x = ${a}·${b}/(${a} + ${b}) = <b>${N(ans)} м</b>.`,
+ explain2:`Чудо: расстояние ${d} м сократилось! Столбы можно раздвинуть хоть на километр — тросы всё равно пересекутся на высоте ${N(ans)} м. Формула: 1/x = 1/${a} + 1/${b}.`};},{star:true});
+G(8,()=>{const v=pick([[3,6],[4,12],[6,12],[10,15],[6,30],[2,6],[12,24],[5,20],[9,18]]);const [a,b]=v;const ans=2*a*b/(a+b);
+ const P={A:[0,0],D:[b,0],B:[(b-a)/2-0.5,b*0.5]};P.C=[P.B[0]+a,P.B[1]];P.O=inter(P.A,P.C,P.B,P.D);const y=P.O[1];P.M=inter(P.A,P.B,[0,y],[1,y]);P.N=inter(P.D,P.C,[0,y],[1,y]);
+ return {type:'num',q:`Основания трапеции ${a} и ${b}. Через точку пересечения диагоналей проведён отрезок, параллельный основаниям, с концами на боковых сторонах. Найди его длину.`,ans,
+ pic:geo({P,poly:[['A','B','C','D']],seg:[['A','C',{col:'var(--muted)'}],['B','D',{col:'var(--muted)'}],['M','N',{sw:2.4,col:'var(--accent)'}]],side:[['B','C',String(a)],['A','D',String(b)]],lab:['A','B','C','D','O','M','N'],maxH:190,W:280}),
+ hint:'MO — часть треугольника ABD, параллельная AD. Найди MO/AD через BO/BD.',short:`MO = ON = ${a}·${b}/(${a}+${b}) = ${N(ans/2)}; MN = ${N(ans)}.`,
+ explain:`BO : OD = ${a} : ${b} (подобие ΔBOC и ΔDOA), значит BO/BD = ${a}/${a+b}.<br>В треугольнике ABD отрезок MO ∥ AD: MO/AD = BO/BD → MO = ${b} · ${a}/${a+b} = ${N(ans/2)}.<br>Аналогично в треугольнике ACD: ON = ${N(ans/2)}.<br>MN = 2ab/(a + b) = <b>${N(ans)}</b>.`,
+ explain2:`Это «среднее гармоническое» оснований: 2 · ${a} · ${b} / (${a} + ${b}) = ${N(ans)}. Оно всегда меньше средней линии (${N((a+b)/2)}). И O — середина отрезка MN, что тоже красиво.`};},{star:true});
+
+/* =====================================================================
+   WIDGETS
+   ===================================================================== */
+function onTheory(root){
+  const w=root.querySelector('#w-scale');
+  if(w){w.innerHTML=`<label>k = <output id="wsk">2</output><input type="range" id="wsK" min="0.5" max="3" step="0.25" value="2"></label><div id="wsS" style="display:flex;justify-content:center"></div><div id="wsO" class="small" style="text-align:center"></div>`;
+    const K=w.querySelector('#wsK');const draw=()=>{const k=+K.value;w.querySelector('#wsk').textContent=N(k);const T=tri3(4,6,5);const u=17,ox=12,H0=T.B[1]*3*u+24;const p=(q,s)=>`${(ox+q[0]*s*u).toFixed(1)},${(H0-12-q[1]*s*u).toFixed(1)}`;
+      const poly=(s,f,op)=>`<polygon points="${p(T.A,s)} ${p(T.B,s)} ${p(T.C,s)}" fill="${f}" fill-opacity="${op}" stroke="var(--fig)" stroke-width="2"/>`;
+      w.querySelector('#wsS').innerHTML=`<svg viewBox="0 0 330 ${H0}" width="330" role="img" aria-label="Подобные треугольники" style="font-family:system-ui,sans-serif">${poly(k,'var(--hl)',0.35)}${poly(1,'var(--accent)',0.35)}</svg>`;
+      w.querySelector('#wsO').innerHTML=`Стороны: 5, 4, 6 → <span class="out">${N(5*k)}, ${N(4*k)}, ${N(6*k)}</span>. Периметр: 15 → ${N(15*k)} (× ${N(k)}). Площадь: × <span class="out">${N(k*k)}</span> (= ${N(k)}²).`;};
+    K.oninput=draw;draw();}
+  const s=root.querySelector('#w-shadow');
+  if(s){s.innerHTML=`<label>Высота Солнца: <output id="wha">45</output>°<input type="range" id="whA" min="20" max="70" step="1" value="45"></label><div id="whS" style="display:flex;justify-content:center"></div><div id="whO" class="small" style="text-align:center"></div>`;
+    const A=s.querySelector('#whA');const draw=()=>{const al=+A.value;s.querySelector('#wha').textContent=al;const t=Math.tan(al*D2R);const Hp=6,hp=1.8;const L=Hp/t,l=hp/t;const W=330,Hh=170;const sc=Math.min((W-200)/(L),120/Hp);
+      const gy=Hh-20,x1=72,x2=x1+L*sc+40;const ln=(a,b,c,d,st)=>`<line x1="${a.toFixed(1)}" y1="${b.toFixed(1)}" x2="${c.toFixed(1)}" y2="${d.toFixed(1)}" ${st}/>`;
+      let o=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" role="img" aria-label="Тени" style="font-family:system-ui,sans-serif">`+ln(5,gy,W-5,gy,'stroke="var(--muted)" stroke-width="2"');
+      o+=ln(x1,gy,x1,gy-Hp*sc,'stroke="var(--fig)" stroke-width="4"')+ln(x1,gy-Hp*sc,x1+L*sc,gy,'stroke="var(--hl)" stroke-width="2" stroke-dasharray="6 4"')+ln(x1,gy,x1+L*sc,gy,'stroke="var(--fig)" stroke-width="5" stroke-opacity=".45"');
+      o+=ln(x2,gy,x2,gy-hp*sc,'stroke="var(--accent)" stroke-width="4"')+ln(x2,gy-hp*sc,x2+l*sc,gy,'stroke="var(--hl)" stroke-width="2" stroke-dasharray="6 4"')+ln(x2,gy,x2+l*sc,gy,'stroke="var(--accent)" stroke-width="5" stroke-opacity=".45"');
+      o+=`<text x="${x1-8}" y="${gy-Hp*sc/2+4}" text-anchor="end" font-size="13" fill="var(--ink)">столб 6 м</text><text x="${x2-8}" y="${gy-hp*sc/2+4}" text-anchor="end" font-size="13" fill="var(--ink)">ты 1,8 м</text></svg>`;
+      s.querySelector('#whS').innerHTML=o;s.querySelector('#whO').innerHTML=`Тень столба <span class="out">${N(Math.round(L*100)/100)} м</span>, твоя тень <span class="out">${N(Math.round(l*100)/100)} м</span>. Отношения: 6 / ${N(Math.round(L*100)/100)} = 1,8 / ${N(Math.round(l*100)/100)} = <span class="out">${N(Math.round(t*100)/100)}</span>.`;};
+    A.oninput=draw;draw();}
+}
+
+window.TOPIC={id:'g8_similarity',title:'Подобные треугольники',subtitle:'Геометрия · 8 класс',
+intro:`<p>Подобные треугольники — одинаковые по форме, разные по размеру. Здесь: определение и коэффициент подобия, три признака, почему площади меняются в k² раз, отрезки в прямоугольном треугольнике (h² = pq), свойство биссектрисы и как Фалес измерил пирамиду её тенью. В конце — олимпиадные задачи.</p>`,
+theory,symbols,figs:{},onTheory,
+levels:['Определение подобия','Первый признак: два угла','Второй и третий признаки','Периметры и площади','Прямая, параллельная стороне','Прямоугольный треугольник: h² = pq','Свойство биссектрисы','Тень, столб, пирамида, карта','★ Олимпиадные задачи'],
+gens};
+})();
