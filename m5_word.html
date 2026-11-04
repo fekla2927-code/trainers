@@ -1,0 +1,1793 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Текстовые задачи — тренажёр</title>
+<style>:root{
+  --bg:#f6f4ef;--card:#ffffff;--ink:#1f2328;--muted:#5d6470;--line:#e2ded5;
+  --accent:#3d5afe;--accent-soft:#e8ecff;--accent-ink:#1a2a9c;
+  --ok:#1e7d4f;--ok-soft:#e3f4ea;--bad:#b3261e;--bad-soft:#fbe9e7;
+  --warn:#8a5a00;--warn-soft:#fff3d6;--hl:#f2a623;--fig:#33415c;
+  --radius:14px;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+    --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+    --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+    --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;
+    --shadow:none;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;--card:#1e2128;--ink:#e9eaee;--muted:#a3a9b5;--line:#30343d;
+  --accent:#8c9eff;--accent-soft:#252b48;--accent-ink:#c5cdff;
+  --ok:#6fd39b;--ok-soft:#173226;--bad:#ff8a80;--bad-soft:#3a1d1b;
+  --warn:#ffcc66;--warn-soft:#3a3018;--hl:#f2a623;--fig:#c9d1e4;--shadow:none;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{font-weight:700;font-size:18px;margin-right:auto}
+.brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:15px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) nav.tabs button[aria-selected="true"]{color:#111}}
+section.view{display:none;padding-top:20px}
+section.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+h1{font-size:26px;line-height:1.25;margin:4px 0 12px}
+h2{font-size:21px;line-height:1.3;margin:0 0 10px}
+h3{font-size:18px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.theory h2{display:flex;gap:10px;align-items:baseline}
+.theory h2 .n{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-size:15px}
+.m,.math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.08em;white-space:nowrap}
+.box{border-radius:10px;padding:12px 14px;margin:10px 0}
+.box.rule{background:var(--accent-soft);color:var(--ink);border-left:4px solid var(--accent)}
+.box.tip{background:var(--warn-soft);border-left:4px solid var(--hl)}
+.box.err{background:var(--bad-soft);border-left:4px solid var(--bad)}
+.box.ex{background:transparent;border:1px dashed var(--line)}
+.box>b:first-child{display:block;margin-bottom:2px}
+.fig{display:flex;justify-content:center;margin:10px 0;overflow-x:auto}
+.fig svg{max-width:100%;height:auto}
+.figrow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.figrow .fig{flex:1 1 220px;flex-direction:column;align-items:center;margin:0}
+.figrow .cap{font-size:14px;color:var(--muted);text-align:center}
+table.sym{width:100%;border-collapse:collapse;font-size:16px}
+table.sym th,table.sym td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}
+table.sym th{font-size:13px;color:var(--muted);font-weight:600}
+table.sym td.s{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:24px;text-align:center;width:70px;color:var(--accent-ink)}
+@media (max-width:600px){table.sym thead{display:none}table.sym tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}table.sym td{display:block;border:0;padding:2px 4px}table.sym td.s{text-align:left;width:auto}}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.levels button{text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.levels button:hover{border-color:var(--accent)}
+.levels button span{display:block;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:11px 18px;border-radius:10px;cursor:pointer}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#111}}
+.btn.ghost{background:transparent;color:var(--accent-ink);border:1px solid var(--line)}
+.btn.warn{background:var(--hl);color:#2a1a00}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.lvl-tag{display:inline-block;font-size:13px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.lvl-tag.re{background:var(--warn-soft);color:var(--warn)}
+.q{font-size:19px;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opts.pics{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:inherit;font-size:17px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:14px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.opts.pics .opt{flex-direction:column;align-items:stretch}
+.opts.pics .opt svg{width:100%;height:auto}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 220px;min-width:0;font:inherit;font-size:19px;padding:11px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.keys button{font:inherit;font-size:17px;min-width:42px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.small{font-size:14px;color:var(--muted)}
+.errmsg{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:16px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.alt{background:var(--warn-soft);border:1px solid var(--hl)}
+.fb h3{margin:0 0 6px}
+.fb .ans{font-weight:600;margin-bottom:8px}
+.understand{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.understand label{display:block;font-weight:600;margin-bottom:6px}
+.hint{margin-top:10px}
+.score{font-size:40px;font-weight:800;color:var(--accent-ink)}
+.res-list{list-style:none;padding:0;margin:10px 0}
+.res-list li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ok-t{color:var(--ok);font-weight:600}.bad-t{color:var(--bad);font-weight:600}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;line-height:1.1}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.sqrt{white-space:nowrap}
+.sqrt>span{border-top:1.5px solid currentColor;padding:0 2px;margin-left:1px}
+.steps{margin:6px 0 6px 0;padding-left:22px}
+.steps li{margin-bottom:4px}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;width:38px;height:38px;cursor:pointer;font-size:16px}
+
+.brand a.home{display:block;font-size:13px;font-weight:500;color:var(--accent-ink);text-decoration:none;margin-bottom:2px}
+.brand a.home:hover{text-decoration:underline}
+@media (max-width:600px){.m,.math{white-space:normal}.q,.fb{overflow-wrap:anywhere}}
+.chem{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.chem sub,.m sub{font-size:.72em}
+.widget{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+.widget label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px;margin:6px 0}
+.widget input[type=range]{flex:1 1 160px;accent-color:var(--accent)}
+.widget output,.widget .out{font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.hook{font-size:18px;line-height:1.55;background:linear-gradient(0deg,transparent,transparent);border-left:4px solid var(--hl);padding:4px 0 4px 14px;margin:6px 0 12px}
+.fact{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:10px 0}
+.fact::before{content:"💡 Знаешь ли ты? ";font-weight:700;color:var(--accent-ink)}
+.prof{display:flex;align-items:center}
+.prof-l{display:flex;align-items:center;gap:4px;font-size:15px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 6px 4px 10px}
+.prof-l select{font:inherit;font-size:15px;border:0;background:transparent;color:var(--ink);padding:2px}
+.prof-ask{border-color:var(--accent)}
+textarea.code,pre.code{width:100%;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:15px;line-height:1.5;tab-size:4;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);color:var(--ink);white-space:pre;overflow-x:auto;resize:vertical}
+textarea.code:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea.code.inp{margin-top:4px}
+.pyed{margin:10px 0}.pybtns{margin-top:8px}
+.pyout{margin-top:8px}.pyout pre.out{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px 12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;white-space:pre-wrap;margin:4px 0 0;min-height:2.4em}
+.pyout pre.out .bad-t{color:#fca5a5}
+pre.code.sol{background:var(--ok-soft)}
+.tbl{overflow-x:auto}table.tests pre{margin:0;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.qhead{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.qhead>div{flex:1 1 260px;min-width:0}
+.qcap{font-size:14px;color:var(--muted)}
+.qlist{display:grid;gap:10px}
+.qitem{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.qitem .qrew{flex:none;min-width:72px;text-align:center;font-weight:800;font-size:18px;border-radius:10px;padding:8px 6px;background:var(--warn-soft);color:var(--warn)}
+.qitem .qbody{flex:1;min-width:0}.qitem ul{list-style:none;padding:0;margin:6px 0}.qitem li{margin:3px 0;font-size:15px}.qitem li a{color:var(--ink)}
+.qitem.ready{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok-soft)}
+.qitem.claimed .qrew{background:var(--ok-soft);color:var(--ok)}
+.qitem.locked{opacity:.6}
+.qcode{font-size:15px}.qcode b{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.04em}
+.quests-card{border-color:var(--hl)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--accent-ink)}}
+:root[data-theme="dark"] .btn{color:#111}
+:root[data-theme="dark"] .btn.ghost{color:var(--accent-ink)}
+:root[data-theme="dark"] nav.tabs button[aria-selected="true"]{color:#111}
+
+.nudge-wrap{padding-top:14px;padding-bottom:0}.nudge-wrap+main{padding-top:0}
+.nudge{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--hl);border-radius:14px;padding:12px 16px;margin:0 0 14px;box-shadow:var(--shadow)}
+.nudge-t{flex:1 1 280px;line-height:1.5;font-size:15px}.nudge-b{flex:0 0 auto}
+
+.tts-hint{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;max-width:min(520px,calc(100vw - 32px));background:var(--card);color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--hl);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);line-height:1.5;font-size:15px}.tts-hint .btn{margin-top:10px}
+/* ===== игровой слой ===== */
+:root{--r-c:#7b8494;--r-r:#2f7bf0;--r-e:#9b4de0;--r-l:#e09a12}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--r-c:#a3abb8;--r-r:#6aa8ff;--r-e:#c08cff;--r-l:#ffc24d}}
+:root[data-theme="dark"]{--r-c:#a3abb8;--r-r:#6aa8ff;--r-e:#c08cff;--r-l:#ffc24d}
+/* цвет сайта из магазина */
+:root[data-accent="lime"]{--accent:#2e7d32;--accent-soft:#e3f3e4;--accent-ink:#1b5e20}
+:root[data-accent="violet"]{--accent:#7c3aed;--accent-soft:#efe7fd;--accent-ink:#5b21b6}
+:root[data-accent="sunset"]{--accent:#d9480f;--accent-soft:#fdeadf;--accent-ink:#9a3412}
+:root[data-accent="rose"]{--accent:#c2255c;--accent-soft:#fbe4ec;--accent-ink:#9d174d}
+@media (prefers-color-scheme: dark){
+ :root:not([data-theme="light"])[data-accent="lime"]{--accent:#81c784;--accent-soft:#1d3320;--accent-ink:#b5e3b7}
+ :root:not([data-theme="light"])[data-accent="violet"]{--accent:#b69cff;--accent-soft:#2c2347;--accent-ink:#d8cbff}
+ :root:not([data-theme="light"])[data-accent="sunset"]{--accent:#ffa36b;--accent-soft:#3b2518;--accent-ink:#ffcfae}
+ :root:not([data-theme="light"])[data-accent="rose"]{--accent:#f58cb3;--accent-soft:#3b1d29;--accent-ink:#ffc2d8}
+}
+:root[data-theme="dark"][data-accent="lime"]{--accent:#81c784;--accent-soft:#1d3320;--accent-ink:#b5e3b7}
+:root[data-theme="dark"][data-accent="violet"]{--accent:#b69cff;--accent-soft:#2c2347;--accent-ink:#d8cbff}
+:root[data-theme="dark"][data-accent="sunset"]{--accent:#ffa36b;--accent-soft:#3b2518;--accent-ink:#ffcfae}
+:root[data-theme="dark"][data-accent="rose"]{--accent:#f58cb3;--accent-soft:#3b1d29;--accent-ink:#ffc2d8}
+
+/* чип в шапке */
+.gm-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:3px 10px 3px 3px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.gm-chip:hover{border-color:var(--accent)}
+.gm-c-lv{color:var(--accent-ink)}.gm-c-st.off{opacity:.45;filter:grayscale(1)}
+.gm-homes{display:flex;gap:4px 14px;flex-wrap:wrap;align-items:center;margin-bottom:2px}
+.gm-chip.sm{font-size:13px;padding:1px 9px 1px 2px;gap:5px}.gm-chip.sm .gm-av{width:24px;height:24px;font-size:15px}
+.gm-homes a.home{display:inline-block}
+/* аватар и рамки */
+.gm-av{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);font-size:18px;line-height:1;flex:none;position:relative}
+.gm-av>span{display:block}
+.gm-av.big{width:64px;height:64px;font-size:38px}
+.gm-av.fr-silver{box-shadow:0 0 0 3px #b8c0cc}
+.gm-av.fr-gold{box-shadow:0 0 0 3px #e6b422,0 0 10px 1px rgba(230,180,34,.45)}
+.gm-av.fr-neon{box-shadow:0 0 0 3px #00d9ff,0 0 12px 2px rgba(0,217,255,.55)}
+.gm-av.fr-fire{box-shadow:0 0 0 3px #ff6a00,0 0 12px 3px rgba(255,80,0,.5)}
+.gm-av.fr-rainbow{background:conic-gradient(#ff4d4d,#ffb84d,#ffee4d,#4dff88,#4dd2ff,#9b6bff,#ff4d4d);padding:3px}
+.gm-av.fr-rainbow>span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:var(--accent-soft)}
+.gm-name{font-weight:800;font-size:22px;line-height:1.2}
+.gm-name.nc-sky{color:#1d7fd6}.gm-name.nc-mint{color:#0f9b77}.gm-name.nc-violet{color:#8b3fe0}.gm-name.nc-sun{color:#d97706}
+.gm-name.nc-rainbow{background:linear-gradient(90deg,#e5484d,#f59e0b,#16a34a,#0ea5e9,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gm-name.nc-sky{color:#6cb8ff}:root:not([data-theme="light"]) .gm-name.nc-mint{color:#5fe0b8}:root:not([data-theme="light"]) .gm-name.nc-violet{color:#c79bff}:root:not([data-theme="light"]) .gm-name.nc-sun{color:#ffc44d}}
+:root[data-theme="dark"] .gm-name.nc-sky{color:#6cb8ff}:root[data-theme="dark"] .gm-name.nc-mint{color:#5fe0b8}:root[data-theme="dark"] .gm-name.nc-violet{color:#c79bff}:root[data-theme="dark"] .gm-name.nc-sun{color:#ffc44d}
+.gm-title{font-size:14px;font-weight:600;color:var(--warn);margin-top:1px}
+
+/* панель персонажа */
+.gm-panel{position:fixed;z-index:60;top:72px;right:max(12px,env(safe-area-inset-right,0px));width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 160px);overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.22)}
+.gm-x{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-size:15px}
+.gm-p-head{display:flex;gap:12px;align-items:center;margin-bottom:10px;padding-right:30px}
+.gm-p-row{display:flex;justify-content:space-between;gap:12px;margin:10px 0}
+.gm-panel h4{margin:12px 0 4px;font-size:16px}
+.gm-p-btns{display:flex;flex-direction:column;gap:8px;margin-top:12px}.gm-p-btns .btn{justify-content:center;text-decoration:none}
+.gm-bar .progress{height:10px}
+/* задания дня */
+.gm-qs{list-style:none;padding:0;margin:6px 0}
+.gm-qs li{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}
+.gm-qs li:last-child{border-bottom:0}
+.gm-q-t{flex:1;min-width:0}.gm-q-t .progress{height:6px;margin:4px 0 0}
+.gm-q-r{flex:none;text-align:right;font-weight:700;font-size:14px}.gm-q-r small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.gm-qs li.ok .gm-q-t{color:var(--muted)}.gm-qs li.ok .progress i{background:var(--ok)}
+
+/* «Мой персонаж» */
+.gm-char{border:2px solid var(--accent);scroll-margin-top:16px}
+.gm-ch-top{display:flex;gap:16px;align-items:center}
+.gm-ch-id{flex:1;min-width:0}.gm-ch-lv{font-size:17px;margin-top:2px}
+.gm-xpbar{height:12px}
+.gm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.gm-stats>div{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.gm-stats b{display:block;font-size:20px}.gm-stats span{font-size:12.5px;color:var(--muted);line-height:1.3;display:block}
+@media (max-width:560px){.gm-stats{grid-template-columns:repeat(2,1fr)}}
+.gm-rev-btn{width:100%;justify-content:center;font-size:19px;padding:15px 18px;text-decoration:none;flex-wrap:wrap}
+.gm-rev-n{background:rgba(255,255,255,.22);border-radius:99px;padding:1px 10px;font-size:15px}
+.gm-char h3{margin:18px 0 4px}
+.gm-bd summary{list-style:none;cursor:pointer}.gm-bd summary::-webkit-details-marker{display:none}
+.gm-bd summary h3::after{content:" ▾";color:var(--muted);font-size:14px}
+/* ачивки — карточки с редкостью */
+.gm-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:8px;margin-top:8px}
+.gm-b{--rc:var(--r-c);border:1.5px solid color-mix(in srgb,var(--rc) 55%,transparent);border-radius:12px;padding:8px;text-align:center;background:color-mix(in srgb,var(--rc) 9%,var(--card));min-width:0}
+.gm-b.rar-r{--rc:var(--r-r)}.gm-b.rar-e{--rc:var(--r-e)}.gm-b.rar-l{--rc:var(--r-l)}
+.gm-b-ic{width:46px;height:46px;margin:0 auto 4px;border-radius:12px;display:grid;place-items:center;font-size:26px;background:color-mix(in srgb,var(--rc) 22%,var(--card));border:2px solid var(--rc)}
+.gm-b-n{font-weight:700;font-size:13.5px;line-height:1.25}
+.gm-b-r{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--rc);font-weight:700;margin-top:2px}
+.gm-b-d{font-size:11.5px;color:var(--muted);line-height:1.3;margin-top:2px}
+.gm-b.locked{filter:grayscale(1);opacity:.55;background:var(--card)}
+.gm-b.locked .gm-b-ic{background:var(--bg)}
+
+/* карта миров */
+.gm-worlds{scroll-margin-top:16px}
+.gm-world{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0;background:var(--bg)}
+.gm-w-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.gm-w-h .gm-w-ic{display:inline-grid;place-items:center;min-width:32px;height:32px;border-radius:10px;background:var(--accent-soft);color:var(--accent-ink);font-size:16px;padding:0 5px}
+.gm-w-h .small{margin-left:auto}
+.gm-path{display:flex;align-items:center;flex-wrap:wrap;row-gap:10px}
+.gm-node{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:2.5px solid var(--line);background:var(--card);color:var(--muted);font-weight:700;font-size:15px;text-decoration:none}
+.gm-node.done{border-color:var(--ok);background:var(--ok-soft);font-size:16px}
+.gm-node.next{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft);animation:gmPulse 1.6s ease-in-out infinite}
+.gm-node.boss{width:46px;height:46px;font-size:22px;border-radius:14px}
+.gm-node.boss.locked{opacity:.6}
+.gm-node.boss.next{border-color:var(--hl);background:var(--warn-soft)}
+.gm-link{flex:none;width:12px;height:4px;border-radius:2px;background:var(--line)}
+.gm-link.on{background:var(--ok)}
+.gm-w-next{margin-top:8px}.gm-w-next a{color:var(--accent-ink)}
+.gm-more summary{cursor:pointer;color:var(--accent-ink);font-weight:600;margin-top:8px}
+@keyframes gmPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent);transform:scale(1)}50%{box-shadow:0 0 0 8px transparent;transform:scale(1.08)}}
+
+/* магазин */
+.gm-preview{display:flex;gap:14px;align-items:center;padding:12px;border:1px dashed var(--line);border-radius:14px;margin:8px 0}
+.gm-shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.gm-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer;min-width:0}
+.gm-item:hover:not(:disabled){border-color:var(--accent)}
+.gm-item.on{border-color:var(--ok);background:var(--ok-soft)}
+.gm-item.lock{opacity:.55;cursor:default}
+.gm-s-av{font-size:32px;line-height:1.1}
+.gm-s-n{font-size:13px;font-weight:600}
+.gm-s-ti{font-size:13px;font-weight:700;color:var(--warn);text-align:center;line-height:1.25;min-height:2.5em;display:grid;place-items:center}
+.gm-s-p{font-size:12.5px;color:var(--muted);font-weight:600}
+.gm-item.on .gm-s-p{color:var(--ok)}
+.gm-sw{width:44px;height:28px;border-radius:8px;display:block;background:#3d5afe}
+.gm-sw[data-acc="lime"]{background:#2e7d32}.gm-sw[data-acc="violet"]{background:#7c3aed}.gm-sw[data-acc="sunset"]{background:#d9480f}.gm-sw[data-acc="rose"]{background:#c2255c}
+
+/* тосты */
+.gm-toasts{position:fixed;z-index:70;top:calc(env(safe-area-inset-top,0px) + 66px);right:max(12px,env(safe-area-inset-right,0px));width:min(340px,calc(100vw - 24px));display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.gm-toast{display:flex;gap:10px;align-items:center;background:var(--card);color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:14px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.18);opacity:0;transform:translateX(30px) scale(.96);transition:opacity .3s,transform .35s cubic-bezier(.2,1.4,.4,1)}
+.gm-toast.in{opacity:1;transform:none}.gm-toast.out{opacity:0;transform:translateX(20px)}
+.gm-toast.streak{border-left-color:#ff7a1a}.gm-toast.quest{border-left-color:var(--ok)}
+.gm-toast.badge{--rc:var(--r-c);border-left-color:var(--rc)}.gm-toast.rar-r{--rc:var(--r-r)}.gm-toast.rar-e{--rc:var(--r-e)}.gm-toast.rar-l{--rc:var(--r-l)}
+.gm-t-ic{flex:none;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:24px;background:var(--accent-soft)}
+.gm-toast.badge .gm-t-ic{background:color-mix(in srgb,var(--rc) 20%,var(--card));border:2px solid var(--rc)}
+.gm-toast.badge.in .gm-t-ic{animation:gmPop .6s ease-out}
+.gm-t-tx{min-width:0;line-height:1.3}.gm-t-tx b{display:block;font-size:15px}.gm-t-tx span{display:block;font-size:13px;color:var(--muted)}
+.gm-xp{position:fixed;z-index:71;top:calc(env(safe-area-inset-top,0px) + 70px);left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-weight:800;font-size:16px;border-radius:999px;padding:5px 14px;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.18);animation:gmFloat 1.3s ease-out forwards;white-space:nowrap}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gm-xp{color:#111}}
+:root[data-theme="dark"] .gm-xp{color:#111}
+@keyframes gmFloat{0%{opacity:0;transform:translate(-50%,10px) scale(.8)}15%{opacity:1;transform:translate(-50%,0) scale(1.08)}30%{transform:translate(-50%,0) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-24px)}}
+@keyframes gmPop{0%{transform:scale(.4) rotate(-20deg)}60%{transform:scale(1.2) rotate(6deg)}100%{transform:none}}
+/* новый уровень */
+.gm-lvlup{position:fixed;inset:0;z-index:80;display:grid;place-items:center;pointer-events:none;padding:16px}
+.gm-lu-card{background:var(--card);color:var(--ink);border:3px solid var(--hl);border-radius:24px;padding:22px 34px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,.3);opacity:0;transform:scale(.6);transition:opacity .3s,transform .5s cubic-bezier(.2,1.6,.4,1)}
+.gm-lvlup.in .gm-lu-card{opacity:1;transform:none}.gm-lvlup.out .gm-lu-card{opacity:0;transform:scale(.9)}
+.gm-lu-sm{font-size:13px;font-weight:800;letter-spacing:.14em;color:var(--warn)}
+.gm-lu-ic{font-size:64px;line-height:1.1;margin:6px 0}
+.gm-lvlup.in .gm-lu-ic{animation:gmPop .8s ease-out}
+.gm-lu-n{font-size:16px;color:var(--muted);font-weight:700}.gm-lu-name{font-size:32px;font-weight:900;color:var(--accent-ink)}
+.gm-lu-next{font-size:14px;color:var(--muted);margin-top:4px}
+/* конфетти */
+.gm-confetti{position:fixed;inset:0;z-index:79;pointer-events:none;overflow:hidden}
+.gm-confetti i{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;animation:gmFall 2s ease-in forwards}
+@keyframes gmFall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--dx),105vh) rotate(var(--r));opacity:.9}}
+@media (prefers-reduced-motion: reduce){
+ .gm-node.next{animation:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 40%,transparent)}
+ .gm-toast,.gm-lu-card{transition:none;transform:none}
+ .gm-xp{animation:none;opacity:1}
+ .gm-toast.badge.in .gm-t-ic,.gm-lvlup.in .gm-lu-ic{animation:none}
+}
+/* родитель */
+.gm-par{border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.gm-week{display:flex;gap:6px;align-items:flex-end;height:70px;margin:10px 0 2px}
+.gm-week>div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.gm-week i{display:block;width:100%;max-width:34px;background:var(--line);border-radius:4px 4px 0 0;min-height:2px}
+.gm-week i.ok{background:var(--ok)}.gm-week span{font-size:11px;color:var(--muted)}
+.gm-par-b{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.gm-chipb{--rc:var(--r-c);font-size:13px;border:1.5px solid var(--rc);border-radius:99px;padding:2px 9px;background:color-mix(in srgb,var(--rc) 10%,var(--card))}
+.gm-chipb.rar-r{--rc:var(--r-r)}.gm-chipb.rar-e{--rc:var(--r-e)}.gm-chipb.rar-l{--rc:var(--r-l)}
+/* Повторялка */
+.rv-hero h1{margin-top:0}
+.rv-boxes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.rv-box{border:1.5px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center;background:var(--bg)}
+.rv-box:nth-child(2){border-color:color-mix(in srgb,var(--accent) 30%,var(--line))}.rv-box:nth-child(3){border-color:color-mix(in srgb,var(--accent) 50%,var(--line))}
+.rv-box:nth-child(4){border-color:color-mix(in srgb,var(--ok) 60%,var(--line))}.rv-box:nth-child(5){border-color:var(--ok);background:var(--ok-soft)}
+.rv-bx-n{font-size:24px;font-weight:800;color:var(--accent-ink)}.rv-bx-l{font-weight:700;font-size:14px}.rv-bx-i{font-size:12px;color:var(--muted);line-height:1.25}
+.rv-tm{font-size:19px}
+.rv-done .score{margin:0}
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Лига Буста"><meta name="theme-color" content="#2a3fe0"></head>
+<body><noscript>Для работы тренажёра нужен JavaScript.</noscript>
+<script>/* Уведомления маме через ntfy.sh: тема-«канал» известна только семье.
+   Если интернета нет — сообщение ждёт в очереди и уйдёт при следующем открытии. */
+(function(){
+const TOPIC='artem-pavel-6cda620c53';
+const URL_='https://ntfy.sh/';
+const OUT='trainer:outbox';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(OUT)||'[]');}catch(e){return [];}};
+const wr=a=>{try{localStorage.setItem(OUT,JSON.stringify(a.slice(-50)));}catch(e){}};
+async function post(m){
+  const r=await fetch(URL_,{method:'POST',body:JSON.stringify({topic:TOPIC,title:m.title,message:m.message,tags:m.tags||[],priority:m.priority||3})});
+  if(!r.ok)throw new Error('ntfy '+r.status);
+}
+let flushing=false;
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{let q=rd();while(q.length){try{await post(q[0]);q.shift();wr(q);}catch(e){break;}}}
+  finally{flushing=false;}
+}
+const N=window.NOTIFY={TOPIC,
+  send(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);flush();},
+  /* в очередь без отправки: уйдёт при уходе со страницы или при следующем открытии */
+  queue(title,message,tags){const q=rd();q.push({title,message,tags,ts:Date.now()});wr(q);},
+  flush};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(flush,1500));else setTimeout(flush,1500);
+window.addEventListener('online',flush);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&rd().length)flush();});
+})();
+
+/* Who is studying: separate progress for each child on the same device */
+(function(){
+const LIST=['Артём','Павел'];
+try{const w=new URLSearchParams(location.search).get('who');if(w&&LIST.includes(w))localStorage.setItem('trainer:profile',w);}catch(e){}const G=()=>{try{return localStorage.getItem('trainer:profile')||'';}catch(e){return '';}};
+const P=window.PROF={
+  list:LIST,
+  get:G,
+  name(){return G()||LIST[0];},
+  set(n){try{localStorage.setItem('trainer:profile',n);}catch(e){}},
+  /* Артём keeps the original keys (his progress is already saved), others get a suffix */
+  key(base){const p=P.name();return p===LIST[0]?base:base+'@'+p;},
+  /* results of finished runs, kept per child: {id:{pct,total,right,star,date,best}} */
+  done(){try{return JSON.parse(localStorage.getItem(P.key('trainer:done'))||'{}');}catch(e){return {};}},
+  record(id,d,label){try{if(window.NOTIFY&&label){const pc=d.pct!=null?d.pct:0;NOTIFY.send(`${P.name()}: ${label}`,`Результат: ${pc}% с первого раза${d.total?` (${d.right} из ${d.total})`:''}${d.star!=null&&!/★/.test(label)?`. Олимпиадный уровень ★: ${d.star}%`:''}. ${pc>=80?'Отлично!':pc>=60?'Неплохо.':'Стоит повторить.'}`,[pc>=80?'white_check_mark':'books']);}}catch(e){}
+  try{const all=P.done();const prev=all[id];const dt=P.now();const day=P.ymd(dt);const now={...d,date:day};
+    if(!prev||(d.pct||0)>=(prev.pct||0)||(d.star!=null&&(prev.star==null||d.star>prev.star)))all[id]={...prev,...now,best:Math.max(d.pct||0,prev&&prev.best||0)};
+    /* последняя попытка — всегда (для недельного пропуска: тема, перепройденная на этой неделе, засчитывается, даже если рекорд был раньше) */
+    all[id].last={pct:d.pct||0,date:day,ts:dt.getTime()};
+    localStorage.setItem(P.key('trainer:done'),JSON.stringify(all));}catch(e){}},
+  /* локальная дата (в тестах можно подменить время через window.__FAKE_NOW) */
+  now(){try{if(window.__FAKE_NOW)return new Date(window.__FAKE_NOW);}catch(e){}return new Date();},
+  ymd(d){d=d||P.now();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');},
+  nudges:[
+    '{n}, нейронка решает быстро — но учится при этом она, а не ты. Твоя задача — научиться самому 🧠',
+    'Сфоткать задачу и переписать ответ — это работа ксерокса 📠, а не учёба. Ксерокс умнее не становится.',
+    'На контрольной в школе и на экзамене у мамы нейронки рядом не будет. Будешь только ты и твоя голова. Тренируй её сейчас 💪',
+    'Ошибка с разбором — это +1 к мозгу. Ответ, списанный у нейронки, — это +0. Выбирай, что тебе выгоднее 😉',
+    'Нейросети будут у всех. Выигрывать будут те, кто понимает больше нейросети. Будь таким, {n}.',
+    'Не получается? Нажми «Не понял» — тренажёр объяснит по-другому. Или приходи к маме. Решать за тебя — не вариант.',
+    'Чемпионы не ездят на тренировку на такси 🏃 Решай сам — только так растёт сила.',
+    '{n}, я в тебя верю: ты можешь решить это сам. Медленно и с ошибками — это нормально. Списать — нет. Мама ❤️',
+    'Чем больше решаешь сам, тем легче следующие темы. С нейронкой каждая новая тема будет всё труднее.',
+  ],
+  nudge(main){if(!main||document.querySelector('.nudge'))return;const m=P.nudges[Math.floor(Math.random()*P.nudges.length)].replace(/\{n\}/g,P.name());
+    const c=document.createElement('div');c.className='nudge';c.innerHTML=`<div class="nudge-t">🤖🚫 ${m}</div><button class="btn ghost nudge-b">Понял, решаю сам 💪</button>`;
+    const w=document.createElement('div');w.className='wrap nudge-wrap';w.appendChild(c);c.querySelector('button').onclick=()=>w.remove();main.parentNode.insertBefore(w,main);},
+  mount(header,main){
+    if(!header)return;
+    if(!document.getElementById('login'))P.nudge(main);
+    const wrap=document.createElement('div');wrap.className='prof';
+    wrap.innerHTML=`<label class="prof-l">👤 <select aria-label="Кто занимается">${LIST.map(n=>`<option${n===P.name()?' selected':''}>${n}</option>`).join('')}</select></label>`;
+    const before=header.querySelector('.theme-btn');header.insertBefore(wrap,before||null);
+    wrap.querySelector('select').onchange=e=>{P.set(e.target.value);location.reload();};
+    if(window.GAME){try{GAME.mount(header);}catch(e){}}
+    if(!G()&&main){
+      const c=document.createElement('div');c.className='card prof-ask';
+      c.innerHTML=`<h2>Кто сейчас занимается?</h2><p class="small">У каждого свой прогресс. Выбрать можно и потом — вверху страницы.</p><div class="row">${LIST.map(n=>`<button class="btn" data-n="${n}">${n}</button>`).join('')}</div>`;
+      main.prepend(c);
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{P.set(b.dataset.n);location.reload();});
+    }
+  }
+};
+})();
+
+window.GAME_MAP={"ids": ["a7_divisibility", "a7_factoring", "a7_func_linear", "a7_lin_eq", "a7_modulus", "a7_polynomials", "a7_powers", "a7_systems", "a7_word_problems", "a8_inequalities", "a8_int_powers", "a8_quad_param", "a8_quadratic", "a8_rational_eq", "a8_vieta", "c8_atom_structure", "c8_atoms", "c8_bonds", "c8_calc", "c8_classes", "c8_formulas", "c8_mole", "c8_reactions", "c8_solutions", "c8_substances", "chetyrehugolniki", "dispersiya", "drobi", "fsu", "g7_angle_sum", "g7_angles", "g7_basics", "g7_circle", "g7_isosceles", "g7_parallel", "g7_right_tri", "g7_triangles_eq", "g8_midline", "g8_pythagoras", "g8_similarity", "giperbola", "i_algorithms", "i_first_program", "i_for", "i_functions", "i_if", "i_lists", "i_neural", "i_oge", "i_strings", "i_variables", "i_while", "korni", "l_dirichlet", "l_games", "l_knights", "l_parity", "l_proofs", "l_statements", "l_tables", "l_weighing", "m5_decimals", "m5_equations", "m5_fractions", "m5_geometry", "m5_natural", "m5_word", "m6_circle", "m6_coordinates", "m6_divisibility", "m6_equations", "m6_fractions", "m6_logic", "m6_negative", "m6_olymp", "m6_percent", "m6_proportions", "mnozhestva", "p7_archimedes", "p7_density", "p7_forces", "p7_matter", "p7_measure", "p7_motion", "p7_pressure", "p7_work_energy", "p8_charge", "p8_circuits", "p8_current", "p8_heat", "p8_light", "p8_magnet", "p8_phase", "p8_power", "ploshchad", "s7_data", "s7_graphs", "s7_median", "s7_prob_intro", "s8_events", "s8_prob", "s8_trees", "s9_bernoulli", "s9_comb", "s9_geom_prob", "s9_random_var", "srednee", "vyrazheniya"], "worlds": [{"id": "Математика:5", "title": "Математика · 5 класс", "icon": "½", "grade": 5, "boss": "star", "stages": [{"id": "m5_natural", "title": "Натуральные числа"}, {"id": "m5_equations", "title": "Выражения и уравнения"}, {"id": "m5_word", "title": "Текстовые задачи"}, {"id": "m5_fractions", "title": "Дроби: первое знакомство"}, {"id": "m5_geometry", "title": "Фигуры, площадь, объём"}, {"id": "m5_decimals", "title": "Десятичные дроби"}]}, {"id": "Математика:6", "title": "Математика · 6 класс", "icon": "½", "grade": 6, "boss": "star", "stages": [{"id": "m6_divisibility", "title": "Делимость чисел"}, {"id": "m6_fractions", "title": "Обыкновенные дроби"}, {"id": "m6_proportions", "title": "Отношения и пропорции"}, {"id": "m6_percent", "title": "Проценты"}, {"id": "m6_negative", "title": "Положительные и отрицательные числа"}, {"id": "m6_equations", "title": "Уравнения и выражения"}, {"id": "m6_coordinates", "title": "Координатная плоскость"}, {"id": "m6_circle", "title": "Окружность и круг"}, {"id": "m6_logic", "title": "Логика и смекалка"}, {"id": "m6_olymp", "title": "Олимпиадная математика 6 класса"}]}, {"id": "Логика:5", "title": "Логика · 5 класс", "icon": "🧩", "grade": 5, "boss": "star", "stages": [{"id": "l_statements", "title": "Высказывания: правда или ложь"}, {"id": "l_knights", "title": "Рыцари и лжецы"}, {"id": "l_tables", "title": "Логические таблицы"}]}, {"id": "Логика:6", "title": "Логика · 6 класс", "icon": "🧩", "grade": 6, "boss": "star", "stages": [{"id": "l_weighing", "title": "Взвешивания и переливания"}, {"id": "l_parity", "title": "Чётность и инварианты"}]}, {"id": "Логика:7", "title": "Логика · 7 класс", "icon": "🧩", "grade": 7, "boss": "star", "stages": [{"id": "l_dirichlet", "title": "Принцип Дирихле"}, {"id": "l_games", "title": "Игры и стратегии"}]}, {"id": "Логика:8", "title": "Логика · 8 класс", "icon": "🧩", "grade": 8, "boss": "star", "stages": [{"id": "l_proofs", "title": "Как рассуждать и доказывать"}]}, {"id": "Программирование:None", "title": "Программирование", "icon": "</>", "grade": null, "boss": "star", "stages": [{"id": "i_first_program", "title": "1. Первая программа"}, {"id": "i_variables", "title": "2. Переменные и ввод"}, {"id": "i_if", "title": "3. Условия"}, {"id": "i_for", "title": "4. Цикл for"}, {"id": "i_while", "title": "5. Цикл while"}, {"id": "i_strings", "title": "6. Строки"}, {"id": "i_lists", "title": "7. Списки"}, {"id": "i_functions", "title": "8. Функции"}, {"id": "i_algorithms", "title": "9. Алгоритмы"}, {"id": "i_oge", "title": "10. Задачи ОГЭ и олимпиад"}, {"id": "i_neural", "title": "11. Как работают нейросети"}]}, {"id": "Алгебра:7", "title": "Алгебра · 7 класс", "icon": "𝑥", "grade": 7, "boss": "star", "stages": [{"id": "vyrazheniya", "title": "Преобразование выражений"}, {"id": "a7_lin_eq", "title": "Линейные уравнения"}, {"id": "a7_word_problems", "title": "Текстовые задачи: составляем уравнение"}, {"id": "a7_func_linear", "title": "Функции. Линейная функция"}, {"id": "a7_powers", "title": "Степень с натуральным показателем"}, {"id": "a7_polynomials", "title": "Одночлены и многочлены"}, {"id": "fsu", "title": "Формулы сокращённого умножения"}, {"id": "a7_factoring", "title": "Разложение на множители"}, {"id": "a7_systems", "title": "Системы линейных уравнений"}, {"id": "a7_divisibility", "title": "Делимость и остатки"}, {"id": "a7_modulus", "title": "Модуль числа"}]}, {"id": "Алгебра:8", "title": "Алгебра · 8 класс", "icon": "𝑥", "grade": 8, "boss": "star", "stages": [{"id": "korni", "title": "Квадратные корни"}, {"id": "drobi", "title": "Рациональные дроби"}, {"id": "giperbola", "title": "Функция y = k/x. Гипербола"}, {"id": "a8_quadratic", "title": "Квадратные уравнения"}, {"id": "a8_vieta", "title": "Теорема Виета"}, {"id": "a8_quad_param", "title": "Квадратные уравнения с параметром"}, {"id": "a8_rational_eq", "title": "Дробно-рациональные уравнения"}, {"id": "a8_inequalities", "title": "Неравенства"}, {"id": "a8_int_powers", "title": "Степень с целым показателем"}]}, {"id": "Геометрия:7", "title": "Геометрия · 7 класс", "icon": "△", "grade": 7, "boss": "star", "stages": [{"id": "g7_basics", "title": "Точки, прямые, отрезки, углы"}, {"id": "g7_angles", "title": "Смежные и вертикальные углы"}, {"id": "g7_triangles_eq", "title": "Признаки равенства треугольников"}, {"id": "g7_isosceles", "title": "Равнобедренный треугольник"}, {"id": "g7_parallel", "title": "Параллельные прямые"}, {"id": "g7_angle_sum", "title": "Сумма углов треугольника"}, {"id": "g7_right_tri", "title": "Прямоугольный треугольник"}, {"id": "g7_circle", "title": "Окружность и построения"}]}, {"id": "Геометрия:8", "title": "Геометрия · 8 класс", "icon": "△", "grade": 8, "boss": "star", "stages": [{"id": "chetyrehugolniki", "title": "Четырёхугольники"}, {"id": "ploshchad", "title": "Площадь"}, {"id": "g8_pythagoras", "title": "Теорема Пифагора"}, {"id": "g8_similarity", "title": "Подобные треугольники"}, {"id": "g8_midline", "title": "Средняя линия и теорема Фалеса"}]}, {"id": "Вероятность и статистика:7", "title": "Вероятность и статистика · 7 класс", "icon": "🎲", "grade": 7, "boss": "star", "stages": [{"id": "s7_data", "title": "Таблицы и диаграммы"}, {"id": "srednee", "title": "Среднее, минимум, максимум, размах"}, {"id": "s7_median", "title": "Медиана и мода"}, {"id": "s7_graphs", "title": "Графы"}, {"id": "s7_prob_intro", "title": "Случайные опыты и частота"}]}, {"id": "Вероятность и статистика:8", "title": "Вероятность и статистика · 8 класс", "icon": "🎲", "grade": 8, "boss": "star", "stages": [{"id": "mnozhestva", "title": "Множества"}, {"id": "dispersiya", "title": "Дисперсия и рассеивание"}, {"id": "s8_prob", "title": "Вероятность случайного события"}, {"id": "s8_events", "title": "Сложение и умножение вероятностей"}, {"id": "s8_trees", "title": "Деревья и дерево эксперимента"}]}, {"id": "Вероятность и статистика:9", "title": "Вероятность и статистика · 9 класс", "icon": "🎲", "grade": 9, "boss": "star", "stages": [{"id": "s9_comb", "title": "Комбинаторика"}, {"id": "s9_geom_prob", "title": "Геометрическая вероятность"}, {"id": "s9_bernoulli", "title": "Испытания Бернулли"}, {"id": "s9_random_var", "title": "Случайная величина"}]}, {"id": "Физика:7", "title": "Физика · 7 класс", "icon": "⚡", "grade": 7, "boss": "star", "stages": [{"id": "p7_measure", "title": "Физические величины и измерения"}, {"id": "p7_matter", "title": "Строение вещества"}, {"id": "p7_motion", "title": "Механическое движение"}, {"id": "p7_density", "title": "Масса и плотность"}, {"id": "p7_forces", "title": "Силы"}, {"id": "p7_pressure", "title": "Давление"}, {"id": "p7_archimedes", "title": "Сила Архимеда и плавание"}, {"id": "p7_work_energy", "title": "Работа, мощность, энергия"}]}, {"id": "Физика:8", "title": "Физика · 8 класс", "icon": "⚡", "grade": 8, "boss": "star", "stages": [{"id": "p8_heat", "title": "Теплота"}, {"id": "p8_phase", "title": "Агрегатные превращения"}, {"id": "p8_charge", "title": "Электрический заряд"}, {"id": "p8_current", "title": "Ток, напряжение, сопротивление"}, {"id": "p8_circuits", "title": "Электрические цепи"}, {"id": "p8_power", "title": "Работа и мощность тока"}, {"id": "p8_magnet", "title": "Магнитные явления"}, {"id": "p8_light", "title": "Световые явления"}]}, {"id": "Химия:8", "title": "Химия · 8 класс", "icon": "⚗️", "grade": 8, "boss": "star", "stages": [{"id": "c8_substances", "title": "Вещества и явления"}, {"id": "c8_atoms", "title": "Атомы и Периодическая система"}, {"id": "c8_atom_structure", "title": "Строение атома"}, {"id": "c8_bonds", "title": "Химическая связь"}, {"id": "c8_formulas", "title": "Формулы и валентность"}, {"id": "c8_mole", "title": "Количество вещества"}, {"id": "c8_reactions", "title": "Химические уравнения"}, {"id": "c8_classes", "title": "Классы неорганических веществ"}, {"id": "c8_solutions", "title": "Растворы"}, {"id": "c8_calc", "title": "Расчёты по уравнениям"}]}, {"id": "rus", "title": "Русский язык", "icon": "Аа", "grade": null, "boss": "rules", "stages": [{"id": "russkiy:5", "title": "5 класс", "page": "russkiy"}, {"id": "russkiy:6", "title": "6 класс", "page": "russkiy"}, {"id": "russkiy:7", "title": "7 класс", "page": "russkiy"}, {"id": "russkiy:8", "title": "8 класс", "page": "russkiy"}, {"id": "russkiy:9", "title": "9 класс", "page": "russkiy"}]}, {"id": "eng", "title": "Английский язык", "icon": "Ee", "grade": null, "boss": "rules", "stages": [{"id": "english:S", "title": "Старт", "page": "english"}, {"id": "english:P", "title": "2–4 класс", "page": "english"}, {"id": "english:5", "title": "5 класс", "page": "english"}, {"id": "english:6", "title": "6 класс", "page": "english"}, {"id": "english:7", "title": "7 класс", "page": "english"}, {"id": "english:8", "title": "8 класс", "page": "english"}, {"id": "english:9", "title": "9 класс", "page": "english"}]}], "focus": {"Артём": [7, 8, 9], "Павел": [5, 6]}, "titles": {"vyrazheniya": "Преобразование выражений", "a7_lin_eq": "Линейные уравнения", "a7_word_problems": "Текстовые задачи: составляем уравнение", "a7_func_linear": "Функции. Линейная функция", "a7_powers": "Степень с натуральным показателем", "a7_polynomials": "Одночлены и многочлены", "fsu": "Формулы сокращённого умножения", "a7_factoring": "Разложение на множители", "a7_systems": "Системы линейных уравнений", "a7_divisibility": "Делимость и остатки", "a7_modulus": "Модуль числа", "korni": "Квадратные корни", "drobi": "Рациональные дроби", "giperbola": "Функция y = k/x. Гипербола", "a8_quadratic": "Квадратные уравнения", "a8_vieta": "Теорема Виета", "a8_quad_param": "Квадратные уравнения с параметром", "a8_rational_eq": "Дробно-рациональные уравнения", "a8_inequalities": "Неравенства", "a8_int_powers": "Степень с целым показателем", "a9_functions": "Функции и их свойства", "a9_parabola": "Квадратичная функция", "a9_quad_ineq": "Неравенства второй степени", "a9_systems2": "Системы уравнений второй степени", "a9_arith_prog": "Арифметическая прогрессия", "a9_geom_prog": "Геометрическая прогрессия", "a9_nth_root": "Корень n-й степени", "a9_text_problems": "Сложные текстовые задачи", "g7_basics": "Точки, прямые, отрезки, углы", "g7_angles": "Смежные и вертикальные углы", "g7_triangles_eq": "Признаки равенства треугольников", "g7_isosceles": "Равнобедренный треугольник", "g7_parallel": "Параллельные прямые", "g7_angle_sum": "Сумма углов треугольника", "g7_right_tri": "Прямоугольный треугольник", "g7_circle": "Окружность и построения", "chetyrehugolniki": "Четырёхугольники", "ploshchad": "Площадь", "g8_pythagoras": "Теорема Пифагора", "g8_similarity": "Подобные треугольники", "g8_midline": "Средняя линия и теорема Фалеса", "g8_trig": "Синус, косинус, тангенс", "g8_circle": "Вписанные углы и окружности", "g9_vectors": "Векторы", "g9_coords": "Метод координат", "g9_sin_cos_theorems": "Теоремы синусов и косинусов", "g9_polygons_circle": "Правильные многоугольники и круг", "g9_motions": "Движения", "s7_data": "Таблицы и диаграммы", "srednee": "Среднее, минимум, максимум, размах", "s7_median": "Медиана и мода", "s7_graphs": "Графы", "s7_prob_intro": "Случайные опыты и частота", "mnozhestva": "Множества", "dispersiya": "Дисперсия и рассеивание", "s8_prob": "Вероятность случайного события", "s8_events": "Сложение и умножение вероятностей", "s8_trees": "Деревья и дерево эксперимента", "s9_comb": "Комбинаторика", "s9_geom_prob": "Геометрическая вероятность", "s9_bernoulli": "Испытания Бернулли", "s9_random_var": "Случайная величина", "p7_measure": "Физические величины и измерения", "p7_matter": "Строение вещества", "p7_motion": "Механическое движение", "p7_density": "Масса и плотность", "p7_forces": "Силы", "p7_pressure": "Давление", "p7_archimedes": "Сила Архимеда и плавание", "p7_work_energy": "Работа, мощность, энергия", "p8_heat": "Теплота", "p8_phase": "Агрегатные превращения", "p8_charge": "Электрический заряд", "p8_current": "Ток, напряжение, сопротивление", "p8_circuits": "Электрические цепи", "p8_power": "Работа и мощность тока", "p8_magnet": "Магнитные явления", "p8_light": "Световые явления", "p9_kinematics": "Равноускоренное движение", "p9_curve": "Движение по окружности", "p9_newton": "Законы Ньютона", "p9_momentum": "Импульс", "p9_energy": "Механическая энергия", "p9_waves": "Колебания, волны, звук", "p9_em": "Электромагнитное поле", "p9_nuclear": "Атом и ядро", "c8_substances": "Вещества и явления", "c8_atoms": "Атомы и Периодическая система", "c8_atom_structure": "Строение атома", "c8_bonds": "Химическая связь", "c8_formulas": "Формулы и валентность", "c8_mole": "Количество вещества", "c8_reactions": "Химические уравнения", "c8_classes": "Классы неорганических веществ", "c8_solutions": "Растворы", "c8_calc": "Расчёты по уравнениям", "c9_ed": "Электролитическая диссоциация", "c9_ionic": "Ионные уравнения", "c9_redox": "Окислительно-восстановительные реакции", "c9_halogens": "Галогены", "c9_nonmetals": "Неметаллы", "c9_metals": "Металлы", "c9_organic": "Начала органической химии", "russkiy": "Русский язык 5–9", "english": "Английский язык", "m5_natural": "Натуральные числа", "m5_equations": "Выражения и уравнения", "m5_word": "Текстовые задачи", "m5_fractions": "Дроби: первое знакомство", "m5_geometry": "Фигуры, площадь, объём", "m5_decimals": "Десятичные дроби", "m6_divisibility": "Делимость чисел", "m6_fractions": "Обыкновенные дроби", "m6_proportions": "Отношения и пропорции", "m6_percent": "Проценты", "m6_negative": "Положительные и отрицательные числа", "m6_equations": "Уравнения и выражения", "m6_coordinates": "Координатная плоскость", "m6_circle": "Окружность и круг", "m6_logic": "Логика и смекалка", "m6_olymp": "Олимпиадная математика 6 класса", "i_first_program": "1. Первая программа", "i_variables": "2. Переменные и ввод", "i_if": "3. Условия", "i_for": "4. Цикл for", "i_while": "5. Цикл while", "i_strings": "6. Строки", "i_lists": "7. Списки", "i_functions": "8. Функции", "i_algorithms": "9. Алгоритмы", "i_oge": "10. Задачи ОГЭ и олимпиад", "i_neural": "11. Как работают нейросети", "i7_info": "Информация и её измерение", "i7_media": "Кодирование картинок и звука", "i8_numbers": "Системы счисления", "i8_logic": "Логика", "i8_executors": "Алгоритмы и исполнители", "i9_graphs": "Графы и пути", "i9_spreadsheets": "Электронные таблицы", "i9_files_net": "Файлы и интернет", "l_statements": "Высказывания: правда или ложь", "l_knights": "Рыцари и лжецы", "l_tables": "Логические таблицы", "l_weighing": "Взвешивания и переливания", "l_parity": "Чётность и инварианты", "l_dirichlet": "Принцип Дирихле", "l_games": "Игры и стратегии", "l_proofs": "Как рассуждать и доказывать", "geo5_discoveries": "Как люди открывали Землю", "geo5_earth": "Земля во Вселенной", "geo5_plan": "План местности", "geo5_map": "Географическая карта", "geo5_coords": "Географические координаты", "geo6_lithosphere": "Литосфера и земная кора", "geo6_relief": "Рельеф: горы и равнины", "geo6_ocean": "Мировой океан", "geo6_land_waters": "Воды суши", "geo6_atmosphere": "Атмосфера, погода и климат", "geo6_biosphere": "Биосфера и природные зоны", "geo8_position": "Россия на карте мира", "geo8_territory": "Территория России", "geo8_population": "Население России", "geo8_relief": "Рельеф и недра России", "geo8_climate": "Климат России", "geo8_waters": "Воды России", "geo8_nature": "Природные зоны России"}, "subj": {"vyrazheniya": "Алгебра", "a7_lin_eq": "Алгебра", "a7_word_problems": "Алгебра", "a7_func_linear": "Алгебра", "a7_powers": "Алгебра", "a7_polynomials": "Алгебра", "fsu": "Алгебра", "a7_factoring": "Алгебра", "a7_systems": "Алгебра", "a7_divisibility": "Алгебра", "a7_modulus": "Алгебра", "korni": "Алгебра", "drobi": "Алгебра", "giperbola": "Алгебра", "a8_quadratic": "Алгебра", "a8_vieta": "Алгебра", "a8_quad_param": "Алгебра", "a8_rational_eq": "Алгебра", "a8_inequalities": "Алгебра", "a8_int_powers": "Алгебра", "a9_functions": "Алгебра", "a9_parabola": "Алгебра", "a9_quad_ineq": "Алгебра", "a9_systems2": "Алгебра", "a9_arith_prog": "Алгебра", "a9_geom_prog": "Алгебра", "a9_nth_root": "Алгебра", "a9_text_problems": "Алгебра", "g7_basics": "Геометрия", "g7_angles": "Геометрия", "g7_triangles_eq": "Геометрия", "g7_isosceles": "Геометрия", "g7_parallel": "Геометрия", "g7_angle_sum": "Геометрия", "g7_right_tri": "Геометрия", "g7_circle": "Геометрия", "chetyrehugolniki": "Геометрия", "ploshchad": "Геометрия", "g8_pythagoras": "Геометрия", "g8_similarity": "Геометрия", "g8_midline": "Геометрия", "g8_trig": "Геометрия", "g8_circle": "Геометрия", "g9_vectors": "Геометрия", "g9_coords": "Геометрия", "g9_sin_cos_theorems": "Геометрия", "g9_polygons_circle": "Геометрия", "g9_motions": "Геометрия", "s7_data": "Вероятность и статистика", "srednee": "Вероятность и статистика", "s7_median": "Вероятность и статистика", "s7_graphs": "Вероятность и статистика", "s7_prob_intro": "Вероятность и статистика", "mnozhestva": "Вероятность и статистика", "dispersiya": "Вероятность и статистика", "s8_prob": "Вероятность и статистика", "s8_events": "Вероятность и статистика", "s8_trees": "Вероятность и статистика", "s9_comb": "Вероятность и статистика", "s9_geom_prob": "Вероятность и статистика", "s9_bernoulli": "Вероятность и статистика", "s9_random_var": "Вероятность и статистика", "p7_measure": "Физика", "p7_matter": "Физика", "p7_motion": "Физика", "p7_density": "Физика", "p7_forces": "Физика", "p7_pressure": "Физика", "p7_archimedes": "Физика", "p7_work_energy": "Физика", "p8_heat": "Физика", "p8_phase": "Физика", "p8_charge": "Физика", "p8_current": "Физика", "p8_circuits": "Физика", "p8_power": "Физика", "p8_magnet": "Физика", "p8_light": "Физика", "p9_kinematics": "Физика", "p9_curve": "Физика", "p9_newton": "Физика", "p9_momentum": "Физика", "p9_energy": "Физика", "p9_waves": "Физика", "p9_em": "Физика", "p9_nuclear": "Физика", "c8_substances": "Химия", "c8_atoms": "Химия", "c8_atom_structure": "Химия", "c8_bonds": "Химия", "c8_formulas": "Химия", "c8_mole": "Химия", "c8_reactions": "Химия", "c8_classes": "Химия", "c8_solutions": "Химия", "c8_calc": "Химия", "c9_ed": "Химия", "c9_ionic": "Химия", "c9_redox": "Химия", "c9_halogens": "Химия", "c9_nonmetals": "Химия", "c9_metals": "Химия", "c9_organic": "Химия", "russkiy": "Русский язык", "english": "Английский язык", "m5_natural": "Математика", "m5_equations": "Математика", "m5_word": "Математика", "m5_fractions": "Математика", "m5_geometry": "Математика", "m5_decimals": "Математика", "m6_divisibility": "Математика", "m6_fractions": "Математика", "m6_proportions": "Математика", "m6_percent": "Математика", "m6_negative": "Математика", "m6_equations": "Математика", "m6_coordinates": "Математика", "m6_circle": "Математика", "m6_logic": "Математика", "m6_olymp": "Математика", "i_first_program": "Программирование", "i_variables": "Программирование", "i_if": "Программирование", "i_for": "Программирование", "i_while": "Программирование", "i_strings": "Программирование", "i_lists": "Программирование", "i_functions": "Программирование", "i_algorithms": "Программирование", "i_oge": "Программирование", "i_neural": "Программирование", "i7_info": "Информатика", "i7_media": "Информатика", "i8_numbers": "Информатика", "i8_logic": "Информатика", "i8_executors": "Информатика", "i9_graphs": "Информатика", "i9_spreadsheets": "Информатика", "i9_files_net": "Информатика", "l_statements": "Логика", "l_knights": "Логика", "l_tables": "Логика", "l_weighing": "Логика", "l_parity": "Логика", "l_dirichlet": "Логика", "l_games": "Логика", "l_proofs": "Логика", "geo5_discoveries": "География", "geo5_earth": "География", "geo5_plan": "География", "geo5_map": "География", "geo5_coords": "География", "geo6_lithosphere": "География", "geo6_relief": "География", "geo6_ocean": "География", "geo6_land_waters": "География", "geo6_atmosphere": "География", "geo6_biosphere": "География", "geo8_position": "География", "geo8_territory": "География", "geo8_population": "География", "geo8_relief": "География", "geo8_climate": "География", "geo8_waters": "География", "geo8_nature": "География"}, "grade": {"vyrazheniya": 7, "a7_lin_eq": 7, "a7_word_problems": 7, "a7_func_linear": 7, "a7_powers": 7, "a7_polynomials": 7, "fsu": 7, "a7_factoring": 7, "a7_systems": 7, "a7_divisibility": 7, "a7_modulus": 7, "korni": 8, "drobi": 8, "giperbola": 8, "a8_quadratic": 8, "a8_vieta": 8, "a8_quad_param": 8, "a8_rational_eq": 8, "a8_inequalities": 8, "a8_int_powers": 8, "g7_basics": 7, "g7_angles": 7, "g7_triangles_eq": 7, "g7_isosceles": 7, "g7_parallel": 7, "g7_angle_sum": 7, "g7_right_tri": 7, "g7_circle": 7, "chetyrehugolniki": 8, "ploshchad": 8, "g8_pythagoras": 8, "g8_similarity": 8, "g8_midline": 8, "s7_data": 7, "srednee": 7, "s7_median": 7, "s7_graphs": 7, "s7_prob_intro": 7, "mnozhestva": 8, "dispersiya": 8, "s8_prob": 8, "s8_events": 8, "s8_trees": 8, "s9_comb": 9, "s9_geom_prob": 9, "s9_bernoulli": 9, "s9_random_var": 9, "p7_measure": 7, "p7_matter": 7, "p7_motion": 7, "p7_density": 7, "p7_forces": 7, "p7_pressure": 7, "p7_archimedes": 7, "p7_work_energy": 7, "p8_heat": 8, "p8_phase": 8, "p8_charge": 8, "p8_current": 8, "p8_circuits": 8, "p8_power": 8, "p8_magnet": 8, "p8_light": 8, "c8_substances": 8, "c8_atoms": 8, "c8_atom_structure": 8, "c8_bonds": 8, "c8_formulas": 8, "c8_mole": 8, "c8_reactions": 8, "c8_classes": 8, "c8_solutions": 8, "c8_calc": 8, "m5_natural": 5, "m5_equations": 5, "m5_word": 5, "m5_fractions": 5, "m5_geometry": 5, "m5_decimals": 5, "m6_divisibility": 6, "m6_fractions": 6, "m6_proportions": 6, "m6_percent": 6, "m6_negative": 6, "m6_equations": 6, "m6_coordinates": 6, "m6_circle": 6, "m6_logic": 6, "m6_olymp": 6, "l_statements": 5, "l_knights": 5, "l_tables": 5, "l_weighing": 6, "l_parity": 6, "l_dirichlet": 7, "l_games": 7, "l_proofs": 8}, "kidGrade": {"Артём": 8, "Павел": 6}};
+/* Игровой слой: XP, уровни, 🔥 серия дней, 💎 кристаллы, ачивки, задания дня, магазин, карта миров.
+   Всё хранится отдельно для каждого ребёнка: PROF.key('trainer:game'). */
+(function(){
+"use strict";
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const now=()=>{try{if(window.__FAKE_NOW)return new Date(window.__FAKE_NOW);}catch(e){}return new Date();};
+const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseD=s=>{const a=String(s).split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);};
+const addDays=(s,n)=>{const d=parseD(s);d.setDate(d.getDate()+n);return ymd(d);};
+const diffDays=(a,b)=>{const x=parseD(a),y=parseD(b);return Math.round((Date.UTC(y.getFullYear(),y.getMonth(),y.getDate())-Date.UTC(x.getFullYear(),x.getMonth(),x.getDate()))/864e5);};
+const today=()=>ymd(now());
+const ruDate=s=>{if(!s)return '';const a=String(s).split('-');return a.length===3?`${a[2]}.${a[1]}.${a[0]}`:s;};
+const plural=(n,a,b,c)=>{const x=Math.abs(n)%100,y=x%10;if(x>10&&x<20)return c;if(y>1&&y<5)return b;if(y===1)return a;return c;};
+const reduced=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
+const LIST=()=>window.PROF?PROF.list:['Артём','Павел'];
+const NAME=()=>window.PROF?PROF.name():'Артём';
+const keyFor=(base,name)=>{const L=LIST();return name===L[0]?base:base+'@'+name;};
+const KEY=()=>window.PROF?PROF.key('trainer:game'):'trainer:game';
+const RKEY=()=>window.PROF?PROF.key('trainer:review'):'trainer:review';
+const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'null');}catch(e){return null;}};
+const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+
+/* ---------- уровни ---------- */
+const LV=[[0,'Нуб','🥚'],[150,'Новичок','🐣'],[400,'Игрок','🎮'],[800,'Скиллер','⚡'],[1400,'Про','😎'],[2200,'Мастер','🛡️'],
+  [3300,'Эксперт','🧪'],[4800,'Чемпион','🏆'],[6800,'Гроссмейстер','♟️'],[9500,'Легенда','🌟'],[13000,'Мифический','🐉'],[18000,'Бог знаний','👑']];
+function levelOf(xp){let i=0;while(i+1<LV.length&&xp>=LV[i+1][0])i++;
+  const cur=LV[i][0],nxt=i+1<LV.length?LV[i+1][0]:null;
+  return {n:i+1,name:LV[i][1],icon:LV[i][2],from:cur,to:nxt,pct:nxt?Math.round((xp-cur)/(nxt-cur)*100):100,left:nxt?nxt-xp:0};}
+
+/* ---------- ачивки ---------- */
+const RAR={c:['обычный','c'],r:['редкий','r'],e:['эпический','e'],l:['легендарный','l']};
+const C=s=>s.cnt||{};
+const BADGES=[
+ {id:'first',  i:'👣',n:'Первый шаг',       d:'Реши первую задачу правильно',              r:'c',t:s=>C(s).right>=1},
+ {id:'r10',    i:'🔟',n:'Разогрев',          d:'10 верных ответов с первого раза',         r:'c',t:s=>C(s).right>=10},
+ {id:'r100',   i:'💯',n:'Сотня',             d:'100 верных ответов с первого раза',        r:'r',t:s=>C(s).right>=100},
+ {id:'r1000',  i:'🏔️',n:'Тысячник',          d:'1000 верных ответов с первого раза',       r:'l',t:s=>C(s).right>=1000},
+ {id:'topic1', i:'🏁',n:'Первый чекпоинт',   d:'Пройди первую тему до конца',              r:'c',t:s=>C(s).topics>=1},
+ {id:'topic10',i:'📚',n:'Книжный червь',     d:'Пройди 10 тем до конца',                   r:'r',t:s=>C(s).topics>=10},
+ {id:'perfect',i:'💎',n:'Чистый забег',      d:'Пройди тему без единой ошибки с первого раза',r:'e',t:s=>C(s).perfect>=1},
+ {id:'star1',  i:'⭐',n:'Первая звезда',     d:'Реши первую олимпиадную задачу ★',         r:'r',t:s=>C(s).star>=1},
+ {id:'star10', i:'🌟',n:'Звездочёт',         d:'Реши 10 олимпиадных задач ★',              r:'e',t:s=>C(s).star>=10},
+ {id:'s3',     i:'🔥',n:'Искра',             d:'3 дня подряд по 50 XP',                    r:'c',t:s=>s.best>=3},
+ {id:'s7',     i:'🔥',n:'Неделя огня',       d:'7 дней подряд по 50 XP',                   r:'r',t:s=>s.best>=7},
+ {id:'s14',    i:'☄️',n:'Две недели в огне', d:'14 дней подряд по 50 XP',                  r:'e',t:s=>s.best>=14},
+ {id:'s30',    i:'🌋',n:'Вулкан',            d:'30 дней подряд по 50 XP',                  r:'l',t:s=>s.best>=30},
+ {id:'fix10',  i:'🛠️',n:'Работа над ошибками',d:'10 раз реши закрепление после ошибки',    r:'r',t:s=>C(s).fixed>=10},
+ {id:'rules25',i:'📜',n:'Знаток правил',     d:'25 верных ответов на вопросы о правилах',  r:'r',t:s=>C(s).rules>=25},
+ {id:'rev1',   i:'🧠',n:'Первая Повторялка', d:'Пройди Повторялку на сегодня',             r:'c',t:s=>C(s).reviews>=1},
+ {id:'rev7',   i:'🧠',n:'Железная память',   d:'7 дней Повторялки подряд',                 r:'e',t:s=>(s.rev&&s.rev.best||0)>=7},
+ {id:'daily3', i:'📅',n:'Всё по плану',      d:'Выполни все 3 задания дня',                r:'c',t:s=>C(s).dailyAll>=1},
+ {id:'lvl5',   i:'😎',n:'Уже Про',           d:'Дойди до 5 уровня',                        r:'r',t:s=>levelOf(s.xp).n>=5},
+ {id:'lvl10',  i:'🌟',n:'Живая легенда',     d:'Дойди до 10 уровня',                       r:'l',t:s=>levelOf(s.xp).n>=10},
+ {id:'world',  i:'🌍',n:'Покоритель мира',   d:'Пройди все этапы одного мира (все темы предмета за класс)',r:'l',t:s=>worldsDone().world},
+ {id:'boss',   i:'🐉',n:'Босс повержен',     d:'Пройди «Испытание ★» в конце мира',        r:'l',t:s=>worldsDone().boss},
+ {id:'mamaboss',i:'⚔️',n:'Победитель босса',  d:'Сдай экзамен у мамы: закрой все предметы недели и победи босса',r:'l',t:s=>!!(s.flags&&s.flags.mamaBoss)},
+ {id:'shop1',  i:'🛍️',n:'Модник',            d:'Купи что-нибудь в Магазине',               r:'c',t:s=>(s.shop&&s.shop.owned||[]).length>=1},
+ {id:'early',  i:'🐦',n:'Ранняя пташка',     d:'Реши задачу до 8:00 утра',                 r:'r',t:s=>!!(s.flags&&s.flags.early)},
+ {id:'owl',    i:'🦉',n:'Сова-шутница',      d:'Ачивка-шутка: решал после 21:00. Даже совы спят! Мозг сохраняет выученное во сне — так что лучше занимайся днём 😴',r:'c',t:s=>!!(s.flags&&s.flags.owl)},
+ // секретные
+ {id:'x_combo',  sec:1,i:'⚡',n:'Комбо ×20',     d:'20 верных ответов подряд без единой ошибки', r:'e',t:s=>(C(s).comboBest||0)>=20},
+ {id:'x_back',   sec:1,i:'🦸',n:'Возвращение героя',d:'Вернулся к учёбе после перерыва в 3+ дня',r:'r',t:s=>!!(s.flags&&s.flags.back)},
+ {id:'x_weekend',sec:1,i:'🏖️',n:'Выходной герой',d:'Набрал 50 XP и в субботу, и в воскресенье',r:'r',t:s=>!!(s.flags&&s.flags.weekend)},
+ {id:'x_marathon',sec:1,i:'🏃',n:'Марафонец',     d:'300 XP за один день',                       r:'e',t:s=>Object.values(s.days||{}).some(v=>v>=300)},
+ {id:'x_rich',   sec:1,i:'🐷',n:'Копилка',       d:'Накопи 200 💎 одновременно',                r:'r',t:s=>(s.gems||0)>=200},
+ {id:'x_pi',     sec:1,i:'🥧',n:'Число π',       d:'Набери 314 XP — как первые цифры числа π = 3,14…',r:'c',t:s=>s.xp>=314},
+];
+
+/* ---------- карта миров (данные — window.GAME_MAP из сборки) ---------- */
+function doneMap(name){if(!name||name===NAME())return window.PROF?PROF.done():{};const v=rd(keyFor('trainer:done',name));return v||{};}
+function starOk(d,id){const a=d[id],b=d[id+':star'];if(a&&a.star==null&&!b)return true;const v=Math.max(a&&a.star!=null?a.star:-1,b?b.pct:-1);return v>=70;}
+function worldState(w,d){
+  const st=w.stages.map(s=>({...s,done:!!(d[s.id]&&(s.need==null||(d[s.id].best!=null?d[s.id].best:d[s.id].pct)>=s.need))}));
+  const all=st.length&&st.every(s=>s.done);
+  let boss=false;
+  if(all){boss=w.boss==='rules'?st.every(s=>{const r=d[s.id+':rules'];return r&&(r.best!=null?r.best:r.pct)>=90;}):st.every(s=>starOk(d,s.id));}
+  const nextI=st.findIndex(s=>!s.done);
+  return {st,all,boss,nextI,n:st.filter(s=>s.done).length};
+}
+function worldsDone(){const M=window.GAME_MAP;if(!M)return {world:false,boss:false};const d=doneMap();let world=false,boss=false;
+  M.worlds.forEach(w=>{const s=worldState(w,d);if(s.all)world=true;if(s.boss)boss=true;});return {world,boss};}
+
+/* ---------- задания дня ---------- */
+const QDEF={
+ right20:{t:'Реши 20 задач правильно с первого раза',g:20,v:s=>s.today.right},
+ right10:{t:'Реши 10 задач правильно с первого раза',g:10,v:s=>s.today.right},
+ combo10:{t:'Реши 10 задач подряд без ошибок',g:10,v:s=>s.today.comboMax},
+ xp150:  {t:'Набери 150 XP за день',g:150,v:s=>s.today.xp},
+ star1:  {t:'Реши 1 олимпиадную задачу ★',g:1,v:s=>s.today.star},
+ rule5:  {t:'Ответь верно на 5 вопросов о правилах',g:5,v:s=>s.today.rule},
+ fix3:   {t:'Исправь 3 ошибки: реши закрепление',g:3,v:s=>s.today.fixed},
+ topic1: {t:'Пройди одну тему до конца',g:1,v:s=>s.today.topic},
+ review: {t:'Пройди Повторялку на сегодня',g:1,v:s=>s.today.review},
+};
+const Q_XP=40,Q_GEMS=10;
+function hash(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h;}
+function pickQuests(s,name){
+  const h=hash(s.today.date+name);
+  const A=['right20','combo10','xp150'],B=['star1','rule5','fix3','topic1'];
+  const studied=Object.keys(doneMap()).length>0||Object.keys(((rd(window.PROF?PROF.key('ru-trainer:v1'):'ru-trainer:v1')||{}).stats)||{}).length>0;
+  return [A[h%A.length],B[(h>>>4)%B.length],studied?'review':'right10'];
+}
+
+/* ---------- магазин ---------- */
+const SHOP=[
+ {id:'av_fox',k:'av',v:'🦊',p:0,free:'Артём'},{id:'av_tiger',k:'av',v:'🐯',p:0,free:'Павел'},
+ {id:'av_panda',k:'av',v:'🐼',p:30},{id:'av_frog',k:'av',v:'🐸',p:30},{id:'av_peng',k:'av',v:'🐧',p:30},
+ {id:'av_lion',k:'av',v:'🦁',p:50},{id:'av_wolf',k:'av',v:'🐺',p:50},{id:'av_octo',k:'av',v:'🐙',p:50},
+ {id:'av_robot',k:'av',v:'🤖',p:80},{id:'av_alien',k:'av',v:'👾',p:80},{id:'av_dino',k:'av',v:'🦖',p:80},
+ {id:'av_ninja',k:'av',v:'🥷',p:100},{id:'av_wizard',k:'av',v:'🧙',p:100},{id:'av_dragon',k:'av',v:'🐲',p:150,lvl:4},{id:'av_unicorn',k:'av',v:'🦄',p:150,lvl:4},
+ {id:'fr_none',k:'fr',v:'none',n:'Без рамки',p:0},{id:'fr_silver',k:'fr',v:'silver',n:'Серебро',p:40},{id:'fr_gold',k:'fr',v:'gold',n:'Золото',p:80},
+ {id:'fr_neon',k:'fr',v:'neon',n:'Неон',p:120},{id:'fr_fire',k:'fr',v:'fire',n:'Огонь',p:150,lvl:3},{id:'fr_rainbow',k:'fr',v:'rainbow',n:'Радуга',p:200,lvl:5},
+ {id:'nc_base',k:'nc',v:'base',n:'Обычный',p:0},{id:'nc_sky',k:'nc',v:'sky',n:'Небесный',p:30},{id:'nc_mint',k:'nc',v:'mint',n:'Мятный',p:30},
+ {id:'nc_violet',k:'nc',v:'violet',n:'Фиолетовый',p:50},{id:'nc_sun',k:'nc',v:'sun',n:'Солнечный',p:50},{id:'nc_rainbow',k:'nc',v:'rainbow',n:'Радужный',p:150,lvl:4},
+ {id:'ac_base',k:'ac',v:'base',n:'Синий (обычный)',p:0},{id:'ac_lime',k:'ac',v:'lime',n:'Изумруд',p:60},{id:'ac_violet',k:'ac',v:'violet',n:'Аметист',p:60},
+ {id:'ac_sunset',k:'ac',v:'sunset',n:'Закат',p:60},{id:'ac_rose',k:'ac',v:'rose',n:'Малина',p:60},
+ {id:'ti_none',k:'ti',v:'',n:'Без титула',p:0},{id:'ti_frac',k:'ti',v:'Укротитель дробей',p:40},{id:'ti_form',k:'ti',v:'Повелитель формул',p:60},
+ {id:'ti_err',k:'ti',v:'Гроза ошибок',p:60},{id:'ti_ninja',k:'ti',v:'Ниндзя логики',p:80},{id:'ti_rev',k:'ti',v:'Мастер Повторялки',p:80},
+ {id:'ti_hack',k:'ti',v:'Хакер мозга',p:100,lvl:3},{id:'ti_cap',k:'ti',v:'Капитан Знание',p:120,lvl:5},{id:'ti_leg',k:'ti',v:'Легенда класса',p:200,lvl:8},
+];
+const SHOP_KINDS=[['av','Аватар'],['fr','Рамка аватара'],['nc','Цвет имени'],['ac','Цвет сайта'],['ti','Титул под именем']];
+function owns(s,it,name){return it.p===0&&(!it.free||it.free===name)||(s.shop.owned||[]).includes(it.id);}
+function eq(s,name){const e=s.shop.eq||{};const L=LIST();return {av:e.av||(name===L[1]?'🐯':'🦊'),fr:e.fr||'none',nc:e.nc||'base',ac:e.ac||'base',ti:e.ti||''};}
+
+/* ---------- состояние ---------- */
+function fresh(){return {v:1,xp:0,gems:0,days:{},streak:0,best:0,lastDay:null,lastActive:null,badges:{},cnt:{},flags:{},today:{date:today()},daily:{date:null,ids:[],done:{}},shop:{owned:[],eq:{}},rev:{last:null,streak:0,best:0}};}
+function norm(s,name){
+  s=s&&typeof s==='object'?s:fresh();const f=fresh();for(const k in f)if(s[k]==null)s[k]=f[k];
+  const t=today();
+  if(s.today.date!==t)s.today={date:t};
+  ['right','star','rule','fixed','xp','comboMax','review','topic','combo'].forEach(k=>{if(s.today[k]==null)s.today[k]=0;});
+  if(s.daily.date!==t){s.daily={date:t,ids:pickQuests(s,name||NAME()),done:{}};}
+  return s;
+}
+function load(name){name=name||NAME();return norm(rd(keyFor('trainer:game',name)),name);}
+function save(s){const ks=Object.keys(s.days).sort();if(ks.length>140)ks.slice(0,ks.length-140).forEach(k=>delete s.days[k]);wr(KEY(),s);}
+/* Серия: показываем, только если последний «засчитанный» день — сегодня или вчера */
+function liveStreak(s){if(!s.lastDay)return 0;const g=diffDays(s.lastDay,today());return g<=1?s.streak:0;}
+
+/* ---------- UI: тосты, конфетти ---------- */
+let host=null;
+/* тосты — сразу под липкой шапкой, чтобы не закрывать её */
+function topY(){try{const h=document.querySelector('header.top');if(h){const r=h.getBoundingClientRect();if(r.bottom>0)return Math.round(r.bottom+8);}}catch(e){}return 12;}
+function toastHost(){if(!(host&&document.body.contains(host))){host=document.createElement('div');host.className='gm-toasts';host.setAttribute('aria-live','polite');document.body.appendChild(host);}
+  host.style.top=topY()+'px';return host;}
+const queue=[];let showing=0;
+function toast(o){queue.push(o);pump();}
+function pump(){
+  if(!document.body)return;
+  while(showing<3&&queue.length){
+    const o=queue.shift();showing++;
+    const el=document.createElement('div');el.className='gm-toast '+(o.cls||'');
+    el.innerHTML=`<div class="gm-t-ic${o.rar?' rar-'+o.rar:''}">${o.icon||'✨'}</div><div class="gm-t-tx"><b>${o.title}</b>${o.text?`<span>${o.text}</span>`:''}</div>`;
+    toastHost().appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('in'));
+    setTimeout(()=>{el.classList.remove('in');el.classList.add('out');setTimeout(()=>{el.remove();showing--;pump();},reduced()?10:350);},o.ms||3800);
+  }
+}
+function xpPill(xp,gems){
+  if(!document.body)return;
+  const el=document.createElement('div');el.className='gm-xp';el.textContent=`+${xp} XP`+(gems?`  +${gems} 💎`:'');el.style.top=topY()+'px';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),reduced()?900:1300);
+}
+function confetti(n){
+  if(reduced()||!document.body)return;
+  const box=document.createElement('div');box.className='gm-confetti';box.setAttribute('aria-hidden','true');
+  const cols=['#3d5afe','#f2a623','#1e9e5a','#e5484d','#9b5de5','#00b8d9'];
+  for(let i=0;i<(n||70);i++){const p=document.createElement('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%cols.length];
+    p.style.animationDelay=(Math.random()*0.35)+'s';p.style.animationDuration=(1.4+Math.random()*1.1)+'s';p.style.setProperty('--dx',(Math.random()*160-80)+'px');p.style.setProperty('--r',(Math.random()*720-360)+'deg');
+    if(i%3===0){p.style.width='7px';p.style.height='7px';p.style.borderRadius='50%';}box.appendChild(p);}
+  document.body.appendChild(box);setTimeout(()=>box.remove(),3000);
+}
+function levelUp(lv){
+  if(!document.body)return;
+  const old=document.querySelector('.gm-lvlup');if(old)old.remove();
+  const el=document.createElement('div');el.className='gm-lvlup';el.setAttribute('role','status');
+  el.innerHTML=`<div class="gm-lu-card"><div class="gm-lu-sm">НОВЫЙ УРОВЕНЬ!</div><div class="gm-lu-ic">${lv.icon}</div><div class="gm-lu-n">Уровень ${lv.n}</div><div class="gm-lu-name">${esc(lv.name)}</div>${lv.to?`<div class="gm-lu-next">До следующего: ${lv.left} XP</div>`:'<div class="gm-lu-next">Это максимальный уровень. Ты — легенда!</div>'}</div>`;
+  document.body.appendChild(el);confetti(90);
+  requestAnimationFrame(()=>el.classList.add('in'));
+  const close=()=>{el.classList.add('out');setTimeout(()=>el.remove(),300);document.removeEventListener('pointerdown',close,true);};
+  setTimeout(close,4200);setTimeout(()=>document.addEventListener('pointerdown',close,true),400);
+}
+
+/* ---------- ядро: начисление ---------- */
+let sessionCombo=0;
+const COUNT={first:'right',star:'star',rule:'rules',fixed:'fixed',topic:'topics',perfect:'perfect',card:'cards',review:'reviews'};
+function add(xp,kind,opt){
+  opt=opt||{};
+  const name=NAME();const s=load(name);const t=today();const d=now();
+  const lvBefore=levelOf(s.xp).n;const gemBase=Math.floor(s.xp/10);
+  xp=Math.max(0,Math.round(xp||0));
+  s.xp+=xp;
+  let gems=Math.floor(s.xp/10)-gemBase;
+  if(opt.gems){gems+=opt.gems;}
+  s.gems+=gems;
+  const prevDayXp=s.days[t]||0;
+  s.days[t]=prevDayXp+xp;
+  if(kind!=='quest')s.today.xp+=xp;
+  const ck=COUNT[kind];if(ck)s.cnt[ck]=(s.cnt[ck]||0)+1;
+  if(kind==='first'||kind==='star'||kind==='rule'){
+    s.cnt.right=(s.cnt.right||0)+(kind==='first'?0:1);
+    if(kind==='first'||kind==='star'||kind==='rule')s.today.right++;
+    if(kind==='star')s.today.star++;
+    if(kind==='rule')s.today.rule++;
+    sessionCombo++;s.today.combo=(s.today.combo||0)+1;s.today.comboMax=Math.max(s.today.comboMax,s.today.combo);
+    s.cnt.comboBest=Math.max(s.cnt.comboBest||0,sessionCombo,s.today.combo);
+    const h=d.getHours();if(h<8&&h>=5)s.flags.early=1;if(h>=21||h<5)s.flags.owl=1;
+  }
+  if(kind==='fixed')s.today.fixed++;
+  if(kind==='topic')s.today.topic++;
+  if(kind==='review'){s.today.review++;
+    const r=s.rev;if(r.last!==t){r.streak=r.last&&diffDays(r.last,t)===1?r.streak+1:1;r.last=t;r.best=Math.max(r.best||0,r.streak);}}
+  // возвращение после перерыва
+  if(s.lastActive&&s.lastActive!==t&&diffDays(s.lastActive,t)>=4)s.flags.back=1;
+  if(xp>0)s.lastActive=t;
+  // серия дней: день засчитан, когда набрано ≥ 50 XP
+  let streakMsg=null;
+  if(prevDayXp<50&&s.days[t]>=50&&s.lastDay!==t){
+    s.streak=s.lastDay&&diffDays(s.lastDay,t)===1?s.streak+1:1;s.lastDay=t;s.best=Math.max(s.best,s.streak);streakMsg=s.streak;
+    const wd=d.getDay();const other=wd===0?addDays(t,-1):wd===6?addDays(t,1):null;if(other&&(s.days[other]||0)>=50)s.flags.weekend=1;
+  }
+  // задания дня
+  const qDone=[];
+  s.daily.ids.forEach(id=>{const q=QDEF[id];if(!q||s.daily.done[id])return;if((q.v(s)||0)>=q.g){s.daily.done[id]=t;qDone.push(id);}});
+  let qXp=0,qGems=0;
+  qDone.forEach(()=>{qXp+=Q_XP;qGems+=Q_GEMS;});
+  if(qXp){const gb=Math.floor(s.xp/10);s.xp+=qXp;s.days[t]+=qXp;const g2=Math.floor(s.xp/10)-gb+qGems;s.gems+=g2;gems+=g2;
+    if(s.daily.ids.every(id=>s.daily.done[id]))s.cnt.dailyAll=(s.cnt.dailyAll||0)+1;
+    if(prevDayXp<50&&s.days[t]>=50&&s.lastDay!==t){s.streak=s.lastDay&&diffDays(s.lastDay,t)===1?s.streak+1:1;s.lastDay=t;s.best=Math.max(s.best,s.streak);streakMsg=s.streak;}}
+  const newB=checkBadges(s);
+  save(s);
+  // ---- показываем ----
+  try{
+    if(xp&&!opt.quiet)xpPill(xp+qXp,gems);
+    qDone.forEach(id=>toast({icon:'📅',title:'Задание дня выполнено!',text:`${esc(QDEF[id].t)} · +${Q_XP} XP, +${Q_GEMS} 💎`,cls:'quest'}));
+    if(streakMsg!=null){toast({icon:'🔥',title:streakMsg>1?`${streakMsg} ${plural(streakMsg,'день','дня','дней')} подряд!`:'Огонёк зажжён!',text:streakMsg>1?'Сегодняшний день засчитан. Не потеряй серию завтра!':'Ты набрал 50 XP сегодня — день засчитан. Приходи завтра, и серия вырастет!',cls:'streak'});
+      if([7,14,30].includes(streakMsg)&&window.NOTIFY)try{(NOTIFY.queue||NOTIFY.send)(`${name}: 🔥 ${streakMsg} дней подряд!`,`${name} занимается ${streakMsg} дней подряд (каждый день не меньше 50 XP). Уровень ${levelOf(s.xp).n} «${levelOf(s.xp).name}», всего ${s.xp} XP.`,['fire']);}catch(e){}
+      if(streakMsg>=3)confetti(40);}
+    newB.forEach(b=>toast({icon:b.i,rar:b.r,title:`Ачивка: ${esc(b.n)}`,text:`${RAR[b.r][0]} · ${esc(b.d)}`,cls:'badge rar-'+b.r,ms:4500}));
+    const lv=levelOf(s.xp);
+    if(lv.n>lvBefore){levelUp(lv);if(window.NOTIFY)try{(NOTIFY.queue||NOTIFY.send)(`${name}: новый уровень ${lv.n}!`,`${name} теперь «${lv.name}» ${lv.icon} — уровень ${lv.n}. Всего ${s.xp} XP, серия 🔥 ${liveStreak(s)}.`,['tada']);}catch(e){}}
+  }catch(e){console.error(e);}
+  refresh();
+  return s;
+}
+/* поставить флаг (например, mamaBoss после экзамена у мамы) и выдать ачивки, которые от него зависят */
+function flag(f){const s=load();s.flags=s.flags||{};s.flags[f]=(s.flags[f]||0)+1;const nb=checkBadges(s);save(s);
+  try{nb.forEach(b=>toast({icon:b.i,rar:b.r,title:`Ачивка: ${esc(b.n)}`,text:`${RAR[b.r][0]} · ${esc(b.d)}`,cls:'badge rar-'+b.r,ms:5000}));}catch(e){}refresh();return nb;}
+function miss(){sessionCombo=0;const s=load();s.today.combo=0;save(s);}
+function checkBadges(s){
+  const out=[];const t=today();
+  BADGES.forEach(b=>{if(s.badges[b.id])return;let ok=false;try{ok=b.t(s);}catch(e){}if(ok){s.badges[b.id]=t;out.push(b);}});
+  return out;
+}
+/* проверка «статичных» ачивок (мир, босс) без начисления XP */
+function check(){const s=load();const nb=checkBadges(s);if(nb.length){save(s);nb.forEach(b=>toast({icon:b.i,rar:b.r,title:`Ачивка: ${esc(b.n)}`,text:`${RAR[b.r][0]} · ${esc(b.d)}`,cls:'badge rar-'+b.r,ms:4500}));refresh();}}
+
+/* ---------- Повторялка: сколько карточек ждёт ---------- */
+const REV_MAX=15,REV_NEW=8;
+function reviewInfo(name){
+  name=name||NAME();const r=rd(keyFor('trainer:review',name))||{};const cards=r.cards||{};const t=today();
+  const ses=(r.sessions||{})[t];
+  if(ses){if(ses.done)return {done:true,n:0,due:0};return {done:false,n:Math.max(0,ses.queue.length-ses.pos)+(ses.again||[]).length,started:true};}
+  const due=Object.values(cards).filter(c=>c.due<=t).length;
+  const d=doneMap(name);const pool=r.pool||{};
+  const intro={};Object.keys(cards).forEach(k=>{const src=k.split(':')[0];intro[src]=(intro[src]||0)+1;});
+  let est=0;
+  Object.keys(d).forEach(id=>{if(id.includes(':')||!window.GAME_MAP||!(window.GAME_MAP.ids||[]).includes(id))return;est+=pool[id]!=null?Math.max(0,pool[id]-(intro[id]||0)):5;});
+  const ru=(rd(keyFor('ru-trainer:v1',name))||{}).stats||{},en=(rd(keyFor('en-trainer:v1',name))||{}).stats||{};
+  est+=Object.keys(ru).filter(k=>!cards['ru:'+k]).length+Object.keys(en).filter(k=>!cards['en:'+k]).length;
+  /* материал прошлых лет (классы ниже текущего) считается изученным — его хватает надолго */
+  const M=window.GAME_MAP||{};const kg=(M.kidGrade||{})[name];
+  if(kg&&(Object.values(M.grade||{}).some(g=>g<kg)||kg>5))est+=REV_NEW;
+  const nNew=Math.min(Math.max(0,REV_NEW-((r.newDays||{})[t]||0)),est);
+  return {done:false,n:Math.min(REV_MAX,due+nNew),due,studied:est>0||Object.keys(cards).length>0};
+}
+
+/* ---------- шапка: чип ---------- */
+function avHtml(e,big){return `<span class="gm-av fr-${esc(e.fr)}${big?' big':''}"><span>${e.av}</span></span>`;}
+function applyCosmetics(s,name){const e=eq(s,name);try{if(e.ac&&e.ac!=='base')document.documentElement.dataset.accent=e.ac;else delete document.documentElement.dataset.accent;}catch(err){}}
+let chip=null,panel=null;
+function mount(header){
+  try{
+    if(!header||header.querySelector('.gm-chip'))return;
+    const name=NAME();let s=load(name);
+    // серия прервалась — мягкое сообщение один раз
+    if(s.streak>0&&s.lastDay&&diffDays(s.lastDay,today())>1){const lost=s.streak;s.streak=0;s.lostShown=today();save(s);
+      setTimeout(()=>toast({icon:'🌱',title:'Серия огоньков прервалась',text:`Ничего страшного — у всех бывают перерывы. Твой рекорд: ${lost} 🔥. Набери сегодня 50 XP, и начнётся новая серия!`,cls:'streak',ms:7000}),600);}
+    applyCosmetics(s,name);
+    chip=document.createElement('button');chip.type='button';chip.className='gm-chip';chip.setAttribute('aria-label','Мой персонаж: уровень, серия и кристаллы');
+    chip.onclick=e=>{e.stopPropagation();togglePanel();};
+    // на страницах тем чип и «Как это работает?» — в верхней строке со ссылкой «← Все тренажёры», чтобы шапка не разрасталась
+    const home=header.querySelector('.brand a.home');
+    if(home){const box=document.createElement('span');box.className='gm-homes';home.parentNode.insertBefore(box,home);box.appendChild(home);
+      if(!/guide\.html$/.test(location.pathname)){const a=document.createElement('a');a.className='home gm-help';a.href='guide.html';a.textContent='❓ Как это работает?';box.appendChild(a);}
+      chip.classList.add('sm');box.appendChild(chip);}
+    else{const before=header.querySelector('.theme-btn');header.insertBefore(chip,before||null);}
+    refresh();
+    setTimeout(check,800);
+  }catch(e){console.error(e);}
+}
+function refresh(){
+  try{
+    const name=NAME();const s=load(name);const lv=levelOf(s.xp);const st=liveStreak(s);const e=eq(s,name);
+    if(chip){chip.innerHTML=`${avHtml(e)}<span class="gm-c-lv">Ур. ${lv.n}</span><span class="gm-c-st${st?'':' off'}">🔥 ${st}</span><span class="gm-c-gm">💎 ${s.gems}</span>`;
+      chip.title=`${lv.name} · ${s.xp} XP · ${st} ${plural(st,'день','дня','дней')} подряд`;}
+    if(panel)renderPanel();
+    renderers.forEach(f=>{try{f();}catch(err){console.error(err);}});
+  }catch(e){console.error(e);}
+}
+const renderers=[];
+function questsHtml(s){
+  return `<ul class="gm-qs">${s.daily.ids.map(id=>{const q=QDEF[id];if(!q)return '';const v=Math.min(q.g,q.v(s)||0);const ok=!!s.daily.done[id];
+    return `<li class="${ok?'ok':''}"><span class="gm-q-ic">${ok?'✅':'⬜'}</span><span class="gm-q-t">${esc(q.t)}<span class="progress"><i style="width:${Math.round(v/q.g*100)}%"></i></span></span><span class="gm-q-r">${ok?'готово':`${v}/${q.g}`}<small>+${Q_XP} XP · +${Q_GEMS} 💎</small></span></li>`;}).join('')}</ul>`;
+}
+function togglePanel(){if(panel){closePanel();return;}panel=document.createElement('div');panel.className='gm-panel';panel.style.top=topY()+'px';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Мой персонаж');document.body.appendChild(panel);renderPanel();
+  setTimeout(()=>document.addEventListener('click',outside,true),0);}
+function outside(e){if(panel&&!panel.contains(e.target)&&!(chip&&chip.contains(e.target))){closePanel();}}
+function closePanel(){if(panel){panel.remove();panel=null;}document.removeEventListener('click',outside,true);}
+function renderPanel(){
+  const name=NAME();const s=load(name);const lv=levelOf(s.xp);const st=liveStreak(s);const e=eq(s,name);const ri=reviewInfo(name);const td=s.days[today()]||0;
+  const onIndex=!!document.getElementById('char');
+  panel.innerHTML=`<button class="gm-x" aria-label="Закрыть">✕</button>
+  <div class="gm-p-head">${avHtml(e,true)}<div><div class="gm-name nc-${esc(e.nc)}">${esc(name)}</div>${e.ti?`<div class="gm-title">«${esc(e.ti)}»</div>`:''}<div class="small">${lv.icon} Уровень ${lv.n} — ${esc(lv.name)}</div></div></div>
+  <div class="gm-bar"><div class="progress"><i style="width:${lv.pct}%"></i></div><div class="small">${s.xp} XP${lv.to?` · до уровня ${lv.n+1}: ${lv.left} XP`:' · максимум!'}</div></div>
+  <div class="gm-p-row"><div><b>🔥 ${st} ${plural(st,'день','дня','дней')} подряд</b><div class="small">Рекорд: ${s.best}. Сегодня: ${Math.min(td,50)}/50 XP${td>=50?' — день засчитан ✓':' до огонька'}</div></div><div><b>💎 ${s.gems}</b><div class="small">кристаллов</div></div></div>
+  <h4>📅 Задания дня</h4>${questsHtml(s)}
+  <div class="gm-p-btns"><a class="btn" href="review.html">🧠 Повторялка${ri.done?' ✓':ri.n?` (${ri.n})`:''}</a><a class="btn ghost" href="${onIndex?'#char':'index.html#char'}">👤 Персонаж и магазин</a><a class="btn ghost" href="guide.html">📘 Как тут всё устроено</a></div>`;
+  panel.querySelector('.gm-x').onclick=closePanel;
+  panel.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',closePanel));
+}
+
+/* ---------- главная: «Мой персонаж» ---------- */
+function badgeCard(b,date){
+  const locked=!date;const hide=locked&&b.sec;
+  return `<div class="gm-b ${locked?'locked':''} rar-${b.r}" title="${esc(hide?'Секретная ачивка: узнаешь, когда получишь':b.d)}"><div class="gm-b-ic">${hide?'❓':b.i}</div><div class="gm-b-n">${esc(hide?'???':b.n)}</div><div class="gm-b-r">${hide?'секретная':RAR[b.r][0]}</div><div class="gm-b-d">${locked?(hide?'Секрет':esc(b.d)):'получена '+ruDate(date)}</div></div>`;
+}
+function badgesHtml(s){
+  const got=BADGES.filter(b=>s.badges[b.id]).sort((a,b)=>String(s.badges[b.id]).localeCompare(String(s.badges[a.id])));
+  const rest=BADGES.filter(b=>!s.badges[b.id]);
+  return `<div class="gm-badges">${got.map(b=>badgeCard(b,s.badges[b.id])).join('')}${rest.map(b=>badgeCard(b,null)).join('')}</div>`;
+}
+function renderChar(el){
+  const draw=()=>{
+    const name=NAME();const s=load(name);const lv=levelOf(s.xp);const st=liveStreak(s);const e=eq(s,name);const ri=reviewInfo(name);
+    const nb=Object.keys(s.badges).length;
+    el.innerHTML=`<div class="gm-ch-top">${avHtml(e,true)}<div class="gm-ch-id"><div class="gm-name nc-${esc(e.nc)}">${esc(name)}</div>${e.ti?`<div class="gm-title">«${esc(e.ti)}»</div>`:''}
+      <div class="gm-ch-lv">${lv.icon} Уровень ${lv.n} — <b>${esc(lv.name)}</b></div>
+      <div class="progress gm-xpbar"><i style="width:${lv.pct}%"></i></div><div class="small">${s.xp} XP${lv.to?` · до уровня ${lv.n+1} «${esc(LV[lv.n][1])}» осталось ${lv.left} XP`:' · максимальный уровень!'}</div></div></div>
+    <div class="gm-stats"><div><b>🔥 ${st}</b><span>${plural(st,'день','дня','дней')} подряд · рекорд ${s.best}</span></div><div><b>✅ ${s.cnt.right||0}</b><span>верно с первого раза</span></div><div><b>💎 ${s.gems}</b><span>кристаллов</span></div><div><b>🏅 ${nb}/${BADGES.length}</b><span>ачивок</span></div></div>
+    <a class="btn gm-rev-btn" href="review.html">🧠 Повторялка на сегодня <span class="gm-rev-n">${ri.done?'✓ готово':ri.n?`${ri.n} ${plural(ri.n,'карточка','карточки','карточек')}`:'нет карточек'}</span></a>
+    ${!ri.done&&!ri.n&&!ri.started?'<p class="small" style="margin:6px 0 0">Карточки появятся, когда ты пройдёшь первую тему до конца.</p>':''}
+    <h3>📅 Задания дня <span class="small">— обновляются каждый день</span></h3>${questsHtml(s)}
+    <details class="gm-bd" open><summary><h3>🏅 Мои ачивки <span class="small">${nb} из ${BADGES.length}</span></h3></summary>${badgesHtml(s)}</details>`;
+  };
+  draw();renderers.push(draw);
+}
+
+/* ---------- карта миров ---------- */
+function renderWorlds(el,opts){
+  opts=opts||{};const href=opts.href||(i=>i+'.html');
+  const draw=()=>{
+    const M=window.GAME_MAP;if(!M){el.innerHTML='';return;}
+    const name=NAME();const d=doneMap(name);const mine=(M.focus&&M.focus[name])||null;
+    const one=w=>{const ws=worldState(w,d);
+      const nodes=ws.st.map((s,i)=>`${i?'<span class="gm-link'+(s.done?' on':'')+'"></span>':''}<a class="gm-node ${s.done?'done':i===ws.nextI?'next':''}" href="${esc(s.href||href(s.page||s.id))}" title="${esc(s.title)}" aria-label="${esc((i+1)+'. '+s.title+(s.done?' — пройдено':''))}">${s.done?'✅':i+1}</a>`).join('');
+      const bossT=w.boss==='rules'?'Испытание ★: проверка правил всех уровней на 90%':'Испытание ★: олимпиадный уровень всех тем на 70%';
+      let bossHref=href(w.stages[0].page||w.stages[0].id);if(ws.all&&!ws.boss){const miss=w.stages.find(s=>w.boss==='rules'?!(d[s.id+':rules']&&(d[s.id+':rules'].best||d[s.id+':rules'].pct)>=90):!starOk(d,s.id));if(miss)bossHref=miss.href||href(miss.page||miss.id);}
+      const boss=`<span class="gm-link${ws.boss?' on':''}"></span><a class="gm-node boss ${ws.boss?'done':ws.all?'next':'locked'}" href="${esc(bossHref)}" title="${esc(bossT)}" aria-label="${esc(bossT)}">${ws.boss?'🏆':ws.all?'🐉':'🔒'}</a>`;
+      const nx=ws.nextI>=0?ws.st[ws.nextI]:null;
+      return `<div class="gm-world"><div class="gm-w-h"><span class="gm-w-ic">${esc(w.icon)}</span><b>${esc(w.title)}</b><span class="small">${ws.n}/${ws.st.length} ✅${ws.boss?' · 🏆 босс пройден':''}</span></div>
+      <div class="gm-path">${nodes}${boss}</div>
+      <div class="small gm-w-next">${nx?`Следующий этап: <a href="${esc(nx.href||href(nx.page||nx.id))}">${esc(nx.title)} →</a>`:ws.boss?'Мир пройден полностью! 🎉':`Все этапы пройдены — осталось <b>Испытание ★</b>: ${esc(bossT.replace('Испытание ★: ',''))}.`}</div></div>`;};
+    const focus=mine?M.worlds.filter(w=>w.grade==null||mine.includes(w.grade)):M.worlds;
+    const other=mine?M.worlds.filter(w=>!(w.grade==null||mine.includes(w.grade))):[];
+    el.innerHTML=`<p class="small" style="margin-top:0">Каждый предмет — это <b>мир</b>, каждая тема — <b>этап</b> с чекпоинтом ✅. Проходи этапы по порядку: следующий мигает. В конце мира ждёт босс — <b>Испытание ★</b>.</p>
+    ${focus.map(one).join('')}${other.length?`<details class="gm-more"><summary>Другие миры (${other.length})</summary>${other.map(one).join('')}</details>`:''}`;
+  };
+  draw();renderers.push(draw);
+}
+
+/* ---------- магазин ---------- */
+function renderShop(el){
+  const draw=()=>{
+    const name=NAME();const s=load(name);const e=eq(s,name);const lv=levelOf(s.xp).n;
+    el.innerHTML=`<p class="small" style="margin-top:0">У тебя <b>💎 ${s.gems}</b>. Кристаллы даются за XP (примерно 1 💎 за каждые 10 XP) и за задания дня. Здесь только украшения для профиля — на учёбу они не влияют. <b>Кристаллы — не настоящие деньги</b>: их нельзя обменять на Robux. Robux — только за <a href="#quests">задания с наградой</a>.</p>
+    <div class="gm-preview">${avHtml(e,true)}<div><div class="gm-name nc-${esc(e.nc)}">${esc(name)}</div>${e.ti?`<div class="gm-title">«${esc(e.ti)}»</div>`:'<div class="small">без титула</div>'}</div></div>
+    ${SHOP_KINDS.map(([k,t])=>`<h3>${t}</h3><div class="gm-shop">${SHOP.filter(it=>it.k===k&&(!it.free||it.free===name)).map(it=>{
+      const own=owns(s,it,name);const on=e[k]===it.v||(k==='av'&&e.av===it.v);const lock=it.lvl&&lv<it.lvl&&!own;
+      const face=k==='av'?`<span class="gm-s-av">${it.v}</span>`:k==='fr'?`<span class="gm-av fr-${it.v}"><span>${e.av}</span></span>`:k==='nc'?`<span class="gm-name nc-${it.v}" style="font-size:16px">${esc(name)}</span>`:k==='ac'?`<span class="gm-sw" data-acc="${it.v}"></span>`:`<span class="gm-s-ti">${it.v?'«'+esc(it.v)+'»':'—'}</span>`;
+      return `<button class="gm-item ${on?'on':''} ${lock?'lock':''}" data-id="${it.id}" ${lock?'disabled':''}>${face}${it.n&&k!=='nc'?`<span class="gm-s-n">${esc(it.n)}</span>`:''}<span class="gm-s-p">${on?'надето ✓':own?'надеть':lock?`🔒 с ${it.lvl} уровня`:`💎 ${it.p}`}</span></button>`;}).join('')}</div>`).join('')}
+    <div class="errmsg" id="gmShopErr"></div>`;
+    el.querySelectorAll('.gm-item').forEach(b=>b.onclick=()=>{const r=buy(b.dataset.id);const m=el.querySelector('#gmShopErr');if(!r.ok&&m)m.textContent=r.msg;});
+  };
+  draw();renderers.push(draw);
+}
+function buy(id){
+  const name=NAME();const s=load(name);const it=SHOP.find(x=>x.id===id);if(!it)return {ok:false,msg:'Нет такого предмета.'};
+  if(!owns(s,it,name)){
+    if(it.lvl&&levelOf(s.xp).n<it.lvl)return {ok:false,msg:`Этот предмет открывается с ${it.lvl} уровня.`};
+    if(s.gems<it.p)return {ok:false,msg:`Не хватает кристаллов: нужно 💎 ${it.p}, у тебя 💎 ${s.gems}. Решай задачи и выполняй задания дня!`};
+    s.gems-=it.p;s.shop.owned.push(it.id);
+    toast({icon:k2icon(it),title:'Покупка!',text:`Теперь у тебя: ${esc(it.n||it.v)}`,cls:'quest'});
+  }
+  s.shop.eq=s.shop.eq||{};s.shop.eq[it.k]=it.v;
+  const nb=checkBadges(s);save(s);nb.forEach(b=>toast({icon:b.i,rar:b.r,title:`Ачивка: ${esc(b.n)}`,text:`${RAR[b.r][0]} · ${esc(b.d)}`,cls:'badge rar-'+b.r}));
+  applyCosmetics(s,name);refresh();return {ok:true};
+}
+function k2icon(it){return it.k==='av'?it.v:it.k==='fr'?'🖼️':it.k==='nc'?'🎨':it.k==='ac'?'🌈':'🏷️';}
+
+/* ---------- страница родителя ---------- */
+function parent(el){
+  let h='';
+  LIST().forEach(name=>{
+    const s=load(name);const lv=levelOf(s.xp);const st=liveStreak(s);const e=eq(s,name);const ri=reviewInfo(name);
+    const got=BADGES.filter(b=>s.badges[b.id]);
+    const last7=[];for(let i=6;i>=0;i--){const d=addDays(today(),-i);last7.push([d,s.days[d]||0]);}
+    h+=`<div class="gm-par"><div class="gm-p-head">${avHtml(e,true)}<div><div class="gm-name">${esc(name)}</div><div>${lv.icon} Уровень <b>${lv.n}</b> — ${esc(lv.name)} · <b>${s.xp}</b> XP · 💎 ${s.gems}</div>
+      <div>🔥 Серия: <b>${st}</b> ${plural(st,'день','дня','дней')} (рекорд ${s.best}) · ✅ верно с первого раза: ${s.cnt.right||0} · 🧠 Повторялок: ${s.cnt.reviews||0}${ri.done?' (сегодня пройдена)':''}</div></div></div>
+      <div class="gm-week">${last7.map(([d,v])=>`<div title="${ruDate(d)}: ${v} XP"><i style="height:${Math.min(100,v/2)}%" class="${v>=50?'ok':''}"></i><span>${d.slice(8)}</span></div>`).join('')}</div>
+      <div class="small">XP за последние 7 дней (зелёный столбик — день засчитан, ≥ 50 XP)</div>
+      <div class="gm-par-b">${got.length?got.map(b=>`<span class="gm-chipb rar-${b.r}" title="${esc(b.d)} · ${ruDate(s.badges[b.id])}">${b.i} ${esc(b.n)}</span>`).join(''):'<span class="small">Ачивок пока нет.</span>'}</div></div>`;
+  });
+  el.innerHTML=h;
+}
+
+window.GAME={add,miss,check,flag,mount,refresh,toast,confetti,levelOf,load,reviewInfo,renderChar,renderWorlds,renderShop,buy,parent,
+  LV,BADGES,SHOP,QDEF,today,addDays,diffDays,now,ymd,keyFor,REV_MAX,REV_NEW,
+  _reset(){sessionCombo=0;}};
+})();
+
+(function(){
+"use strict";
+/* ---------- helpers available to topic modules as window.H ---------- */
+const H = window.H = {
+  R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),
+  pick:a=>a[Math.floor(Math.random()*a.length)],
+  shuffle:a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},
+  sample:(a,k)=>H.shuffle(a).slice(0,k),
+  range:(a,b,st)=>{st=st||1;const r=[];for(let i=a;i<=b;i+=st)r.push(i);return r;},
+  gcd:(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;},
+  lcm:(a,b)=>Math.abs(a*b)/H.gcd(a,b),
+  plural:(n,one,few,many)=>{const a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return many;if(b>1&&b<5)return few;if(b===1)return one;return many;},
+  num:x=>{if(typeof x!=='number')return String(x);let r=Math.round(x*1e9)/1e9;let s=String(r).replace('.',',');return s.replace(/^-/,'−');},
+  fmtSet:(arr)=>{if(!arr||!arr.length)return '∅';let a=arr.slice();if(a.every(v=>typeof v==='number'))a.sort((x,y)=>x-y);return '{'+a.map(v=>typeof v==='number'?H.num(v):v).join(', ')+'}';},
+  frac:(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`,
+  sqrt:x=>`<span class="sqrt">√<span>${x}</span></span>`,
+  m:s=>`<span class="m">${s}</span>`,
+  parseNum:(s)=>{
+    if(s==null)return NaN;
+    {const mm=String(s).trim().replace(/[−–—]/g,'-').match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);if(mm){const d=+mm[4];if(!d)return NaN;const v=+mm[2]+(+mm[3])/d;return mm[1]?-v:v;}}
+    s=String(s).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'.');
+    if(!s)return NaN;
+    let m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+    if(m){const d=Number(m[2]);return d===0?NaN:Number(m[1])/d;}
+    if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return Number(s);
+    return NaN;
+  },
+  normTok:(t)=>String(t).toLowerCase().replace(/ё/g,'е').replace(/[«»"'.]/g,'').trim(),
+  normExpr:(s)=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/[·*×]/g,'').replace(/,/g,'.').replace(/²/g,'^2').replace(/³/g,'^3')
+};
+H.parseList=function(raw){
+  let s=String(raw).trim();
+  if(/^(∅|пусто|пустое|пустоемножество|\{\s*\})$/i.test(s.replace(/\s+/g,'')))return [];
+  s=s.replace(/[{}]/g,' ');
+  return s.split(/[;,\s]+/).map(t=>t.trim()).filter(Boolean).filter(t=>t!=='∅');
+};
+H.sameSet=function(userArr,ansArr){
+  const key=v=>{const n=H.parseNum(v);return isNaN(n)?'s:'+H.normTok(v):'n:'+(Math.round(n*1e9)/1e9);};
+  const a=new Set(userArr.map(key)),b=new Set(ansArr.map(key));
+  if(a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;
+};
+
+H.toFrac=function(x){if(!isFinite(x)||Number.isInteger(x))return null;const r=Math.round(x*1e6)/1e6;if(Math.abs(r-x)<1e-12&&String(r).split('.')[1].length<=4)return null;
+  let best=null;for(let d=2;d<=10000;d++){const n=Math.round(x*d);if(Math.abs(n/d-x)<1e-9){best=[n,d];break;}}if(!best)return null;const g=H.gcd(best[0],best[1]);return [best[0]/g,best[1]/g];};
+H.normChem=function(x){const sub='₀₁₂₃₄₅₆₇₈₉',sup='⁰¹²³⁴⁵⁶⁷⁸⁹';return String(x).replace(/[\u200b-\u200d\u2060]/g,'').replace(/[₀-₉]/g,c=>sub.indexOf(c)).replace(/[⁰-⁹]/g,c=>sup.indexOf(c)).replace(/[⁺]/g,'+').replace(/[⁻−–]/g,'-').replace(/\s+/g,'').replace(/→|->|=>|=/g,'=');};
+H.sub=s=>String(s).replace(/(\d+)/g,'<sub>$1</sub>');
+H.chem=f=>`<span class="chem">${String(f).replace(/([A-Za-z\)\]])(\d+)/g,'$1<sub>$2</sub>')}</span>`;
+H.near=(x,y,tol)=>Math.abs(x-y)<=(tol==null?1e-9:Math.max(1e-9,Math.abs(tol<1?tol*y:tol)));
+
+/* ---------- state ---------- */
+let T=null,LS_KEY='';
+const store={get(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'null');}catch(e){return null;}},set(v){try{localStorage.setItem(LS_KEY,JSON.stringify(v));}catch(e){}},clear(){try{localStorage.removeItem(LS_KEY);}catch(e){}}};
+let S=null;
+const MAX_REINFORCE=3;
+const $=(sel,el)=>(el||document).querySelector(sel);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- layout ---------- */
+function build(){
+  T=window.TOPIC;LS_KEY=window.PROF?PROF.key('trainer:'+T.id):'trainer:'+T.id;
+  document.title=T.title+' — тренажёр';
+  const symTab=T.symbols?(T.symbols.tab||'Знаки'):null;
+  document.body.innerHTML=`
+  <header class="top"><div class="wrap">
+    <div class="brand"><a class="home" href="index.html">← Все тренажёры</a>${T.title}<small>${T.subtitle||''}</small></div>
+    <nav class="tabs" role="tablist">
+      <button data-v="theory" aria-selected="true">Теория</button>
+      ${symTab?`<button data-v="sym" aria-selected="false">${symTab}</button>`:''}
+      <button data-v="train" aria-selected="false">Тренажёр</button>
+    </nav>
+    <button class="theme-btn" id="themeBtn" title="Светлая / тёмная тема" aria-label="Сменить тему">◐</button>
+  </div></header>
+  <main class="wrap">
+    <section class="view on theory" id="v-theory"></section>
+    ${symTab?'<section class="view" id="v-sym"></section>':''}
+    <section class="view" id="v-train"></section>
+  </main>`;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.dataset.theme;
+    const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'light':'dark';
+    try{localStorage.setItem('trainer:theme',document.documentElement.dataset.theme);}catch(e){}
+  };
+  try{const th=localStorage.getItem('trainer:theme');if(th)document.documentElement.dataset.theme=th;}catch(e){}
+  if(window.PROF)PROF.mount($('header.top .wrap'),$('main.wrap'));
+  renderTheory();
+  if(symTab)renderSym();
+  renderStart();
+}
+function show(v){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function fillFigs(root){
+  root.querySelectorAll('[data-fig]').forEach(el=>{
+    const f=T.figs&&T.figs[el.dataset.fig];
+    if(f){try{el.innerHTML=f(el.dataset);}catch(e){console.error(e);}}
+  });
+}
+function renderTheory(){
+  const v=$('#v-theory');
+  let h=`<div class="card"><h1>${T.title}: объясняю просто</h1>${T.intro||''}
+    <div class="row" style="margin-top:8px"><button class="btn" id="goTrain">Перейти к задачам →</button></div></div>`;
+  T.theory.forEach((s,i)=>{
+    h+=`<div class="card" id="th-${i}" data-lvl="${s.lvl==null?'':s.lvl}"><h2><span class="n">${i+1}</span><span>${s.title}</span></h2>${s.html}</div>`;
+  });
+  h+=`<div class="card"><div class="row"><button class="btn" id="goTrain2">Всё прочитал — к задачам →</button></div></div>`;
+  v.innerHTML=h;
+  fillFigs(v);
+  if(window.PY)PY.mountRuns(v);
+  if(T.onTheory){try{T.onTheory(v);}catch(e){console.error(e);}}
+  $('#goTrain').onclick=()=>show('train');
+  $('#goTrain2').onclick=()=>show('train');
+}
+function renderSym(){
+  const v=$('#v-sym');const sy=T.symbols;
+  let h=`<div class="card"><h1>${sy.title||'Что значит каждый знак'}</h1>${sy.intro||''}
+  <table class="sym"><thead><tr><th>Знак</th><th>Как называется и читается</th><th>Что значит простыми словами</th><th>Пример</th></tr></thead><tbody>`;
+  sy.rows.forEach(r=>{h+=`<tr><td class="s">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]||''}</td></tr>`;});
+  h+=`</tbody></table>${sy.after||''}</div>`;
+  v.innerHTML=h;fillFigs(v);
+}
+
+/* ---------- trainer ---------- */
+function freshStats(){const per={};T.levels.forEach((_,i)=>per[i]={r:0,w:0,fixed:0});return per;}
+function renderStart(){
+  const v=$('#v-train');const saved=store.get();
+  const counts=T.levels.map((_,i)=>T.gens.filter(g=>g.lvl===i).length);
+  let h=`<div class="card"><h1>Тренажёр</h1>
+  <p>${T.gens.length} ${H.plural(T.gens.length,'задача','задачи','задач')}: сначала совсем простые, в конце — сложные, олимпиадного уровня (★).</p>
+  <div class="box rule"><b>Как это работает</b>Решаешь задачу. Если ошибся — я подробно объясню, почему так. Прочитай и напиши слово <b>«понял»</b>. Если непонятно — нажми <b>«Не понял»</b>, и я объясню по-другому. Потом дам похожую задачу, чтобы закрепить.</div>
+  <div class="row" style="margin-top:12px">
+    ${saved&&saved.pos>0&&saved.pos<saved.queue.length?`<button class="btn" id="cont">Продолжить с задачи ${saved.pos+1}</button><button class="btn ghost" id="restart">Начать заново</button>`:`<button class="btn" id="restart">Начать с первой задачи</button>`}
+  </div>
+  ${T.gens.some(g=>g.rule)?`<div class="box tip" style="margin-top:14px"><b>🧠 Помнишь правила?</b>Быстрая проверка: только вопросы на сами правила и формулы, без задач. Полезно перед контрольной и через несколько дней после изучения.<div class="row" style="margin-top:8px"><button class="btn ghost" id="rulesOnly">Проверить правила (${T.gens.filter(g=>g.rule).length})</button></div></div>`:''}
+  </div>
+  <div class="card"><h2>Или начни с нужного уровня</h2><div class="levels">
+  ${T.levels.map((l,i)=>`<button data-l="${i}">${i+1}. ${l}<span>${counts[i]} ${H.plural(counts[i],'задача','задачи','задач')}</span></button>`).join('')}
+  </div></div>`;
+  v.innerHTML=h;
+  if($('#cont'))$('#cont').onclick=()=>{S=saved;S.cur=null;next();};
+  $('#restart').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+  if($('#rulesOnly'))$('#rulesOnly').onclick=()=>startQueue(T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0));
+  v.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l;startQueue(T.gens.map((g,i)=>g.lvl>=l?i:-1).filter(i=>i>=0));
+  });
+}
+function startQueue(q){S={queue:q,pos:0,right:0,wrong:0,per:freshStats(),cur:null};store.set(S);next();}
+function save(){const c=S.cur;S.cur=null;store.set(S);S.cur=c;}
+function next(){
+  if(S.pos>=S.queue.length){finish();return;}
+  const gi=S.queue[S.pos];
+  S.cur={gi,task:makeTask(gi),re:0,stage:'answer',alt:0};
+  renderTask();
+}
+function makeTask(gi){
+  for(let k=0;k<20;k++){try{const t=T.gens[gi].make();if(t)return t;}catch(e){console.error('gen',gi,e);}}
+  return {type:'choice',q:'Ошибка в задаче',opts:['Дальше'],ans:0,short:'',explain:'',explain2:''};
+}
+function reinforce(){
+  S.cur={gi:S.cur.gi,task:makeTask(S.cur.gi),re:S.cur.re+1,stage:'answer',alt:0};
+  renderTask();
+}
+function ansText(t){
+  if(t.ansText)return t.ansText;
+  switch(t.type){
+    case 'choice':return t.opts[t.ans];
+    case 'multi':return t.ans.map(i=>t.opts[i]).join('; ');
+    case 'num':{const f=H.toFrac(t.ans);return f?`${f[0]<0?'−':''}${H.frac(Math.abs(f[0]),f[1])} (≈ ${H.num(Math.round(t.ans*1000)/1000)})`:H.num(t.ans);}
+    case 'set':return H.fmtSet(t.ans);
+    case 'code':return `<div class="small">Вот одно из правильных решений:</div><pre class="code sol">${esc(t.solution||'')}</pre>`;
+    default:return Array.isArray(t.ans)?t.ans[0]:String(t.ans);
+  }
+}
+function renderTask(){
+  const v=S.emb?S.emb.host:$('#v-train');const c=S.cur,t=c.task,g=T.gens[c.gi];
+  const total=S.queue.length;
+  const pct=Math.round(S.pos/total*100);
+  let body='';
+  const keyL=['А','Б','В','Г','Д','Е','Ж'];
+  if(t.type==='choice'||t.type==='multi'){
+    body=`<div class="opts ${t.pics?'pics':''}">${t.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${t.type==='multi'?'☐':keyL[i]}</span><span>${o}</span></button>`).join('')}</div>`;
+    if(t.type==='multi')body+=`<p class="small" style="margin-top:8px">Можно выбрать несколько вариантов. Потом нажми «Проверить».</p><div class="row"><button class="btn" id="check">Проверить</button></div><div class="errmsg" id="err"></div>`;
+  }else if(t.type==='code'){
+    body=`<div id="pyhost"></div><div class="row" style="margin-top:8px"><button class="btn" id="check">✓ Проверить на тестах</button></div><div class="errmsg" id="err"></div><div id="pyrep"></div>`;
+  }else{
+    const keys=t.keys||(t.type==='set'?['∅']:t.type==='num'?['−','/',',']:[]);
+    body=`<div class="inp"><input id="ans" autocomplete="off" inputmode="${t.type==='num'&&!t.keys?'text':'text'}" placeholder="${esc(t.ph||(t.type==='set'?'например: 1, 2, 3 (или ∅)':t.type==='num'?'впиши число':'впиши ответ'))}"><button class="btn" id="check">Проверить</button></div>
+    ${keys.length?`<div class="keys">${keys.map(k=>`<button data-k="${esc(k)}">${k}</button>`).join('')}</div>`:''}
+    <div class="errmsg" id="err"></div>`;
+  }
+  v.innerHTML=`<div class="card">
+    ${S.emb?S.emb.meta:`<div class="meta"><span>Задача ${S.pos+1} из ${total}</span><span>${S.streak>=3?`🔥 Серия: ${S.streak} · `:''}Верно с первого раза: ${S.right} · Ошибок: ${S.wrong}</span></div>
+    <div class="progress"><i style="width:${pct}%"></i></div>`}
+    <div style="margin-top:12px">${c.re?`<span class="lvl-tag re">Закрепление ${c.re} · похожая задача</span> `:''}<span class="lvl-tag">Уровень ${g.lvl+1}: ${T.levels[g.lvl]}${g.star?' ★':''}</span></div>
+    <div class="q">${t.q}</div>
+    ${t.pic?`<div class="fig">${t.pic}</div>`:''}
+    ${body}
+    ${t.hint&&!(S.emb&&S.emb.exam)?`<div class="hint"><button class="btn ghost" id="hintBtn">💡 Подсказка</button><div class="box tip" id="hintBox" style="display:none">${t.hint}</div></div>`:''}
+    <div id="fb"></div>
+  </div>
+  ${S.emb?'':`<div class="row"><button class="btn ghost" id="toStart">← К выбору уровня</button><button class="btn ghost" id="toTheory">📖 Теория по этой задаче</button></div>`}`;
+  fillFigs(v);
+  if(t.onShow){try{t.onShow(v);}catch(e){console.error(e);}}
+  if($('#hintBtn'))$('#hintBtn').onclick=()=>{$('#hintBox').style.display='block';$('#hintBtn').style.display='none';};
+  if(!S.emb){$('#toStart').onclick=()=>{save();renderStart();};
+  $('#toTheory').onclick=()=>openTheory(g.lvl);}
+  if(t.type==='code'){
+    if(!window.PY){$('#pyhost').innerHTML='<div class="box err">Для этой задачи нужен модуль Python.</div>';}
+    else{
+      const ed=PY.editor($('#pyhost'),{code:c.code!=null?c.code:(t.starter||''),input:t.tests&&t.tests[0]?t.tests[0].in:'' ,forceInput:t.tests&&t.tests.some(x=>x.in)});
+      ed.ta.addEventListener('input',()=>{c.code=ed.code;});
+      PY.warm();
+      $('#check').onclick=async()=>{
+        const b=$('#check');b.disabled=true;b.textContent=PY.booted?'Проверяю…':'Загружаю Python и проверяю…';
+        const r=await PY.check(ed.code,t.tests||[]);
+        b.textContent='✓ Проверить на тестах';
+        if(r.boot){b.disabled=false;$('#pyrep').innerHTML=r.report;return;}
+        t._report=r.report;submit({passed:r.passed});
+      };
+    }
+  }else if(t.type==='choice'){
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>submit(+b.dataset.i));
+  }else if(t.type==='multi'){
+    const sel=new Set();
+    v.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.has(i)){sel.delete(i);b.classList.remove('sel');b.querySelector('.k').textContent='☐';}else{sel.add(i);b.classList.add('sel');b.querySelector('.k').textContent='☑';}$('#err').textContent='';});
+    $('#check').onclick=()=>{if(!sel.size){$('#err').textContent='Выбери хотя бы один вариант.';return;}submit([...sel].sort((a,b)=>a-b));};
+  }else{
+    const inp=$('#ans');
+    inp.addEventListener('input',()=>$('#err').textContent='');
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#check').click();}});
+    v.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+    $('#check').onclick=()=>{
+      const raw=inp.value;
+      if(!raw.trim()){$('#err').textContent=t.type==='set'?'Впиши ответ. Если элементов нет — нажми ∅.':'Сначала впиши ответ.';return;}
+      if(t.type==='num'&&!t.check&&isNaN(H.parseNum(raw))){$('#err').textContent='Впиши число, например 12, −3, 2,5 или 3/4.';return;}
+      submit(raw);
+    };
+    setTimeout(()=>inp.focus({preventScroll:true}),30);
+  }
+  window.scrollTo({top:0});
+}
+function isRight(t,val){
+  if(t.type==='code')return !!(val&&val.passed);
+  if(t.check)return !!t.check(val);
+  switch(t.type){
+    case 'choice':return val===t.ans;
+    case 'multi':{const a=t.ans.slice().sort((x,y)=>x-y);return a.length===val.length&&a.every((x,i)=>x===val[i]);}
+    case 'num':{const v=H.parseNum(val);if(t.tol!=null)return Math.abs(v-t.ans)<=Math.abs(t.tol<1?t.tol*t.ans:t.tol)+1e-9;return Math.abs(v-t.ans)<1e-9;}
+    case 'set':return H.sameSet(H.parseList(val),t.ans);
+    case 'text':{const n=H.normExpr(val);return (Array.isArray(t.ans)?t.ans:[t.ans]).some(a=>H.normExpr(a)===n);}
+  }
+  return false;
+}
+function submit(val){
+  const c=S.cur,t=c.task,g=T.gens[c.gi];
+  if(c.stage!=='answer')return;
+  c.stage='done';
+  const ok=isRight(t,val);
+  const v=S.emb?S.emb.host:$('#v-train');
+  /* экзамен у мамы: без подсветки верного ответа, без разбора — сразу дальше */
+  if(S.emb&&S.emb.exam){
+    v.querySelectorAll('.opt').forEach(b=>{b.disabled=true;});v.querySelectorAll('input,.keys button,#check,textarea').forEach(x=>{x.disabled=true;});
+    S.emb.cb(ok,val,t);return;
+  }
+  if(t.type==='choice'||t.type==='multi'){
+    const right=t.type==='choice'?[t.ans]:t.ans;const chosen=t.type==='choice'?[val]:val;
+    v.querySelectorAll('.opt').forEach(b=>{const i=+b.dataset.i;b.disabled=true;if(right.includes(i))b.classList.add('right');else if(chosen.includes(i))b.classList.add('wrong');});
+    if($('#check'))$('#check').disabled=true;
+  }else if(t.type==='code'){$('#check').disabled=true;v.querySelectorAll('#pyhost textarea').forEach(x=>x.readOnly=true);}
+  else{$('#ans').disabled=true;$('#check').disabled=true;v.querySelectorAll('.keys button').forEach(b=>b.disabled=true);}
+  if(!c.re){if(ok){S.right++;S.per[g.lvl].r++;}else{S.wrong++;S.per[g.lvl].w++;}}
+  else if(ok){S.per[g.lvl].fixed++;}
+  if(window.GAME&&!S.emb){try{if(!c.re){if(ok)GAME.add(g.rule?5:g.star?25:10,g.rule?'rule':g.star?'star':'first');else GAME.miss();}else if(ok)GAME.add(5,'fixed');}catch(e){}}
+  if(ok){S.streak=(S.streak||0)+1;S.best=Math.max(S.best||0,S.streak);}else S.streak=0;
+  const fb=$('#fb');
+  if(ok){
+    const sk=S.streak;const streakMsg=sk===5?' 🔥 5 подряд!':sk===10?' 🔥🔥 10 подряд — ты в ударе!':sk>0&&sk%15===0?` 🏆 ${sk} подряд!`:'';
+    const honest=(sk===10||(sk>0&&sk%15===0))?`<div class="small" style="margin-top:6px">Если всё это сам — ты красавчик! Если с нейронкой — честно, это ничего не стоит: на контрольной её не будет 😉</div>`:'';
+    fb.innerHTML=`<div class="fb ok"><h3>${c.re?'Закрепил! Молодец 💪':H.pick(['Верно! ✅','Правильно! 👍','Отлично! ✅','Точно! 🎯'])}${streakMsg}</h3>${honest}${t._report?t._report:''}${t.short?`<div>${t.short}</div>`:''}
+    <div class="row" style="margin-top:12px"><button class="btn" id="nextBtn">Следующая задача →</button></div></div>`;
+    fillFigs(fb);
+    $('#nextBtn').onclick=()=>{if(S.emb){S.emb.cb(true);return;}S.pos++;save();next();};
+    if(S.emb)$('#nextBtn').textContent='Дальше →';
+    $('#nextBtn').focus({preventScroll:true});
+  }else{
+    fb.innerHTML=`<div class="fb bad"><h3>Неправильно — давай разберёмся</h3>
+      ${t._report?t._report:''}<div class="ans">${t.type==='code'?'':'Правильный ответ: '}${ansText(t)}</div>
+      <div><b>Почему так:</b></div><div>${t.explain||''}</div></div>
+      <div id="alt"></div>
+      <div class="understand card" style="margin-top:12px">
+        <label for="und">Прочитай объяснение. Если всё ясно — напиши «понял»:</label>
+        <div class="inp"><input id="und" autocomplete="off" placeholder="напиши: понял"><button class="btn" id="undOk">Понял ✓</button></div>
+        <div class="errmsg" id="undErr"></div>
+        <div class="row"><button class="btn warn" id="undNo">🤔 Не понял — объясни по-другому</button></div>
+      </div>`;
+    fillFigs(fb);
+    const go=()=>{
+      const w=$('#und').value.trim().toLowerCase();
+      if(!/(^|\s)(понял|поняла|понятно|ясно|понял!)/.test(w)){$('#undErr').textContent='Напиши слово «понял», когда разберёшься. Если непонятно — нажми «Не понял».';return;}
+      if(S.emb){S.emb.cb(false);return;}
+      if(c.re<MAX_REINFORCE)reinforce();
+      else{S.pos++;save();next();}
+    };
+    $('#undOk').onclick=go;
+    $('#und').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go();}});
+    $('#und').addEventListener('input',()=>$('#undErr').textContent='');
+    $('#undNo').onclick=()=>{
+      c.alt++;
+      const alt=$('#alt');
+      if(c.alt===1){
+        alt.innerHTML=`<div class="fb alt"><h3>Объясняю по-другому</h3>${t.explain2||t.explain}</div>`;
+        $('#undNo').textContent='🤔 Всё равно не понял';
+      }else if(c.alt===2){
+        alt.innerHTML+=`<div class="fb alt"><h3>Ещё раз, совсем медленно</h3>${t.explain3||`<ol class="steps"><li>Прочитай ещё раз первое объяснение (красный блок) — по одной строчке.</li><li>Возьми листок и повтори каждый шаг сам, своей рукой.</li><li>Открой «Теорию по этой задаче» (кнопка внизу) и прочитай правило и пример.</li><li>Если всё ещё непонятно — покажи эту задачу маме или учителю: так быстрее всего.</li></ol>`}
+        ${S.emb?'':'<div class="row"><button class="btn ghost" id="altTheory">📖 Открыть теорию</button></div>'}</div>`;
+        if(!S.emb)$('#altTheory').onclick=()=>openTheory(g.lvl);
+        $('#undNo').style.display='none';
+      }
+      fillFigs(alt);
+    };
+    setTimeout(()=>$('#und').focus({preventScroll:true}),30);
+  }
+}
+function openTheory(lvl){
+  show('theory');
+  let target=null;
+  document.querySelectorAll('#v-theory .card[data-lvl]').forEach(el=>{if(!target&&el.dataset.lvl!==''&&el.dataset.lvl.split(',').map(Number).includes(lvl))target=el;});
+  if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  if(S&&S.cur){const back=document.getElementById('backToTask');if(!back){const b=document.createElement('button');b.id='backToTask';b.className='btn';b.textContent='← Вернуться к задаче';b.style.cssText='position:sticky;bottom:16px;margin:8px auto;display:flex';b.onclick=()=>{show('train');b.remove();};$('#v-theory').appendChild(b);}}
+}
+function finish(){
+  store.clear();
+  try{if(window.PROF){
+    const tot=S.right+S.wrong;
+    const full=S.queue.length===T.gens.length;
+    const ruleIdx=T.gens.map((g,i)=>g.rule?i:-1).filter(i=>i>=0);
+    const rulesOnly=ruleIdx.length&&S.queue.length===ruleIdx.length&&S.queue.every(i=>T.gens[i].rule);
+    let sr=0,sw=0;T.levels.forEach((_,i)=>{if(T.gens.some(g=>g.lvl===i&&g.star)){sr+=S.per[i].r;sw+=S.per[i].w;}});
+    const star=sr+sw?Math.round(sr/(sr+sw)*100):null;
+    if(tot&&full)PROF.record(T.id,{pct:Math.round(S.right/tot*100),total:tot,right:S.right,star},'закончил тренажёр «'+T.title+'»');
+    else if(tot&&rulesOnly)PROF.record(T.id+':rules',{pct:Math.round(S.right/tot*100),total:tot,right:S.right},'проверка правил «'+T.title+'»');
+    else if(tot&&star!=null&&S.queue.every(i=>T.gens[i].star||T.levels.length-1===T.gens[i].lvl))PROF.record(T.id+':star',{pct:star,total:sr+sw,right:sr,star},'олимпиадный уровень ★ «'+T.title+'»');
+  }}catch(e){console.error(e);}
+  try{if(window.GAME){const tot=S.right+S.wrong;if(tot&&S.queue.length===T.gens.length){GAME.add(50,'topic');if(!S.wrong)GAME.add(100,'perfect');}GAME.check();}}catch(e){console.error(e);}
+  const v=$('#v-train');const tot=S.right+S.wrong;
+  const pct=tot?Math.round(S.right/tot*100):0;
+  const weak=T.levels.map((l,i)=>({l,i,...S.per[i]})).filter(x=>x.w>0);
+  v.innerHTML=`<div class="card"><h1>Готово! 🎉</h1>
+  <div class="score">${S.right} из ${tot}</div><p>верно с первого раза (${pct}%). ${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=40?1:0)}${S.best>=5?` Лучшая серия: 🔥 ${S.best}.`:''}</p>
+  <p>${pct>=90?'Отличный результат — тема понята!':pct>=70?'Хорошо! Осталось подтянуть пару мест.':'Тема ещё не до конца уложилась — пройди уровни с ошибками ещё раз, это нормально.'}</p>
+  <ul class="res-list">${T.levels.map((l,i)=>{const p=S.per[i];if(!p.r&&!p.w)return '';return `<li><span>${i+1}. ${l}</span><span><span class="ok-t">${p.r} верно</span>${p.w?` · <span class="bad-t">${p.w} ошиб.</span>`:''}</span></li>`;}).join('')}</ul>
+  <div class="row">
+    ${weak.length?`<button class="btn" id="redoWeak">Прорешать уровни с ошибками (новые числа)</button>`:''}
+    <button class="btn ${weak.length?'ghost':''}" id="redoAll">Пройти всё заново</button>
+  </div></div>`;
+  if($('#redoWeak'))$('#redoWeak').onclick=()=>{const ls=new Set(weak.map(w=>w.i));startQueue(T.gens.map((g,i)=>ls.has(g.lvl)?i:-1).filter(i=>i>=0));};
+  $('#redoAll').onclick=()=>startQueue(T.gens.map((_,i)=>i));
+}
+window.__trainer={get S(){return S;},isRight,ansText,makeTask,next,submit};
+/* одна задача внутри другой страницы (Повторялка): та же отрисовка, разбор и «понял» */
+window.ENGINE={card(host,topic,gi,meta,cb,task,opt){T=topic;S={queue:[gi],pos:0,right:0,wrong:0,per:freshStats(),emb:{host,meta:meta||'',cb,exam:!!(opt&&opt.exam)}};
+  S.cur={gi,task:task||makeTask(gi),re:0,stage:'answer',alt:0};renderTask();return S.cur.task;},makeTaskFor(topic,gi){T=topic;return makeTask(gi);},isRight,ansText(topic,t){T=topic;return ansText(t);}};
+if(!window.REVIEW_MODE){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else setTimeout(build,0);}
+})();
+
+/* Python runner for the trainers: Pyodide in a Web Worker, self-hosted in ./py/ */
+(function(){
+"use strict";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE=(window.PY_BASE)||new URL('py/',location.href).href;
+const TIMEOUT=6000;
+const WORKER_SRC=`
+let py=null,ready=null;
+function boot(base){ if(ready)return ready; importScripts(base+'pyodide.js'); ready=loadPyodide({indexURL:base}).then(p=>{py=p;}); return ready; }
+onmessage=async e=>{
+  const {id,code,input,base}=e.data;
+  try{ await boot(base); }catch(err){ postMessage({id,ok:false,boot:true,out:'',err:String(err&&err.message||err)}); return; }
+  let out=''; const lines=String(input||'').replace(/\\r/g,'').split('\\n'); let li=0;
+  py.setStdout({batched:s=>{out+=s+'\\n';}});
+  py.setStderr({batched:s=>{out+=s+'\\n';}});
+  py.setStdin({stdin:()=> li<lines.length? lines[li++] : undefined, autoEOF:true});
+  const ns=py.globals.get('dict')();
+  try{ await py.runPythonAsync(code,{globals:ns}); postMessage({id,ok:true,out}); }
+  catch(err){ postMessage({id,ok:false,out,err:String(err&&err.message||err)}); }
+  finally{ try{ns.destroy();}catch(_){} }
+};`;
+let worker=null, booted=false, seq=0; const pending=new Map();
+function mk(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+  worker=new Worker(url);
+  worker.onmessage=e=>{const p=pending.get(e.data.id);if(!p)return;pending.delete(e.data.id);clearTimeout(p.t);if(!e.data.boot)booted=true;p.res(e.data);};
+  worker.onerror=e=>{pending.forEach(p=>{clearTimeout(p.t);p.res({ok:false,boot:!booted,out:'',err:'Не удалось запустить Python: '+(e.message||'ошибка загрузки')});});pending.clear();worker=null;};
+}
+function run(code,input){
+  return new Promise(res=>{
+    try{ if(!worker)mk(); }catch(e){ res({ok:false,boot:true,out:'',err:'Этот браузер не умеет запускать Python здесь. Открой тренажёр по ссылке на сайте (в Safari или Chrome).'}); return; }
+    const id=++seq;
+    const limit=booted?TIMEOUT:90000;
+    const t=setTimeout(()=>{ pending.delete(id); try{worker.terminate();}catch(_){} worker=null; booted=false;
+      res({ok:false,timeout:true,out:'',err:'Программа работает слишком долго (больше '+(TIMEOUT/1000)+' секунд). Скорее всего, где-то бесконечный цикл: проверь условие в while.'}); },limit);
+    pending.set(id,{res,t});
+    worker.postMessage({id,code,input,base:BASE});
+  });
+}
+/* friendly error explanation */
+function explainErr(err){
+  const s=String(err||'');const lines=s.trim().split('\n');let last=lines[lines.length-1]||s;
+  const lineNo=(s.match(/File "<exec>", line (\d+)/g)||[]).pop();const ln=lineNo?lineNo.match(/\d+/)[0]:null;
+  const map=[[/SyntaxError/,'Синтаксическая ошибка: Python не понял запись. Проверь двоеточие после if/for/while/def, скобки и кавычки.'],
+   [/IndentationError/,'Ошибка отступа: строки внутри if/for/while/def должны начинаться с 4 пробелов, одинаково.'],
+   [/NameError: name '([^']+)'/,m=>`Python не знает имя «${m[1]}». Возможно, опечатка, или переменная ещё не создана, или забыты кавычки у текста.`],
+   [/TypeError: can only concatenate str/,'Нельзя склеить текст и число через +. Преврати число в текст: str(x), или используй print(a, b).'],
+   [/TypeError: unsupported operand type\(s\) for .*'str' and 'int'|'int' and 'str'/,'Складываешь текст и число. Ввод input() — это всегда текст: используй int(input()).'],
+   [/TypeError/,'Ошибка типов: операция не подходит для этих данных (например, число и текст).'],
+   [/ZeroDivisionError/,'Деление на ноль.'],
+   [/ValueError: invalid literal for int/,'int() получил не число. Проверь ввод: возможно, в строке несколько чисел — тогда нужен split().'],
+   [/IndexError/,'Выход за границы списка или строки: такого индекса нет. Помни: индексы начинаются с 0.'],
+   [/EOFError/,'Программа просит ввод input() больше раз, чем есть строк во входных данных.'],
+   [/KeyError/,'Такого ключа нет в словаре.'],
+   [/RecursionError/,'Слишком глубокая рекурсия: функция вызывает себя без остановки.']];
+  for(const [re,msg] of map){const m=s.match(re);if(m)return (ln?`Строка ${ln}. `:'')+(typeof msg==='function'?msg(m):msg)+`<br><code>${esc(last)}</code>`;}
+  return (ln?`Строка ${ln}. `:'')+`<code>${esc(last)}</code>`;
+}
+function norm(o){return String(o).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/\n+$/,'').replace(/^\n+/,'');}
+async function check(code,tests){
+  let rows='';let passed=0;let firstFail=null;
+  for(let i=0;i<tests.length;i++){
+    const t=tests[i];const r=await run(code,t.in||'');
+    if(r.boot){return {passed:false,boot:true,report:`<div class="box err"><b>Python не загрузился</b>${esc(r.err)}</div>`};}
+    const got=r.ok?norm(r.out):null;const ok=r.ok&&got===norm(t.out);
+    if(ok)passed++;else if(!firstFail)firstFail={i,t,r,got};
+    if(i<8)rows+=`<tr><td>${i+1}</td><td><pre>${esc(t.in||'—')}</pre></td><td><pre>${esc(t.out)}</pre></td><td><pre>${r.ok?esc(got):'<span class="bad-t">ошибка</span>'}</pre></td><td>${ok?'✅':'❌'}</td></tr>`;
+    if(r.timeout)break;
+  }
+  let report=`<div class="small">Тестов пройдено: <b>${passed} из ${tests.length}</b></div><div class="tbl"><table class="sym tests"><thead><tr><th>№</th><th>Ввод</th><th>Ожидалось</th><th>Твоя программа</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  if(firstFail&&!firstFail.r.ok)report+=`<div class="box err"><b>Ошибка при запуске</b>${firstFail.r.timeout?esc(firstFail.r.err):explainErr(firstFail.r.err)}</div>`;
+  return {passed:passed===tests.length,report};
+}
+/* editor widget */
+function editor(host,opt){
+  opt=opt||{};
+  const code=opt.code||'';const needsInput=opt.input!=null||/input\s*\(/.test(code);
+  host.classList.add('pyed');
+  host.innerHTML=`<textarea class="code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" rows="${Math.max(3,Math.min(18,code.split('\n').length+1))}"></textarea>
+  ${needsInput||opt.forceInput?`<label class="small">Ввод (каждое значение на своей строке):<textarea class="code inp" rows="2" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea></label>`:''}
+  <div class="row pybtns"><button class="btn sbtn run">▶ Запустить</button>${opt.reset!==false?'<button class="btn ghost sbtn reset">↺ Начать заново</button>':''}</div>
+  <div class="pyout" hidden><div class="small">Вывод программы:</div><pre class="out"></pre></div>`;
+  const ta=host.querySelector('textarea.code');ta.value=code;
+  const inp=host.querySelector('textarea.inp');if(inp)inp.value=opt.input||'';
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,en=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(en);ta.selectionStart=ta.selectionEnd=s+4;}
+    if(e.key==='Enter'){const s=ta.selectionStart;const lineStart=ta.value.lastIndexOf('\n',s-1)+1;const line=ta.value.slice(lineStart,s);let ind=(line.match(/^ */)||[''])[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.value=ta.value.slice(0,s)+'\n'+ind+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+1+ind.length;}
+  });
+  ta.addEventListener('input',()=>{ta.rows=Math.max(3,Math.min(24,ta.value.split('\n').length+1));});
+  const outBox=host.querySelector('.pyout'),out=host.querySelector('.out'),runB=host.querySelector('.run');
+  runB.onclick=async()=>{
+    runB.disabled=true;outBox.hidden=false;out.textContent=booted?'Выполняю…':'Загружаю Python… В первый раз это занимает 10–30 секунд, потом — мгновенно.';
+    const r=await run(ta.value,inp?inp.value:'');runB.disabled=false;
+    if(r.ok){out.textContent=r.out||'(программа ничего не напечатала)';out.classList.remove('err');}
+    else{out.innerHTML=(r.out?esc(r.out)+'\n':'')+'<span class="bad-t">'+(r.timeout||r.boot?esc(r.err):explainErr(r.err))+'</span>';out.classList.add('err');}
+  };
+  const rs=host.querySelector('.reset');if(rs)rs.onclick=()=>{ta.value=code;ta.dispatchEvent(new Event('input'));};
+  return {get code(){return ta.value;},set code(v){ta.value=v;},get input(){return inp?inp.value:'';},ta};
+}
+function mountRuns(root){root.querySelectorAll('pre.run').forEach(pre=>{const d=document.createElement('div');pre.replaceWith(d);editor(d,{code:pre.textContent.replace(/^\n/,''),input:pre.dataset.input!=null?pre.dataset.input.replace(/\\n/g,'\n'):null});});}
+window.PY={run,check,editor,mountRuns,explainErr,norm,get booted(){return booted;},warm(){if(!worker&&!booted)run('pass','');}};
+})();
+</script>
+<script>(function(){
+const {R,pick,shuffle,sample,range,plural}=H;
+const N=H.num,M=H.m;
+const ok=(c,msg)=>{if(!c)throw new Error('self-check failed: '+msg);};
+const STEPS=(t,a)=>`<div class="box ex"><b>${t}</b>${a.map((s,i)=>`<div style="margin:5px 0"><b>Шаг ${i+1}.</b> ${s}</div>`).join('')}</div>`;
+const CHK=(qs)=>`<div class="box ex"><b>🤔 Проверь себя</b>${qs.map(([q,a])=>`<div style="margin:6px 0">${q}<details style="margin-top:4px"><summary style="cursor:pointer;color:var(--accent-ink);font-weight:600">Показать ответ</summary><div style="margin-top:4px">${a}</div></details></div>`).join('')}</div>`;
+const REM=(r,t)=>`<div class="box tip"><b>📌 Запомни</b>${r}<div style="margin-top:6px"><i>Как запомнить:</i> ${t}</div></div>`;
+const CH=(q,right,wrong,o)=>{const opts=shuffle([right,...wrong]);return Object.assign({type:'choice',q,opts,ans:opts.indexOf(right)},o);};
+const TBL=(head,rows)=>`<table class="sym" style="margin:6px 0"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+
+/* ---------- схемы ---------- */
+// схема отрезками. rows: [{lab, parts:[{n,t,dash}], end}], o: {brace:'текст', under:{row,from,to,t}}
+function segs(rows,o){o=o||{};const L=84,maxW=o.brace?172:190;const tot=r=>r.parts.reduce((s,p)=>s+p.n,0);const mx=Math.max(...rows.map(tot));const u=maxW/mx;const rh=o.under?52:40;let g='';
+  rows.forEach((r,i)=>{const y=14+i*rh;let x=L;g+=`<text x="${L-8}" y="${y+12}" text-anchor="end" font-size="13" font-weight="600" fill="var(--ink)">${r.lab}</text>`;
+    r.parts.forEach(p=>{const w=p.n*u;g+=`<rect x="${x}" y="${y}" width="${w}" height="16" fill="${p.dash?'none':'var(--hl)'}" fill-opacity="${p.dash?1:.55}" stroke="var(--fig)" stroke-width="1.3" ${p.dash?'stroke-dasharray="4 3"':''}/>`;
+      if(p.t)g+=`<text x="${x+w/2}" y="${y+12.5}" text-anchor="middle" font-size="11.5" fill="var(--ink)">${p.t}</text>`;x+=w;});
+    if(r.end&&!o.brace)g+=`<text x="${x+6}" y="${y+12.5}" font-size="13" font-weight="700" fill="var(--accent-ink)">${r.end}</text>`;
+    if(o.under&&o.under.row===i){const x1=L+o.under.from*u,x2=L+o.under.to*u,yy=y+22;g+=`<path d="M${x1},${yy} v5 H${x2} v-5" fill="none" stroke="var(--accent-ink)" stroke-width="1.3"/><text x="${(x1+x2)/2}" y="${yy+18}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--accent-ink)">${o.under.t}</text>`;}});
+  if(o.brace){const xb=L+maxW+8,y1=14,y2=14+(rows.length-1)*rh+16,ym=(y1+y2)/2;g+=`<path d="M${xb},${y1} q6,0 6,8 V${ym-6} q0,6 6,6 q-6,0 -6,6 V${y2-8} q0,8 -6,8" fill="none" stroke="var(--accent-ink)" stroke-width="1.5"/><text x="${xb+16}" y="${ym+5}" font-size="13" font-weight="700" fill="var(--accent-ink)">${o.brace}</text>`;}
+  const Hh=14+rows.length*rh;
+  return `<svg viewBox="0 0 340 ${Hh}" width="340" role="img" aria-label="Схема отрезками" style="font-family:system-ui,sans-serif">${g}</svg>`;}
+// схема движения
+function arrow(x1,y,x2,lab,col){const d=x2>x1?1:-1;return `<line x1="${x1}" y1="${y}" x2="${x2-d*8}" y2="${y}" stroke="${col||'var(--accent)'}" stroke-width="2.6"/><path d="M${x2},${y} l${-d*10},-5 v10 z" fill="${col||'var(--accent)'}"/>${lab?`<text x="${(x1+x2)/2}" y="${y-7}" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--accent-ink)">${lab}</text>`:''}`;}
+function motion(kind,o){let g='';const y=70;const pt=(x,l)=>`<circle cx="${x}" cy="${y}" r="5" fill="var(--fig)"/><text x="${x}" y="${y+22}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)">${l}</text>`;
+  const dist=(x1,x2,l,yy)=>`<path d="M${x1},${yy} H${x2}" stroke="var(--muted)" stroke-width="1" /><path d="M${x1},${yy-4} v8 M${x2},${yy-4} v8" stroke="var(--muted)" stroke-width="1"/><text x="${(x1+x2)/2}" y="${yy+15}" text-anchor="middle" font-size="12.5" fill="var(--ink)">${l}</text>`;
+  if(kind==='toward'){g+=`<line x1="20" y1="${y}" x2="320" y2="${y}" stroke="var(--fig)" stroke-width="1.6"/>`+pt(30,'A')+pt(310,'B')+arrow(30,y-22,120,o.v1)+arrow(310,y-22,220,o.v2)+dist(30,310,o.s,y+40);}
+  else if(kind==='apart'){g+=`<line x1="20" y1="${y}" x2="320" y2="${y}" stroke="var(--fig)" stroke-width="1.6"/>`+pt(170,'A')+arrow(160,y-22,60,o.v1)+arrow(180,y-22,280,o.v2)+(o.s?dist(40,300,o.s,y+40):'');}
+  else if(kind==='chase'){g+=`<line x1="20" y1="${y}" x2="320" y2="${y}" stroke="var(--fig)" stroke-width="1.6"/>`+pt(30,'A')+pt(160,'B')+arrow(30,y-22,110,o.v1)+arrow(160,y-22,230,o.v2)+dist(30,160,o.s,y+40);}
+  else if(kind==='river'){g+=`<path d="M10,${y+6} q20,-8 40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0" fill="none" stroke="var(--accent)" stroke-width="1.4" opacity=".7"/><path d="M10,${y+18} q20,-8 40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0" fill="none" stroke="var(--accent)" stroke-width="1.4" opacity=".7"/>`;
+    g+=arrow(200,y+44,300,o.c,'var(--muted)').replace('fill="var(--accent-ink)"','fill="var(--muted)"');g+=`<text x="120" y="${y+48}" text-anchor="middle" font-size="12" fill="var(--muted)">течение</text>`;
+    g+=`<path d="M60,${y-4} h70 l-12,12 h-50 z" fill="var(--hl)" fill-opacity=".7" stroke="var(--fig)"/>`+arrow(70,y-26,o.up?20:200,o.v1);}
+  return `<svg viewBox="0 0 340 ${kind==='river'?130:134}" width="340" role="img" aria-label="Схема движения" style="font-family:system-ui,sans-serif">${g}</svg>`;}
+
+/* ---------- теория ---------- */
+const theory=[
+{title:'Как решать задачу: краткая запись и схема',lvl:0,html:`
+<p class="hook">Задача — это как уровень в игре: сначала смотришь карту, потом строишь план, а не бежишь вслепую. «Карта» задачи — это <b>краткая запись</b> и <b>схема</b>.</p>
+<p>Многие ошибки случаются не из-за счёта, а потому что задачу не <b>поняли</b>. Схема помогает увидеть, что известно и что надо найти.</p>
+<div class="box rule"><b>Порядок решения</b>1) Прочитай задачу два раза.<br>2) Сделай краткую запись или схему отрезками: что известно, что найти (знак «?»).<br>3) Составь план: какое действие сначала, какое потом и <b>зачем</b>.<br>4) Посчитай.<br>5) Проверь ответ по условию и запиши ответ словами.</div>
+<div class="fig">${segs([{lab:'Егор',parts:[{n:12,t:'12'}]},{lab:'Паша',parts:[{n:12,t:'12'},{n:7,t:'7',dash:true}]}],{brace:'?'})}</div>
+<p class="small" style="text-align:center">«У Егора 12 карточек, у Паши на 7 больше. Сколько у них вместе?»</p>
+${STEPS('Пример 1 (лёгкий). Реши задачу со схемы.',[
+'Краткая запись: Егор — 12; Паша — на 7 больше (?); вместе — ?',
+'Сначала узнаём, сколько у Паши: 12 + 7 = 19. Без этого «вместе» не найти!',
+'Вместе: 12 + 19 = <b>31</b> карточка. Проверка: у Паши 19, это на 7 больше 12 ✅.'])}
+${STEPS('Пример 2. «В корзине 30 яблок. Съели 8, потом положили ещё 5. Сколько стало?»',[
+'Схема: было 30 → −8 → +5 → ?',
+'30 − 8 = 22, 22 + 5 = <b>27</b>.'])}
+<div class="box err"><b>Частая ошибка</b>Ответить на промежуточный вопрос: «у Паши 19» — а спрашивали, сколько вместе. Перечитай вопрос перед тем, как писать ответ!</div>
+${CHK([['В классе 14 мальчиков, а девочек на 3 меньше. Сколько всего учеников?','Девочек 14 − 3 = 11, всего 14 + 11 = 25.']])}
+${REM('Прочитай → схема → план → счёт → проверка.','«Сначала карта, потом поход».')}`},
+
+{title:'«На сколько больше» и «во сколько раз больше»',lvl:0,html:`
+<p class="hook">У Егора 12 карточек, у Паши — 36. Паша говорит: «У меня на 24 больше!» Егор: «А у тебя в 3 раза больше!» Кто прав? Оба! Просто они отвечают на <b>разные</b> вопросы.</p>
+<div class="fig">${segs([{lab:'Егор',parts:[{n:12,t:'12'}]},{lab:'Паша',parts:[{n:12,t:'12'},{n:12,t:'12'},{n:12,t:'12'}],end:'36'}],{under:{row:1,from:12,to:36,t:'на 24 больше'}})}</div>
+<div class="box rule"><b>Правило</b><b>На сколько</b> больше (меньше)? → из большего <b>вычитаем</b> меньшее.<br><b>Во сколько раз</b> больше (меньше)? → большее <b>делим</b> на меньшее.<br>«На 5 больше» → +5, «на 5 меньше» → −5, «в 5 раз больше» → ·5, «в 5 раз меньше» → :5.</div>
+${STEPS('Пример 1 (лёгкий). 36 и 12: на сколько больше и во сколько раз?',[
+'На сколько: 36 − 12 = <b>24</b>.',
+'Во сколько раз: 36 : 12 = <b>3</b>.'])}
+${STEPS('Пример 2. Карандаш стоит 15 ₽, ручка — в 4 раза дороже. Сколько стоят вместе?',[
+'«В 4 раза дороже» — умножаем: ручка 15 · 4 = 60 ₽.',
+'Вместе: 15 + 60 = <b>75 ₽</b>.'])}
+${STEPS('Пример 3 (потруднее, ловушка!). Тетрадь стоит 12 ₽, это в 3 раза <b>меньше</b>, чем стоит блокнот. Сколько стоит блокнот?',[
+'Читаем внимательно: тетрадь в 3 раза меньше блокнота — значит, блокнот в 3 раза <b>больше</b> тетради.',
+'Блокнот: 12 · 3 = <b>36 ₽</b>. (Ответ «4 ₽» — ловушка: блокнот не может быть дешевле, если тетрадь в 3 раза дешевле его.)'])}
+<div class="box err"><b>Частая ошибка</b>Видишь слово «меньше» — и сразу вычитаешь или делишь. Сначала разберись, <b>кто</b> меньше <b>кого</b>.</div>
+${CHK([['В одной коробке 8 конфет, в другой 40. Во сколько раз во второй больше?','40 : 8 = 5 раз.'],['Футболист забил 6 голов, это на 4 меньше, чем у лучшего бомбардира. Сколько у бомбардира?','6 + 4 = 10.']])}
+${REM('«На» — вычитание, «в … раз» — деление (при сравнении).','«НА — Найди рАзность, В РАЗ — Высчитай РАЗделив».')}`},
+
+{title:'Цена, количество, стоимость',lvl:1,html:`
+<p class="hook">Ты покупаешь в игре 3 сундука по 150 робуксов. Сколько потратишь? Это самая «жизненная» задача на свете: так считают в каждом магазине.</p>
+<div class="box rule"><b>Правило</b>${M('стоимость = цена · количество')}<br>${M('цена = стоимость : количество')}<br>${M('количество = стоимость : цена')}</div>
+<p><b>Цена</b> — сколько стоит одна штука. <b>Стоимость</b> — сколько стоит вся покупка. Удобно записывать в таблицу:</p>
+${TBL(['','Цена','Количество','Стоимость'],[['Сундуки','150 R$','3 шт.','?']])}
+${STEPS('Пример 1 (лёгкий). 3 сундука по 150 робуксов.',[
+'Стоимость = цена · количество.',
+'150 · 3 = <b>450 робуксов</b>.'])}
+${STEPS('Пример 2. За 6 одинаковых наклеек заплатили 72 ₽. Сколько стоит одна?',[
+'Цена = стоимость : количество.',
+'72 : 6 = <b>12 ₽</b>.'])}
+${STEPS('Пример 3 (потруднее). На одни и те же деньги можно купить 12 тетрадей по 30 ₽. Сколько тетрадей по 40 ₽ можно купить на эти деньги?',[
+'Сначала найдём, сколько денег: 30 · 12 = 360 ₽.',
+'Количество = стоимость : цена: 360 : 40 = <b>9 тетрадей</b>.'])}
+<div class="box err"><b>Частая ошибка</b>Перепутать цену и стоимость: «за 6 наклеек 72 ₽» — это стоимость всей покупки, а не цена одной.</div>
+${CHK([['5 мороженых стоят 225 ₽. Сколько стоит одно?','225 : 5 = 45 ₽.'],['У тебя 200 ₽. Сколько шоколадок по 35 ₽ можно купить?','200 : 35 = 5 (ост. 25) — 5 шоколадок, и 25 ₽ сдачи.']])}
+${REM('Ц · К = С. Из этой формулы получаются две другие делением.','Треугольник «С над Ц и К»: закрой пальцем то, что ищешь, — увидишь, что делать с остальными.')}`},
+
+{title:'Работа и производительность',lvl:2,html:`
+<p class="hook">Егор проходит 4 уровня в час, а Паша — 6. Сколько уровней они пройдут за 3 часа вместе? Задачи на работу устроены точно так же, как задачи на покупки!</p>
+<div class="box rule"><b>Правило</b>${M('работа = производительность · время')}<br><b>Производительность</b> — сколько работы делают за единицу времени (за 1 час, за 1 минуту).<br>Работают вместе — производительности <b>складываются</b>.</div>
+${STEPS('Пример 1 (лёгкий). Принтер печатает 20 страниц в минуту. Сколько страниц за 7 минут?',[
+'Работа = производительность · время.',
+'20 · 7 = <b>140 страниц</b>.'])}
+${STEPS('Пример 2. Егор проходит 4 уровня в час, Паша — 6. Сколько уровней они пройдут вместе за 3 часа?',[
+'Вместе за 1 час: 4 + 6 = 10 уровней.',
+'За 3 часа: 10 · 3 = <b>30 уровней</b>.'])}
+${STEPS('Пример 3 (потруднее). Два насоса откачали 360 л воды за 4 минуты. Первый качает 50 л в минуту. Сколько качает второй?',[
+'Вместе за 1 минуту: 360 : 4 = 90 л.',
+'Второй: 90 − 50 = <b>40 л в минуту</b>.'])}
+<div class="box err"><b>Частая ошибка</b>Складывать время работы: «Егор за 2 часа, Паша за 3 часа — вместе за 5». Вместе они работают <b>быстрее</b>, а не дольше! Складываются производительности, а не время.</div>
+${CHK([['Мастер делает 12 деталей в час. За сколько часов он сделает 84 детали?','84 : 12 = 7 ч.']])}
+${REM('Работа = производительность · время. Вместе — складываем производительности.','«Как покупки: цена ↔ производительность, количество ↔ время, стоимость ↔ работа».')}`},
+
+{title:'Движение: s = v · t',lvl:3,html:`
+<p class="hook">Самый быстрый спринтер Усэйн Болт бежал со средней скоростью около 10 метров в секунду. Гепард — до 30 м/с. А кто быстрее: ты на велике или голубь? Всё это — задачи на движение.</p>
+<div class="box rule"><b>Правило</b>${M('s = v · t')} — расстояние = скорость · время.<br>${M('v = s : t')}, ${M('t = s : v')}.<br><b>Скорость</b> — расстояние за единицу времени: 60 км/ч — это 60 км за каждый час.</div>
+${STEPS('Пример 1 (лёгкий). Автобус едет 3 ч со скоростью 60 км/ч. Какой путь он проедет?',[
+'s = v · t = 60 · 3 = <b>180 км</b>.'])}
+${STEPS('Пример 2. Велосипедист проехал 48 км за 4 ч. Какова его скорость?',[
+'v = s : t = 48 : 4 = <b>12 км/ч</b>.'])}
+${STEPS('Пример 3 (потруднее). Турист шёл 2 ч со скоростью 5 км/ч, потом ехал 3 ч на автобусе со скоростью 40 км/ч. Сколько он преодолел?',[
+'Пешком: 5 · 2 = 10 км.',
+'На автобусе: 40 · 3 = 120 км.',
+'Всего: 10 + 120 = <b>130 км</b>.'])}
+<div class="box err"><b>Частая ошибка</b>Смешать единицы: скорость в км/ч, а время в минутах. Сначала переведи всё в одни единицы!</div>
+${CHK([['Сколько часов нужно, чтобы проехать 240 км со скоростью 80 км/ч?','240 : 80 = 3 ч.']])}
+${REM('s = v · t. Из неё v = s : t и t = s : v.','То же, что «С = Ц · К»: скорость — как цена одного часа пути.')}`},
+
+{title:'Навстречу и в разные стороны',lvl:4,html:`
+<p class="hook">Два друга живут в 12 км друг от друга и выезжают навстречу на великах: один 7 км/ч, другой 5 км/ч. Через сколько они встретятся? Секрет: представь, что один стоит, а другой мчится к нему со скоростью 12 км/ч!</p>
+<div class="fig">${motion('toward',{v1:'7 км/ч',v2:'5 км/ч',s:'12 км'})}</div>
+<div class="box rule"><b>Правило</b><b>Навстречу:</b> расстояние между ними уменьшается на ${M('v₁ + v₂')} каждый час (скорость сближения). Время до встречи: ${M('t = s : (v₁ + v₂)')}.<br><b>В разные стороны:</b> расстояние увеличивается на ${M('v₁ + v₂')} каждый час (скорость удаления).</div>
+${STEPS('Пример 1 (лёгкий). Друзья из примера: через сколько часов встретятся?',[
+'Скорость сближения: 7 + 5 = 12 км/ч — за каждый час расстояние уменьшается на 12 км.',
+'Время: 12 : 12 = <b>1 ч</b>.'])}
+<div class="fig">${motion('apart',{v1:'4 км/ч',v2:'5 км/ч',s:'? км через 3 ч'})}</div>
+${STEPS('Пример 2. Из одной точки в разные стороны пошли два пешехода: 4 км/ч и 5 км/ч. Какое расстояние между ними будет через 3 ч?',[
+'Скорость удаления: 4 + 5 = 9 км/ч.',
+'Через 3 ч: 9 · 3 = <b>27 км</b>.'])}
+${STEPS('Пример 3 (потруднее). Из двух городов, расстояние между которыми 390 км, навстречу выехали две машины. Первая едет 60 км/ч. Они встретились через 3 ч. Какова скорость второй?',[
+'За 3 ч машины вместе проехали всю дорогу, 390 км. Значит, за 1 ч они сближались на 390 : 3 = 130 км — это скорость сближения.',
+'Скорость сближения — сумма скоростей: 60 + ? = 130.',
+'Вторая: 130 − 60 = <b>70 км/ч</b>. Проверка: (60 + 70) · 3 = 390 ✅.'])}
+<div class="box err"><b>Частая ошибка</b>При встречном движении вычитать скорости. Вычитают при движении <b>в одну сторону</b> (вдогонку), а навстречу — складывают.</div>
+${CHK([['Два поезда идут навстречу: 70 км/ч и 80 км/ч. Расстояние 450 км. Через сколько встретятся?','450 : (70 + 80) = 450 : 150 = 3 ч.']])}
+${REM('Навстречу и в разные стороны — скорости складываем.','«Навстречу — как два магнита: тянутся вдвойне быстро».')}`},
+
+{title:'Вдогонку и по реке',lvl:5,html:`
+<p class="hook">Пёс заметил кота в 30 м от себя и бросился вдогонку. Пёс бежит 10 м/с, кот — 7 м/с. Успеет ли кот к дереву? Каждую секунду пёс приближается всего на 3 метра — разность скоростей!</p>
+<div class="fig">${motion('chase',{v1:'10 м/с',v2:'7 м/с',s:'30 м'})}</div>
+<div class="box rule"><b>Правило</b><b>Вдогонку</b> (в одну сторону): расстояние уменьшается на ${M('v₁ − v₂')} каждую единицу времени. Время: ${M('t = s : (v₁ − v₂)')}.<br><b>По реке:</b> ${M('v по течению = v собств. + v течения')}, ${M('v против течения = v собств. − v течения')}. Плот плывёт со скоростью течения.</div>
+${STEPS('Пример 1 (лёгкий). Через сколько секунд пёс догонит кота?',[
+'Скорость сближения: 10 − 7 = 3 м/с.',
+'Время: 30 : 3 = <b>10 с</b>.'])}
+<div class="fig">${motion('river',{v1:'15 + 3 = 18 км/ч',c:'3 км/ч'})}</div>
+${STEPS('Пример 2. Собственная скорость лодки 15 км/ч, течения — 3 км/ч. Сколько км лодка пройдёт за 2 ч по течению и за 2 ч против?',[
+'По течению река «подталкивает»: 15 + 3 = 18 км/ч, за 2 ч — 36 км.',
+'Против течения река «мешает»: 15 − 3 = 12 км/ч, за 2 ч — <b>24 км</b>.'])}
+${STEPS('Пример 3 (потруднее). По течению катер идёт со скоростью 24 км/ч, против — 18 км/ч. Найди скорость течения.',[
+'Разница скоростей — это две скорости течения (одну прибавили, другую отняли): 24 − 18 = 6.',
+'Скорость течения: 6 : 2 = <b>3 км/ч</b>. А собственная: 24 − 3 = 21 км/ч.'])}
+<div class="box err"><b>Частая ошибка</b>Думать, что разница «по течению − против» — это скорость течения. Нет, это <b>две</b> скорости течения!</div>
+${CHK([['Плот проплыл 12 км за 4 ч. Какова скорость течения?','Плот плывёт со скоростью течения: 12 : 4 = 3 км/ч.']])}
+${REM('Вдогонку — скорости вычитаем. По течению +, против течения −.','«Река — как эскалатор: едешь по ходу — быстрее, против — медленнее».')}`},
+
+{title:'Задачи на части',lvl:6,html:`
+<p class="hook">Для смузи берут 2 части банана и 3 части клубники. У тебя 500 г фруктов. Сколько нужно клубники? Секрет — найти, сколько весит <b>одна часть</b>.</p>
+<div class="fig">${segs([{lab:'Банан',parts:[{n:1,t:'1 ч.'},{n:1,t:'1 ч.'}]},{lab:'Клубника',parts:[{n:1,t:'1 ч.'},{n:1,t:'1 ч.'},{n:1,t:'1 ч.'}]}],{brace:'500 г'})}</div>
+<div class="box rule"><b>Правило</b>1) Найди, сколько всего частей (или на сколько частей одно больше другого).<br>2) Найди, сколько приходится на <b>одну часть</b>.<br>3) Умножь на нужное число частей.</div>
+${STEPS('Пример 1 (лёгкий). Смузи: 2 части банана и 3 части клубники, всего 500 г. Сколько клубники?',[
+'Всего частей: 2 + 3 = 5.',
+'Одна часть: 500 : 5 = 100 г.',
+'Клубника: 100 · 3 = <b>300 г</b>. (Банан — 200 г. Проверка: 200 + 300 = 500 ✅.)'])}
+${STEPS('Пример 2. Красок: синей 4 части, белой 7 частей. Белой на 120 г больше. Сколько всего краски?',[
+'Белой больше на 7 − 4 = 3 части, и это 120 г.',
+'Одна часть: 120 : 3 = 40 г.',
+'Всего 4 + 7 = 11 частей: 40 · 11 = <b>440 г</b>.'])}
+${STEPS('Пример 3 (потруднее). У Егора и Паши вместе 48 наклеек, у Паши в 3 раза больше. Сколько у Егора?',[
+'Если у Егора 1 часть, у Паши — 3 части. Всего 4 части.',
+'1 часть = 48 : 4 = <b>12</b> (у Егора), у Паши 36.'])}
+<div class="box err"><b>Частая ошибка</b>«В 3 раза больше» — считать, что всего 3 части. Нет: у одного 1 часть, у другого 3, вместе <b>4</b>.</div>
+${CHK([['Отрезок длиной 56 см разделили на две части в отношении 3 к 4 (3 части и 4 части). Найди меньшую часть.','Всего 7 частей, одна — 8 см, меньшая: 3 · 8 = 24 см.']])}
+${REM('Всё ищем через одну часть.','«Сначала одна долька — потом весь апельсин».')}`},
+
+{title:'★ Сумма и разность. Головы и ноги',lvl:7,html:`
+<p class="hook">Во дворе куры и кролики. Всего 10 голов и 28 ног. Сколько кроликов? Взрослые часто составляют уравнение, а ты решишь одной хитростью: «Скажем всем кроликам встать на задние лапы»!</p>
+<div class="box rule"><b>Сумма и разность</b>Если известна сумма S двух чисел и их разность D:<br>меньшее = ${M('(S − D) : 2')}, большее = ${M('(S + D) : 2')}.</div>
+<div class="fig">${segs([{lab:'Егор',parts:[{n:14,t:'?'}]},{lab:'Паша',parts:[{n:14,t:'?'},{n:6,t:'6',dash:true}]}],{brace:'34'})}</div>
+${STEPS('Пример 1. У Егора и Паши вместе 34 значка, у Паши на 6 больше. Сколько у каждого?',[
+'Уберём у Паши «лишние» 6: останется 34 − 6 = 28 — это два одинаковых отрезка.',
+'У Егора: 28 : 2 = <b>14</b>, у Паши: 14 + 6 = <b>20</b>. Проверка: 14 + 20 = 34 ✅.'])}
+${STEPS('Пример 2 (головы и ноги). 10 голов, 28 ног. Сколько кроликов и кур?',[
+'Пусть все 10 зверей встанут на 2 лапы: на земле 10 · 2 = 20 ног.',
+'Но ног 28 — значит, 28 − 20 = 8 ног «подняты». У каждого кролика подняты 2 лапы.',
+'Кроликов: 8 : 2 = <b>4</b>, кур: 10 − 4 = <b>6</b>. Проверка: 4 · 4 + 6 · 2 = 16 + 12 = 28 ✅.'])}
+<div class="box err"><b>Частая ошибка</b>Делить сумму пополам сразу: 34 : 2 = 17 — так было бы, только если бы у ребят было поровну.</div>
+${CHK([['В классе 30 учеников, девочек на 4 больше, чем мальчиков. Сколько мальчиков?','(30 − 4) : 2 = 13.'],['На стоянке машины (4 колеса) и мотоциклы (2 колеса): всего 15 машин и мотоциклов и 46 колёс. Сколько машин?','Все на 2 колёсах — 30, лишних 16, машин 16 : 2 = 8.']])}
+${REM('Сумма и разность: убери разницу — раздели пополам. Головы и ноги: «все на две лапы».','«Кролики, встаньте на задние лапы!»')}`},
+
+{title:'★ Возраст и хитрые задачи',lvl:8,html:`
+<p class="hook">Папе 36 лет, сыну 12. Через сколько лет папа будет старше сына вдвое? Подсказка: разница в возрасте — единственное, что <b>никогда не меняется</b>.</p>
+<div class="box rule"><b>Главные хитрости</b>1) <b>Разность возрастов</b> всегда одна и та же: каждый год стареют оба.<br>2) Через n лет <b>сумма</b> возрастов двух людей увеличится на 2n.<br>3) <b>Распилы и этажи:</b> чтобы распилить бревно на k частей, нужно k − 1 распилов; с 1-го этажа на n-й — n − 1 пролётов.</div>
+${STEPS('Пример 1. Папе 36, сыну 12. Через сколько лет папа будет вдвое старше?',[
+'Разница: 36 − 12 = 24 года — она не меняется.',
+'Когда папа вдвое старше, разница равна возрасту сына (2 части − 1 часть = 1 часть). Значит, сыну будет 24.',
+'24 − 12 = <b>12 лет</b>. Проверка: папе 48, сыну 24 ✅.'])}
+${STEPS('Пример 2. Бревно распилили на 6 частей. Каждый распил — 3 минуты. Сколько минут пилили?',[
+'Частей 6 — распилов на 1 меньше: 5.',
+'5 · 3 = <b>15 минут</b>. (Ответ 18 — классическая ловушка.)'])}
+${STEPS('Пример 3 (улитка). Улитка ползёт на столб высотой 10 м: днём поднимается на 3 м, ночью сползает на 2 м. На какой день она доберётся до верха?',[
+'За сутки она поднимается на 3 − 2 = 1 м, но в последний день сползти не успеет!',
+'К утру 8-го дня она на высоте 7 м. Днём 8-го дня: 7 + 3 = 10 м — на вершине.',
+'Ответ: на <b>8-й</b> день (а не на 10-й).'])}
+<div class="box err"><b>Частая ошибка</b>Думать, что разница возрастов растёт. Нет! Через 10 лет и папе, и сыну прибавится по 10.</div>
+${CHK([['Сейчас брату 7, сестре 11. Сколько лет будет сестре, когда брату будет 15?','Разница 4 года: 15 + 4 = 19.'],['Сколько распилов нужно, чтобы разрезать доску на 10 кусков?','9.']])}
+${REM('Разность возрастов постоянна. Частей на 1 больше, чем распилов.','«Пока ты растёшь, папа тоже не стоит на месте».')}`},
+
+{title:'Шпаргалка',html:`
+<ul class="steps">
+<li>«На сколько больше» — вычитание; «во сколько раз» — деление.</li>
+<li>Стоимость = цена · количество.</li>
+<li>Работа = производительность · время; вместе — производительности складываются.</li>
+<li>s = v · t.</li>
+<li>Навстречу и в разные стороны: v₁ + v₂. Вдогонку: v₁ − v₂.</li>
+<li>По течению: v + vт; против: v − vт; плот — со скоростью течения.</li>
+<li>Части: сначала одна часть.</li>
+<li>Сумма и разность: меньшее = (S − D) : 2.</li>
+<li>Разность возрастов не меняется.</li></ul>`}
+];
+
+/* ---------- символы ---------- */
+const symbols={tab:'Формулы',title:'Главные формулы задач',rows:[
+['−','На сколько больше / меньше','Из большего вычитаем меньшее.','36 − 12 = 24'],
+[':','Во сколько раз больше / меньше','Большее делим на меньшее.','36 : 12 = 3'],
+['С = Ц · К','Стоимость','Цена одной штуки · количество.','150 · 3 = 450'],
+['A = p · t','Работа','Производительность · время.','20 · 7 = 140'],
+['s = v · t','Расстояние','Скорость · время.','60 · 3 = 180 км'],
+['v₁ + v₂','Скорость сближения навстречу (и удаления в разные стороны)','Каждый час расстояние меняется на сумму скоростей.','7 + 5 = 12 км/ч'],
+['v₁ − v₂','Скорость сближения вдогонку','Догоняющий за час «отыгрывает» разность скоростей.','10 − 7 = 3 м/с'],
+['v + vт','По течению','Река помогает.','15 + 3 = 18'],
+['v − vт','Против течения','Река мешает.','15 − 3 = 12'],
+['(S − D) : 2','Меньшее по сумме и разности','Убери разницу и раздели пополам.','(34 − 6) : 2 = 14']
+],after:`<div class="box tip" style="margin-top:14px"><b>Самое важное</b>Перед счётом нарисуй схему. После счёта — проверь ответ по условию.</div>`};
+
+/* ---------- генераторы ---------- */
+const gens=[];
+const G=(lvl,make,o)=>gens.push(Object.assign({lvl,make:()=>{for(let i=0;i<2000;i++){const t=make();if(t)return t;}throw new Error('no task');}},o||{}));
+const RULE=(lvl,vars,o)=>G(lvl,()=>{const v=pick(vars);const opts=shuffle([v.ok,...v.bad]);return {type:'choice',q:v.q,opts,ans:opts.indexOf(v.ok),short:v.ex,explain:v.ex,explain2:v.ex2};},Object.assign({rule:true},o||{}));
+const NM=['Егор','Паша','Тимур','Артём','Макс','Дима'];
+const ITEMS=[['карточку','карточки','карточек'],['наклейку','наклейки','наклеек'],['значок','значка','значков'],['монету','монеты','монет']];
+const it=(n,w)=>`${n} ${plural(n,w[0],w[1],w[2])}`;
+const GEN={'Егор':'Егора','Паша':'Паши','Тимур':'Тимура','Артём':'Артёма','Макс':'Макса','Дима':'Димы'};
+
+/* L0 */
+RULE(0,[{q:'Как узнать, <b>на сколько</b> одно число больше другого?',ok:'Из большего вычесть меньшее',bad:['Большее разделить на меньшее','Сложить числа','Меньшее умножить на большее'],ex:'«На сколько больше» — это разность: <b>большее − меньшее</b>. 36 − 12 = 24.',ex2:'Положи две стопки рядом: на сколько одна выше другой? Лишний кусок — это и есть разность.'},
+{q:'Как узнать, <b>во сколько раз</b> одно число больше другого?',ok:'Большее разделить на меньшее',bad:['Из большего вычесть меньшее','Большее умножить на меньшее','Сложить их и разделить на 2'],ex:'«Во сколько раз» — это деление: <b>большее : меньшее</b>. 36 : 12 = 3.',ex2:'Сколько раз маленькая стопка помещается в большой? Это и есть «во сколько раз».'}]);
+G(0,()=>{const nm=sample(NM,2);const w=pick(ITEMS);const a=R(3,15),k=R(2,6);const b=a*k;const ask=pick(['diff','ratio']);const ans=ask==='diff'?b-a:k;
+ const pic=segs([{lab:nm[0],parts:[{n:a,t:String(a)}]},{lab:nm[1],parts:range(1,k).map(()=>({n:a,t:String(a)})),end:String(b)}],ask==='diff'?{under:{row:1,from:a,to:b,t:'на ? больше'}}:{});
+ return {type:'num',q:`У ${GEN[nm[0]]} ${it(a,w)}, а у ${GEN[nm[1]]} — ${b}. ${ask==='diff'?`На сколько у ${GEN[nm[1]]} больше`:`Во сколько раз у ${GEN[nm[1]]} больше`}?`,ans,pic,
+ short:ask==='diff'?`${b} − ${a} = ${ans}.`:`${b} : ${a} = ${ans}.`,
+ explain:ask==='diff'?`Вопрос «на сколько больше» — это <b>вычитание</b>: ${b} − ${a} = <b>${ans}</b>.<br>(А «во сколько раз» было бы ${b} : ${a} = ${k} — это другой вопрос.)`:`Вопрос «во сколько раз больше» — это <b>деление</b>: ${b} : ${a} = <b>${ans}</b>.<br>(А «на сколько» было бы ${b} − ${a} = ${b-a} — это другой вопрос.)`,
+ explain2:`Посмотри на схему: верхний отрезок ${a} помещается в нижнем ${k} ${plural(k,'раз','раза','раз')}${ask==='diff'?`, а «лишний» кусок справа — ${b-a}`:''}.`};});
+G(0,()=>{const a=R(12,60),k=R(2,6);const vs=[{t:`на ${k} больше`,r:`${a} + ${k}`},{t:`на ${k} меньше`,r:`${a} − ${k}`},{t:`в ${k} раза больше`.replace(/(\d) раза/,(m,d)=>`${d} ${plural(+d,'раз','раза','раз')}`),r:`${a} · ${k}`},{t:`в ${k} ${plural(k,'раз','раза','раз')} меньше`,r:`${a} : ${k}`}];
+ const v=pick(vs);if(v.r.includes(':')&&a%k)return null;if(v.r.includes('−')&&a<=k)return null;
+ return CH(`В первой коробке ${a} ${plural(a,'конфета','конфеты','конфет')}, а во второй — ${v.t}. Каким действием найти, сколько конфет во второй коробке?`,v.r,vs.filter(z=>z!==v).map(z=>z.r),{
+ short:`«${v.t}» → ${v.r}.`,
+ explain:`«На … больше / меньше» — прибавляем / вычитаем. «В … раз больше / меньше» — умножаем / делим.<br>«${v.t}» → <b>${v.r}</b>.`,
+ explain2:`Подумай здраво: во второй коробке ${v.t.includes('больше')?'больше, значит ответ должен быть больше '+a:'меньше, значит ответ должен быть меньше '+a}. ${v.t.startsWith('на')?`Но ненамного — всего на ${k}.`:`И не на чуть-чуть, а в ${k} ${plural(k,'раз','раза','раз')}.`}`});});
+G(0,()=>{const SP=pick([['Футболист забил','гол','гола','голов'],['Хоккеист забросил','шайбу','шайбы','шайб'],['Баскетболист забросил','мяч','мяча','мячей']]);const nm=SP[0];const a=R(4,30);const kind=pick(['na','v']);const k=kind==='na'?R(3,20):R(2,5);const b=kind==='na'?a+k:a*k;const tot=a+b;
+ const pic=segs([{lab:'1-й',parts:[{n:a,t:String(a)}]},{lab:'2-й',parts:kind==='na'?[{n:a,t:String(a)},{n:k,t:String(k),dash:true}]:range(1,k).map(()=>({n:a,t:String(a)}))}],{brace:'?'});
+ return {type:'num',q:`${nm} ${a} ${plural(a,SP[1],SP[2],SP[3])} в первом сезоне, а во втором — ${kind==='na'?`на ${k} больше`:`в ${k} ${plural(k,'раз','раза','раз')} больше`}. Сколько ${SP[3]} за два сезона?`,ans:tot,pic,
+ short:`${a} ${kind==='na'?'+':'·'} ${k} = ${b}; ${a} + ${b} = ${tot}.`,
+ explain:`1) Во втором сезоне: ${a} ${kind==='na'?'+':'·'} ${k} = <b>${b}</b> (${kind==='na'?'«на … больше» — прибавляем':'«в … раз больше» — умножаем'}).<br>2) За два сезона: ${a} + ${b} = <b>${tot}</b>.`,
+ explain2:`Частая ошибка — ответить ${b}: это только второй сезон, а спрашивают про оба. Ещё одна — сложить ${a} + ${k} = ${a+k} и остановиться. Схема показывает: нужно сложить оба отрезка.`};});
+G(0,()=>{const k=R(2,6),a=R(6,30);const b=a*k;const ob=pick([['Тетрадь','блокнот','блокнота'],['Ручка','рюкзак','рюкзака'],['Брелок','наушники','наушников']]);
+ return {type:'num',q:`${ob[0]} стоит ${a} ₽ — это в ${k} ${plural(k,'раз','раза','раз')} <b>меньше</b>, чем стоимость ${ob[2]}. Сколько стоит ${ob[1]}?`,ans:b,
+ hint:'Кто дешевле — тот «меньше». Значит, второй предмет в несколько раз дороже.',
+ short:`${ob[1]} в ${k} ${plural(k,'раз','раза','раз')} дороже: ${a} · ${k} = ${b} ₽.`,
+ explain:`Переворачиваем фразу: если ${ob[0].toLowerCase()} в ${k} ${plural(k,'раз','раза','раз')} дешевле, то ${ob[1]} в ${k} ${plural(k,'раз','раза','раз')} <b>дороже</b>.<br>${a} · ${k} = <b>${b} ₽</b>.<br>Ловушка: увидеть слово «меньше» и разделить: ${a} : ${k} — тогда ${ob[1]} оказался бы дешевле, а это противоречит условию.`,
+ explain2:`Проверка: ${b} : ${k} = ${a} — действительно, ${ob[0].toLowerCase()} в ${k} ${plural(k,'раз','раза','раз')} дешевле ✅.${segs([{lab:ob[0],parts:[{n:1,t:String(a)}]},{lab:ob[1].slice(0,9),parts:range(1,k).map(()=>({n:1,t:String(a)})),end:'?'}])}`};});
+
+/* L1 */
+RULE(1,[{q:'Как найти стоимость покупки?',ok:'Цену умножить на количество',bad:['Цену разделить на количество','Цену сложить с количеством','Количество разделить на цену'],ex:'<b>Стоимость = цена · количество</b>. 3 сундука по 150 — это 150 · 3 = 450.',ex2:'Цена — сколько стоит одна штука. Берёшь 3 штуки — платишь 3 раза по цене.'},
+{q:'Как найти цену, если известны стоимость и количество?',ok:'Стоимость разделить на количество',bad:['Стоимость умножить на количество','Количество разделить на стоимость','Из стоимости вычесть количество'],ex:'<b>Цена = стоимость : количество</b>. 72 ₽ за 6 наклеек → 72 : 6 = 12 ₽.',ex2:'Раздели всю сумму поровну на все штуки — получишь, сколько стоит одна.'}]);
+G(1,()=>{const p=R(12,250),n=R(2,12);const C=p*n;const ask=pick(['C','p','n']);const thing=pick([['скин','скина','скинов'],['сундук','сундука','сундуков'],['пропуск','пропуска','пропусков']]);
+ const tbl=TBL(['Цена','Количество','Стоимость'],[[ask==='p'?'?':p+' R$',ask==='n'?'?':it(n,thing),ask==='C'?'?':C+' R$']]);
+ const q=ask==='C'?`Егор купил ${it(n,thing)} по ${p} ${plural(p,'робуксу','робукса','робуксов')}. Сколько робуксов он потратил?`:ask==='p'?`Егор купил ${it(n,thing)} и потратил ${C} ${plural(C,'робукс','робукса','робуксов')}. Сколько стоит один?`:`Егор потратил ${C} ${plural(C,'робукс','робукса','робуксов')} на ${thing[2]} по ${p} ${plural(p,'робуксу','робукса','робуксов')}. Сколько ${thing[2]} он купил?`;
+ const ans=ask==='C'?C:ask==='p'?p:n;const f=ask==='C'?`${p} · ${n} = ${C}`:ask==='p'?`${C} : ${n} = ${p}`:`${C} : ${p} = ${n}`;
+ return {type:'num',q,ans,short:f+'.',
+ explain:`Краткая запись:${tbl}${ask==='C'?'Стоимость = цена · количество':ask==='p'?'Цена = стоимость : количество':'Количество = стоимость : цена'}: ${f.replace(/= (\d+)$/,'= <b>$1</b>')}.`,
+ explain2:`Проверь по формуле С = Ц · К: ${p} · ${n} = ${C} ✅. Если ответ получился «странный» (например, цена больше всей стоимости) — значит, перепутаны действия.`};});
+G(1,()=>{const n1=R(2,5),p1=R(15,60),n2=R(2,5),p2=R(10,50);const tot=n1*p1+n2*p2;const D=Math.ceil((tot+1)/100)*100;const ch=D-tot;
+ return {type:'num',q:`Паша купил ${n1} ${plural(n1,'тетрадь','тетради','тетрадей')} по ${p1} ₽ и ${n2} ${plural(n2,'ручку','ручки','ручек')} по ${p2} ₽. Он дал продавцу ${D} ₽. Сколько рублей сдачи он получил?`,ans:ch,
+ short:`${n1} · ${p1} + ${n2} · ${p2} = ${tot}; ${D} − ${tot} = ${ch}.`,
+ explain:`1) Тетради: ${p1} · ${n1} = ${n1*p1} ₽.<br>2) Ручки: ${p2} · ${n2} = ${n2*p2} ₽.<br>3) Вся покупка: ${n1*p1} + ${n2*p2} = ${tot} ₽.<br>4) Сдача: ${D} − ${tot} = <b>${ch} ₽</b>.`,
+ explain2:`Проверка: покупка ${tot} ₽ + сдача ${ch} ₽ = ${D} ₽ — ровно столько, сколько дал Паша ✅.`};});
+G(1,()=>{for(;;){const p1=R(2,12)*5,n1=R(4,20);const C=p1*n1;const p2=pick(range(10,200,5).filter(x=>x!==p1&&C%x===0&&C/x>=2));if(!p2)continue;const n2=C/p2;
+ return {type:'num',q:`На все свои деньги Егор может купить ${n1} ${plural(n1,'пакетик','пакетика','пакетиков')} сока по ${p1} ₽. Сколько шоколадок по ${p2} ₽ он может купить на эти же деньги?`,ans:n2,
+ short:`${p1} · ${n1} = ${C}; ${C} : ${p2} = ${n2}.`,
+ explain:`1) Сколько денег: ${p1} · ${n1} = <b>${C} ₽</b>.<br>2) Сколько шоколадок: ${C} : ${p2} = <b>${n2}</b>.`,
+ explain2:`Краткая запись:${TBL(['','Цена','Количество','Стоимость'],[['Сок',p1+' ₽',n1,'одинаковая'],['Шоколад',p2+' ₽','?','одинаковая']])}Стоимость одинаковая — найди её по первой строке, а потом количество во второй.`};}});
+
+/* L2 */
+RULE(2,[{q:'Как найти работу, если известны производительность и время?',ok:'Производительность умножить на время',bad:['Производительность разделить на время','Время разделить на производительность','Сложить производительность и время'],ex:'<b>Работа = производительность · время</b>. 20 страниц в минуту за 7 минут — 140 страниц.',ex2:'Как с покупками: «цена» одного часа (производительность) · количество часов.'},
+{q:'Двое работают вместе. Что складывается?',ok:'Их производительности (работа за 1 час)',bad:['Время их работы','Ничего не складывается','Их работа делится пополам'],ex:'Вместе за 1 час они делают p₁ + p₂. Поэтому работа идёт <b>быстрее</b>, и время уменьшается.',ex2:'Если один копает 2 ямы в час, а другой — 3, то вдвоём они копают 5 ям в час.'}]);
+G(2,()=>{const p=R(6,40),t=R(2,12);const W=p*t;const ask=pick(['W','p','t']);const ans=ask==='W'?W:ask==='p'?p:t;
+ const q=ask==='W'?`Робот-уборщик моет ${p} м² пола в минуту. Сколько м² он вымоет за ${t} мин?`:ask==='p'?`Робот-уборщик вымыл ${W} м² пола за ${t} мин. Сколько м² он моет за одну минуту?`:`Робот-уборщик моет ${p} м² в минуту. За сколько минут он вымоет ${W} м²?`;
+ const f=ask==='W'?`${p} · ${t} = ${W}`:ask==='p'?`${W} : ${t} = ${p}`:`${W} : ${p} = ${t}`;
+ return {type:'num',q,ans,short:f+'.',
+ explain:`${ask==='W'?'Работа = производительность · время':ask==='p'?'Производительность = работа : время':'Время = работа : производительность'}: ${f.replace(/= (\d+)$/,'= <b>$1</b>')}.`,
+ explain2:`Краткая запись:${TBL(['Производительность','Время','Работа'],[[ask==='p'?'?':p+' м²/мин',ask==='t'?'?':t+' мин',ask==='W'?'?':W+' м²']])}Это та же тройка, что «цена — количество — стоимость».`};});
+G(2,()=>{const p=R(2,9),q=R(2,9),t=R(2,8);const W=(p+q)*t;
+ return {type:'num',q:`Егор проходит ${p} ${plural(p,'уровень','уровня','уровней')} игры в час, а Паша — ${q}. За сколько часов они вместе пройдут ${W} ${plural(W,'уровень','уровня','уровней')}, если играют одновременно?`,ans:t,
+ short:`${p} + ${q} = ${p+q} в час; ${W} : ${p+q} = ${t} ч.`,
+ explain:`1) Вместе за 1 час: ${p} + ${q} = <b>${p+q}</b> ${plural(p+q,'уровень','уровня','уровней')}.<br>2) Время: ${W} : ${p+q} = <b>${t} ч</b>.`,
+ explain2:`Проверка: за ${t} ч Егор пройдёт ${p} · ${t} = ${p*t}, Паша — ${q} · ${t} = ${q*t}, вместе ${p*t} + ${q*t} = ${W} ✅. Ловушка — делить на ${p} или на ${q} по отдельности: тогда получится время одного игрока.`};});
+G(2,()=>{const p=R(20,80),q=R(15,70),t=R(2,6);const W=(p+q)*t;
+ return {type:'num',q:`Два насоса вместе откачали ${W} л воды за ${t} мин. Первый насос откачивает ${p} л в минуту. Сколько литров в минуту откачивает второй?`,ans:q,
+ short:`${W} : ${t} = ${p+q}; ${p+q} − ${p} = ${q}.`,
+ explain:`1) Вместе за 1 минуту: ${W} : ${t} = <b>${p+q} л</b>.<br>2) Второй: ${p+q} − ${p} = <b>${q} л/мин</b>.`,
+ explain2:`Другой путь: первый за ${t} мин откачал ${p} · ${t} = ${p*t} л, второй — остальное: ${W} − ${p*t} = ${q*t} л, то есть ${q*t} : ${t} = ${q} л в минуту.`};});
+
+/* L3 */
+RULE(3,[{q:'Как найти расстояние, если известны скорость и время?',ok:'s = v · t (скорость умножить на время)',bad:['s = v : t','s = t : v','s = v + t'],ex:'<b>Расстояние = скорость · время</b>. 60 км/ч за 3 ч — 180 км.',ex2:'60 км/ч значит «60 км каждый час». За 3 часа — три раза по 60.'},
+{q:'Как найти время в пути?',ok:'Расстояние разделить на скорость',bad:['Скорость разделить на расстояние','Расстояние умножить на скорость','Из расстояния вычесть скорость'],ex:'<b>t = s : v</b>. 240 км со скоростью 80 км/ч — 3 ч.',ex2:'Сколько раз по 80 км помещается в 240 км? Три раза — три часа.'}]);
+G(3,()=>{const v=R(4,90),t=R(2,9);const s=v*t;const ask=pick(['s','v','t']);const who=v<=20?pick(['Велосипедист','Самокатчик','Бегун']):pick(['Автобус','Автомобиль','Поезд']);
+ const q=ask==='s'?`${who} движется со скоростью ${v} км/ч. Какое расстояние он проедет за ${t} ч?`:ask==='v'?`${who} проехал ${s} км за ${t} ч. С какой скоростью он ехал (км/ч)?`:`${who} едет со скоростью ${v} км/ч. За сколько часов он преодолеет ${s} км?`;
+ const f=ask==='s'?`${v} · ${t} = ${s}`:ask==='v'?`${s} : ${t} = ${v}`:`${s} : ${v} = ${t}`;
+ return {type:'num',q,ans:ask==='s'?s:ask==='v'?v:t,short:f+'.',
+ explain:`${ask==='s'?'s = v · t':ask==='v'?'v = s : t':'t = s : v'}: ${f.replace(/= (\d+)$/,'= <b>$1</b>')}.`,
+ explain2:`Проверь по формуле s = v · t: ${v} · ${t} = ${s} ✅. Подумай здраво: ${ask==='t'?'чем больше скорость, тем меньше времени нужно':ask==='v'?`${s} км за ${t} ч — это по ${v} км в каждый час`:`каждый час — ещё ${v} км`}.`};});
+G(3,()=>{const v1=R(3,6),t1=R(1,3),v2=R(30,90),t2=R(2,5);const s=v1*t1+v2*t2;
+ return {type:'num',q:`Турист шёл ${t1} ч со скоростью ${v1} км/ч, а потом ехал ${t2} ч на автобусе со скоростью ${v2} км/ч. Какой путь он преодолел за всё время?`,ans:s,
+ short:`${v1} · ${t1} + ${v2} · ${t2} = ${v1*t1} + ${v2*t2} = ${s} км.`,
+ explain:`1) Пешком: ${v1} · ${t1} = <b>${v1*t1} км</b>.<br>2) На автобусе: ${v2} · ${t2} = <b>${v2*t2} км</b>.<br>3) Всего: ${v1*t1} + ${v2*t2} = <b>${s} км</b>.`,
+ explain2:`Ловушка: сложить скорости (${v1} + ${v2}) и время (${t1} + ${t2}) и перемножить: ${(v1+v2)*(t1+t2)}. Так нельзя — с разной скоростью он ехал разное время. Считай каждый кусок пути отдельно.`};});
+G(3,()=>{const s1=R(2,6)*R(3,8),t1=pick([2,3,4]);if(s1%t1)return null;const v1=s1/t1;const k=R(2,4),t2=R(2,5);const v2=v1*k;const s2=v2*t2;
+ return {type:'num',q:`Самокатчик проехал ${s1} км за ${t1} ч. Велосипедист едет в ${k} ${plural(k,'раз','раза','раз')} быстрее. Сколько километров проедет велосипедист за ${t2} ч?`,ans:s2,
+ short:`v = ${s1} : ${t1} = ${v1}; ${v1} · ${k} = ${v2}; ${v2} · ${t2} = ${s2} км.`,
+ explain:`1) Скорость самокатчика: ${s1} : ${t1} = <b>${v1} км/ч</b>.<br>2) Скорость велосипедиста: ${v1} · ${k} = <b>${v2} км/ч</b>.<br>3) Путь: ${v2} · ${t2} = <b>${s2} км</b>.`,
+ explain2:`План: чтобы найти путь велосипедиста, нужна его скорость; чтобы найти её, нужна скорость самокатчика. Поэтому решаем «с конца плана к началу»: сначала v самоката, потом v велосипеда, потом путь.`};});
+
+/* L4 */
+RULE(4,[{q:'Два велосипедиста едут <b>навстречу</b> друг другу. Как найти скорость сближения?',ok:'Сложить их скорости',bad:['Из большей скорости вычесть меньшую','Перемножить скорости','Взять большую из скоростей'],ex:'Навстречу — каждый час расстояние уменьшается на <b>v₁ + v₂</b>. 7 км/ч и 5 км/ч → 12 км/ч.',ex2:'Каждый «съедает» свой кусок дороги: один 7 км, другой 5 км — вместе 12 км за час.'},
+{q:'Два пешехода вышли из одной точки в <b>противоположные</b> стороны. Как меняется расстояние между ними каждый час?',ok:'Увеличивается на сумму их скоростей',bad:['Увеличивается на разность скоростей','Не меняется','Уменьшается на сумму скоростей'],ex:'В разные стороны — скорость удаления <b>v₁ + v₂</b>. 4 км/ч и 5 км/ч → каждый час +9 км.',ex2:'Один за час уходит на 4 км влево, другой на 5 км вправо — между ними 9 км.'}]);
+G(4,()=>{const v1=R(40,90),v2=R(40,90),t=R(2,6);const s=(v1+v2)*t;
+ return {type:'num',q:`Из двух городов, расстояние между которыми ${s} км, одновременно навстречу друг другу выехали две машины. Скорость одной ${v1} км/ч, другой ${v2} км/ч. Через сколько часов они встретятся?`,ans:t,
+ pic:motion('toward',{v1:v1+' км/ч',v2:v2+' км/ч',s:s+' км'}),
+ short:`${s} : (${v1} + ${v2}) = ${s} : ${v1+v2} = ${t} ч.`,
+ explain:`1) Скорость сближения: ${v1} + ${v2} = <b>${v1+v2} км/ч</b> (каждый час расстояние уменьшается на столько).<br>2) Время до встречи: ${s} : ${v1+v2} = <b>${t} ч</b>.`,
+ explain2:`Проверка: за ${t} ч первая проедет ${v1} · ${t} = ${v1*t} км, вторая — ${v2} · ${t} = ${v2*t} км. Вместе ${v1*t} + ${v2*t} = ${s} км — вся дорога ✅.`};});
+G(4,()=>{const v1=R(3,15),v2=R(3,15),t=R(1,4);const s=(v1+v2)*t+R(2,30);const rem=s-(v1+v2)*t;
+ return {type:'num',q:`Из двух сёл, расстояние между которыми ${s} км, навстречу друг другу одновременно выехали два велосипедиста: ${v1} км/ч и ${v2} км/ч. Какое расстояние будет между ними через ${t} ч?`,ans:rem,
+ pic:motion('toward',{v1:v1+' км/ч',v2:v2+' км/ч',s:s+' км'}),
+ short:`${s} − (${v1} + ${v2}) · ${t} = ${s} − ${(v1+v2)*t} = ${rem} км.`,
+ explain:`1) Скорость сближения: ${v1} + ${v2} = ${v1+v2} км/ч.<br>2) За ${t} ч они сблизились на ${v1+v2} · ${t} = <b>${(v1+v2)*t} км</b>.<br>3) Осталось: ${s} − ${(v1+v2)*t} = <b>${rem} км</b>.`,
+ explain2:`По отдельности: первый проехал ${v1*t} км, второй ${v2*t} км. Из всей дороги ${s} км они «съели» ${v1*t} + ${v2*t} = ${(v1+v2)*t} км. Осталось ${rem} км — они ещё не встретились.`};});
+G(4,()=>{const v1=R(3,7),v2=R(3,8),t=R(2,6);const s=(v1+v2)*t;const who=pick([['пешехода','пешеход'],['лыжника','лыжник']]);
+ return {type:'num',q:`Из одной точки в противоположных направлениях одновременно вышли два ${who[0]}: ${v1} км/ч и ${v2} км/ч. Какое расстояние будет между ними через ${t} ч?`,ans:s,
+ pic:motion('apart',{v1:v1+' км/ч',v2:v2+' км/ч',s:'? км'}),
+ short:`(${v1} + ${v2}) · ${t} = ${s} км.`,
+ explain:`1) Скорость удаления: ${v1} + ${v2} = <b>${v1+v2} км/ч</b>.<br>2) Через ${t} ч: ${v1+v2} · ${t} = <b>${s} км</b>.`,
+ explain2:`Отдельно: первый ушёл на ${v1*t} км в одну сторону, второй на ${v2*t} км в другую. Между ними ${v1*t} + ${v2*t} = ${s} км.`};});
+G(4,()=>{const v1=R(50,90),v2=R(40,90),t=R(2,5);const s=(v1+v2)*t;
+ return {type:'num',q:`Два поезда вышли одновременно навстречу друг другу из двух городов, расстояние между которыми ${s} км, и встретились через ${t} ч. Скорость первого поезда ${v1} км/ч. Найди скорость второго.`,ans:v2,
+ pic:motion('toward',{v1:v1+' км/ч',v2:'? км/ч',s:s+' км'}),
+ short:`${s} : ${t} = ${v1+v2}; ${v1+v2} − ${v1} = ${v2} км/ч.`,
+ explain:`1) Скорость сближения: ${s} : ${t} = <b>${v1+v2} км/ч</b>.<br>2) Она равна сумме скоростей, поэтому второй: ${v1+v2} − ${v1} = <b>${v2} км/ч</b>.`,
+ explain2:`Иначе: первый поезд за ${t} ч прошёл ${v1} · ${t} = ${v1*t} км. Второй — оставшиеся ${s} − ${v1*t} = ${v2*t} км за те же ${t} ч: ${v2*t} : ${t} = ${v2} км/ч.`};});
+
+/* L5 */
+RULE(5,[{q:'Мотоцикл догоняет велосипед (едут в одну сторону). Как найти скорость сближения?',ok:'Из скорости мотоцикла вычесть скорость велосипеда',bad:['Сложить скорости','Перемножить скорости','Взять скорость мотоцикла'],ex:'Вдогонку — каждый час догоняющий «отыгрывает» <b>v₁ − v₂</b>.',ex2:'Если ты бежишь 10 м/с, а кот 7 м/с, то за секунду расстояние уменьшается на 3 м.'},
+{q:'Чему равна скорость лодки <b>против течения</b>?',ok:'Собственная скорость минус скорость течения',bad:['Собственная скорость плюс скорость течения','Скорость течения','Собственная скорость, течение не важно'],ex:'Против течения река мешает: <b>v − vт</b>. По течению помогает: v + vт.',ex2:'Как эскалатор: идёшь против его хода — продвигаешься медленнее.'}]);
+G(5,()=>{const v2=R(5,40),dv=R(2,20),t=R(2,6);const v1=v2+dv;const d=dv*t;const p=pick([['Мотоциклист','велосипедиста','велосипедист','км/ч','км','ч'],['Пёс','кота','кот','м/с','м','с']]);
+ return {type:'num',q:`${p[0]} заметил ${p[1]} в ${d} ${p[4]} впереди и бросился догонять. Скорость ${p[0]==='Пёс'?'пса':'мотоциклиста'} ${v1} ${p[3]}, ${p[1]} — ${v2} ${p[3]}. Через сколько ${p[5]==='ч'?'часов':'секунд'} он догонит ${p[1]}?`,ans:t,
+ pic:motion('chase',{v1:v1+' '+p[3],v2:v2+' '+p[3],s:d+' '+p[4]}),
+ short:`${d} : (${v1} − ${v2}) = ${d} : ${dv} = ${t} ${p[5]}.`,
+ explain:`1) Скорость сближения вдогонку: ${v1} − ${v2} = <b>${dv} ${p[3]}</b>.<br>2) Время: ${d} : ${dv} = <b>${t} ${p[5]}</b>.`,
+ explain2:`Проверка: за ${t} ${p[5]} догоняющий пробежит ${v1*t} ${p[4]}, а убегающий — ${v2*t} ${p[4]}. Разница ${v1*t} − ${v2*t} = ${d} ${p[4]} — ровно начальное расстояние ✅. Ловушка — сложить скорости (${v1+v2}): так считают при встречном движении.`};});
+G(5,()=>{const v=R(10,30),c=R(1,4),t=R(2,6);const up=Math.random()<.5;const sp=up?v-c:v+c;const s=sp*t;
+ return {type:'num',q:`Собственная скорость катера ${v} км/ч, скорость течения ${c} км/ч. Какое расстояние катер пройдёт за ${t} ч <b>${up?'против течения':'по течению'}</b>?`,ans:s,
+ pic:motion('river',{v1:`${v} ${up?'−':'+'} ${c} = ${sp} км/ч`,c:c+' км/ч',up}),
+ short:`(${v} ${up?'−':'+'} ${c}) · ${t} = ${sp} · ${t} = ${s} км.`,
+ explain:`1) ${up?'Против течения река мешает':'По течению река помогает'}: ${v} ${up?'−':'+'} ${c} = <b>${sp} км/ч</b>.<br>2) Путь: ${sp} · ${t} = <b>${s} км</b>.`,
+ explain2:`Ловушка — забыть про течение: ${v} · ${t} = ${v*t} км. А ${up?'против':'по'} течению скорость катера ${up?'меньше':'больше'} собственной на ${c} км/ч.`};});
+G(5,()=>{const v=R(8,30),c=R(1,5);const dn=v+c,up=v-c;const ask=pick(['c','v']);
+ return {type:'num',q:`Скорость лодки по течению ${dn} км/ч, а против течения — ${up} км/ч. Найди ${ask==='c'?'скорость течения':'собственную скорость лодки'} (км/ч).`,ans:ask==='c'?c:v,
+ short:ask==='c'?`(${dn} − ${up}) : 2 = ${c}.`:`(${dn} + ${up}) : 2 = ${v}.`,
+ explain:ask==='c'?`По течению и против течения отличаются на <b>две</b> скорости течения (одну прибавили, одну отняли): ${dn} − ${up} = ${dn-up}.<br>Скорость течения: ${dn-up} : 2 = <b>${c} км/ч</b>.`:`Собственная скорость — ровно посередине между ${up} и ${dn}: (${dn} + ${up}) : 2 = <b>${v} км/ч</b>.`,
+ explain2:`Проверка: ${v} + ${c} = ${dn} (по течению), ${v} − ${c} = ${up} (против) ✅. ${ask==='c'?`Ловушка — ответить ${dn-up}: это две скорости течения.`:`Это как «сумма и разность»: два числа ${v} и ${c}, их сумма ${dn}, разность ${up}.`}`};});
+G(5,()=>{const c=R(2,5),t=R(2,8);const s=c*t;const v=R(10,25);
+ return {type:'num',q:`Собственная скорость моторной лодки ${v} км/ч, скорость течения реки ${c} км/ч. Лодка и плот одновременно отплыли от пристани вниз по реке. Сколько часов понадобится <b>плоту</b>, чтобы проплыть ${s} км?`,ans:t,
+ hint:'У плота нет мотора. С какой скоростью он плывёт?',
+ short:`Плот плывёт со скоростью течения: ${s} : ${c} = ${t} ч.`,
+ explain:`У плота нет мотора, его несёт река: скорость плота = скорость течения = <b>${c} км/ч</b>.<br>Время: ${s} : ${c} = <b>${t} ч</b>. Скорость лодки (${v} км/ч) — лишнее данное, ловушка!`,
+ explain2:`В задачах иногда дают «лишние» числа, чтобы проверить, понимаешь ли ты смысл. Плоту всё равно, какой мотор у лодки.`};});
+
+/* L6 */
+RULE(6,[{q:'С чего начинают решение задачи на части?',ok:'Находят, сколько всего частей (или их разницу), и сколько приходится на одну часть',bad:['Делят общую массу на число предметов','Складывают все числа из условия','Умножают общую массу на число частей'],ex:'Ключ — <b>одна часть</b>. 2 части + 3 части = 5 частей = 500 г → 1 часть = 100 г.',ex2:'Как с пиццей: сначала узнаёшь, сколько весит один кусок, потом — сколько весят твои куски.'}]);
+G(6,()=>{const a=R(1,5),b=R(2,7);if(a===b)return null;const u=R(5,60);const T=(a+b)*u;const sub=pick([['банана','клубники','смузи','г'],['муки','сахара','теста','г'],['синей краски','белой краски','голубой краски','г']]);const ask=pick([0,1]);const ans=(ask?b:a)*u;
+ return {type:'num',q:`Для ${sub[2]} берут ${a} ${plural(a,'часть','части','частей')} ${sub[0]} и ${b} ${plural(b,'часть','части','частей')} ${sub[1]}. Всего получилось ${T} ${sub[3]}. Сколько граммов ${ask?sub[1]:sub[0]}?`,ans,
+ pic:segs([{lab:sub[0].split(' ')[0].slice(0,8),parts:range(1,a).map(()=>({n:1,t:'ч.'}))},{lab:sub[1].split(' ')[0].slice(0,8),parts:range(1,b).map(()=>({n:1,t:'ч.'}))}],{brace:T+' г'}),
+ short:`${a} + ${b} = ${a+b} ч.; ${T} : ${a+b} = ${u}; ${u} · ${ask?b:a} = ${ans}.`,
+ explain:`1) Всего частей: ${a} + ${b} = <b>${a+b}</b>.<br>2) Одна часть: ${T} : ${a+b} = <b>${u} г</b>.<br>3) ${ask?sub[1]:sub[0]}: ${u} · ${ask?b:a} = <b>${ans} г</b>.`,
+ explain2:`Проверка: ${sub[0]} ${a*u} г + ${sub[1]} ${b*u} г = ${T} г ✅. Ловушка — разделить ${T} на 2 («поровну»): части ведь разные!`};});
+G(6,()=>{const a=R(2,6),b=a+R(1,5),u=R(5,40);const D=(b-a)*u,T=(a+b)*u;
+ return {type:'num',q:`В магазине кроссовок разных цветов: на ${a} ${plural(a,'часть','части','частей')} белых приходится ${b} ${plural(b,'часть','части','частей')} чёрных. Чёрных пар на ${D} больше, чем белых. Сколько всего пар?`,ans:T,
+ pic:segs([{lab:'Белые',parts:range(1,a).map(()=>({n:1,t:'ч.'}))},{lab:'Чёрные',parts:range(1,b).map((_,i)=>({n:1,t:'ч.',dash:i>=a}))}],{under:{row:1,from:a,to:b,t:'на '+D+' больше'}}),
+ short:`${b} − ${a} = ${b-a} ч. = ${D}; 1 ч. = ${u}; ${a+b} · ${u} = ${T}.`,
+ explain:`1) Чёрных больше на ${b} − ${a} = <b>${b-a}</b> ${plural(b-a,'часть','части','частей')}, и это ${D} пар.<br>2) Одна часть: ${D} : ${b-a} = <b>${u}</b>.<br>3) Всего ${a} + ${b} = ${a+b} частей: ${u} · ${a+b} = <b>${T}</b>.`,
+ explain2:`Проверка: белых ${a*u}, чёрных ${b*u}. Разница ${b*u} − ${a*u} = ${D} ✅, всего ${T} ✅.`};});
+G(6,()=>{const nm=sample(NM,2);const x=R(4,30),k=R(2,6);const T=x*(k+1);
+ return {type:'num',q:`У ${GEN[nm[0]]} и ${GEN[nm[1]]} вместе ${T} ${plural(T,'наклейка','наклейки','наклеек')}, причём у ${GEN[nm[1]]} в ${k} ${plural(k,'раз','раза','раз')} больше. Сколько наклеек у ${GEN[nm[0]]}?`,ans:x,
+ pic:segs([{lab:nm[0],parts:[{n:1,t:'1 ч.'}]},{lab:nm[1],parts:range(1,k).map(()=>({n:1,t:'1 ч.'}))}],{brace:String(T)}),
+ short:`1 + ${k} = ${k+1} ч.; ${T} : ${k+1} = ${x}.`,
+ explain:`Пусть у ${GEN[nm[0]]} 1 часть, тогда у ${GEN[nm[1]]} — ${k} частей. Всего 1 + ${k} = <b>${k+1}</b> частей.<br>1 часть: ${T} : ${k+1} = <b>${x}</b>.`,
+ explain2:`Ловушка — разделить на ${k}: ${T} : ${k}. Но частей не ${k}, а ${k+1} — не забудь про того, у кого «1 часть». Проверка: ${x} + ${x*k} = ${T} ✅, ${x*k} : ${x} = ${k} ✅.`};});
+G(6,()=>{const u=R(3,20);const k1=1,k2=R(2,3),k3=k2+R(1,3);const T=(k1+k2+k3)*u;
+ return {type:'num',q:`Три друга собрали ${T} грибов. Второй собрал в ${k2} раза больше первого, а третий — в ${k3} ${plural(k3,'раз','раза','раз')} больше первого. Сколько грибов собрал третий?`,ans:k3*u,
+ pic:segs([{lab:'1-й',parts:[{n:1,t:'ч.'}]},{lab:'2-й',parts:range(1,k2).map(()=>({n:1,t:'ч.'}))},{lab:'3-й',parts:range(1,k3).map(()=>({n:1,t:'ч.'}))}],{brace:String(T)}),
+ short:`1 + ${k2} + ${k3} = ${1+k2+k3} ч.; ${T} : ${1+k2+k3} = ${u}; ${u} · ${k3} = ${k3*u}.`,
+ explain:`Первый — 1 часть, второй — ${k2}, третий — ${k3}. Всего ${1+k2+k3} частей.<br>Одна часть: ${T} : ${1+k2+k3} = <b>${u}</b>.<br>Третий: ${u} · ${k3} = <b>${k3*u}</b>.`,
+ explain2:`Проверка: ${u} + ${k2*u} + ${k3*u} = ${T} ✅.`};});
+
+/* L7 — ★ */
+RULE(7,[{q:'Сумма двух чисел S, разность D. Как найти меньшее число?',ok:'(S − D) : 2',bad:['(S + D) : 2','S : 2 − D','S − D'],ex:'Убираем у большего «лишнее» D — остаются две равные части: S − D. Одна часть — меньшее: <b>(S − D) : 2</b>.',ex2:'34 значка, у Паши на 6 больше: (34 − 6) : 2 = 14 у Егора, 14 + 6 = 20 у Паши.'}],{star:true});
+G(7,()=>{const x=R(8,60),d=R(2,25);const S=2*x+d;const ask=pick(['min','max']);const nm=pick([['Егор','Паша','у Паши','Паши'],['Синяя команда','Красная команда','у красной','красной']]);
+ return {type:'num',q:`${nm[0]==='Егор'?'У Егора и Паши вместе':'Две команды вместе набрали'} ${S} ${plural(S,'очко','очка','очков')}, причём ${nm[2]} на ${d} больше. Сколько очков ${ask==='min'?(nm[0]==='Егор'?'у Егора':'у синей команды'):nm[2]}?`,ans:ask==='min'?x:x+d,
+ pic:segs([{lab:nm[0].split(' ')[0],parts:[{n:x,t:'?'}]},{lab:nm[1].split(' ')[0],parts:[{n:x,t:'?'},{n:d,t:String(d),dash:true}]}],{brace:String(S)}),
+ short:`(${S} − ${d}) : 2 = ${x}${ask==='max'?`; ${x} + ${d} = ${x+d}`:''}.`,
+ explain:`1) Убираем «лишние» ${d}: ${S} − ${d} = ${S-d} — это два одинаковых отрезка.<br>2) Меньшее: ${S-d} : 2 = <b>${x}</b>.${ask==='max'?`<br>3) Большее: ${x} + ${d} = <b>${x+d}</b>.`:''}`,
+ explain2:`Можно и сразу большее: (${S} + ${d}) : 2 = ${x+d} (добавили недостающие ${d} к меньшему). Проверка: ${x} + ${x+d} = ${S}, ${x+d} − ${x} = ${d} ✅.`};},{star:true});
+G(7,()=>{const tp=pick([['кроликов','кур','Во дворе гуляют кролики и куры',4,2,'ног'],['коров','гусей','На ферме коровы и гуси',4,2,'ног'],['пауков','жуков','В коробке у юного натуралиста пауки и жуки',8,6,'ног'],['машин','мотоциклов','',4,2,'колёс']]);const [A,B,PH,la,lb,un]=tp;
+ const n=R(8,30);const a=R(1,n-1);const L=a*la+(n-a)*lb;let sol=[];for(let x=0;x<=n;x++)if(x*la+(n-x)*lb===L)sol.push(x);ok(sol.length===1&&sol[0]===a,'hl');
+ const isVeh=un==='колёс';
+ return {type:'num',q:isVeh?`На стоянке ${n} машин и мотоциклов, у них всего ${L} колёс. Сколько на стоянке машин?`:`${PH}. Всего у них ${n} ${plural(n,'голова','головы','голов')} и ${L} ${un}. Сколько ${A}?`,ans:a,
+ hint:`Представь, что у всех по ${lb} ${un}. Сколько ${un} «лишних»?`,
+ short:`${n} · ${lb} = ${n*lb}; ${L} − ${n*lb} = ${L-n*lb}; ${L-n*lb} : ${la-lb} = ${a}.`,
+ explain:`1) Пусть у всех ${n} по ${lb} ${un}: ${n} · ${lb} = <b>${n*lb}</b>.<br>2) А на самом деле ${L} — «лишних» ${L} − ${n*lb} = <b>${L-n*lb}</b>.<br>3) У каждого из ${A} на ${la} − ${lb} = ${la-lb} ${un==='ног'?plural(la-lb,'ногу','ноги','ног'):plural(la-lb,'колесо','колеса','колёс')} больше: ${L-n*lb} : ${la-lb} = <b>${a}</b>.<br>Проверка: ${a} · ${la} + ${n-a} · ${lb} = ${a*la} + ${(n-a)*lb} = ${L} ✅.`,
+ explain2:`Перебор подтверждает: из всех вариантов от 0 до ${n} подходит только ${a} ${A} и ${n-a} ${B}. Уравнением: ${la}x + ${lb}(${n} − x) = ${L} → ${la-lb}x = ${L-n*lb} → x = ${a}.`};},{star:true});
+G(7,()=>{for(;;){const n=R(6,25);const a=R(1,n-1);const S=5*a+2*(n-a);let sol=[];for(let x=0;x<=n;x++)if(5*x+2*(n-x)===S)sol.push(x);if(sol.length!==1)continue;
+ return {type:'num',q:`В копилке ${n} монет по 2 ₽ и по 5 ₽, всего на ${S} ₽. Сколько монет по 5 ₽?`,ans:a,
+ short:`${n} · 2 = ${2*n}; ${S} − ${2*n} = ${S-2*n}; ${S-2*n} : 3 = ${a}.`,
+ explain:`Как «головы и ноги»: пусть все монеты по 2 ₽ — это ${n} · 2 = ${2*n} ₽.<br>Не хватает ${S} − ${2*n} = ${S-2*n} ₽. Каждая пятирублёвка «добавляет» 5 − 2 = 3 ₽.<br>Пятирублёвок: ${S-2*n} : 3 = <b>${a}</b>. Двухрублёвок: ${n-a}.<br>Проверка: ${a} · 5 + ${n-a} · 2 = ${5*a} + ${2*(n-a)} = ${S} ✅.`,
+ explain2:`Перебор всех вариантов (от 0 до ${n} пятирублёвок) даёт ровно один подходящий: ${a}.`};}},{star:true});
+
+/* L8 — ★ */
+RULE(8,[{q:'Папе 36 лет, сыну 12. Какой будет разница их возрастов через 10 лет?',ok:'24 года — разница не меняется',bad:['34 года','14 лет','44 года'],ex:'Каждый год стареют <b>оба</b> на 1 год, поэтому разность возрастов всегда одна: 36 − 12 = 24.',ex2:'Через 10 лет: папе 46, сыну 22. 46 − 22 = 24 ✅.'}],{star:true});
+G(8,()=>{for(;;){const k=pick([2,3,4]);const son=R(3,20);const y=R(2,25);const fa=k*(son+y)-y;if(fa-son<18||fa>60)continue;let sol=[];for(let z=1;z<=80;z++)if(fa+z===k*(son+z))sol.push(z);if(sol.length!==1||sol[0]!==y)continue;const d=fa-son;
+ return {type:'num',q:`Папе ${fa} ${plural(fa,'год','года','лет')}, а сыну ${son}. Через сколько лет папа будет старше сына ровно в ${k} раза?`,ans:y,
+ hint:'Разница возрастов не меняется. Сколько «частей» она составляет, когда папа в k раз старше?',
+ short:`Разница ${d}; сыну будет ${d} : ${k-1} = ${son+y}; ${son+y} − ${son} = ${y}.`,
+ explain:`1) Разница возрастов: ${fa} − ${son} = <b>${d}</b> — она не меняется.<br>2) Когда папа в ${k} раза старше, сын — 1 часть, папа — ${k} ${plural(k,'часть','части','частей')}, разница — ${k-1} ${plural(k-1,'часть','части','частей')}. Значит, сыну тогда будет ${k===2?`столько же, сколько разница: <b>${son+y}</b>`:`${d} : ${k-1} = <b>${son+y}</b>`}.<br>3) Ждать: ${son+y} − ${son} = <b>${y}</b> ${plural(y,'год','года','лет')}.<br>Проверка: папе ${fa+y}, сыну ${son+y}, ${fa+y} : ${son+y} = ${k} ✅.`,
+ explain2:`Перебором: через 1 год ${fa+1} и ${son+1}, через 2 — ${fa+2} и ${son+2}… Ровно в ${k} раза — только через ${y} ${plural(y,'год','года','лет')}. Уравнением: ${fa} + x = ${k}(${son} + x).`};}},{star:true});
+G(8,()=>{for(;;){const up=R(3,7),dn=R(1,up-1),Hh=R(up+3,30);let h=0,day=0;while(true){day++;h+=up;if(h>=Hh)break;h-=dn;}const naive=Math.ceil(Hh/(up-dn));if(naive===day)continue;
+ return {type:'num',q:`Улитка ползёт вверх по столбу высотой ${Hh} м. Днём она поднимается на ${up} м, а ночью сползает на ${dn} м. На какой день она впервые доберётся до вершины? (Начала в первое утро у земли.)`,ans:day,
+ hint:'Не спеши делить! В последний день она доберётся до верха и сползать уже не будет.',
+ short:`К утру ${day}-го дня — ${(day-1)*(up-dn)} м, днём +${up} → ${(day-1)*(up-dn)+up} ≥ ${Hh}: ${day}-й день.`,
+ explain:`За сутки улитка поднимается на ${up} − ${dn} = ${up-dn} м. Но в последний день ей хватит подъёма, и ночью она уже не сползёт.<br>К утру ${day-1}-го дня: ${(day-2)*(up-dn)} м — днём ${(day-2)*(up-dn)+up} м, не хватает.<br>К утру ${day}-го дня: ${(day-1)*(up-dn)} м, днём ${(day-1)*(up-dn)} + ${up} = ${(day-1)*(up-dn)+up} м ≥ ${Hh} — на вершине!<br>Ответ: <b>${day}</b>-й день. (Ловушка: ${Hh} : ${up-dn} → ${naive}-й день.)`,
+ explain2:`Распиши по дням (вечер / утро): ${range(1,day).map(dd=>{const ev=(dd-1)*(up-dn)+up;return `день ${dd}: ${Math.min(ev,Hh)} м${ev>=Hh?' 🏁':` / утро ${ev-dn} м`}`;}).join('; ')}. Компьютерная симуляция даёт тот же ответ.`};}},{star:true});
+G(8,()=>{if(Math.random()<0.5){const k=R(3,12),t=R(2,9);const ans=(k-1)*t;
+  return {type:'num',q:`Бревно распилили на ${k} ${plural(k,'часть','части','частей')}. Каждый распил занимает ${t} мин. Сколько минут пилили?`,ans,
+  short:`Распилов ${k} − 1 = ${k-1}; ${k-1} · ${t} = ${ans} мин.`,
+  explain:`Чтобы получить ${k} ${plural(k,'кусок','куска','кусков')}, нужно на один распил меньше: ${k} − 1 = <b>${k-1}</b>.<br>Время: ${k-1} · ${t} = <b>${ans} мин</b>.<br>Ловушка: ${k} · ${t} = ${k*t}.`,
+  explain2:`Проверь на маленьком: 1 распил — 2 куска, 2 распила — 3 куска. Распилов всегда на 1 меньше, чем кусков.`};}
+ const st=R(10,24),a=pick([2,3,4]);const b=pick(range(5,16).filter(x=>x>a+1));const s1=(a-1)*st;const ans=(b-1)*st;
+ return {type:'num',q:`Чтобы подняться с 1-го этажа на ${a}-й, Егор проходит ${s1} ${plural(s1,'ступеньку','ступеньки','ступенек')}. Сколько ступенек ему нужно пройти с 1-го этажа на ${b}-й? (Пролёты между этажами одинаковые.)`,ans,
+ short:`${s1} : ${a-1} = ${st} на этаж; ${b-1} · ${st} = ${ans}.`,
+ explain:`С 1-го на ${a}-й — это ${a} − 1 = ${a-1} ${plural(a-1,'пролёт','пролёта','пролётов')} (на первый этаж подниматься не надо!).<br>Один пролёт: ${s1} : ${a-1} = <b>${st}</b> ступенек.<br>С 1-го на ${b}-й — ${b-1} пролётов: ${b-1} · ${st} = <b>${ans}</b>.<br>Ловушка: «${b} : ${a} = во сколько раз выше» — неверно, считать надо пролёты.`,
+ explain2:`Нарисуй лестницу: 1 → 2 → 3 … Между соседними этажами одна стрелка (пролёт). От 1-го до ${b}-го стрелок ${b-1}, а не ${b}.`};},{star:true});
+
+window.TOPIC={id:'m5_word',title:'Текстовые задачи',subtitle:'Математика · 5 класс',
+intro:'<p>Текстовые задачи — это маленькие истории: покупки, поездки, гонки, игры. Научимся рисовать схемы отрезками, различать «на сколько» и «во сколько раз», решать задачи на работу, движение и части. А в конце — знаменитые олимпиадные задачи про головы и ноги, возраст и улитку ★.</p>',
+theory,symbols,figs:{},
+levels:['«На сколько» и «во сколько раз»','Цена, количество, стоимость','Работа и производительность','Движение: s = v · t','Навстречу и в разные стороны','Вдогонку и по реке','Задачи на части','★ Сумма и разность, головы и ноги','★ Возраст и хитрые задачи'],
+gens};
+})();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
